@@ -16,10 +16,11 @@ enum GenerationBackend {
             while !Task.isCancelled {
                 do {
                     let job = try await MetagGateway.job(jobId)
+                    let ticket = job.shots.isEmpty ? nil : try? await MetagGateway.fileTicket(job: jobId)
                     let update = BackendGenerationJob(
                         _id: jobId,
                         status: status(from: job.status),
-                        resultUrls: job.shots.isEmpty ? nil : job.shots.map { fileURL(job: jobId, name: $0.video) },
+                        resultUrls: job.shots.isEmpty ? nil : job.shots.map { fileURL(job: jobId, name: $0.video, ticket: ticket) },
                         errorMessage: job.error,
                         costCredits: nil,
                         refundedCredits: nil,
@@ -62,13 +63,12 @@ enum GenerationBackend {
         }
     }
 
-    /// 免费档结果留在网关内存盘，取件需带 token（<video>/下载器无法设 header）
-    private static func fileURL(job: String, name: String) -> String {
+    /// 免费档结果留在网关内存盘；下载器无法设 header，所以带短时效票据而不是长期 JWT
+    private static func fileURL(job: String, name: String, ticket: String?) -> String {
         if let absolute = URL(string: name), absolute.scheme != nil { return name }
-        let token = MetagGateway.token ?? ""
         return MetagGateway.baseURL
             .appendingPathComponent("files/\(job)/\(name)")
-            .appending(queryItems: [URLQueryItem(name: "token", value: token)])
+            .appending(queryItems: [URLQueryItem(name: "ticket", value: ticket ?? "")])
             .absoluteString
     }
 
@@ -97,8 +97,18 @@ enum GenerationBackend {
         projectId: String? = nil,
     ) async throws -> String {
         guard let prompt = params.prompt, !prompt.isEmpty else { throw BackendError.notConfigured }
+        // 图生视频：起始帧是本地文件就先上传，与 web 端同一条 /upload/frame 契约
+        var frameId: String?
+        if case .video(let p) = params, let start = p.startFrameURL, let url = URL(string: start), url.isFileURL {
+            frameId = try await MetagGateway.uploadFrame(url)
+        }
         // macOS 端是"生成一个镜头"的意图，按镜头计价
-        return try await MetagGateway.submit(prompt: prompt, engine: engine(for: model), shots: 1)
+        return try await MetagGateway.submit(
+            prompt: prompt,
+            engine: engine(for: model),
+            shots: 1,
+            firstFrame: frameId
+        )
     }
 
     /// 模型 id → METAG 引擎档位。未知模型走本地档（最便宜，不会意外扣大额）。

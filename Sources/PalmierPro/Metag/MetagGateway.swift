@@ -79,11 +79,36 @@ enum MetagGateway {
     }
 
     /// 提交一句话生成；engine: local | cloud | seedance | hh
-    static func submit(prompt: String, engine: String = "local", cover: Bool = false, shots: Int = 4) async throws -> String {
+    static func submit(
+        prompt: String,
+        engine: String = "local",
+        cover: Bool = false,
+        shots: Int = 4,
+        firstFrame: String? = nil
+    ) async throws -> String {
         struct Response: Decodable { let job_id: String }
-        let req = try request("api/v1/agent/generate", method: "POST",
-                              body: ["prompt": prompt, "engine": engine, "cover": cover, "shots": shots])
+        var body: [String: Any] = ["prompt": prompt, "engine": engine, "cover": cover, "shots": shots]
+        if let firstFrame { body["first_frame"] = firstFrame }
+        let req = try request("api/v1/agent/generate", method: "POST", body: body)
         return try await send(req, as: Response.self).job_id
+    }
+
+    /// 取件票据：5 分钟一次性，避免把 7 天 JWT 写进 URL（会进日志/历史）
+    static func fileTicket(job id: String) async throws -> String {
+        struct Response: Decodable { let ticket: String }
+        return try await send(request("api/v1/jobs/\(id)/ticket", method: "POST"), as: Response.self).ticket
+    }
+
+    /// 图生视频首帧上传，返回 frame_id（服务端内存盘，1 小时蒸发）
+    static func uploadFrame(_ fileURL: URL) async throws -> String {
+        struct Response: Decodable { let frame_id: String }
+        guard let token else { throw Failure.signedOut }
+        let data = try Data(contentsOf: fileURL)
+        var req = URLRequest(url: baseURL.appendingPathComponent("api/v1/upload/frame"))
+        req.httpMethod = "POST"
+        req.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
+        req.httpBody = data
+        return try await send(req, as: Response.self).frame_id
     }
 
     /// Stripe 结账页（plan: "sub" 订阅 | "pack" 加油包）。官网直分发，不走 MAS 免 30% 抽成。
