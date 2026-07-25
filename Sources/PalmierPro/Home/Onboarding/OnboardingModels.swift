@@ -28,8 +28,8 @@ enum OnboardingQuestion: String, CaseIterable, Identifiable {
         switch self {
         case .videoTypes: L10n.key("What do you make?")
         case .roles: L10n.key("What best describes your role?")
-        case .interests: L10n.key("What interests you most about Palmier Pro?")
-        case .acquisitionSource: L10n.key("How did you find Palmier Pro?")
+        case .interests: L10n.key("What interests you most about METAG?")
+        case .acquisitionSource: L10n.key("How did you find METAG?")
         case .previousEditors: L10n.key("Which editors did you use before?")
         }
     }

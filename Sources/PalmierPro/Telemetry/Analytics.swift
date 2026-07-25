@@ -79,7 +79,7 @@ enum Analytics {
     private static let host = Bundle.main.object(forInfoDictionaryKey: "PostHogHost") as? String ?? PostHogConfig.defaultHost
     private static let captureQueue = DispatchQueue(label: "io.palmier.pro.analytics.capture")
     #endif
-    private static let enabledKey = "io.palmier.pro.analytics.enabled"
+    private static let enabledKey = "ai.metag.analytics.enabled"
 
     static var isEnabled: Bool {
         get {

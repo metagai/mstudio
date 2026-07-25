@@ -20,7 +20,7 @@ enum MainMenuBuilder {
     private static func appMenu() -> NSMenuItem {
         let item = NSMenuItem()
         let menu = NSMenu(title: AppIdentity.name)
-        menu.addItem(withTitle: L10n.string("About Palmier Pro"), action: #selector(NSApplication.orderFrontStandardAboutPanel(_:)), keyEquivalent: "")
+        menu.addItem(withTitle: L10n.string("About \(AppIdentity.name)"), action: #selector(NSApplication.orderFrontStandardAboutPanel(_:)), keyEquivalent: "")
         menu.addItem(.separator())
         let updatesItem = NSMenuItem(title: L10n.string("Check for Updates…"), action: #selector(Updater.checkForUpdates(_:)), keyEquivalent: "")
         updatesItem.target = Updater.shared
@@ -28,7 +28,7 @@ enum MainMenuBuilder {
         menu.addItem(.separator())
         menu.addItem(withTitle: L10n.string("Settings…"), action: #selector(AppDelegate.showSettings(_:)), keyEquivalent: ",")
         menu.addItem(.separator())
-        menu.addItem(withTitle: L10n.string("Quit Palmier Pro"), action: #selector(NSApplication.terminate(_:)), keyEquivalent: "q")
+        menu.addItem(withTitle: L10n.string("Quit \(AppIdentity.name)"), action: #selector(NSApplication.terminate(_:)), keyEquivalent: "q")
         item.submenu = menu
         return item
     }

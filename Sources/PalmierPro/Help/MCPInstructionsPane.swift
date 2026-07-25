@@ -39,7 +39,7 @@ struct MCPInstructionsPane: View {
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: AppTheme.Spacing.xxl) {
-                Text(L10n.string("Connect an external agent to inspect and edit the open Palmier Pro project."))
+                Text(L10n.string("Connect an external agent to inspect and edit the open \(AppIdentity.name) project."))
                     .font(.system(size: AppTheme.FontSize.smMd, weight: AppTheme.FontWeight.regular))
                     .foregroundStyle(AppTheme.Text.secondaryColor)
                     .fixedSize(horizontal: false, vertical: true)
@@ -96,7 +96,7 @@ struct MCPInstructionsPane: View {
         agentSection(
             .cursor,
             name: "Cursor",
-            description: L10n.string("Install the Palmier Pro MCP server in Cursor."),
+            description: L10n.string("Install the \(AppIdentity.name) MCP server in Cursor."),
             action: (L10n.string("Install in Cursor"), openCursor)
         ) {
             ManualFallback(
@@ -110,7 +110,7 @@ struct MCPInstructionsPane: View {
         agentSection(
             .claude,
             name: "Claude Desktop",
-            description: L10n.string("Install the bundled Palmier Pro connector."),
+            description: L10n.string("Install the bundled \(AppIdentity.name) connector."),
             action: (L10n.string("Install in Claude Desktop"), openClaudeDesktopBundle)
         ) {
             EmptyView()
@@ -199,7 +199,7 @@ struct MCPInstructionsPane: View {
 
     private func openClaudeDesktopBundle() {
         guard let bundleURL = claudeDesktopBundleURL else {
-            claudeInstallError = "The Palmier Pro connector could not be found. Reinstall Palmier Pro, then try again."
+            claudeInstallError = "The \(AppIdentity.name) connector could not be found. Reinstall \(AppIdentity.name), then try again."
             return
         }
         guard let claudeURL = NSWorkspace.shared.urlForApplication(withBundleIdentifier: "com.anthropic.claudefordesktop") else {
@@ -214,7 +214,7 @@ struct MCPInstructionsPane: View {
         ) { _, error in
             guard error != nil else { return }
             Task { @MainActor in
-                claudeInstallError = "Claude Desktop could not open the Palmier Pro connector. Update Claude Desktop, then try again."
+                claudeInstallError = "Claude Desktop could not open the \(AppIdentity.name) connector. Update Claude Desktop, then try again."
             }
         }
     }

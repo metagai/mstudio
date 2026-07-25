@@ -76,9 +76,9 @@ private struct WelcomeTitle: View {
 
     private var title: String {
         if let first = account.account?.user.firstName {
-            return L10n.string("Welcome to Palmier Pro, \(first)")
+            return L10n.string("Welcome to \(AppIdentity.name), \(first)")
         }
-        return L10n.string("Welcome to Palmier Pro")
+        return L10n.string("Welcome to \(AppIdentity.name)")
     }
 }
 

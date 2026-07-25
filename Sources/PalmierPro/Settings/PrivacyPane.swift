@@ -12,7 +12,7 @@ struct PrivacyPane: View {
         VStack(alignment: .leading, spacing: AppTheme.Spacing.md) {
             SettingsToggleRow(
                 title: L10n.string("Share usage data"),
-                subtitle: L10n.string("Send usage data from your interactions with Palmier Pro to help improve the app."),
+                subtitle: L10n.string("Send usage data from your interactions with \(AppIdentity.name) to help improve the app."),
                 isOn: $analyticsEnabled
             )
             .onChange(of: analyticsEnabled) { _, newValue in
@@ -35,7 +35,7 @@ struct PrivacyPane: View {
                 HStack(spacing: AppTheme.Spacing.xs) {
                     Image(systemName: "arrow.clockwise")
                         .font(.system(size: AppTheme.FontSize.xs, weight: AppTheme.FontWeight.medium))
-                    Text(L10n.string("Restart Palmier Pro to apply this change."))
+                    Text(L10n.string("Restart \(AppIdentity.name) to apply this change."))
                 }
                 .font(.system(size: AppTheme.FontSize.sm))
                 .foregroundStyle(AppTheme.Text.secondaryColor)
