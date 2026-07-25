@@ -68,9 +68,9 @@ private struct WelcomeTitle: View {
 
     private var title: String {
         if let first = account.account?.user.firstName {
-            return "Welcome to Palmier Pro, \(first)"
+            return "Welcome to METAG, \(first)"
         }
-        return "Welcome to Palmier Pro"
+        return "Welcome to METAG"
     }
 }
 
@@ -138,7 +138,7 @@ final class HomeWindowController: NSWindowController {
         let window = NSWindow(contentViewController: hostingController)
         window.setContentSize(AppTheme.Window.homeDefault)
         window.minSize = AppTheme.Window.homeMin
-        window.title = "Palmier Pro"
+        window.title = "METAG"
         window.appearance = NSAppearance(named: .darkAqua)
         window.backgroundColor = AppTheme.Background.base.withAlphaComponent(0.4)
         window.isOpaque = false

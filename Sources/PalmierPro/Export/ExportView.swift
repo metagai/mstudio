@@ -4,7 +4,7 @@ import UniformTypeIdentifiers
 enum ExportDestination: String, CaseIterable, Identifiable {
     case video = "Video"
     case timeline = "Timeline"
-    case palmierProject = "Palmier Project"
+    case palmierProject = "METAGject"
 
     var id: String { rawValue }
 }
@@ -606,12 +606,12 @@ struct ExportView: View {
     private var exportFormat: ExportFormat {
         switch destination {
         case .timeline: timelineFormat.exportFormat
-        case .palmierProject: .xml   // Palmier Project has its own path; never rendered.
+        case .palmierProject: .xml   // METAGject has its own path; never rendered.
         case .video: codec.exportFormat
         }
     }
 
-    /// Quick estimate for exporting a Palmier Project
+    /// Quick estimate for exporting a METAGject
     private nonisolated static func computePalmierSummary(
         entries: [MediaManifestEntry],
         projectURL: URL?

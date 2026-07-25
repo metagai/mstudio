@@ -107,11 +107,10 @@ final class AccountService {
     private(set) var isBuyingCredits: Bool = false
     private(set) var authState: AuthState<String> = .loading
 
-    var isSignedIn: Bool {
-        guard !isMisconfigured, case .authenticated = authState else { return false }
-        return true
-    }
-    var aiAllowed: Bool { isSignedIn && !isMisconfigured }
+    private(set) var metagCredits: Int = 0
+
+    var isSignedIn: Bool { MetagGateway.isSignedIn }
+    var aiAllowed: Bool { isSignedIn }
     var tier: AccountTier { account?.user.tier ?? .none }
     var isPaid: Bool { tier.isPaid }
 
@@ -122,7 +121,16 @@ final class AccountService {
         return tierBudget + (user.purchasedCredits ?? 0)
     }
 
-    var remainingCredits: Int { max(0, (budgetCredits ?? 0) - spentCredits) }
+    var remainingCredits: Int { metagCredits }
+
+    func refreshMetagAccount() async {
+        guard MetagGateway.isSignedIn else {
+            metagCredits = 0
+            return
+        }
+        do { metagCredits = try await MetagGateway.account().credits }
+        catch { lastError = error.localizedDescription }
+    }
     var hasCredits: Bool { remainingCredits > 0 }
 
     @ObservationIgnored private(set) var convex: ConvexClientWithAuth<String>?
@@ -138,42 +146,10 @@ final class AccountService {
         guard !didConfigure else { return }
         didConfigure = true
 
-        guard let publishableKey = BackendConfig.clerkPublishableKey,
-              let deploymentURL = BackendConfig.convexDeploymentURL
-        else {
-            isMisconfigured = true
-            isLoading = false
-            Log.account.warning(
-                "account backend misconfigured",
-                telemetry: "Account backend misconfigured",
-                data: [
-                    "hasClerkKey": BackendConfig.clerkPublishableKey != nil,
-                    "hasConvexURL": BackendConfig.convexDeploymentURL != nil
-                ]
-            )
-            return
-        }
-
-        let keychainConfig = BackendConfig.clerkKeychainAccessGroup
-            .map { Clerk.Options.KeychainConfig(accessGroup: $0) } ?? .init()
-        Clerk.configure(
-            publishableKey: publishableKey,
-            options: Clerk.Options(
-                keychainConfig: keychainConfig,
-                redirectConfig: .init(
-                    redirectUrl: "palmier://callback",
-                    callbackUrlScheme: "palmier"
-                )
-            )
-        )
-        convex = ConvexClientWithAuth(
-            deploymentUrl: deploymentURL.absoluteString,
-            authProvider: ClerkConvexAuthProvider()
-        )
-        Log.account.notice("account configured", telemetry: "Account configured")
-        startPlansSubscription()
-
-        startAuthObservation()
+        // METAG 自有网关取代 Clerk/Convex：登录态在 Keychain，额度在网关
+        isMisconfigured = false
+        isLoading = false
+        Task { await refreshMetagAccount() }
     }
 
     private func startAuthObservation() {
@@ -306,86 +282,55 @@ final class AccountService {
         isBuyingCredits = false
     }
 
-    func signInWithGoogle() async {
-        guard !isMisconfigured else { return }
+    func signInWithGoogle() async { await signIn(with: .google) }
+
+    func signIn(with provider: MetagAuth.Provider) async {
         guard !isSigningIn else {
             lastError = "Sign-in is already in progress."
-            Log.account.notice(
-                "sign in ignored provider=google reason=in_progress",
-                telemetry: "Sign in ignored",
-                data: ["provider": "google", "reason": "in_progress"]
-            )
             return
         }
         isSigningIn = true
         lastError = nil
-        Log.account.notice("sign in requested provider=google", telemetry: "Sign in requested", data: ["provider": "google"])
         defer { isSigningIn = false }
         do {
-            _ = try await Clerk.shared.auth.signInWithOAuth(provider: .google)
+            try await MetagAuth.shared.signIn(with: provider)
+            await refreshMetagAccount()
         } catch {
             lastError = error.localizedDescription
             Log.account.warning(
-                "sign in failed provider=google error=\(error.localizedDescription)",
+                "sign in failed provider=\(provider.rawValue)",
                 telemetry: "Sign in failed",
-                data: ["provider": "google", "error": error.localizedDescription]
+                data: ["provider": provider.rawValue]
             )
         }
     }
 
     func signOut() async {
-        guard !isMisconfigured else { return }
-        Log.account.notice("sign out requested", telemetry: "Sign out requested")
-        do {
-            try await Clerk.shared.auth.signOut()
-        } catch {
-            lastError = error.localizedDescription
-            Log.account.warning(
-                "sign out failed error=\(error.localizedDescription)",
-                telemetry: "Sign out failed",
-                data: ["error": error.localizedDescription]
-            )
-        }
+        MetagAuth.shared.signOut()
+        metagCredits = 0
+        account = nil
     }
 
     func subscribe(tier: AccountTier) async {
-        lastError = nil
-        guard tier.isPaid, let convex else { return }
-        do {
-            let result: UrlResponse = try await convex.action(
-                "billing:createCheckoutSession",
-                with: ["tier": tier.rawValue]
-            )
-            openInBrowser(result.url)
-        } catch {
-            lastError = error.localizedDescription
-        }
+        await openCheckout(plan: "sub")
     }
 
     func buyCredits(dollars: Int) {
-        guard let convex else { return }
-        guard (TopOffLimits.minDollars...TopOffLimits.maxDollars).contains(dollars) else {
-            lastError = "Amount must be $\(TopOffLimits.minDollars)–$\(TopOffLimits.maxDollars)."
-            return
-        }
-        if isBuyingCredits { return }
-        lastError = nil
+        guard !isBuyingCredits else { return }
         isBuyingCredits = true
         buyCreditsTask = Task { @MainActor [weak self] in
             defer {
                 self?.isBuyingCredits = false
                 self?.buyCreditsTask = nil
             }
-            do {
-                let result: UrlResponse = try await convex.action(
-                    "billing:createTopOffCheckoutSession",
-                    with: ["dollars": Double(dollars)]
-                )
-                self?.openInBrowser(result.url)
-            } catch {
-                self?.lastError = error.localizedDescription
-            }
+            await self?.openCheckout(plan: "pack")
         }
+    }
+
+    private func openCheckout(plan: String) async {
+        lastError = nil
+        do { openInBrowser(try await MetagGateway.checkoutURL(plan: plan)) }
+        catch { lastError = error.localizedDescription }
     }
 
     func sendFeedback(

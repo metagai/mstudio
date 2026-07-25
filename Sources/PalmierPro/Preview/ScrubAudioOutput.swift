@@ -83,7 +83,7 @@ final class ScrubAudioOutput: @unchecked Sendable {
     private static let channelCount: AVAudioChannelCount = 2
 
     // Core Audio operations stay off the main thread because they may block.
-    private let queue = DispatchQueue(label: "io.palmier.pro.scrub-audio-output", qos: .userInteractive)
+    private let queue = DispatchQueue(label: "ai.metag.scrub-audio-output", qos: .userInteractive)
     private let pending = OSAllocatedUnfairLock(initialState: ScrubAudioPendingState<ScrubAudioGrain>())
     private let sampleRate: Double
     private var state = ScrubAudioOutputState()

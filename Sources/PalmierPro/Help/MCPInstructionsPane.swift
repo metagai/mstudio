@@ -39,7 +39,7 @@ struct MCPInstructionsPane: View {
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: AppTheme.Spacing.xxl) {
-                Text("Connect an external agent to inspect and edit the open Palmier Pro project.")
+                Text("Connect an external agent to inspect and edit the open METAG project.")
                     .font(.system(size: AppTheme.FontSize.smMd, weight: AppTheme.FontWeight.regular))
                     .foregroundStyle(AppTheme.Text.secondaryColor)
                     .fixedSize(horizontal: false, vertical: true)
@@ -96,7 +96,7 @@ struct MCPInstructionsPane: View {
         agentSection(
             .cursor,
             name: "Cursor",
-            description: "Install the Palmier Pro MCP server in Cursor.",
+            description: "Install the METAG MCP server in Cursor.",
             action: ("Install in Cursor", openCursor)
         ) {
             ManualFallback(
@@ -110,7 +110,7 @@ struct MCPInstructionsPane: View {
         agentSection(
             .claude,
             name: "Claude Desktop",
-            description: "Install the bundled Palmier Pro connector.",
+            description: "Install the bundled METAG connector.",
             action: ("Install in Claude Desktop", openClaudeDesktopBundle)
         ) {
             EmptyView()
@@ -199,7 +199,7 @@ struct MCPInstructionsPane: View {
 
     private func openClaudeDesktopBundle() {
         guard let bundleURL = claudeDesktopBundleURL else {
-            claudeInstallError = "The Palmier Pro connector could not be found. Reinstall Palmier Pro, then try again."
+            claudeInstallError = "The METAG connector could not be found. Reinstall METAG, then try again."
             return
         }
         guard let claudeURL = NSWorkspace.shared.urlForApplication(withBundleIdentifier: "com.anthropic.claudefordesktop") else {
@@ -214,7 +214,7 @@ struct MCPInstructionsPane: View {
         ) { _, error in
             guard error != nil else { return }
             Task { @MainActor in
-                claudeInstallError = "Claude Desktop could not open the Palmier Pro connector. Update Claude Desktop, then try again."
+                claudeInstallError = "Claude Desktop could not open the METAG connector. Update Claude Desktop, then try again."
             }
         }
     }

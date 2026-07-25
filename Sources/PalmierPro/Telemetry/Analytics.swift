@@ -37,7 +37,7 @@ enum Analytics {
     private static let projectToken = Bundle.main.object(forInfoDictionaryKey: "PostHogProjectToken") as? String ?? ""
     private static let host = Bundle.main.object(forInfoDictionaryKey: "PostHogHost") as? String ?? PostHogConfig.defaultHost
     #endif
-    private static let enabledKey = "io.palmier.pro.analytics.enabled"
+    private static let enabledKey = "ai.metag.analytics.enabled"
 
     static var isEnabled: Bool {
         get {

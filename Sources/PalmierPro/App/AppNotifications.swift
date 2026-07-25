@@ -4,7 +4,7 @@ import UserNotifications
 
 @MainActor
 enum AppNotifications {
-    private static let enabledKey = "io.palmier.pro.notifications.enabled"
+    private static let enabledKey = "ai.metag.notifications.enabled"
 
     static var isEnabled: Bool {
         get {
@@ -127,7 +127,7 @@ enum AppNotifications {
 
     private static func body(assetName: String, assetType: ClipType, count: Int) -> String {
         if count > 1 {
-            return "\(count) \(assetType.rawValue)s are ready in Palmier Pro."
+            return "\(count) \(assetType.rawValue)s are ready in METAG."
         }
         let name = assetName.trimmingCharacters(in: .whitespacesAndNewlines)
         return name.isEmpty ? "Your \(assetType.rawValue) is ready." : "\(name) is ready."
