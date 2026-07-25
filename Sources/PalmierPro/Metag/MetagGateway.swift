@@ -79,10 +79,10 @@ enum MetagGateway {
     }
 
     /// 提交一句话生成；engine: local | cloud | seedance | hh
-    static func submit(prompt: String, engine: String = "local", cover: Bool = false) async throws -> String {
+    static func submit(prompt: String, engine: String = "local", cover: Bool = false, shots: Int = 4) async throws -> String {
         struct Response: Decodable { let job_id: String }
         let req = try request("api/v1/agent/generate", method: "POST",
-                              body: ["prompt": prompt, "engine": engine, "cover": cover])
+                              body: ["prompt": prompt, "engine": engine, "cover": cover, "shots": shots])
         return try await send(req, as: Response.self).job_id
     }
 
