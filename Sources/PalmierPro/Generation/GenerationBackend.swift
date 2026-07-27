@@ -82,6 +82,9 @@ enum GenerationBackend {
         params: BackendGenerationParams,
         projectId: String? = nil,
     ) async throws -> String {
+        // METAG 网关目前只做视频。音频/图片/放大若静默走视频通道，用户会拿到不对的东西还被扣费 ——
+        // 明确拒绝，比"看起来能用"诚实。
+        guard case .video = params else { throw BackendError.unsupported }
         guard let prompt = params.prompt, !prompt.isEmpty else { throw BackendError.notConfigured }
         // 图生视频：起始帧是本地文件就先上传，与 web 端同一条 /upload/frame 契约
         var frameId: String?
