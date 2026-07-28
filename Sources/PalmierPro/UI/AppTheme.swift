@@ -176,9 +176,10 @@ enum AppTheme {
 
         static var successColor: Color { Color(success) }
 
-        /// systemOrange 会跟随系统 appearance / 辅助功能设置自动调整，
-        /// 换成固定 hex 会丢掉这个能力，所以这一个不收敛。
-        static let warning = NSColor.systemOrange
+        /// warning 主要当【小字】用（fps/分辨率不匹配、积分不足、skill 状态）。
+        /// systemOrange 在纸底上只有 2.11:1，过不了 AA —— 所以这一个必须收敛。
+        /// 跟随系统 appearance 的能力换不来可读性。
+        static let warning = DesignTokens.statusWarning
 
         static var warningColor: Color { Color(warning) }
     }
@@ -227,7 +228,7 @@ enum AppTheme {
         static let text = NSColor(red: 0x71/255.0, green: 0x54/255.0, blue: 0x86/255.0, alpha: 1)
         static let lottie = NSColor(red: 0xA0/255.0, green: 0x78/255.0, blue: 0x22/255.0, alpha: 1)
         static let sequence = NSColor(red: 0xB9/255.0, green: 0xB2/255.0, blue: 0x9A/255.0, alpha: 1)
-        static let multicam = NSColor.systemRed
+        static let multicam = DesignTokens.statusDanger
     }
 
     // MARK: - Corner radii

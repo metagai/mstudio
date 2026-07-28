@@ -64,8 +64,8 @@ enum DesignTokens {
     static let contentTertiary = NSColor(srgbRed: 0.435294, green: 0.443137, blue: 0.470588, alpha: 1)
     static var contentTertiaryColor: Color { Color(contentTertiary) }
 
-    /// `content-muted` = #8A8C92
-    static let contentMuted = NSColor(srgbRed: 0.541176, green: 0.54902, blue: 0.572549, alpha: 1)
+    /// `content-muted` = #63656C
+    static let contentMuted = NSColor(srgbRed: 0.388235, green: 0.396078, blue: 0.423529, alpha: 1)
     static var contentMutedColor: Color { Color(contentMuted) }
 
     /// `content-on-accent` = #FFFFFF
@@ -90,12 +90,12 @@ enum DesignTokens {
 
     // MARK: - accent
 
-    /// `accent` = #0E8F63
-    static let accent = NSColor(srgbRed: 0.054902, green: 0.560784, blue: 0.388235, alpha: 1)
+    /// `accent` = #0A7350
+    static let accent = NSColor(srgbRed: 0.039216, green: 0.45098, blue: 0.313725, alpha: 1)
     static var accentColor: Color { Color(accent) }
 
-    /// `accent-hover` = #0A7350
-    static let accentHover = NSColor(srgbRed: 0.039216, green: 0.45098, blue: 0.313725, alpha: 1)
+    /// `accent-hover` = #086342
+    static let accentHover = NSColor(srgbRed: 0.031373, green: 0.388235, blue: 0.258824, alpha: 1)
     static var accentHoverColor: Color { Color(accentHover) }
 
     /// `accent-glow` = rgba(14, 143, 99, 0.22)
@@ -113,12 +113,12 @@ enum DesignTokens {
     static let statusDanger = NSColor(srgbRed: 0.788235, green: 0.231373, blue: 0.164706, alpha: 1)
     static var statusDangerColor: Color { Color(statusDanger) }
 
-    /// `status-warning` = #B8951A
-    static let statusWarning = NSColor(srgbRed: 0.721569, green: 0.584314, blue: 0.101961, alpha: 1)
+    /// `status-warning` = #8A5F00
+    static let statusWarning = NSColor(srgbRed: 0.541176, green: 0.372549, blue: 0, alpha: 1)
     static var statusWarningColor: Color { Color(statusWarning) }
 
-    /// `status-success` = #0E8F63
-    static let statusSuccess = NSColor(srgbRed: 0.054902, green: 0.560784, blue: 0.388235, alpha: 1)
+    /// `status-success` = #0A7350
+    static let statusSuccess = NSColor(srgbRed: 0.039216, green: 0.45098, blue: 0.313725, alpha: 1)
     static var statusSuccessColor: Color { Color(statusSuccess) }
 
     /// `status-info` = #2C43C7
