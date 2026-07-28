@@ -11,6 +11,7 @@ enum SettingsTab: String, CaseIterable, Identifiable {
 
     var id: String { rawValue }
 
+    @MainActor
     var label: String {
         switch self {
         case .account: return L10n.key("Account")

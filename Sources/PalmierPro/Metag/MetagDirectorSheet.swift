@@ -58,12 +58,12 @@ struct MetagDirectorSheet: View {
             Image(systemName: "film.stack")
                 .font(.system(size: AppTheme.FontSize.md, weight: AppTheme.FontWeight.semibold))
                 .foregroundStyle(AppTheme.Accent.primary)
-            Text("Auto Director")
+            Text(L10n.key("Auto Director"))
                 .font(.system(size: AppTheme.FontSize.lg, weight: AppTheme.FontWeight.semibold))
                 .foregroundStyle(AppTheme.Text.primaryColor)
             Spacer(minLength: 0)
             if account.isSignedIn {
-                Text("\(account.remainingCredits) credits")
+                Text(L10n.string("\(account.remainingCredits.formatted()) credits"))
                     .font(.system(size: AppTheme.FontSize.xs))
                     .monospacedDigit()
                     .foregroundStyle(AppTheme.Text.tertiaryColor)
@@ -90,7 +90,7 @@ struct MetagDirectorSheet: View {
                 .textFieldStyle(.roundedBorder)
                 .lineLimit(3...3)
                 .font(.system(size: AppTheme.FontSize.sm))
-            Text("Every paid step quotes first. Nothing is billed until you approve.")
+            Text(L10n.key("Every paid step quotes first. Nothing is billed until you approve."))
                 .font(.system(size: AppTheme.FontSize.xs))
                 .foregroundStyle(AppTheme.Text.tertiaryColor)
         }
@@ -110,7 +110,7 @@ struct MetagDirectorSheet: View {
                     .font(.system(size: AppTheme.FontSize.xxs))
                     .foregroundStyle(AppTheme.Text.tertiaryColor)
                     .lineLimit(2)
-                Text("~\(Int(item.target_seconds))s · \(item.estimated_cost_credits) credits · ~\(max(1, item.estimated_wait_seconds / 60)) min")
+                Text(L10n.string("~\(Int(item.target_seconds).formatted())s · \(item.estimated_cost_credits.formatted()) credits · ~\(max(1, item.estimated_wait_seconds / 60).formatted()) min"))
                     .font(.system(size: AppTheme.FontSize.xxs))
                     .foregroundStyle(AppTheme.Accent.primary)
             }
@@ -178,7 +178,7 @@ struct MetagDirectorSheet: View {
                     .fixedSize(horizontal: false, vertical: true)
             }
             if run.status == "done" {
-                Text("Done. Shots are landing in the media library.")
+                Text(L10n.key("Done. Shots are landing in the media library."))
                     .font(.system(size: AppTheme.FontSize.xs))
                     .foregroundStyle(AppTheme.Status.successColor)
             }
@@ -214,9 +214,9 @@ struct MetagDirectorSheet: View {
     private func budgetBar(_ run: MetagDirector.Run) -> some View {
         VStack(alignment: .leading, spacing: AppTheme.Spacing.xxs) {
             HStack {
-                Text("Budget")
+                Text(L10n.key("Budget"))
                 Spacer(minLength: 0)
-                Text("\(run.spent_credits) / \(run.budget_credits) credits").monospacedDigit()
+                Text(L10n.string("\(run.spent_credits.formatted()) / \(run.budget_credits.formatted()) credits")).monospacedDigit()
             }
             .font(.system(size: AppTheme.FontSize.xxs))
             .foregroundStyle(AppTheme.Text.tertiaryColor)
@@ -245,7 +245,7 @@ struct MetagDirectorSheet: View {
                     .foregroundStyle(AppTheme.Text.secondaryColor)
                     .fixedSize(horizontal: false, vertical: true)
             }
-            Text("\(quote.stage.capitalized) costs \(quote.cost_credits) credits — \(quote.engine), \(quote.shots) shots. Billed only after you approve.")
+            Text(L10n.string("\(quote.stage.capitalized) costs \(quote.cost_credits.formatted()) credits — \(quote.engine), \(quote.shots.formatted()) shots. Billed only after you approve."))
                 .font(.system(size: AppTheme.FontSize.sm, weight: AppTheme.FontWeight.medium))
                 .foregroundStyle(AppTheme.Text.primaryColor)
                 .fixedSize(horizontal: false, vertical: true)
@@ -267,23 +267,23 @@ struct MetagDirectorSheet: View {
     private var footer: some View {
         HStack(spacing: AppTheme.Spacing.sm) {
             if let run, !run.isTerminal {
-                Button("Stop") { act { try await MetagGateway.cancelDirectorRun(run.id) } }
+                Button(L10n.key("Stop")) { act { try await MetagGateway.cancelDirectorRun(run.id) } }
                     .buttonStyle(.plain)
                     .focusable(false)
                     .disabled(busy)
             }
             Spacer(minLength: 0)
-            Button("Close") { isPresented = false }
+            Button(L10n.key("Close")) { isPresented = false }
                 .buttonStyle(.plain)
                 .focusable(false)
             if run == nil {
-                Button(account.isSignedIn ? "Start" : "Sign In to Start", action: start)
+                Button(account.isSignedIn ? L10n.key("Start") : L10n.key("Sign In to Start"), action: start)
                     .buttonStyle(.editorPrimary)
                     .focusable(false)
                     .disabled(account.isSignedIn ? !canStart : busy)
             }
             if let run, run.isAwaitingApproval {
-                Button("Approve \(run.artifacts.quote?.cost_credits ?? 0) Credits") {
+                Button(L10n.string("Approve \((run.artifacts.quote?.cost_credits ?? 0).formatted()) Credits")) {
                     act { try await MetagGateway.approveDirectorRun(run.id) }
                 }
                 .buttonStyle(.editorPrimary)
@@ -291,7 +291,7 @@ struct MetagDirectorSheet: View {
                 .disabled(busy)
             }
             if let run, run.status == "failed" || run.status == "cancelled" {
-                Button("Start Over") { reset() }
+                Button(L10n.key("Start Over")) { reset() }
                     .buttonStyle(.editorPrimary)
                     .focusable(false)
             }

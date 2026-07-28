@@ -75,7 +75,7 @@ private struct WelcomeTitle: View {
     }
 
     // The gateway stores only the OAuth `sub` — no name to greet them by.
-    private var title: String { "Welcome to METAG" }
+    private var title: String { L10n.key("Welcome to METAG") }
 }
 
 private struct HomeSidebar: View {

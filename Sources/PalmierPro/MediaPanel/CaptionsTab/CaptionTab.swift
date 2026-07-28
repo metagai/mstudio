@@ -187,7 +187,7 @@ struct CaptionTab: View {
 
     /// Templates seed the style, animation, and placement below — the preview and Generate path are unchanged.
     private var templateSection: some View {
-        EditorPanelGroup("Template", isExpanded: $templatesExpanded) {
+        EditorPanelGroup(L10n.key("Template"), isExpanded: $templatesExpanded) {
             LazyVGrid(
                 columns: [
                     GridItem(.flexible(), spacing: AppTheme.Spacing.xs),
@@ -199,13 +199,13 @@ struct CaptionTab: View {
             }
             if !editor.captionTextClipIds.isEmpty {
                 Button(action: applyTemplateToExistingCaptions) {
-                    Text("Apply to Existing Captions")
+                    Text(L10n.key("Apply to Existing Captions"))
                         .frame(maxWidth: .infinity)
                 }
                 .buttonStyle(.capsule(.secondary))
                 .focusable(false)
                 .disabled(selectedTemplate == nil)
-                .help("Restyle the captions already on the timeline. Undoable as one step.")
+                .help(L10n.key("Restyle the captions already on the timeline. Undoable as one step."))
             }
         }
     }

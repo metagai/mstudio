@@ -45,13 +45,22 @@ enum MetagGateway {
             var isSubscription: Bool { interval == "month" }
         }
         /// One generation engine. Billing is flat per shot — `credits_per_shot` is what the
-        /// gateway actually charges, and `spec` carries the fixed resolution/fps/duration.
+        /// gateway actually charges. `duration_s` / `resolution` are structured on purpose:
+        /// deriving billing numbers from the display string `spec` broke silently on a reword.
         struct Engine: Decodable, Sendable, Identifiable {
             let id: String
             let name: String
+            let name_i18n: [String: String]?
             let spec: String
+            let resolution: String?
+            let duration_s: Int?
             let native_audio: Bool
             let credits_per_shot: Int
+
+            /// Display name for `code` (`zh` | `en` | `es`), falling back to the legacy `name`.
+            func displayName(for code: String) -> String {
+                name_i18n?[code] ?? name_i18n?["en"] ?? name
+            }
         }
         let signup_free_credits: Int
         let plans: [Plan]
@@ -78,9 +87,9 @@ enum MetagGateway {
 
         var errorDescription: String? {
             switch self {
-            case .signedOut: return "Sign in to METAG to generate."
-            case .insufficientCredits: return "Not enough credits."
-            case .http(let code): return "METAG request failed (\(code))."
+            case .signedOut: return L10n.key("Sign in to METAG to generate.")
+            case .insufficientCredits: return L10n.key("Not enough credits.")
+            case .http(let code): return L10n.key("METAG request failed.") + " (\(code))"
             }
         }
     }
@@ -128,10 +137,23 @@ enum MetagGateway {
         firstFrame: String? = nil
     ) async throws -> String {
         struct Response: Decodable { let job_id: String }
-        var body: [String: Any] = ["prompt": prompt, "engine": engine, "cover": cover, "shots": shots]
+        var body: [String: Any] = [
+            "prompt": prompt, "engine": engine, "cover": cover, "shots": shots,
+            // 旁白语言跟随界面语言。每个建单入口都要带，否则用户会遇到"有时中文有时英文"。
+            // 画面 prompt 保持英文 —— 那是视频模型的要求，不是用户偏好。
+            "lang": await currentLanguageCode(),
+        ]
         if let firstFrame { body["first_frame"] = firstFrame }
         let req = try request("api/v1/agent/generate", method: "POST", body: body)
         return try await send(req, as: Response.self).job_id
+    }
+
+    /// 界面语言 → 网关 `lang`。集中在这里，避免各建单入口各自取值而漏掉。
+    static func currentLanguageCode() async -> String {
+        await MainActor.run {
+            AppLocalization.shared.selection.identifier
+                ?? Locale.current.language.languageCode?.identifier ?? "en"
+        }
     }
 
     /// 取件票据：5 分钟一次性，避免把 7 天 JWT 写进 URL（会进日志/历史）

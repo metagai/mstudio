@@ -37,7 +37,7 @@ struct AccountPane: View {
     }
 
     private var creditsSection: some View {
-        SettingsGroup(title: "Credits") {
+        SettingsGroup(title: L10n.key("Credits")) {
             HStack(alignment: .top, spacing: AppTheme.Spacing.md) {
                 card {
                     cardCaption("Remaining")
@@ -51,7 +51,7 @@ struct AccountPane: View {
                         fill: AnyShapeStyle(AppTheme.Background.raisedColor),
                         showsExternalLinkIcon: true
                     )
-                    Text("One-off purchase. Credits do not expire.")
+                    Text(L10n.key("One-off purchase. Credits do not expire."))
                         .font(.system(size: AppTheme.FontSize.xs))
                         .foregroundStyle(AppTheme.Text.tertiaryColor)
                         .fixedSize(horizontal: false, vertical: true)
@@ -62,7 +62,7 @@ struct AccountPane: View {
 
     @ViewBuilder
     private var subscriptionSection: some View {
-        SettingsGroup(title: "Subscription") {
+        SettingsGroup(title: L10n.key("Subscription")) {
             HStack(alignment: .center, spacing: AppTheme.Spacing.sm) {
                 Text(account.planLabel)
                     .font(.system(size: AppTheme.FontSize.md))
@@ -71,7 +71,7 @@ struct AccountPane: View {
             }
 
             if account.subscriptionPlans.isEmpty {
-                Text("Plans are unavailable right now.")
+                Text(L10n.key("Plans are unavailable right now."))
                     .font(.system(size: AppTheme.FontSize.sm))
                     .foregroundStyle(AppTheme.Text.tertiaryColor)
             } else {
@@ -90,12 +90,12 @@ struct AccountPane: View {
                 Text("$\(plan.price_usd, specifier: "%.2f")")
                     .font(.system(size: AppTheme.FontSize.xl, weight: AppTheme.FontWeight.semibold))
                     .foregroundStyle(AppTheme.Text.primaryColor)
-                Text("/ month")
+                Text(L10n.key("/ month"))
                     .font(.system(size: AppTheme.FontSize.sm))
                     .foregroundStyle(AppTheme.Text.tertiaryColor)
             }
 
-            Text("\(plan.credits.formatted()) credits / month")
+            Text(L10n.string("\(plan.credits.formatted()) credits / month"))
                 .font(.system(size: AppTheme.FontSize.sm))
                 .foregroundStyle(AppTheme.Text.secondaryColor)
                 .monospacedDigit()
@@ -105,7 +105,7 @@ struct AccountPane: View {
             Button {
                 Task { await account.subscribe(planId: plan.id) }
             } label: {
-                Text(account.isPaid ? "Switch" : "Subscribe").frame(maxWidth: .infinity)
+                Text(account.isPaid ? L10n.key("Switch") : L10n.key("Subscribe")).frame(maxWidth: .infinity)
             }
             .buttonStyle(.capsule(
                 .secondary,

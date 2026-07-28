@@ -91,7 +91,7 @@ struct AccountPopoverCard: View {
 
             Spacer(minLength: 0)
 
-            Button("Subscribe") {
+            Button(L10n.key("Subscribe")) {
                 Task { await account.subscribe(planId: plan.id) }
                 dismiss()
             }
@@ -113,6 +113,10 @@ struct AccountPopoverCard: View {
         VStack(spacing: AppTheme.Spacing.xxs) {
             footerButton(label: L10n.string("Settings"), systemImage: "gearshape") {
                 SettingsWindowController.shared.show()
+                dismiss()
+            }
+            footerButton(label: L10n.key("Feedback"), systemImage: "bubble.left.and.bubble.right") {
+                FeedbackMail.open()
                 dismiss()
             }
             if account.isSignedIn {
