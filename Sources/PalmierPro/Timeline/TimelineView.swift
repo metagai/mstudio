@@ -353,7 +353,7 @@ final class TimelineView: NSView, NSPopoverDelegate {
             return nil
         }()
         if let target = activeDropTarget, let lineY = geo.insertionLineY(for: target) {
-            ctx.setStrokeColor(NSColor.systemYellow.cgColor)
+            ctx.setStrokeColor(DesignTokens.accent.cgColor)   // 同上：纸底上 systemYellow 1.34:1
             ctx.setLineWidth(2)
             ctx.move(to: CGPoint(x: 0, y: Double(lineY)))
             ctx.addLine(to: CGPoint(x: Double(bounds.width), y: Double(lineY)))
@@ -362,7 +362,8 @@ final class TimelineView: NSView, NSPopoverDelegate {
 
         if let razorFrame = inputController.razorPreviewFrame {
             let razorX = geo.xForFrame(razorFrame)
-            ctx.setStrokeColor(NSColor.systemOrange.withAlphaComponent(0.8).cgColor)
+            // 剃刀线横跨深色片段与纸底；systemOrange 在纸上只有 1.95:1。
+        ctx.setStrokeColor(DesignTokens.statusDanger.cgColor)
             ctx.setLineWidth(1)
             ctx.setLineDash(phase: 0, lengths: [4, 4])
             ctx.move(to: CGPoint(x: razorX, y: Double(geo.rulerHeight)))

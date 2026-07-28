@@ -1,7 +1,9 @@
 import AppKit
 
 enum Playhead {
-    static var color: NSColor { AppTheme.Accent.playheadNSColor }
+    /// systemRed 在时间轴纸底上只有 3.14:1（非文字下限 3:1，几乎压线）。
+    /// 收敛到品牌红 #C93B2A = 4.49:1，同时不再受系统 appearance 影响。
+    static let color: NSColor = DesignTokens.statusDanger
     static let triangleSize: CGFloat = 8
 
     static func appendPath(

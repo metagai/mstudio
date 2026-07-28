@@ -11,7 +11,9 @@ final class SnapIndicatorOverlay {
 
     init(view: TimelineView) {
         self.view = view
-        layer.strokeColor = NSColor.systemYellow.cgColor
+        // systemYellow 压在时间轴纸底(#F4F1EA)上只有 1.34:1 —— 1px 虚线等于不存在。
+        // 品牌绿 5.20:1，且在深色片段上同样读得出。
+        layer.strokeColor = DesignTokens.accent.cgColor
         layer.fillColor = nil
         layer.lineWidth = 1
         layer.lineDashPattern = [4, 4]

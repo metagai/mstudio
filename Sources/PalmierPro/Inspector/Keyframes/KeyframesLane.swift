@@ -306,7 +306,8 @@ struct KeyframesPanel: View {
                 var p = Path()
                 p.move(to: CGPoint(x: x, y: 0))
                 p.addLine(to: CGPoint(x: x, y: size.height))
-                ctx.stroke(p, with: .color(.yellow), style: StrokeStyle(lineWidth: AppTheme.BorderWidth.thin, dash: [4, 4]))
+                // 纸底上 .yellow 只有 1.34:1，虚线等于不存在
+                ctx.stroke(p, with: .color(DesignTokens.accentColor), style: StrokeStyle(lineWidth: AppTheme.BorderWidth.thin, dash: [4, 4]))
             }
             .allowsHitTesting(false)
         }

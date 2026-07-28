@@ -244,7 +244,8 @@ enum ClipRenderer {
         let y = rect.maxY - 5
         let half: CGFloat = 3
         context.setFillColor(NSColor.systemYellow.withAlphaComponent(0.95).cgColor)
-        context.setStrokeColor(AppTheme.MediaOverlay.background.withAlphaComponent(0.5).cgColor)
+        // sequence 轨道色 #B9B29A 是浅米色，黄菱形压上去几乎隐形 —— 靠描边兜底。
+        context.setStrokeColor(NSColor.black.withAlphaComponent(0.8).cgColor)
         context.setLineWidth(0.5)
         for f in frames where clip.contains(timelineFrame: f) {
             let x = baseX + CGFloat(f - clip.startFrame) * pxPerFrame
@@ -535,8 +536,9 @@ enum ClipRenderer {
         let half = volumeKeyframeSize / 2
 
         if showsVolumeKeyframes {
-            context.setFillColor(AppTheme.Accent.timecodeNSColor.cgColor)
-            context.setStrokeColor(AppTheme.MediaOverlay.background.withAlphaComponent(0.5).cgColor)
+            context.setFillColor(lineColor)
+            // sequence 轨道色 #B9B29A 是浅米色，黄菱形压上去几乎隐形 —— 靠描边兜底。
+        context.setStrokeColor(NSColor.black.withAlphaComponent(0.8).cgColor)
             context.setLineWidth(0.5)
 
             // 4) Keyframe diamonds — independent of the fade knees.

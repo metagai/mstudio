@@ -196,9 +196,10 @@ enum AppTheme {
 
         static var successColor: Color { Color(success) }
 
-        /// systemOrange 会跟随系统 appearance / 辅助功能设置自动调整，
-        /// 换成固定 hex 会丢掉这个能力，所以这一个不收敛。
-        static let warning = NSColor.systemOrange
+        /// warning 主要当【小字】用（fps/分辨率不匹配、积分不足、skill 状态）。
+        /// systemOrange 在纸底上只有 2.11:1，过不了 AA —— 所以这一个必须收敛。
+        /// 跟随系统 appearance 的能力换不来可读性。
+        static let warning = DesignTokens.statusWarning
 
         static var warningColor: Color { Color(warning) }
 
@@ -301,14 +302,16 @@ enum AppTheme {
     // MARK: - Track type colors
 
     enum TrackColor {
-        static var video: NSColor { TimelineClipColorPalette.shared.color(for: .video) }
-        static var audio: NSColor { TimelineClipColorPalette.shared.color(for: .audio) }
-        static var image: NSColor { TimelineClipColorPalette.shared.color(for: .image) }
-        static var text: NSColor { TimelineClipColorPalette.shared.color(for: .text) }
-        static var lottie: NSColor { TimelineClipColorPalette.shared.color(for: .animation) }
-        static var sequence: NSColor { TimelineClipColorPalette.shared.color(for: .sequence) }
-        static let multicam = NSColor.systemRed
+        static let video = NSColor(red: 0x1D/255.0, green: 0x58/255.0, blue: 0x78/255.0, alpha: 1)
+        static let audio = NSColor(red: 0x2E/255.0, green: 0x77/255.0, blue: 0x65/255.0, alpha: 1)
+        static let image = NSColor(red: 0x71/255.0, green: 0x54/255.0, blue: 0x86/255.0, alpha: 1)
+        static let text = NSColor(red: 0x71/255.0, green: 0x54/255.0, blue: 0x86/255.0, alpha: 1)
+        static let lottie = NSColor(red: 0xA0/255.0, green: 0x78/255.0, blue: 0x22/255.0, alpha: 1)
+        static let sequence = NSColor(red: 0xB9/255.0, green: 0xB2/255.0, blue: 0x9A/255.0, alpha: 1)
+        static let multicam = DesignTokens.statusDanger
 
+        /// 按 WCAG 相对亮度在黑白之间选前景 —— 轨道色用户可改，
+        /// 写死任何一种前景都会在某个色上读不清。
         static func readableForeground(on background: NSColor) -> NSColor {
             guard let background = background.usingColorSpace(.sRGB) else { return .white }
             let luminance = relativeLuminance(
