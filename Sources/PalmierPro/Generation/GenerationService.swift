@@ -311,6 +311,57 @@ final class GenerationService {
         }
     }
 
+    /// Adopt a job the gateway already created (Auto Director approves and bills server-side).
+    /// Reuses the same placeholders, monitoring, download, and import path as a local submission.
+    func adoptBackendJob(
+        backendJobId: String,
+        shots: Int,
+        prompt: String,
+        model: String,
+        editor: EditorViewModel
+    ) {
+        let count = max(1, min(8, shots))
+        let destDir = Self.destinationDirectory(for: editor.projectURL)
+        var placeholders: [MediaAsset] = []
+        for outputIndex in 0..<count {
+            var input = GenerationInput(
+                prompt: prompt,
+                model: model,
+                duration: AppTheme.Director.shotDuration,
+                aspectRatio: "16:9"
+            )
+            input.createdAt = Date()
+            input.outputIndex = outputIndex
+            input.backendJobId = backendJobId
+            let placeholder = createPlaceholder(
+                type: .video,
+                name: String(prompt.prefix(30)),
+                duration: Double(AppTheme.Director.shotDuration),
+                genInput: input,
+                folderId: nil,
+                destDir: destDir,
+                fileExtension: "mp4",
+                editor: editor
+            )
+            placeholder.generationStatus = .generating
+            placeholders.append(placeholder)
+        }
+        editor.updateManifestMetadata(for: placeholders)
+        editor.onProjectCheckpointRequired?()
+
+        Task { @MainActor [weak self, weak editor] in
+            guard let self, let editor else { return }
+            await self.monitorBackendJob(
+                backendJobId: backendJobId,
+                placeholders: placeholders,
+                editor: editor,
+                failIfUnavailable: true,
+                onComplete: nil,
+                onFailure: nil
+            )
+        }
+    }
+
     private func backendError(_ error: Error) -> (code: String?, message: String) {
         struct Payload: Decodable { let code: String?; let message: String? }
         if case let ClientError.ConvexError(data) = error,

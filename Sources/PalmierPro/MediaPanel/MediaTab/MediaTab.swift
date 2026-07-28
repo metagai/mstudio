@@ -34,6 +34,7 @@ struct MediaTab: View {
 
     @State private var mediaPanelHeight: CGFloat = 600
     @State private var showMatteSheet = false
+    @State private var showDirectorSheet = false
 
     enum ViewMode: String, CaseIterable {
         case folder, flat, grouped
@@ -168,6 +169,9 @@ struct MediaTab: View {
         }
         .sheet(isPresented: $showMatteSheet) {
             MatteSheet(isPresented: $showMatteSheet)
+        }
+        .sheet(isPresented: $showDirectorSheet) {
+            MetagDirectorSheet(isPresented: $showDirectorSheet)
         }
     }
 
@@ -628,6 +632,11 @@ struct MediaTab: View {
             }
             Button { showMatteSheet = true } label: {
                 Label("Create Matte", systemImage: "square.fill")
+            }
+            if !AccountService.shared.isMisconfigured {
+                Button { showDirectorSheet = true } label: {
+                    Label("Auto Director…", systemImage: "film.stack")
+                }
             }
             if canOrganize {
                 Button(action: organizeWithAgent) {
