@@ -278,7 +278,7 @@ struct AgentPanelView: View {
         let action: () -> Void
     }
 
-    private func errorCTA(for error: PalmierClientError?) -> ErrorCTA? {
+    private func errorCTA(for error: AgentStreamError?) -> ErrorCTA? {
         guard let error else { return nil }
         switch error {
         case .unauthenticated:
@@ -318,51 +318,32 @@ struct AgentPanelView: View {
     @ViewBuilder
     private var missingKeyState: some View {
         let account = AccountService.shared
+        // 托管对话未上线时不提供登录 CTA —— 登录也开不了口，只会把用户引到死路
+        let offersHostedAgent = MetagGateway.hostedAgentEnabled && !account.isSignedIn
         VStack(spacing: AppTheme.Spacing.mdLg) {
             Button {
-                missingKeyPrimaryAction(account: account)
+                if offersHostedAgent {
+                    Task { await account.signInWithGoogle() }
+                } else {
+                    SettingsWindowController.shared.show(tab: .agent)
+                }
             } label: {
-                Label(missingKeyPrimaryLabel(account: account), systemImage: missingKeyPrimaryIcon(account: account))
-                    .font(.system(size: AppTheme.FontSize.mdLg, weight: .semibold))
+                Label(
+                    offersHostedAgent ? "Sign in to METAG" : "Add an Anthropic API key",
+                    systemImage: offersHostedAgent ? "person.crop.circle" : "key"
+                )
+                .font(.system(size: AppTheme.FontSize.mdLg, weight: .semibold))
             }
             .buttonStyle(.capsule(.prominent, size: .regular))
 
-            if !account.isSignedIn {
-                Text("First-time sign-ups only")
-                    .font(.system(size: AppTheme.FontSize.sm))
-                    .foregroundStyle(AppTheme.Text.mutedColor)
-            }
-
-            Button(action: { SettingsWindowController.shared.show(tab: .agent) }) {
-                Text("or use your own Anthropic key")
-                    .underline()
-                    .foregroundStyle(AppTheme.Text.secondaryColor)
-                    .padding(.horizontal, AppTheme.Spacing.sm)
-                    .padding(.vertical, AppTheme.Spacing.xxs)
-            }
-            .buttonStyle(.plain)
-            .font(.system(size: AppTheme.FontSize.smMd, weight: .medium))
-            .hoverHighlight(cornerRadius: AppTheme.Radius.sm)
-        }
-    }
-
-    private func missingKeyPrimaryLabel(account: AccountService) -> LocalizedStringKey {
-        if !account.isSignedIn { return "Log in for 250 free credits" }
-        if !account.isPaid { return "Subscribe" }
-        return "Open Settings"
-    }
-
-    private func missingKeyPrimaryIcon(account: AccountService) -> String {
-        if !account.isSignedIn { return "gift.fill" }
-        if !account.isPaid { return "sparkles" }
-        return "gearshape"
-    }
-
-    private func missingKeyPrimaryAction(account: AccountService) {
-        if !account.isSignedIn {
-            Task { await account.signInWithGoogle() }
-        } else {
-            SettingsWindowController.shared.show(tab: .account)
+            Text(
+                offersHostedAgent
+                    ? "Or use your own Anthropic key in Settings."
+                    : "The agent streams through your own Anthropic key."
+            )
+            .font(.system(size: AppTheme.FontSize.sm))
+            .foregroundStyle(AppTheme.Text.mutedColor)
+            .multilineTextAlignment(.center)
         }
     }
 

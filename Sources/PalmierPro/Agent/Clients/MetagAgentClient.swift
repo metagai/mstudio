@@ -1,9 +1,12 @@
 import Foundation
-import ClerkKit
 
-struct PalmierClient: AgentClient {
+/// 托管 Agent 对话：METAG 网关 JWT（Keychain）+ Anthropic 线格式 SSE。
+/// 生成类工具不走这里，仍走 GenerationBackend → create_job，计费入口只有一条。
+struct MetagAgentClient: AgentClient {
     let model: AnthropicModel
     var maxTokens: Int = 8192
+
+    static let path = "api/v1/agent/chat"
 
     func stream(
         system: String,
@@ -29,21 +32,13 @@ struct PalmierClient: AgentClient {
         messages: [AnthropicMessage],
         continuation: AsyncThrowingStream<AnthropicStreamEvent, Error>.Continuation
     ) async throws {
-        guard let baseURL = BackendConfig.convexHttpURL else {
-            throw PalmierClientError.upstream("Backend not configured")
-        }
-        let endpoint = baseURL.appendingPathComponent("v1/agent/stream")
-
-        guard let session = await Clerk.shared.session, session.status == .active else {
-            throw PalmierClientError.unauthenticated
-        }
-        guard let jwt = try await session.getToken(), !jwt.isEmpty else {
-            throw PalmierClientError.unauthenticated
+        guard let token = MetagGateway.token, !token.isEmpty else {
+            throw AgentStreamError.unauthenticated
         }
 
-        var request = URLRequest(url: endpoint)
+        var request = URLRequest(url: MetagGateway.baseURL.appendingPathComponent(Self.path))
         request.httpMethod = "POST"
-        request.setValue("Bearer \(jwt)", forHTTPHeaderField: "Authorization")
+        request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
         request.setValue("application/json", forHTTPHeaderField: "content-type")
         request.setValue("text/event-stream", forHTTPHeaderField: "accept")
         request.httpBody = try JSONSerialization.data(
@@ -57,14 +52,17 @@ struct PalmierClient: AgentClient {
         if let http = response as? HTTPURLResponse, http.statusCode >= 400 {
             var body = ""
             for try await line in bytes.lines { body += line + "\n" }
-            throw PalmierClientError.from(status: http.statusCode, body: body)
+            let error = AgentStreamError.from(status: http.statusCode, body: body)
+            // 网关判定登录态失效时丢弃本地 JWT，避免面板反复撞 401
+            if case .unauthenticated = error { MetagGateway.token = nil }
+            throw error
         }
 
         try await AnthropicSSE.parse(bytes: bytes, continuation: continuation)
     }
 }
 
-enum PalmierClientError: LocalizedError {
+enum AgentStreamError: LocalizedError {
     case unauthenticated
     case insufficientCredits(String)
     case upstream(String)
@@ -77,7 +75,7 @@ enum PalmierClientError: LocalizedError {
         }
     }
 
-    static func from(status: Int, body: String) -> PalmierClientError {
+    static func from(status: Int, body: String) -> AgentStreamError {
         let parsed = parseErrorEnvelope(body)
         let message = parsed?.message ?? body.prefix(500).description
         switch parsed?.code {

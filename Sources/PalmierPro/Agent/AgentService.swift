@@ -38,11 +38,14 @@ final class AgentService {
 
     var hasApiKey: Bool { !apiKey.isEmpty }
 
-    var canStream: Bool {
-        if hasApiKey { return true }
+    /// 网关托管的对话尚未上线，此时只有 BYOK 能真正发起流式请求
+    var hostedAgentAvailable: Bool {
+        guard MetagGateway.hostedAgentEnabled else { return false }
         let account = AccountService.shared
         return account.isSignedIn && account.hasCredits
     }
+
+    var canStream: Bool { hasApiKey || hostedAgentAvailable }
 
     var availableModels: [AnthropicModel] {
         if hasApiKey { return AnthropicModel.allCases }
@@ -52,9 +55,7 @@ final class AgentService {
     private func selectClient() -> (any AgentClient)? {
         let chosen = effectiveModel
         if hasApiKey { return AnthropicClient(apiKey: apiKey, model: chosen) }
-        if AccountService.shared.isSignedIn {
-            return PalmierClient(model: chosen)
-        }
+        if hostedAgentAvailable { return MetagAgentClient(model: chosen) }
         return nil
     }
 
@@ -78,7 +79,7 @@ final class AgentService {
     var currentSessionId: UUID?
     var messages: [AgentMessage] = []
     var isStreaming: Bool = false
-    var streamError: PalmierClientError?
+    var streamError: AgentStreamError?
     var onSessionsChanged: (@MainActor () -> Void)?
 
     var draft: String = ""
@@ -398,7 +399,7 @@ final class AgentService {
             } catch is CancellationError {
                 dropEmptyAssistantTurn(id: assistantID)
                 break loop
-            } catch let err as PalmierClientError {
+            } catch let err as AgentStreamError {
                 dropEmptyAssistantTurn(id: assistantID)
                 streamError = err
                 break loop
