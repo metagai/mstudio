@@ -22,9 +22,40 @@ enum MetagGateway {
     /// 端点上线后把默认值改成 true；本地联调用 METAG_HOSTED_AGENT=1 提前打开。
     static let hostedAgentEnabled = ProcessInfo.processInfo.environment["METAG_HOSTED_AGENT"] == "1"
 
+    /// GET /api/v1/me 的全部字段。没有头像/档位名。
     struct Account: Decodable, Sendable {
+        /// OAuth 的 `provider:id`。内部标识 —— 永远不要显示给用户。
         let sub: String
         let credits: Int
+        /// 付费与否的唯一判据（网关 users.sub_until > now），客户端不要自己推断
+        let subscribed: Bool
+        /// 网关只回已验证的邮箱；未验证时为 nil，不能当身份凭据用。
+        let email: String?
+        let email_verified: Bool?
+    }
+
+    /// GET /api/v1/pricing —— 单价真源，无需认证。只解我们用得到的字段。
+    struct Pricing: Decodable, Sendable {
+        struct Plan: Decodable, Sendable, Identifiable {
+            let id: String          // sub | pro | studio | pack
+            let price_usd: Double
+            let interval: String    // month | once
+            let credits: Int
+
+            var isSubscription: Bool { interval == "month" }
+        }
+        /// One generation engine. Billing is flat per shot — `credits_per_shot` is what the
+        /// gateway actually charges, and `spec` carries the fixed resolution/fps/duration.
+        struct Engine: Decodable, Sendable, Identifiable {
+            let id: String
+            let name: String
+            let spec: String
+            let native_audio: Bool
+            let credits_per_shot: Int
+        }
+        let signup_free_credits: Int
+        let plans: [Plan]
+        let engines: [Engine]
     }
 
     struct Job: Decodable, Sendable {
@@ -81,6 +112,11 @@ enum MetagGateway {
 
     static func account() async throws -> Account {
         try await send(request("api/v1/me"), as: Account.self)
+    }
+
+    /// 价格与赠额的单价真源。无需登录 —— 登录页也要报出赠额，所以不能挂在 JWT 上。
+    static func pricing() async throws -> Pricing {
+        try await send(URLRequest(url: baseURL.appendingPathComponent("api/v1/pricing")), as: Pricing.self)
     }
 
     /// 提交一句话生成；engine: local | cloud | seedance | hh

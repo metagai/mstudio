@@ -670,6 +670,12 @@
 "Open" = "開く";
 "Open %@" = "%@を開く";
 "Open Project" = "プロジェクトを開く";
+
+/* --- METAG --- */
+"Log in for free credits" = "ログインして%@クレジットを無料でゲット";
+"Log in for free credits (no number)" = "ログインして無料クレジットをゲット";
+"or use your own Anthropic key" = "または自分のAnthropic APIキーを使用";
+"Subscribe" = "登録する";
 "Open Settings" = "設定を開く";
 "Open Skills Folder" = "スキルフォルダを開く";
 "Open Skills to browse community playbooks, create your own, or add them to other agents." = "スキルを開いてコミュニティのプレイブックを参照したり、独自のスキルを作成したり、ほかのエージェントに追加したりできます。";

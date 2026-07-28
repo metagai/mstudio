@@ -10,11 +10,13 @@ struct CaptionTab: View {
     @Bindable private var account = AccountService.shared
     private let output: Output
 
+    @State private var estimatedCloudCost: Int?
+
     @State private var style: TextStyle = .caption
     @State private var center = AppTheme.Caption.defaultCenter
     @State private var selectedTrackId: String?
     @State private var selectedClipTargets: [String] = []
-    @State private var provider: TranscriptionProvider = .cloud
+    @State private var provider: TranscriptionProvider = .local
     @State private var animationPreset: TextAnimation.Preset = .none
     @State private var animationHighlight: TextStyle.RGBA = TextAnimation.defaultHighlight
     @State private var censorProfanity = false
@@ -24,7 +26,6 @@ struct CaptionTab: View {
     @State private var locale: Locale?
     @State private var supportedLocales: [Locale] = []
     @State private var isGenerating = false
-    @State private var estimatedCloudCost: Int?
     @State private var note: String?
     @State private var templateId: String?
     @State private var templatesExpanded = true
@@ -80,7 +81,7 @@ struct CaptionTab: View {
         editor.timeline.tracks.indices.filter { !editor.captionTargets(trackIds: [editor.timeline.tracks[$0].id]).isEmpty }
     }
     private var remainingCloudCredits: Int? {
-        account.budgetCredits == nil ? nil : account.remainingCredits
+        account.remainingCredits == nil ? nil : account.remainingCredits
     }
     private var cloudModeUnavailableMessage: String? {
         guard provider == .cloud else { return nil }
@@ -181,16 +182,6 @@ struct CaptionTab: View {
         .onChange(of: editor.isMarqueeSelecting) { wasSelecting, isSelecting in
             guard wasSelecting, !isSelecting else { return }
             rememberSelectedClipTargets()
-        }
-        .task(id: costEstimateKey) {
-            estimatedCloudCost = nil
-            guard provider == .cloud, effectiveCount > 0 else { return }
-            try? await Task.sleep(for: .milliseconds(150))
-            guard !Task.isCancelled else { return }
-            let request = EditorViewModel.CaptionRequest(sourceClipIds: sourceClipIds, autoDetect: isAutoSource, locale: locale, provider: .cloud)
-            let cost = await editor.captionCloudCreditCost(for: request)
-            guard !Task.isCancelled else { return }
-            estimatedCloudCost = cost
         }
     }
 
@@ -394,8 +385,6 @@ struct CaptionTab: View {
                     .controlSize(.mini)
                     .accessibilityLabel(L10n.string("Censor profanity"))
                     .tint(AppTheme.Text.primaryColor.opacity(AppTheme.Opacity.strong))
-                    .disabled(provider == .cloud)
-                    .opacity(provider == .cloud ? AppTheme.Opacity.muted : AppTheme.Opacity.opaque)
             }
         }
     }
@@ -654,7 +643,7 @@ struct CaptionTab: View {
             autoDetect: isAutoSource,
             style: style,
             center: center,
-            censorProfanity: provider == .local && censorProfanity,
+            censorProfanity: censorProfanity,
             locale: locale,
             maxWords: maxWords,
             maxCharacters: maxCharacters,

@@ -145,10 +145,8 @@ struct OnboardingAccountStep: View {
         guard account.isSignedIn else {
             return L10n.string("Sign In")
         }
-        guard let firstName = account.account?.user.firstName else {
-            return L10n.string("Welcome")
-        }
-        return L10n.string("Welcome, \(firstName)")
+        // 网关只存 OAuth sub，没有可用来称呼的名字
+        return L10n.string("Welcome")
     }
 
     private var detail: String {

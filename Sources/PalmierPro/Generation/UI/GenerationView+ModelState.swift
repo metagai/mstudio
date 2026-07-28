@@ -20,15 +20,22 @@ extension GenerationView {
     var audioModel: AudioModelConfig { selectedModel(audioModels, at: selectedAudioModelIndex) }
     var upscaleModel: UpscaleModelConfig { selectedModel(upscaleModels, at: selectedUpscaleModelIndex) }
 
-    var catalogReady: Bool {
-        !videoModels.isEmpty
-            && !imageModels.isEmpty
-            && !audioModels.isEmpty
-            && (selectedType != .upscale || !upscaleModels.isEmpty)
+    /// Only the selected type needs models. `/api/v1/pricing` supplies video engines and nothing
+    /// else, so requiring all four would block the panel forever.
+    var catalogReady: Bool { hasModels(for: selectedType) }
+
+    /// A type with no models is omitted rather than shown as an empty picker.
+    var availableGenerationTypes: [GenerationType] {
+        GenerationType.allCases.filter(hasModels(for:))
     }
 
-    var availableGenerationTypes: [GenerationType] {
-        upscaleModels.isEmpty ? GenerationType.allCases.filter { $0 != .upscale } : GenerationType.allCases
+    func hasModels(for type: GenerationType) -> Bool {
+        switch type {
+        case .video: return !videoModels.isEmpty
+        case .image: return !imageModels.isEmpty
+        case .audio: return !audioModels.isEmpty
+        case .upscale: return !upscaleModels.isEmpty
+        }
     }
 
     var aiAllowed: Bool { account.aiAllowed }

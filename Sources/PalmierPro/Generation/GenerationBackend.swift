@@ -1,6 +1,5 @@
 import Foundation
 import Combine
-@preconcurrency import ConvexMobile
 
 /// The RPC layer for the backend — METAG 网关（REST + 轮询），取代原 Convex 订阅。
 /// 签名保持不变，`GenerationService` 的编排/占位/下载/撤销逻辑一行未动。
@@ -72,16 +71,6 @@ enum GenerationBackend {
             .absoluteString
     }
 
-    static func subscribeToProjectActivity(
-        projectId: String
-    ) -> AnyPublisher<[BackendProjectActivityEntry], ClientError>? {
-        guard let convex = AccountService.shared.convex else { return nil }
-        return convex.subscribe(
-            to: "generations:projectActivity",
-            with: ["projectId": projectId],
-            yielding: [BackendProjectActivityEntry].self,
-        )
-    }
 
     static func uploadReference(
         fileURL: URL,
@@ -115,6 +104,13 @@ enum GenerationBackend {
     }
 
     /// 模型 id → METAG 引擎档位。未知模型走本地档（最便宜，不会意外扣大额）。
+    /// Upstream's draft-enhance runs on a Convex mutation the METAG gateway has no
+    /// equivalent for. The catalog never sets the draft rates that surface the control,
+    /// so this stays unreachable — and says so plainly if it ever is reached.
+    static func enhanceDraft(sourceJobId: String) async throws -> String {
+        throw BackendError.unsupported
+    }
+
     static func engine(for model: String) -> String {
         let id = model.lowercased()
         if id.contains("seedance") { return "seedance" }
@@ -123,16 +119,6 @@ enum GenerationBackend {
         return "local"
     }
 
-    static func enhanceDraft(sourceJobId: String) async throws -> String {
-        guard let convex = AccountService.shared.convex else {
-            throw BackendError.notConfigured
-        }
-        let result: SubmitGenerationResult = try await convex.mutation(
-            "generations:enhanceDraft",
-            with: ["sourceJobId": sourceJobId],
-        )
-        return result.jobId
-    }
 }
 
 // MARK: - Backend generation types

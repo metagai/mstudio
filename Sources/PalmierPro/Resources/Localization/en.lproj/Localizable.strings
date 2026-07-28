@@ -390,6 +390,10 @@
 "Filter markers by status" = "Filter markers by status";
 "Final Cut Pro" = "Final Cut Pro";
 "First Frame" = "First Frame";
+
+/* --- METAG --- */
+"Log in for free credits" = "Log in for %@ free credits";
+"Log in for free credits (no number)" = "Log in for free credits";
 "First-time sign-ups only" = "First-time sign-ups only";
 "First/Last" = "First/Last";
 "Fit" = "Fit";

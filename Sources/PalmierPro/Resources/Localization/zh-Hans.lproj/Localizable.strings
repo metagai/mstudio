@@ -389,6 +389,10 @@
 "Filter markers by status" = "按状态筛选标记";
 "Final Cut Pro" = "Final Cut Pro";
 "First Frame" = "首帧";
+
+/* --- METAG --- */
+"Log in for free credits" = "登录即可获得 %@ 积分";
+"Log in for free credits (no number)" = "登录即可获得免费积分";
 "First-time sign-ups only" = "仅限首次注册";
 "First/Last" = "首帧/尾帧";
 "Fit" = "适合";

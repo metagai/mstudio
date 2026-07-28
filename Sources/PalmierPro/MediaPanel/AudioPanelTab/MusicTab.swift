@@ -91,7 +91,7 @@ struct MusicSection: View {
             if let issue = model.validate(spanSeconds: spanSeconds) { return issue }
         }
         if let cost = estimatedCost, cost > AccountService.shared.remainingCredits,
-           AccountService.shared.budgetCredits != nil {
+           AccountService.shared.remainingCredits != nil {
             return CostEstimator.localizedInsufficientCredits(
                 cost,
                 remaining: AccountService.shared.remainingCredits

@@ -935,6 +935,11 @@
 "Student" = "Estudante";
 "Style" = "Estilo";
 "Style instructions (optional). e.g., warm and slow, British accent." = "Instruções de estilo (opcional). Por exemplo: acolhedor e lento, sotaque britânico.";
+
+/* --- METAG --- */
+"Log in for free credits" = "Entre e ganhe %@ créditos grátis";
+"Log in for free credits (no number)" = "Entre e ganhe créditos grátis";
+"or use your own Anthropic key" = "ou use sua própria chave da Anthropic";
 "Subscribe" = "Assinar";
 "Subscribe or add your own API key to use this model." = "Assine ou adicione sua própria chave de API para usar este modelo.";
 "Subscription" = "Assinatura";

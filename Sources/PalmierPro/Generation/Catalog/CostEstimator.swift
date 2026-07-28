@@ -105,6 +105,8 @@ enum CostEstimator {
         return ceilCredits(rate * (model.pricing?.mode == .flat ? 1 : Double(d)))
     }
 
+    /// Cloud transcription only — on-device costs nothing, and `captionCloudCreditCost`
+    /// returns 0 before reaching here for any non-cloud provider.
     static func estimatedTranscriptionCost(durationSeconds: Double) -> Int? {
         guard durationSeconds > 0 else { return nil }
         return ceilCredits(25.0 * durationSeconds / 3600.0)

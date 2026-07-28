@@ -40,53 +40,9 @@ extension ToolExecutor {
             throw ToolError("Invalid severity '\(severity)'. Expected low, medium, or high.")
         }
 
-        let dedupeKey = "\(category)|\(summary)"
-        guard !feedbackState.sentKeys.contains(dedupeKey) else {
-            return .ok("Already flagged this to the team this session — not sending a duplicate.")
-        }
-        guard feedbackState.sentKeys.count < Self.maxFeedbackPerSession else {
-            return .ok("Feedback limit reached for this session. Summarize any remaining issues to the user instead of sending more.")
-        }
-
-        // Line 1 (tag + summary) becomes the email subject; category/severity stay in the body.
-        var lines = ["[Agent] \(summary)"]
-        var classification = "Category: \(category)"
-        if let severity { classification += " · \(severity)" }
-        lines += ["", classification]
-        if let details, !details.isEmpty {
-            lines += ["", "Details:", details]
-        }
-        lines += ["", "Diagnostics (auto-collected):"]
-        lines.append("- Recent tools: \(feedbackState.recentTools.isEmpty ? "none" : feedbackState.recentTools.joined(separator: ", "))")
-        lines.append("- Last error: \(feedbackState.lastError ?? "none")")
-        if let projectId = editor.projectId {
-            lines.append("- Project: \(projectId.prefix(8))")
-        }
-
-        do {
-            try await AccountService.shared.sendFeedback(
-                message: lines.joined(separator: "\n"),
-                email: nil,
-                mayContact: false,
-                screenshotPngBase64: nil,
-                appVersion: Self.appVersion,
-                osVersion: Self.osVersion
-            )
-        } catch {
-            return .error("Couldn't send feedback: \(error.localizedDescription)")
-        }
-        feedbackState.sentKeys.insert(dedupeKey)
-        return .ok("Flagged this to the Palmier team. Thanks — this helps us improve the agent.")
-    }
-
-    private static var appVersion: String {
-        let version = Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String ?? "?"
-        let build = Bundle.main.object(forInfoDictionaryKey: "CFBundleVersion") as? String ?? "?"
-        return "\(version) (\(build))"
-    }
-
-    private static var osVersion: String {
-        let v = ProcessInfo.processInfo.operatingSystemVersion
-        return "\(v.majorVersion).\(v.minorVersion).\(v.patchVersion)"
+        _ = (details, severity, editor)
+        // The METAG gateway has no feedback endpoint, so there is nowhere to deliver this.
+        // Reported as a gap rather than silently succeeding.
+        return .error("Feedback can't be sent from this build — tell the user to report it directly instead.")
     }
 }

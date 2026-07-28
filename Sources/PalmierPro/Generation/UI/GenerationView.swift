@@ -189,7 +189,6 @@ struct GenerationView: View {
                 typeTabs
                 Spacer()
                 CreditSummaryView(style: .compact)
-                ProjectActivityButton()
                 Button {
                     editFolderId = nil
                     editor.showGenerationPanel = false

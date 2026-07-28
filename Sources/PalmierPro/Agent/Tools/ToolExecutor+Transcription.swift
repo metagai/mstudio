@@ -295,8 +295,8 @@ extension ToolExecutor {
             estimatedCost: cost
         ) ? .cloud : .local
         return TranscriptionToolContext(
-            provider: provider,
-            preferredLocale: provider == .cloud ? nil : try await Self.parseLocale(args, path: path)
+            provider: .local,
+            preferredLocale: try await Self.parseLocale(args, path: path)
         )
     }
 

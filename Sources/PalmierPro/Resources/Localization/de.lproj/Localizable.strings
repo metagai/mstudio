@@ -670,6 +670,12 @@
 "Open" = "Öffnen";
 "Open %@" = "%@ öffnen";
 "Open Project" = "Projekt öffnen";
+
+/* --- METAG --- */
+"Log in for free credits" = "Anmelden und %@ Gratis-Credits erhalten";
+"Log in for free credits (no number)" = "Anmelden und Gratis-Credits erhalten";
+"or use your own Anthropic key" = "oder eigenen Anthropic-Schlüssel verwenden";
+"Subscribe" = "Abonnieren";
 "Open Settings" = "Einstellungen öffnen";
 "Open Skills Folder" = "Skills-Ordner öffnen";
 "Open Skills to browse community playbooks, create your own, or add them to other agents." = "Öffnen Sie Skills, um Community-Playbooks zu durchsuchen, eigene zu erstellen oder sie anderen Agents hinzuzufügen.";
