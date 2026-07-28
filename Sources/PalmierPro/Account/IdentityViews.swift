@@ -18,7 +18,6 @@ struct UserAvatar: View {
         ZStack {
             background
             foreground
-            profileImage
         }
         .frame(width: diameter, height: diameter)
         .clipShape(Circle())
@@ -36,9 +35,17 @@ struct UserAvatar: View {
     @ViewBuilder
     private var foreground: some View {
         if account.isSignedIn {
-            Text(account.displayInitial)
-                .font(.system(size: fontSize, weight: .semibold))
-                .foregroundStyle(AppTheme.Text.primaryColor)
+            // Initial only when a verified email backs it. Without one we show a glyph rather
+            // than derive a letter from `sub`, which is an internal id.
+            if let initial = account.displayInitial {
+                Text(initial)
+                    .font(.system(size: fontSize, weight: .semibold))
+                    .foregroundStyle(AppTheme.Text.primaryColor)
+            } else {
+                Image(systemName: "person.fill")
+                    .font(.system(size: fontSize))
+                    .foregroundStyle(AppTheme.Text.primaryColor)
+            }
         } else {
             switch signedOutStyle {
             case .filledCircle:
@@ -53,18 +60,6 @@ struct UserAvatar: View {
         }
     }
 
-    @ViewBuilder
-    private var profileImage: some View {
-        if let urlString = account.account?.user.image,
-           let url = URL(string: urlString) {
-            AsyncImage(url: url) { phase in
-                if let image = phase.image {
-                    image.resizable().scaledToFill()
-                }
-            }
-            .id(urlString)
-        }
-    }
 }
 
 // MARK: - UserAvatarButton

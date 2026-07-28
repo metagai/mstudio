@@ -353,7 +353,7 @@ struct ProjectRoundTripTests {
 
     @Test func generationLogEntryMigratesLegacyCostDollarsToCredits() throws {
         // Legacy entries stored `cost` as dollars (Double). New entries use `costCredits` (Int).
-        // Conversion: credits = ceil(dollars * 100).
+        // 100 credits/$ is the frozen rate those rows were written at, not today's `credit_usd`.
         let json = """
         { "id": "abc", "model": "test-model", "cost": 0.05 }
         """

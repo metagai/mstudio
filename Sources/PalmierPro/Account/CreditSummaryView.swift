@@ -1,8 +1,10 @@
 import SwiftUI
 
+/// The gateway reports an absolute credit balance, not a period budget, so there is no
+/// denominator to draw a progress bar against — show the balance itself.
 struct CreditSummaryView: View {
     enum Style {
-        case full   // settings: bigger title + progress bar
+        case full    // settings
         case compact // generation panel header chip
     }
 
@@ -11,17 +13,15 @@ struct CreditSummaryView: View {
     @State private var showActions = false
 
     var body: some View {
-        if let budget = account.budgetCredits {
-            let left = max(0, budget - account.spentCredits)
-            let remaining = budget > 0 ? min(1.0, Double(left) / Double(budget)) : 0
+        if account.isSignedIn {
             switch style {
             case .full:
-                fullView(left: left, budget: budget, remaining: remaining)
+                fullView
             case .compact:
                 Button {
                     showActions = true
                 } label: {
-                    compactView(left: left, budget: budget, remaining: remaining)
+                    compactView
                 }
                 .buttonStyle(.plain)
                 .help("Manage credits")
@@ -32,48 +32,46 @@ struct CreditSummaryView: View {
         }
     }
 
-    private func fullView(left: Int, budget: Int, remaining: Double) -> some View {
-        VStack(alignment: .leading, spacing: AppTheme.Spacing.xs) {
-            HStack(spacing: AppTheme.Spacing.xs) {
-                Text("\(left.formatted()) / \(budget.formatted())")
-                    .font(.system(size: AppTheme.FontSize.sm, weight: .medium))
-                    .monospacedDigit()
-                    .foregroundStyle(barColor(remaining))
-                Spacer()
-            }
-            ProgressView(value: remaining)
-                .progressViewStyle(.linear)
-                .tint(barColor(remaining))
+    private var credits: Int { account.remainingCredits }
+
+    private var fullView: some View {
+        HStack(alignment: .firstTextBaseline, spacing: AppTheme.Spacing.xs) {
+            Text(credits.formatted())
+                .font(.system(size: AppTheme.FontSize.xl, weight: AppTheme.FontWeight.semibold))
+                .monospacedDigit()
+                .foregroundStyle(tint)
+            Text(credits == 1 ? "credit" : "credits")
+                .font(.system(size: AppTheme.FontSize.sm))
+                .foregroundStyle(AppTheme.Text.tertiaryColor)
+            Spacer(minLength: 0)
         }
     }
 
-    private func compactView(left: Int, budget: Int, remaining: Double) -> some View {
+    private var compactView: some View {
         HStack(spacing: AppTheme.Spacing.xs) {
             Image(systemName: "dollarsign.circle.fill")
                 .font(.system(size: AppTheme.FontSize.sm))
-                .foregroundStyle(barColor(remaining))
-            Text(left.formatted())
-                .font(.system(size: AppTheme.FontSize.xs, weight: .medium))
+                .foregroundStyle(tint)
+            Text(credits.formatted())
+                .font(.system(size: AppTheme.FontSize.xs, weight: AppTheme.FontWeight.medium))
                 .monospacedDigit()
-                .foregroundStyle(barColor(remaining))
+                .foregroundStyle(tint)
         }
         .padding(.horizontal, AppTheme.Spacing.sm)
         .padding(.vertical, AppTheme.Spacing.xs)
-        .background(
-            Capsule().fill(.ultraThinMaterial)
-        )
+        .background(Capsule().fill(.ultraThinMaterial))
         .overlay(
             Capsule().stroke(AppTheme.Border.subtleColor, lineWidth: AppTheme.BorderWidth.hairline)
         )
         .fixedSize(horizontal: true, vertical: false)
-        .help("\(left.formatted()) of \(budget.formatted()) credits remaining this period")
+        .help("\(credits.formatted()) credits remaining")
     }
 
-    /// Tint by remaining ratio — full bar is healthy, drained bar is alarming.
-    private func barColor(_ remaining: Double) -> Color {
-        switch remaining {
-        case ..<0.05: return .red
-        case ..<0.25: return .orange
+    /// A drained balance is alarming; thresholds are absolute because there is no budget.
+    private var tint: Color {
+        switch credits {
+        case ..<1: return .red
+        case ..<20: return .orange
         default: return AppTheme.Accent.primary
         }
     }
@@ -82,17 +80,25 @@ struct CreditSummaryView: View {
 private struct CreditActionsPopover: View {
     @Bindable private var account = AccountService.shared
     @Binding var isPresented: Bool
-    @State private var topOffDollars: Int = 20
 
     private static let popoverWidth: CGFloat = 240
 
     var body: some View {
         VStack(alignment: .leading, spacing: AppTheme.Spacing.smMd) {
-            if account.isPaid {
-                paidActions
-            } else {
-                freeActions
+            Text("Add credits")
+                .font(.system(size: AppTheme.FontSize.xs, weight: AppTheme.FontWeight.medium))
+                .foregroundStyle(AppTheme.Text.tertiaryColor)
+
+            CreditPackButton()
+
+            Button {
+                SettingsWindowController.shared.show(tab: .account)
+                isPresented = false
+            } label: {
+                Text("Account settings").frame(maxWidth: .infinity)
             }
+            .buttonStyle(.capsule(.secondary))
+            .controlSize(.small)
 
             if let error = account.lastError {
                 Text(error)
@@ -104,47 +110,36 @@ private struct CreditActionsPopover: View {
         .padding(AppTheme.Spacing.md)
         .frame(width: Self.popoverWidth)
     }
+}
 
-    // MARK: - Free tier
+/// Buys the one-off credit pack priced by `/api/v1/pricing`. The amount and the credits
+/// are never computed locally — the gateway checkout is what actually charges.
+struct CreditPackButton: View {
+    @Bindable private var account = AccountService.shared
+    var fill: AnyShapeStyle?
+    var showsExternalLinkIcon: Bool = false
 
-    @ViewBuilder
-    private var freeActions: some View {
-        sectionCaption("Upgrade to add credits")
-        Button { openAccountSettings() } label: {
-            Text("Account settings").frame(maxWidth: .infinity)
-        }
-        .buttonStyle(.capsule(.prominent))
-        .controlSize(.small)
-    }
-
-    // MARK: - Paid tier
-
-    @ViewBuilder
-    private var paidActions: some View {
-        sectionCaption("Add credits")
-        TopOffField(dollars: $topOffDollars, controlSize: .small, fillWidth: false) {
-            account.buyCredits(dollars: topOffDollars)
-            isPresented = false
-        } trailing: {
-            Button { openAccountSettings() } label: {
-                Text("Account settings")
+    var body: some View {
+        if let pack = account.creditPack {
+            Button {
+                account.buyCreditPack()
+            } label: {
+                HStack(spacing: AppTheme.Spacing.xs) {
+                    Text("Buy \(pack.credits.formatted()) credits · $\(pack.price_usd, specifier: "%.2f")")
+                    if showsExternalLinkIcon {
+                        Image(systemName: "arrow.up.right")
+                            .font(.system(
+                                size: AppTheme.FontSize.xs,
+                                weight: AppTheme.FontWeight.semibold
+                            ))
+                            .accessibilityHidden(true)
+                    }
+                }
+                .frame(maxWidth: .infinity)
             }
-            .buttonStyle(.capsule(.secondary))
-            .controlSize(.small)
+            .buttonStyle(.capsule(.secondary, size: .small, fill: fill))
+            .disabled(account.isBuyingCredits)
+            .pointerStyle(.link)
         }
-    }
-
-    // MARK: - Shared
-
-    @ViewBuilder
-    private func sectionCaption(_ text: String) -> some View {
-        Text(text)
-            .font(.system(size: AppTheme.FontSize.xs, weight: .medium))
-            .foregroundStyle(AppTheme.Text.tertiaryColor)
-    }
-
-    private func openAccountSettings() {
-        SettingsWindowController.shared.show(tab: .account)
-        isPresented = false
     }
 }

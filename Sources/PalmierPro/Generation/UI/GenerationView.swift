@@ -147,17 +147,26 @@ struct GenerationView: View {
                 catalogLoadingView
             }
         }
-        .onChange(of: upscaleModels.isEmpty) { _, isEmpty in
-            if isEmpty && selectedType == .upscale { selectedType = .video }
+        .onChange(of: availableGenerationTypes) { _, available in
+            guard !available.contains(selectedType), let fallback = available.first else { return }
+            selectedType = fallback
         }
     }
 
     private var catalogLoadingView: some View {
         VStack(spacing: AppTheme.Spacing.md) {
-            ProgressView()
-            Text("Loading models…")
-                .font(.system(size: AppTheme.FontSize.sm))
-                .foregroundStyle(AppTheme.Text.secondaryColor)
+            if let error = ModelCatalog.shared.lastError {
+                Text("Models unavailable. \(error)")
+                    .font(.system(size: AppTheme.FontSize.sm))
+                    .foregroundStyle(AppTheme.Text.secondaryColor)
+                    .multilineTextAlignment(.center)
+                    .padding(.horizontal, AppTheme.Spacing.lg)
+            } else {
+                ProgressView()
+                Text("Loading models…")
+                    .font(.system(size: AppTheme.FontSize.sm))
+                    .foregroundStyle(AppTheme.Text.secondaryColor)
+            }
         }
         .frame(maxWidth: .infinity)
         .frame(height: AppTheme.GenerationPanel.loadingHeight)

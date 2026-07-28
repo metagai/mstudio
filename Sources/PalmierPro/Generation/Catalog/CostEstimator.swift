@@ -96,11 +96,6 @@ enum CostEstimator {
         return ceilCredits(rate * (model.pricing?.mode == .flat ? 1 : Double(d)))
     }
 
-    static func estimatedTranscriptionCost(durationSeconds: Double) -> Int? {
-        guard durationSeconds > 0 else { return nil }
-        return ceilCredits(25.0 * durationSeconds / 3600.0)
-    }
-
     /// Recompute cost from a stored `GenerationInput`. Used on rerun.
     @MainActor
     static func cost(for genInput: GenerationInput) -> Int? {

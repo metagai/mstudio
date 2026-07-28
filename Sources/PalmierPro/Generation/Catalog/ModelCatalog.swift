@@ -1,6 +1,5 @@
 import Foundation
 import Combine
-@preconcurrency import ConvexMobile
 
 enum ModelKind: Sendable {
     case video(VideoModelConfig)
@@ -39,54 +38,83 @@ final class ModelCatalog {
     private(set) var isLoaded: Bool = false
     private(set) var lastError: String?
 
-    @ObservationIgnored private var subscription: AnyCancellable?
     @ObservationIgnored private var didConfigure = false
-    @ObservationIgnored private var retryTask: Task<Void, Never>?
-    @ObservationIgnored private var failureCount = 0
 
     private init() {}
 
+    /// Video models come from `/api/v1/pricing` — the same endpoint that owns what we charge,
+    /// so a picker price can never disagree with the bill. That feed has no image/audio/upscale
+    /// tiers, so those three stay empty until the gateway offers them.
     func configure() {
         guard !didConfigure else { return }
         didConfigure = true
-        startSubscription()
+        Task { await load() }
     }
 
-    private func startSubscription() {
-        guard let client = AccountService.shared.convex else { return }
-
-        subscription = client
-            .subscribe(to: "models:list", yielding: [CatalogEntry].self)
-            .receive(on: DispatchQueue.main)
-            .sink(
-                receiveCompletion: { [weak self] completion in
-                    if case .failure(let err) = completion {
-                        self?.handleFailure(err)
-                    }
-                },
-                receiveValue: { [weak self] entries in
-                    self?.failureCount = 0
-                    self?.apply(entries)
-                }
-            )
+    func load() async {
+        do {
+            let pricing = try await MetagGateway.pricing()
+            apply(pricing.engines.map(Self.videoEntry(from:)))
+        } catch {
+            lastError = error.localizedDescription
+            Log.generation.error("ModelCatalog load failed: \(error.localizedDescription)")
+        }
     }
 
-    private func handleFailure(_ err: ClientError) {
-        failureCount += 1
-        lastError = err.localizedDescription
-        // First failure goes to Sentry; retries only log locally.
-        if failureCount == 1 {
-            Log.generation.error("ModelCatalog subscription failed: \(err.localizedDescription)")
-        } else {
-            Log.generation.warning("ModelCatalog subscription failed (attempt \(self.failureCount)): \(err.localizedDescription)")
+    /// Billing is flat per shot, and each engine has exactly one duration, so the per-second rate
+    /// is `credits_per_shot / duration` — over that one duration it re-multiplies back to the
+    /// exact flat price. If the duration can't be read we publish no rate at all rather than a
+    /// guess: an absent estimate is honest, a wrong one is not.
+    nonisolated static func videoEntry(from engine: MetagGateway.Pricing.Engine) -> CatalogEntry {
+        let spec = parseSpec(engine.spec)
+        var rate: [String: Double]?
+        if let seconds = spec.seconds, seconds > 0 {
+            rate = ["": Double(engine.credits_per_shot) / Double(seconds)]
         }
-        let delay = min(pow(2.0, Double(failureCount - 1)), 60)
-        retryTask?.cancel()
-        retryTask = Task { @MainActor [weak self] in
-            try? await Task.sleep(for: .seconds(delay))
-            guard !Task.isCancelled else { return }
-            self?.startSubscription()
+        return CatalogEntry(
+            id: engine.id,
+            kind: .video,
+            displayName: engine.name,
+            description: engine.spec,
+            responseShape: .video,
+            uiCapabilities: .video(
+                VideoCaps(
+                    durations: spec.seconds.map { [$0] } ?? [],
+                    resolutions: spec.resolution.map { [$0] },
+                    aspectRatios: [],
+                    supportsFirstFrame: false,
+                    supportsLastFrame: false,
+                    maxReferenceImages: 0,
+                    maxReferenceVideos: 0,
+                    maxReferenceAudios: 0,
+                    maxTotalReferences: nil,
+                    maxCombinedVideoRefSeconds: nil,
+                    maxCombinedAudioRefSeconds: nil,
+                    framesAndReferencesExclusive: false,
+                    referenceTagNoun: "reference",
+                    requiresSourceVideo: false,
+                    maxSourceVideoResolution: nil,
+                    requiresReferenceImage: false
+                )
+            ),
+            creditsPerSecond: rate,
+            // The gateway gates on credits, not on subscription tier.
+            paidOnly: false
+        )
+    }
+
+    /// Specs look like "480P · 16fps · 3s" or "720P · 24fps · 8s（最高画质）".
+    nonisolated static func parseSpec(_ spec: String) -> (resolution: String?, seconds: Int?) {
+        func first(_ pattern: String) -> String? {
+            guard let re = try? NSRegularExpression(pattern: pattern, options: .caseInsensitive),
+                  let m = re.firstMatch(in: spec, range: NSRange(spec.startIndex..., in: spec)),
+                  let r = Range(m.range(at: 1), in: spec)
+            else { return nil }
+            return String(spec[r])
         }
+        let resolution = first(#"(\d+)\s*[pP]\b"#).map { "\($0)p" }
+        let seconds = first(#"(\d+)\s*s\b"#).flatMap(Int.init)
+        return (resolution, seconds)
     }
 
     private func apply(_ entries: [CatalogEntry]) {
@@ -194,6 +222,44 @@ struct CatalogEntry: Decodable, Sendable {
         case id, kind, displayName, providerName, description, allowedEndpoints, responseShape, uiCapabilities
         case creditsPerSecond, audioDiscountRate, creditsPerImage, qualities
         case audioPricing, creditsPerSecondUpscale, upscalePricing, paidOnly
+    }
+
+    /// Defining `init(from:)` suppresses the memberwise init, and the catalog is now also
+    /// built in code from `/api/v1/pricing`, so spell it out.
+    init(
+        id: String,
+        kind: Kind,
+        displayName: String,
+        providerName: String? = nil,
+        description: String? = nil,
+        allowedEndpoints: [String] = [],
+        responseShape: ResponseShape,
+        uiCapabilities: UICapabilities,
+        creditsPerSecond: [String: Double]? = nil,
+        audioDiscountRate: [String: Double]? = nil,
+        creditsPerImage: [String: Double]? = nil,
+        qualities: [String]? = nil,
+        audioPricing: AudioPricing? = nil,
+        creditsPerSecondUpscale: Double? = nil,
+        upscalePricing: UpscalePricing? = nil,
+        paidOnly: Bool = false
+    ) {
+        self.id = id
+        self.kind = kind
+        self.displayName = displayName
+        self.providerName = providerName
+        self.description = description
+        self.allowedEndpoints = allowedEndpoints
+        self.responseShape = responseShape
+        self.uiCapabilities = uiCapabilities
+        self.creditsPerSecond = creditsPerSecond
+        self.audioDiscountRate = audioDiscountRate
+        self.creditsPerImage = creditsPerImage
+        self.qualities = qualities
+        self.audioPricing = audioPricing
+        self.creditsPerSecondUpscale = creditsPerSecondUpscale
+        self.upscalePricing = upscalePricing
+        self.paidOnly = paidOnly
     }
 
     init(from decoder: Decoder) throws {

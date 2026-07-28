@@ -1,5 +1,6 @@
 /* Agent panel — signed-out / no-credits state */
-"Log in for 250 free credits" = "ログインして250クレジットを無料でゲット";
+"Log in for free credits" = "ログインして%@クレジットを無料でゲット";
+"Log in for free credits (no number)" = "ログインして無料クレジットをゲット";
 "First-time sign-ups only" = "初回登録者限定";
 "or use your own Anthropic key" = "または自分のAnthropic APIキーを使用";
 "Subscribe" = "登録する";

@@ -66,12 +66,8 @@ private struct WelcomeTitle: View {
             .foregroundStyle(AppTheme.Text.primaryColor)
     }
 
-    private var title: String {
-        if let first = account.account?.user.firstName {
-            return "Welcome to METAG, \(first)"
-        }
-        return "Welcome to METAG"
-    }
+    // The gateway stores only the OAuth `sub` — no name to greet them by.
+    private var title: String { "Welcome to METAG" }
 }
 
 private struct HomeSidebar: View {

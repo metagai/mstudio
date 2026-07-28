@@ -90,7 +90,7 @@ struct MusicTab: View {
             if let issue = model.validate(spanSeconds: spanSeconds) { return issue }
         }
         if let cost = estimatedCost, cost > AccountService.shared.remainingCredits,
-           AccountService.shared.budgetCredits != nil {
+           AccountService.shared.isSignedIn {
             return "\(cost) credits needed. Only \(AccountService.shared.remainingCredits.formatted()) remaining."
         }
         return nil

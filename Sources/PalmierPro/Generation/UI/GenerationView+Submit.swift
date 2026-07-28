@@ -77,9 +77,10 @@ extension GenerationView {
         }
     }
 
+    /// Gateway balance. nil while signed out — we know nothing about their credits then.
     private var remainingCredits: Int? {
-        guard let budget = AccountService.shared.budgetCredits else { return nil }
-        return max(0, budget - AccountService.shared.spentCredits)
+        let account = AccountService.shared
+        return account.isSignedIn ? account.remainingCredits : nil
     }
 
     private var hasInsufficientCredits: Bool {

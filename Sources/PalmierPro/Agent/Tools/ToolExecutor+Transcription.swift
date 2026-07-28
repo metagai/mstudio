@@ -162,29 +162,15 @@ extension ToolExecutor {
     func transcriptionContext(
         _ args: [String: Any],
         path: String,
-        preferLast: Bool = false,
-        estimatedCloudCost: () async -> Int
+        preferLast: Bool = false
     ) async throws -> TranscriptionToolContext {
         if preferLast, let lastTranscriptContext {
             return lastTranscriptContext
         }
-        let account = AccountService.shared
-        let cost = await estimatedCloudCost()
-        let provider: TranscriptionProvider = Self.canUseCloudTranscription(
-            isSignedIn: account.isSignedIn,
-            remainingCredits: account.remainingCredits,
-            estimatedCost: cost
-        ) ? .cloud : .local
         return TranscriptionToolContext(
-            provider: provider,
-            preferredLocale: provider == .cloud ? nil : try await Self.parseLocale(args, path: path)
+            provider: .local,
+            preferredLocale: try await Self.parseLocale(args, path: path)
         )
-    }
-
-    static func canUseCloudTranscription(isSignedIn: Bool, remainingCredits: Int, estimatedCost: Int) -> Bool {
-        guard isSignedIn else { return false }
-        guard estimatedCost > 0 else { return true }
-        return remainingCredits >= estimatedCost
     }
 
     static func parseLocale(_ args: [String: Any], path: String) async throws -> Locale? {
@@ -194,19 +180,6 @@ extension ToolExecutor {
             throw ToolError("\(path): on-device transcription does not support language '\(lang)'.")
         }
         return match
-    }
-
-    static func validateCloudTranscriptionAccess(for request: EditorViewModel.CaptionRequest, in editor: EditorViewModel) async throws {
-        guard request.provider == .cloud else { return }
-        let cost = await editor.captionCloudCreditCost(for: request)
-        let account = AccountService.shared
-        guard account.isSignedIn else { throw ToolError("Sign in to use Cloud transcription.") }
-        guard cost > 0 else { return }
-        let remaining = account.remainingCredits
-        guard remaining > 0 else { throw ToolError("Add credits to use Cloud transcription.") }
-        if cost > remaining {
-            throw ToolError("\(CostEstimator.format(cost)) needed. Only \(remaining.formatted()) remaining.")
-        }
     }
 
     func getTranscript(_ editor: EditorViewModel, _ args: [String: Any]) async throws -> ToolResult {
@@ -224,9 +197,7 @@ extension ToolExecutor {
             throw ToolError("granularity must be 'words' or 'segments' (got '\(granularity)')")
         }
 
-        let context = try await transcriptionContext(args, path: "get_transcript") {
-            await editor.captionCloudCreditCost(for: .init(autoDetect: true, provider: .cloud))
-        }
+        let context = try await transcriptionContext(args, path: "get_transcript")
         let transcript = try await timelineTranscript(editor, context: context)
         lastTranscriptContext = context
 
@@ -243,10 +214,6 @@ extension ToolExecutor {
     }
 
     func timelineTranscript(_ editor: EditorViewModel, context: TranscriptionToolContext) async throws -> TimelineTranscript {
-        if context.provider == .cloud {
-            let request = EditorViewModel.CaptionRequest(autoDetect: true, provider: .cloud)
-            try await Self.validateCloudTranscriptionAccess(for: request, in: editor)
-        }
         let (words, skipped) = try await timelineWords(editor, context: context)
         return TimelineTranscript(context: context, words: words, skipped: skipped)
     }

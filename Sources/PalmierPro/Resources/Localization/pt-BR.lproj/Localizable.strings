@@ -1,5 +1,6 @@
 /* Agent panel — signed-out / no-credits state */
-"Log in for 250 free credits" = "Entre e ganhe 250 créditos grátis";
+"Log in for free credits" = "Entre e ganhe %@ créditos grátis";
+"Log in for free credits (no number)" = "Entre e ganhe créditos grátis";
 "First-time sign-ups only" = "Apenas para novos cadastros";
 "or use your own Anthropic key" = "ou use sua própria chave da Anthropic";
 "Subscribe" = "Assinar";

@@ -28,15 +28,8 @@ extension ToolExecutor {
             maxWords = n
         }
 
-        let context = try await transcriptionContext(args, path: "add_captions") {
-            await editor.captionCloudCreditCost(for: .init(autoDetect: true, provider: .cloud))
-        }
+        let context = try await transcriptionContext(args, path: "add_captions")
         let provider = context.provider
-        if provider == .cloud {
-            if args.bool("censorProfanity") == true {
-                throw ToolError("add_captions: censorProfanity is only available with local transcription.")
-            }
-        }
 
         let request = EditorViewModel.CaptionRequest(
             sourceClipIds: [],
@@ -50,8 +43,6 @@ extension ToolExecutor {
             provider: provider,
             animation: animation
         )
-
-        try await Self.validateCloudTranscriptionAccess(for: request, in: editor)
 
         let snapshot = timelineSnapshot(editor)
         let ids = try await editor.generateCaptions(for: request, applying: { mutation in

@@ -19,6 +19,8 @@ struct GenerationLogEntry: Codable, Sendable, Equatable, Identifiable {
 
     private enum LegacyKeys: String, CodingKey { case cost }
 
+    private static let legacyCreditsPerDollar = 100.0
+
     init(from decoder: Decoder) throws {
         let c = try decoder.container(keyedBy: CodingKeys.self)
         self.id = try c.decodeIfPresent(String.self, forKey: .id) ?? UUID().uuidString
@@ -29,7 +31,9 @@ struct GenerationLogEntry: Codable, Sendable, Equatable, Identifiable {
         } else {
             let legacy = try decoder.container(keyedBy: LegacyKeys.self)
             if let dollars = try legacy.decodeIfPresent(Double.self, forKey: .cost) {
-                self.costCredits = Int((dollars * 100).rounded(.up))
+                // Frozen rate these rows were written at ($0.01/credit). Never follow `credit_usd` —
+                // that would restate a past receipt at today's price.
+                self.costCredits = Int((dollars * Self.legacyCreditsPerDollar).rounded(.up))
             } else {
                 self.costCredits = nil
             }
