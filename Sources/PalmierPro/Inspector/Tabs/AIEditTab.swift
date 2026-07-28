@@ -201,7 +201,7 @@ struct AIEditTab: View {
         let paidBlocked = (action == .upscale || action == .edit) && !account.isPaid
         let isEnabled = availability.isAvailable && !paidBlocked && aiDisabledReason == nil
         let disabledReason = aiDisabledReason
-            ?? (paidBlocked ? "Requires a paid plan" : availability.reason)
+            ?? (paidBlocked ? L("Requires a paid plan") : availability.reason)
 
         descriptiveActionRow(
             icon: icon,
@@ -235,7 +235,7 @@ struct AIEditTab: View {
         let paidBlocked = model?.paidOnly == true && !account.isPaid
         let isEnabled = availability.isAvailable && !paidBlocked && aiDisabledReason == nil
         let disabledReason = aiDisabledReason
-            ?? (paidBlocked ? "Requires a paid plan" : availability.reason)
+            ?? (paidBlocked ? L("Requires a paid plan") : availability.reason)
 
         descriptiveActionRow(
             icon: kind.iconName,
@@ -398,7 +398,7 @@ struct AIEditTab: View {
 
     private var aiDisabledReason: String? {
         if account.isMisconfigured { return "AI is unavailable" }
-        if !account.isSignedIn { return "Sign in to use AI" }
+        if !account.isSignedIn { return L("Sign in to use AI") }
         return nil
     }
 

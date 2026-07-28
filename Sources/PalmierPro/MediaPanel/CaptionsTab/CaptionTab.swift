@@ -66,7 +66,7 @@ struct CaptionTab: View {
 
     private var sourceSummary: String {
         guard let selectedTrackId else { return automaticSourceSummary }
-        guard let index = editor.timeline.tracks.firstIndex(where: { $0.id == selectedTrackId }) else { return "No track" }
+        guard let index = editor.timeline.tracks.firstIndex(where: { $0.id == selectedTrackId }) else { return L("No track") }
         return "\(trackTitle(index)) · \(sourceClipIds.count)"
     }
 
@@ -89,7 +89,7 @@ struct CaptionTab: View {
             }
             if isGenerating {
                 AppTheme.Background.surfaceColor.opacity(AppTheme.Opacity.prominent)
-                GeneratingOverlay(label: "Transcribing…", size: .preview)
+                GeneratingOverlay(label: L("Transcribing…"), size: .preview)
             }
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
@@ -112,7 +112,7 @@ struct CaptionTab: View {
 
     /// Templates seed the style, animation, and placement below — the preview and Generate path are unchanged.
     private var templateSection: some View {
-        EditorPanelGroup("Template", isExpanded: $templatesExpanded) {
+        EditorPanelGroup(L("Template"), isExpanded: $templatesExpanded) {
             LazyVGrid(
                 columns: [
                     GridItem(.flexible(), spacing: AppTheme.Spacing.xs),
@@ -124,13 +124,13 @@ struct CaptionTab: View {
             }
             if !editor.captionTextClipIds.isEmpty {
                 Button(action: applyTemplateToExistingCaptions) {
-                    Text("Apply to Existing Captions")
+                    Text(L("Apply to Existing Captions"))
                         .frame(maxWidth: .infinity)
                 }
                 .buttonStyle(.capsule(.secondary))
                 .focusable(false)
                 .disabled(selectedTemplate == nil)
-                .help("Restyle the captions already on the timeline. Undoable as one step.")
+                .help(L("Restyle the captions already on the timeline. Undoable as one step."))
             }
         }
     }
@@ -206,9 +206,9 @@ struct CaptionTab: View {
 
     private var settingsSection: some View {
         EditorPanelGroup("Settings", isExpanded: $settingsExpanded) {
-            InspectorRow(label: "Language", onReset: { locale = nil }) {
+            InspectorRow(label: L("Language"), onReset: { locale = nil }) {
                 Menu {
-                    Button("Auto") { locale = nil }
+                    Button(L("Auto")) { locale = nil }
                     if !supportedLocales.isEmpty {
                         Divider()
                         ForEach(supportedLocales, id: \.identifier) { loc in
@@ -220,12 +220,12 @@ struct CaptionTab: View {
                 .frame(maxWidth: .infinity)
             }
             InspectorRow(
-                label: "Max words",
-                labelHelp: "Cap the words shown per caption. None fits each line to the box.",
+                label: L("Max words"),
+                labelHelp: L("Cap the words shown per caption. None fits each line to the box."),
                 onReset: { maxWords = nil }
             ) {
                 Menu {
-                    Button("None") { maxWords = nil }
+                    Button(L("None")) { maxWords = nil }
                     ForEach(1...8, id: \.self) { n in
                         Button("\(n)") { maxWords = n }
                     }
@@ -233,12 +233,12 @@ struct CaptionTab: View {
                 .menuStyle(.button).buttonStyle(.plain).menuIndicator(.hidden).focusable(false)
                 .frame(maxWidth: .infinity)
             }
-            InspectorRow(label: "Censor profanity", onReset: { censorProfanity = false }) {
+            InspectorRow(label: L("Censor profanity"), onReset: { censorProfanity = false }) {
                 Toggle("", isOn: $censorProfanity)
                     .labelsHidden()
                     .toggleStyle(.switch)
                     .controlSize(.mini)
-                    .accessibilityLabel("Censor profanity")
+                    .accessibilityLabel(L("Censor profanity"))
                     .tint(AppTheme.Text.primaryColor.opacity(AppTheme.Opacity.strong))
             }
         }
@@ -255,7 +255,7 @@ struct CaptionTab: View {
             Divider()
 
             if captionTrackIndices.isEmpty {
-                Text("No Tracks")
+                Text(L("No Tracks"))
             } else {
                 ForEach(captionTrackIndices, id: \.self) { index in
                     if editor.timeline.tracks.indices.contains(index) {
@@ -347,20 +347,20 @@ struct CaptionTab: View {
         ) {
             Button {
                 captionTask("remove filler words (um, uh, er, like, you know) from the captions, keeping each caption's timing unchanged.")
-            } label: { Label("Remove filler words", systemImage: "text.badge.minus") }
+            } label: { Label(L("Remove filler words"), systemImage: "text.badge.minus") }
             Button {
                 captionTask("fix any misspelled names, brand names, or technical jargon in the captions using the surrounding context, keeping timing unchanged.")
-            } label: { Label("Fix names & jargon", systemImage: "checkmark.bubble") }
+            } label: { Label(L("Fix names & jargon"), systemImage: "checkmark.bubble") }
             Button {
                 captionTask("add relevant emoji to the captions, keeping the text and timing otherwise unchanged.")
-            } label: { Label("Add emoji", systemImage: "face.smiling") }
+            } label: { Label(L("Add emoji"), systemImage: "face.smiling") }
             Menu {
                 ForEach(Self.translateLanguages, id: \.self) { language in
                     Button(language) {
                         captionTask("translate the captions to \(language), keeping each caption's timing unchanged.")
                     }
                 }
-            } label: { Label("Translate", systemImage: "globe") }
+            } label: { Label(L("Translate"), systemImage: "globe") }
         }
     }
 
@@ -438,14 +438,14 @@ struct CaptionTab: View {
         EditorActionFooter(message: note) {
             HStack(spacing: AppTheme.Spacing.sm) {
                 Button(action: generate) {
-                    Text("Generate Captions")
+                    Text(L("Generate Captions"))
                         .lineLimit(1)
                         .frame(maxWidth: .infinity)
                 }
                 .buttonStyle(.editorPrimary)
                 .focusable(false)
                 .disabled(!canGenerateCaptions)
-                .help("Transcribed on this Mac with Apple's SpeechAnalyzer. Free — your audio never leaves the device.")
+                .help(L("Transcribed on this Mac with Apple's SpeechAnalyzer. Free — your audio never leaves the device."))
 
                 agentMenu
             }
@@ -456,7 +456,7 @@ struct CaptionTab: View {
         note = nil
         let sourceIds = sourceClipIds
         if selectedTrackId != nil && sourceIds.isEmpty {
-            note = "No audio selected."
+            note = L("No audio selected.")
             return
         }
         let request = EditorViewModel.CaptionRequest(
@@ -474,7 +474,7 @@ struct CaptionTab: View {
             isGenerating = true
             defer { isGenerating = false }
             do {
-                if try await editor.generateCaptions(for: request).isEmpty { note = "No speech detected." }
+                if try await editor.generateCaptions(for: request).isEmpty { note = L("No speech detected.") }
             } catch {
                 note = error.localizedDescription
             }

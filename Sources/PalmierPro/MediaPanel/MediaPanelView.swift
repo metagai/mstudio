@@ -40,7 +40,7 @@ struct MediaPanelView: View {
         }
         .overlay(alignment: .topLeading) {
             if let hoveredTab {
-                hoverLabel(hoveredTab.rawValue)
+                hoverLabel(L(hoveredTab.rawValue))
                     .id(hoveredTab)
                     .offset(
                         x: AppTheme.MediaPanel.tabRailWidth + AppTheme.Spacing.xs,
@@ -103,7 +103,7 @@ struct MediaPanelView: View {
                 hoveredTab = hovering ? tab : (hoveredTab == tab ? nil : hoveredTab)
             }
         }
-        .accessibilityLabel(tab.rawValue)
+        .accessibilityLabel(L(tab.rawValue))
         .zIndex(hovered ? 1 : 0)
     }
 

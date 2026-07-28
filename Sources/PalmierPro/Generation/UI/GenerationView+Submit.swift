@@ -96,15 +96,15 @@ extension GenerationView {
 
     private var costHelpText: String {
         guard let cost = estimatedCost else {
-            return "Estimated cost. Actual billing may differ slightly."
+            return L("Estimated cost. Actual billing may differ slightly.")
         }
         guard let left = remainingCredits else {
-            return "\(cost) credits estimated. Actual billing may differ."
+            return L("%@ credits estimated. Actual billing may differ.", cost.formatted())
         }
         if cost > left {
-            return "\(cost) credits needed. Only \(left.formatted()) remaining."
+            return L("%@ credits needed. Only %@ remaining.", cost.formatted(), left.formatted())
         }
-        return "\(cost) credits. \((left - cost).formatted()) credits remaining after this generation."
+        return L("%@ credits. %@ credits remaining after this generation.", cost.formatted(), (left - cost).formatted())
     }
 
     var costEstimateLabel: some View {

@@ -91,7 +91,7 @@ struct AccountPopoverCard: View {
 
             Spacer(minLength: 0)
 
-            Button("Subscribe") {
+            Button(L("Subscribe")) {
                 Task { await account.subscribe(planId: plan.id) }
                 dismiss()
             }
@@ -102,26 +102,30 @@ struct AccountPopoverCard: View {
 
     private func creditsShortLabel(_ credits: Int) -> String {
         if credits >= 1000, credits % 1000 == 0 {
-            return "\(credits / 1000)k credits"
+            return L("%@k credits", (credits / 1000).formatted())
         }
-        return "\(credits.formatted()) credits"
+        return L("%@ credits", credits.formatted())
     }
 
     // MARK: - Footer (Settings + Sign in / Sign out)
 
     private var footerRow: some View {
         VStack(spacing: AppTheme.Spacing.xxs) {
-            footerButton(label: "Settings", systemImage: "gearshape") {
+            footerButton(label: L("Settings"), systemImage: "gearshape") {
                 SettingsWindowController.shared.show()
                 dismiss()
             }
+            footerButton(label: L("Feedback"), systemImage: "bubble.left.and.bubble.right") {
+                FeedbackMail.open()
+                dismiss()
+            }
             if account.isSignedIn {
-                footerButton(label: "Sign out", systemImage: "rectangle.portrait.and.arrow.right") {
+                footerButton(label: L("Sign out"), systemImage: "rectangle.portrait.and.arrow.right") {
                     Task { await account.signOut() }
                     dismiss()
                 }
             } else {
-                footerButton(label: account.isSigningIn ? "Opening Google…" : "Sign in", systemImage: "person.crop.circle") {
+                footerButton(label: account.isSigningIn ? L("Opening Google…") : L("Sign in"), systemImage: "person.crop.circle") {
                     Task { await account.signInWithGoogle() }
                     dismiss()
                 }

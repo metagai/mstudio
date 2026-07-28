@@ -10,14 +10,15 @@ enum SettingsTab: String, CaseIterable, Identifiable {
 
     var id: String { rawValue }
 
+    @MainActor
     var label: String {
         switch self {
-        case .account: return "Account"
-        case .general: return "General"
-        case .models: return "Models"
-        case .agent: return "Agent"
-        case .skills: return "Skills"
-        case .storage: return "Storage"
+        case .account: return L("Account")
+        case .general: return L("General")
+        case .models: return L("Models")
+        case .agent: return L("Agent")
+        case .skills: return L("Skills")
+        case .storage: return L("Storage")
         }
     }
 
@@ -131,10 +132,13 @@ private struct SettingsDetail: View {
                             case .account:
                                 AccountPane()
                             case .general:
-                                SettingsSection(title: "Notifications") {
+                                SettingsSection(title: L("Language")) {
+                                    LanguagePane()
+                                }
+                                SettingsSection(title: L("Notifications")) {
                                     NotificationsPane()
                                 }
-                                SettingsSection(title: "Privacy & Diagnostics") {
+                                SettingsSection(title: L("Privacy & Diagnostics")) {
                                     PrivacyPane()
                                 }
                             case .models:

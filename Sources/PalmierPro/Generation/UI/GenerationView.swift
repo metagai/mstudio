@@ -156,14 +156,14 @@ struct GenerationView: View {
     private var catalogLoadingView: some View {
         VStack(spacing: AppTheme.Spacing.md) {
             if let error = ModelCatalog.shared.lastError {
-                Text("Models unavailable. \(error)")
+                Text(L("Models unavailable. %@", error))
                     .font(.system(size: AppTheme.FontSize.sm))
                     .foregroundStyle(AppTheme.Text.secondaryColor)
                     .multilineTextAlignment(.center)
                     .padding(.horizontal, AppTheme.Spacing.lg)
             } else {
                 ProgressView()
-                Text("Loading models…")
+                Text(L("Loading models…"))
                     .font(.system(size: AppTheme.FontSize.sm))
                     .foregroundStyle(AppTheme.Text.secondaryColor)
             }

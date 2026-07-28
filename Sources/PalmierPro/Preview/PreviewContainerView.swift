@@ -457,7 +457,9 @@ struct PreviewContainerView: View {
                         .padding(.horizontal, AppTheme.Spacing.lg)
                 }
                 if isUnprocessable {
-                    EmptyView()
+                    Button(L("Report a Problem")) { FeedbackMail.open() }
+                        .buttonStyle(.capsule(.prominent, size: .regular))
+                        .padding(.top, AppTheme.Spacing.xs)
                 } else {
                     HStack(spacing: AppTheme.Spacing.sm) {
                         if let assetId {

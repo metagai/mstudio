@@ -116,14 +116,14 @@ struct ProjectCard: View {
         .onHover { isHovered = $0 }
         .contextMenu {
             if entry.isAccessible {
-                Button("Open") { onOpen(entry.url) }
-                Button("Reveal in Finder") {
+                Button(L("Open")) { onOpen(entry.url) }
+                Button(L("Reveal in Finder")) {
                     NSWorkspace.shared.selectFile(entry.url.path, inFileViewerRootedAtPath: entry.url.deletingLastPathComponent().path)
                 }
                 Divider()
             }
-            Button("Remove from Recents") { onRemove(entry.url) }
-            Button("Delete Project", role: .destructive, action: onDelete)
+            Button(L("Remove from Recents")) { onRemove(entry.url) }
+            Button(L("Delete Project"), role: .destructive, action: onDelete)
         }
         .task(id: entry.lastOpenedDate) { await loadThumbnail(for: entry.url) }
     }

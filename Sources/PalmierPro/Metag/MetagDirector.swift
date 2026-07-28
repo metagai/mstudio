@@ -98,7 +98,9 @@ extension MetagGateway {
         topic: String,
         url: String? = nil
     ) async throws -> MetagDirector.Run {
-        var body: [String: Any] = ["preset": preset, "topic": topic]
+        // 分镜旁白语言。网关的 director_start 目前还没接这个字段（RunReq 无 lang，
+        // 而 pipeline 读 params["lang"] 时兜底 "zh"）—— 先带上，网关补上即刻生效。
+        var body: [String: Any] = ["preset": preset, "topic": topic, "lang": await currentLanguageCode()]
         if let url, !url.isEmpty { body["url"] = url }
         return try await send(request("api/v1/director/runs", method: "POST", body: body), as: MetagDirector.Run.self)
     }

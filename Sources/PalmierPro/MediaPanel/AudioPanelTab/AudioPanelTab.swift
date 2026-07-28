@@ -10,8 +10,8 @@ struct AudioPanelTab: View {
     var body: some View {
         VStack(spacing: AppTheme.Spacing.zero) {
             TitleTabBar(
-                titles: Tab.allCases.map(\.rawValue),
-                selected: tab.rawValue
+                titles: Tab.allCases.map { L($0.rawValue) },
+                selected: L(tab.rawValue)
             ) { title in
                 if let t = Tab(rawValue: title) { tab = t }
             }

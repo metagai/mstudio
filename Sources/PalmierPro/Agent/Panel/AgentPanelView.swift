@@ -282,11 +282,11 @@ struct AgentPanelView: View {
         guard let error else { return nil }
         switch error {
         case .unauthenticated:
-            return ErrorCTA(title: "Sign in") {
+            return ErrorCTA(title: L("Sign in")) {
                 SettingsWindowController.shared.show(tab: .account)
             }
         case .insufficientCredits:
-            return ErrorCTA(title: "View plans") {
+            return ErrorCTA(title: L("View plans")) {
                 SettingsWindowController.shared.show(tab: .account)
             }
         case .upstream:
@@ -298,7 +298,7 @@ struct AgentPanelView: View {
     private var emptyState: some View {
         if service.canStream {
             VStack(spacing: AppTheme.Spacing.smMd) {
-                Text("Ask anything, or start with:")
+                Text(L("Ask anything, or start with:"))
                     .font(.system(size: AppTheme.FontSize.smMd, weight: AppTheme.FontWeight.medium))
                     .foregroundStyle(AppTheme.Text.secondaryColor)
                     .multilineTextAlignment(.center)
@@ -329,7 +329,7 @@ struct AgentPanelView: View {
                 }
             } label: {
                 Label(
-                    offersHostedAgent ? "Sign in to METAG" : "Add an Anthropic API key",
+                    offersHostedAgent ? L("Sign in to METAG") : L("Add an Anthropic API key"),
                     systemImage: offersHostedAgent ? "person.crop.circle" : "key"
                 )
                 .font(.system(size: AppTheme.FontSize.mdLg, weight: .semibold))
@@ -338,8 +338,8 @@ struct AgentPanelView: View {
 
             Text(
                 offersHostedAgent
-                    ? "Or use your own Anthropic key in Settings."
-                    : "The agent streams through your own Anthropic key."
+                    ? L("Or use your own Anthropic key in Settings.")
+                    : L("The agent streams through your own Anthropic key.")
             )
             .font(.system(size: AppTheme.FontSize.sm))
             .foregroundStyle(AppTheme.Text.mutedColor)

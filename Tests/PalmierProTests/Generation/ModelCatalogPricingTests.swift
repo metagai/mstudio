@@ -7,12 +7,17 @@ struct ModelCatalogPricingTests {
     private func engine(
         id: String = "veo",
         name: String = "Flagship Veo",
+        nameI18n: [String: String]? = nil,
         spec: String,
+        resolution: String? = nil,
+        durationS: Int? = nil,
         audio: Bool = true,
         creditsPerShot: Int
     ) -> MetagGateway.Pricing.Engine {
         MetagGateway.Pricing.Engine(
-            id: id, name: name, spec: spec, native_audio: audio, credits_per_shot: creditsPerShot
+            id: id, name: name, name_i18n: nameI18n, spec: spec,
+            resolution: resolution, duration_s: durationS,
+            native_audio: audio, credits_per_shot: creditsPerShot
         )
     }
 
@@ -68,6 +73,45 @@ struct ModelCatalogPricingTests {
         }
         #expect(caps.durations.isEmpty)
         #expect(VideoModelConfig(entry: entry, caps: caps).creditsPerSecond.isEmpty)
+    }
+
+    /// Structured fields are authoritative. Deriving billing inputs from the display string
+    /// broke silently whenever `spec` was reworded, so `duration_s` must win over it.
+    @Test
+    @MainActor
+    func structuredDurationOverridesSpecText() throws {
+        let entry = ModelCatalog.videoEntry(
+            from: engine(spec: "wording changed · 99s", resolution: "720P", durationS: 8, creditsPerShot: 27)
+        )
+        guard case .video(let caps) = entry.uiCapabilities else {
+            Issue.record("expected video capabilities")
+            return
+        }
+        #expect(caps.durations == [8])
+        #expect(caps.resolutions == ["720p"])
+        let model = VideoModelConfig(entry: entry, caps: caps)
+        #expect(
+            CostEstimator.videoCost(model: model, durationSeconds: 8, resolution: "720p", generateAudio: true) == 27
+        )
+    }
+
+    @Test(arguments: [("zh", "带音轨"), ("es", "Con audio"), ("en", "With audio")])
+    @MainActor
+    func displayNameFollowsRequestedLanguage(code: String, expected: String) {
+        let e = engine(
+            name: "带音轨",
+            nameI18n: ["zh": "带音轨", "en": "With audio", "es": "Con audio"],
+            spec: "480P · 8s", durationS: 8, creditsPerShot: 27
+        )
+        #expect(ModelCatalog.videoEntry(from: e, language: code).displayName == expected)
+    }
+
+    /// Older responses carry no `name_i18n`; the legacy `name` must still be used.
+    @Test
+    @MainActor
+    func displayNameFallsBackToLegacyName() {
+        let e = engine(name: "Legacy", spec: "480P · 8s", durationS: 8, creditsPerShot: 27)
+        #expect(ModelCatalog.videoEntry(from: e, language: "es").displayName == "Legacy")
     }
 
     /// The gateway meters credits, not subscription tier — nothing from pricing is subscriber-only.

@@ -137,11 +137,12 @@ enum CostEstimator {
         }
     }
 
+    @MainActor
     static func format(_ credits: Int?) -> String {
         guard let credits else { return "—" }
-        if credits <= 0 { return "0 credits" }
-        if credits == 1 { return "1 credit" }
-        return "\(credits) credits"
+        if credits <= 0 { return L("%@ credits", "0") }
+        if credits == 1 { return L("%@ credit", "1") }
+        return L("%@ credits", credits.formatted())
     }
 
     private static func resolvedRate(_ dict: [String: Double], key: String?) -> Double? {

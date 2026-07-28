@@ -27,7 +27,7 @@ extension GenerationView {
                                 weight: selectedType == type ? .semibold : .medium
                             ))
                             .foregroundStyle(selectedType == type ? type.accentColor : AppTheme.Text.tertiaryColor)
-                        Text(type.rawValue)
+                        Text(L(type.rawValue))
                             .font(.system(size: AppTheme.FontSize.xxs, weight: .medium))
                             .foregroundStyle(selectedType == type ? AppTheme.Text.primaryColor : AppTheme.Text.tertiaryColor)
                     }

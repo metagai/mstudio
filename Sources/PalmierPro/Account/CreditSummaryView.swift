@@ -24,7 +24,7 @@ struct CreditSummaryView: View {
                     compactView
                 }
                 .buttonStyle(.plain)
-                .help("Manage credits")
+                .help(L("Manage credits"))
                 .popover(isPresented: $showActions, arrowEdge: .bottom) {
                     CreditActionsPopover(isPresented: $showActions)
                 }
@@ -40,7 +40,7 @@ struct CreditSummaryView: View {
                 .font(.system(size: AppTheme.FontSize.xl, weight: AppTheme.FontWeight.semibold))
                 .monospacedDigit()
                 .foregroundStyle(tint)
-            Text(credits == 1 ? "credit" : "credits")
+            Text(credits == 1 ? L("credit") : L("credits"))
                 .font(.system(size: AppTheme.FontSize.sm))
                 .foregroundStyle(AppTheme.Text.tertiaryColor)
             Spacer(minLength: 0)
@@ -64,7 +64,7 @@ struct CreditSummaryView: View {
             Capsule().stroke(AppTheme.Border.subtleColor, lineWidth: AppTheme.BorderWidth.hairline)
         )
         .fixedSize(horizontal: true, vertical: false)
-        .help("\(credits.formatted()) credits remaining")
+        .help(L("%@ credits remaining", credits.formatted()))
     }
 
     /// A drained balance is alarming; thresholds are absolute because there is no budget.
@@ -85,7 +85,7 @@ private struct CreditActionsPopover: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: AppTheme.Spacing.smMd) {
-            Text("Add credits")
+            Text(L("Add credits"))
                 .font(.system(size: AppTheme.FontSize.xs, weight: AppTheme.FontWeight.medium))
                 .foregroundStyle(AppTheme.Text.tertiaryColor)
 
@@ -95,7 +95,7 @@ private struct CreditActionsPopover: View {
                 SettingsWindowController.shared.show(tab: .account)
                 isPresented = false
             } label: {
-                Text("Account settings").frame(maxWidth: .infinity)
+                Text(L("Account settings")).frame(maxWidth: .infinity)
             }
             .buttonStyle(.capsule(.secondary))
             .controlSize(.small)
@@ -125,7 +125,7 @@ struct CreditPackButton: View {
                 account.buyCreditPack()
             } label: {
                 HStack(spacing: AppTheme.Spacing.xs) {
-                    Text("Buy \(pack.credits.formatted()) credits · $\(pack.price_usd, specifier: "%.2f")")
+                    Text(L("Buy %@ credits · $%@", pack.credits.formatted(), String(format: "%.2f", pack.price_usd)))
                     if showsExternalLinkIcon {
                         Image(systemName: "arrow.up.right")
                             .font(.system(

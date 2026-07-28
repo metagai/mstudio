@@ -54,7 +54,8 @@ final class ModelCatalog {
     func load() async {
         do {
             let pricing = try await MetagGateway.pricing()
-            apply(pricing.engines.map(Self.videoEntry(from:)))
+            let code = L10n.shared.gatewayLanguageCode
+            apply(pricing.engines.map { Self.videoEntry(from: $0, language: code) })
         } catch {
             lastError = error.localizedDescription
             Log.generation.error("ModelCatalog load failed: \(error.localizedDescription)")
@@ -63,24 +64,30 @@ final class ModelCatalog {
 
     /// Billing is flat per shot, and each engine has exactly one duration, so the per-second rate
     /// is `credits_per_shot / duration` — over that one duration it re-multiplies back to the
-    /// exact flat price. If the duration can't be read we publish no rate at all rather than a
+    /// exact flat price. If the duration is missing we publish no rate at all rather than a
     /// guess: an absent estimate is honest, a wrong one is not.
-    nonisolated static func videoEntry(from engine: MetagGateway.Pricing.Engine) -> CatalogEntry {
-        let spec = parseSpec(engine.spec)
+    nonisolated static func videoEntry(
+        from engine: MetagGateway.Pricing.Engine,
+        language: String = "en"
+    ) -> CatalogEntry {
+        // Structured fields win; `spec` parsing is only a fallback for older gateway responses.
+        let parsed = parseSpec(engine.spec)
+        let seconds = engine.duration_s ?? parsed.seconds
+        let resolution = engine.resolution.map { $0.lowercased() } ?? parsed.resolution
         var rate: [String: Double]?
-        if let seconds = spec.seconds, seconds > 0 {
+        if let seconds, seconds > 0 {
             rate = ["": Double(engine.credits_per_shot) / Double(seconds)]
         }
         return CatalogEntry(
             id: engine.id,
             kind: .video,
-            displayName: engine.name,
+            displayName: engine.displayName(for: language),
             description: engine.spec,
             responseShape: .video,
             uiCapabilities: .video(
                 VideoCaps(
-                    durations: spec.seconds.map { [$0] } ?? [],
-                    resolutions: spec.resolution.map { [$0] },
+                    durations: seconds.map { [$0] } ?? [],
+                    resolutions: resolution.map { [$0] },
                     aspectRatios: [],
                     supportsFirstFrame: false,
                     supportsLastFrame: false,

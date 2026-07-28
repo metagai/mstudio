@@ -67,7 +67,7 @@ private struct WelcomeTitle: View {
     }
 
     // The gateway stores only the OAuth `sub` — no name to greet them by.
-    private var title: String { "Welcome to METAG" }
+    private var title: String { L("Welcome to METAG") }
 }
 
 private struct HomeSidebar: View {
@@ -83,19 +83,19 @@ private struct HomeSidebar: View {
             VStack(alignment: .leading, spacing: 2) {
                 if !account.isSignedIn && !account.isMisconfigured {
                     SidebarRowButton(
-                        label: account.isSigningIn ? "Opening Google…" : "Sign in with Google",
+                        label: account.isSigningIn ? "Opening Google…" : L("Sign in with Google"),
                         systemImage: "person.crop.circle",
                         action: { Task { await account.signInWithGoogle() } }
                     )
                     .disabled(account.isSigningIn)
                 }
                 SidebarRowButton(
-                    label: "New Project",
+                    label: L("New Project"),
                     systemImage: "plus",
                     action: { AppState.shared.createProjectInteractively() }
                 )
                 SidebarRowButton(
-                    label: "Open Project",
+                    label: L("Open Project"),
                     systemImage: "folder",
                     action: { AppState.shared.openProjectFromPanel() }
                 )

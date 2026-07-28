@@ -14,7 +14,7 @@ struct TitleBarLeadingView: View {
                     .hoverHighlight()
             }
             .buttonStyle(.plain)
-            .help("Toggle Agent Panel")
+            .help(L("Toggle Agent Panel"))
         }
     }
 }
@@ -44,7 +44,7 @@ struct TitleBarTrailingView: View {
                         }
                     }
                     .frame(width: AppTheme.IconSize.sm, height: AppTheme.IconSize.sm)
-                    Text("Export")
+                    Text(L("Export"))
                 }
                 .font(.system(size: AppTheme.FontSize.sm, weight: AppTheme.FontWeight.medium))
                 .foregroundStyle(AppTheme.Text.secondaryColor)

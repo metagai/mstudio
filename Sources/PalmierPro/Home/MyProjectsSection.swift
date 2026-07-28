@@ -30,7 +30,7 @@ struct MyProjectsSection: View {
 
     private var toolbar: some View {
         HStack(spacing: AppTheme.Spacing.md) {
-            Text("My Projects")
+            Text(L("My Projects"))
                 .font(.system(size: AppTheme.FontSize.md, weight: AppTheme.FontWeight.regular))
                 .foregroundStyle(AppTheme.Text.primaryColor)
 
@@ -61,10 +61,10 @@ struct MyProjectsSection: View {
                 }
                 .buttonStyle(.capsule(fill: AnyShapeStyle(AppTheme.Status.errorColor)))
                 .disabled(selectedProjectIDs.isEmpty)
-                Button("Done") { endSelection() }
+                Button(L("Done")) { endSelection() }
                     .buttonStyle(.capsule)
             } else if !ProjectRegistry.shared.entries.isEmpty {
-                Button("Select") { isSelecting = true }
+                Button(L("Select")) { isSelecting = true }
                     .buttonStyle(.capsule)
             }
         }
@@ -75,7 +75,7 @@ struct MyProjectsSection: View {
             get: { !projectsPendingDeletion.isEmpty },
             set: { if !$0 { projectsPendingDeletion = [] } }
         )) {
-            Button("Cancel", role: .cancel) { projectsPendingDeletion = [] }
+            Button(L("Cancel"), role: .cancel) { projectsPendingDeletion = [] }
             Button("Delete", role: .destructive) { deletePendingProjects() }
         } message: {
             Text(deletionPrompt)
@@ -141,7 +141,7 @@ struct MyProjectsSection: View {
                 if ProjectRegistry.shared.entries.isEmpty {
                     NewProjectCard(action: { AppState.shared.createProjectInteractively() })
                 } else if entries.isEmpty {
-                    Text("No projects found")
+                    Text(L("No projects found"))
                         .font(.system(size: AppTheme.FontSize.sm))
                         .foregroundStyle(AppTheme.Text.mutedColor)
                         .padding(.vertical, AppTheme.Spacing.xl)
