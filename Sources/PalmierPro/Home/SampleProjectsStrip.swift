@@ -95,7 +95,8 @@ private struct SampleCard: View {
             LinearGradient(
                 stops: [
                     .init(color: .clear, location: 0),
-                    .init(color: AppTheme.MediaOverlay.backgroundColor.opacity(AppTheme.Opacity.high), location: 1),
+                    .init(color: AppTheme.Background.raisedColor, location: 0.55),
+                    .init(color: AppTheme.Background.raisedColor, location: 1),
                 ],
                 startPoint: .top,
                 endPoint: .bottom
@@ -105,7 +106,7 @@ private struct SampleCard: View {
 
             Text(sample.title)
                 .font(.system(size: AppTheme.FontSize.smMd, weight: .regular))
-                .foregroundStyle(AppTheme.MediaOverlay.primaryColor)
+                .foregroundStyle(AppTheme.Text.primaryColor)
                 .lineLimit(1)
                 .padding(.horizontal, AppTheme.Spacing.md)
                 .padding(.bottom, AppTheme.Spacing.smMd)
@@ -123,7 +124,7 @@ private struct SampleCard: View {
         .overlay(
             RoundedRectangle(cornerRadius: cardRadius, style: .continuous)
                 .strokeBorder(
-                    AppTheme.Interaction.fill(isHovered ? AppTheme.Opacity.muted : AppTheme.Opacity.hint),
+                    AppTheme.Text.primaryColor.opacity(isHovered ? AppTheme.Opacity.muted : AppTheme.Opacity.hint),
                     lineWidth: AppTheme.BorderWidth.hairline
                 )
         )

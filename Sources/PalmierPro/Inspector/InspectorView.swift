@@ -1019,7 +1019,19 @@ struct InspectorView: View {
                 .padding(.top, hasReferences ? AppTheme.Spacing.md : AppTheme.Spacing.zero)
             }
         }
-        .padding(.top, AppTheme.Spacing.xxs)
+    }
+
+    private var aiBadge: some View {
+        Text("AI")
+            .font(.system(size: AppTheme.FontSize.xxs, weight: .bold))
+            .tracking(AppTheme.Tracking.wide)
+            .foregroundStyle(AppTheme.aiGradient)
+            .padding(.horizontal, AppTheme.Spacing.sm)
+            .padding(.vertical, AppTheme.Spacing.xxs)
+            .overlay(
+                RoundedRectangle(cornerRadius: AppTheme.Radius.sm)
+                    .strokeBorder(AppTheme.Text.primaryColor.opacity(AppTheme.Opacity.muted), lineWidth: AppTheme.BorderWidth.hairline)
+            )
     }
 
     private func promptSection(prompt: String) -> some View {

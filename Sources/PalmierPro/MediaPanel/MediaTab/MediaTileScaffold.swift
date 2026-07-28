@@ -31,7 +31,7 @@ struct MediaTileScaffold<Artwork: View, MenuItems: View>: View {
                 .padding(.vertical, AppTheme.Spacing.xxs)
                 .background(
                     RoundedRectangle(cornerRadius: AppTheme.Radius.sm)
-                        .fill(isRenaming ? AppTheme.Interaction.fill(AppTheme.Opacity.faint) : .clear)
+                        .fill(isRenaming ? AppTheme.Text.primaryColor.opacity(AppTheme.Opacity.faint) : .clear)
                 )
         }
         .frame(maxWidth: .infinity)
@@ -89,10 +89,13 @@ struct MediaTileScaffold<Artwork: View, MenuItems: View>: View {
 
 extension View {
     func tileBadge() -> some View {
-        foregroundStyle(AppTheme.MediaOverlay.primaryColor)
+        // 角标压在【任意亮度的媒体缩略图】上。原先靠 .ultraThinMaterial 当底，
+        // 解除 darkAqua 后它变成亮玻璃，白字当场不可读。
+        // 改成固定的深色遮罩 + 浅色字 —— 这样与主题、与素材亮度都无关。
+        foregroundStyle(AppTheme.Text.onDarkColor)
             .padding(.horizontal, AppTheme.Spacing.sm)
             .padding(.vertical, AppTheme.Spacing.xxs)
-            .background(AppTheme.MediaOverlay.backgroundColor.opacity(AppTheme.Opacity.strong), in: .capsule)
+            .background(Color.black.opacity(AppTheme.Opacity.strong), in: .capsule)
             .padding(AppTheme.Spacing.xs)
     }
 }

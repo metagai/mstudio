@@ -120,12 +120,12 @@ struct MyProjectsSection: View {
         .padding(.vertical, AppTheme.Spacing.xs)
         .background(
             Capsule(style: .continuous)
-                .fill(AppTheme.Interaction.fill(AppTheme.Opacity.subtle))
+                .fill(AppTheme.Text.primaryColor.opacity(AppTheme.Opacity.subtle))
         )
         .overlay(
             Capsule(style: .continuous)
                 .strokeBorder(
-                    AppTheme.Interaction.fill(AppTheme.Opacity.faint),
+                    AppTheme.Text.primaryColor.opacity(AppTheme.Opacity.faint),
                     lineWidth: AppTheme.BorderWidth.thin
                 )
         )
@@ -258,7 +258,8 @@ private struct NewProjectCard: View {
                 .clipped()
 
             LinearGradient(
-                colors: [.clear, AppTheme.MediaOverlay.backgroundColor.opacity(AppTheme.Opacity.high)],
+                // 渐隐到纸色而不是黑色：配合墨字，有图没图都读得出。
+                colors: [.clear, AppTheme.Background.raisedColor],
                 startPoint: .top,
                 endPoint: .bottom
             )
@@ -267,7 +268,7 @@ private struct NewProjectCard: View {
 
             Text(L10n.string("Untitled"))
                 .font(.system(size: AppTheme.FontSize.smMd, weight: .regular))
-                .foregroundStyle(AppTheme.MediaOverlay.primaryColor)
+                .foregroundStyle(AppTheme.Text.primaryColor)
                 .lineLimit(1)
                 .padding(.horizontal, AppTheme.Spacing.md)
                 .padding(.bottom, AppTheme.Spacing.smMd)
@@ -278,7 +279,7 @@ private struct NewProjectCard: View {
         .overlay(
             RoundedRectangle(cornerRadius: AppTheme.Radius.mdLg, style: .continuous)
                 .strokeBorder(
-                    AppTheme.Interaction.fill(isHovered ? AppTheme.Opacity.muted : AppTheme.Opacity.hint),
+                    AppTheme.Text.primaryColor.opacity(isHovered ? AppTheme.Opacity.muted : AppTheme.Opacity.hint),
                     lineWidth: AppTheme.BorderWidth.hairline
                 )
         )

@@ -247,7 +247,7 @@ struct TextStyleControls<AfterAlignment: View, AfterColor: View>: View {
             }
             .pickerStyle(.segmented)
             .labelsHidden()
-            .tint(AppTheme.Accent.primary.opacity(AppTheme.Opacity.strong))
+            .tint(AppTheme.Text.primaryColor.opacity(AppTheme.Opacity.strong))
             .fixedSize()
         }
     }

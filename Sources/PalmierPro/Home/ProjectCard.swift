@@ -45,11 +45,14 @@ struct ProjectCard: View {
                 }
                 .clipped()
 
-            // Bottom gradient + label overlay
+            // 标题底衬。深色时代是「黑色渐变 + 白字」——那在有缩略图时成立，
+            // 但空项目的占位板是白的，黑渐变会在纸上糊出一道灰。
+            // 纸感下改成渐隐到纸色 + 墨字：有图没图都读得出。
             LinearGradient(
                 stops: [
                     .init(color: .clear, location: 0),
-                    .init(color: AppTheme.MediaOverlay.backgroundColor.opacity(AppTheme.Opacity.high), location: 1),
+                    .init(color: AppTheme.Background.raisedColor, location: 0.55),
+                    .init(color: AppTheme.Background.raisedColor, location: 1),
                 ],
                 startPoint: .top,
                 endPoint: .bottom
@@ -60,14 +63,12 @@ struct ProjectCard: View {
             VStack(alignment: .leading, spacing: AppTheme.Spacing.xxs) {
                 Text(entry.name)
                     .font(.system(size: AppTheme.FontSize.smMd, weight: .regular))
-                    .foregroundStyle(entry.isAccessible
-                        ? AppTheme.MediaOverlay.primaryColor
-                        : AppTheme.MediaOverlay.mutedColor)
+                    .foregroundStyle(entry.isAccessible ? AppTheme.Text.primaryColor : AppTheme.Text.mutedColor)
                     .lineLimit(1)
 
                 Text(Self.relativeString(for: entry.createdDate))
                     .font(.system(size: AppTheme.FontSize.xs))
-                    .foregroundStyle(AppTheme.MediaOverlay.primaryColor.opacity(AppTheme.Opacity.medium))
+                    .foregroundStyle(AppTheme.Text.secondaryColor)
             }
             .padding(.horizontal, AppTheme.Spacing.md)
             .padding(.bottom, AppTheme.Spacing.smMd)
@@ -109,7 +110,7 @@ struct ProjectCard: View {
                 .strokeBorder(
                     isSelected
                         ? AppTheme.Accent.primary
-                        : AppTheme.Interaction.fill(isHovered ? AppTheme.Opacity.muted : AppTheme.Opacity.hint),
+                        : AppTheme.Text.primaryColor.opacity(isHovered ? AppTheme.Opacity.muted : AppTheme.Opacity.hint),
                     lineWidth: isSelected ? AppTheme.BorderWidth.thick : AppTheme.BorderWidth.hairline
                 )
         )

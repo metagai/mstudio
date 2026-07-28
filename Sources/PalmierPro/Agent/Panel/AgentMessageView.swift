@@ -55,7 +55,7 @@ struct AgentMessageView: View {
                     .padding(.vertical, AppTheme.Spacing.smMd)
                     .background(
                         RoundedRectangle(cornerRadius: AppTheme.Radius.lg, style: .continuous)
-                            .fill(AppTheme.Interaction.fill(AppTheme.Opacity.faint))
+                            .fill(AppTheme.Text.primaryColor.opacity(AppTheme.Opacity.faint))
                     )
                     .textSelection(.enabled)
             }
@@ -235,7 +235,7 @@ private struct ToolRunRow: View {
                 .padding(AppTheme.Spacing.md)
                 .background(
                     RoundedRectangle(cornerRadius: AppTheme.Radius.md, style: .continuous)
-                        .fill(AppTheme.Interaction.fill(AppTheme.Opacity.subtle))
+                        .fill(AppTheme.Text.primaryColor.opacity(AppTheme.Opacity.subtle))
                 )
                 .textSelection(.enabled)
                 .transition(.opacity.combined(with: .move(edge: .top)))

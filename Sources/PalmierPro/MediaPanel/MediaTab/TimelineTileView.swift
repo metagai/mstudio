@@ -26,7 +26,7 @@ struct TimelineTileView: View {
             onCancelRename: onCancelRename
         ) {
             RoundedRectangle(cornerRadius: AppTheme.Radius.sm)
-                .fill(AppTheme.Interaction.fill(AppTheme.Opacity.subtle))
+                .fill(AppTheme.Text.primaryColor.opacity( AppTheme.Opacity.subtle))
             if let posterImage {
                 GeometryReader { geo in
                     Image(nsImage: posterImage)
@@ -64,9 +64,7 @@ struct TimelineTileView: View {
                 Image(systemName: "film.stack")
                     .font(.system(size: AppTheme.FontSize.xxs, weight: AppTheme.FontWeight.semibold))
                     .tileBadge()
-                    .foregroundStyle(isActive
-                        ? AppTheme.MediaOverlay.primaryColor
-                        : AppTheme.MediaOverlay.secondaryColor)
+                    .foregroundStyle(isActive ? DesignTokens.accentColor : AppTheme.Text.onDarkColor)
                 Spacer()
             }
             Spacer()

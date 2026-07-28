@@ -569,6 +569,40 @@ struct MediaTab: View {
             .fixedSize()
     }
 
+    private var searchField: some View {
+        HStack(spacing: AppTheme.Spacing.xs) {
+            Image(systemName: "magnifyingglass")
+                .font(.system(size: AppTheme.FontSize.xs))
+                .foregroundStyle(AppTheme.Text.tertiaryColor)
+            TextField("Search", text: $searchQuery)
+                .textFieldStyle(.plain)
+                .font(.system(size: AppTheme.FontSize.xs))
+                .foregroundStyle(AppTheme.Text.primaryColor)
+            if !searchQuery.isEmpty {
+                Button { searchQuery = "" } label: {
+                    Image(systemName: "xmark.circle.fill")
+                        .font(.system(size: AppTheme.FontSize.xs))
+                        .foregroundStyle(AppTheme.Text.mutedColor)
+                }
+                .buttonStyle(.plain)
+                .focusable(false)
+                .help("Clear search")
+            }
+        }
+        .padding(.leading, AppTheme.Spacing.smMd)
+        .padding(.trailing, AppTheme.Spacing.xs)
+        .padding(.vertical, AppTheme.Spacing.xs)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .background(
+            Capsule(style: .continuous)
+                .fill(AppTheme.Text.primaryColor.opacity(AppTheme.Opacity.subtle))
+        )
+        .overlay(
+            Capsule(style: .continuous)
+                .strokeBorder(AppTheme.Text.primaryColor.opacity(AppTheme.Opacity.faint), lineWidth: AppTheme.BorderWidth.thin)
+        )
+    }
+
     private func toolbarButton(
         title: String,
         prominent: Bool = false,
@@ -738,8 +772,8 @@ struct MediaTab: View {
     var marqueeOverlay: some View {
         if let rect = marqueeSelection.rect {
             Rectangle()
-                .stroke(AppTheme.Interaction.fill(AppTheme.Opacity.strong), style: StrokeStyle(lineWidth: AppTheme.BorderWidth.thin, dash: [3, 3]))
-                .background(Rectangle().fill(AppTheme.Interaction.fill(AppTheme.Opacity.soft)))
+                .stroke(AppTheme.Text.primaryColor.opacity(AppTheme.Opacity.strong), style: StrokeStyle(lineWidth: AppTheme.BorderWidth.thin, dash: [3, 3]))
+                .background(Rectangle().fill(AppTheme.Text.primaryColor.opacity(AppTheme.Opacity.soft)))
                 .frame(width: rect.width, height: rect.height)
                 .position(x: rect.midX, y: rect.midY)
                 .allowsHitTesting(false)

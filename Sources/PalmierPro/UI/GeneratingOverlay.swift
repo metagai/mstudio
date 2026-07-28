@@ -46,10 +46,11 @@ struct GeneratingOverlay: View {
     private var progressBar: some View {
         GeometryReader { geo in
             ZStack(alignment: .leading) {
+                // 这个浮层压在深色媒体缩略图上，所以仍然用浅色（不随主题反相）。
                 Capsule()
-                    .fill(AppTheme.MediaOverlay.primaryColor.opacity(AppTheme.Opacity.muted))
+                    .fill(AppTheme.Text.onDarkColor.opacity(AppTheme.Opacity.muted))
                 Capsule()
-                    .fill(AppTheme.MediaOverlay.primaryColor.opacity(AppTheme.Opacity.strong))
+                    .fill(AppTheme.Text.onDarkColor.opacity(AppTheme.Opacity.strong))
                     .frame(width: geo.size.width * progress)
             }
         }

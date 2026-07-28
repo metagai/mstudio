@@ -179,7 +179,17 @@ struct GenerationView: View {
         }
         .frame(maxWidth: .infinity)
         .frame(height: AppTheme.GenerationPanel.loadingHeight)
-        .background { panelChrome }
+        .glassEffect(.regular, in: .rect(cornerRadius: AppTheme.Radius.xl))
+        .overlay {
+            RoundedRectangle(cornerRadius: AppTheme.Radius.xl, style: .continuous)
+                .strokeBorder(
+                    AppTheme.Text.primaryColor.opacity(AppTheme.Opacity.hint),
+                    lineWidth: AppTheme.BorderWidth.hairline
+                )
+                .allowsHitTesting(false)
+        }
+        .padding(.horizontal, AppTheme.Spacing.sm)
+        .padding(.bottom, AppTheme.Spacing.sm)
     }
 
     private var bodyContent: some View {
@@ -258,8 +268,25 @@ struct GenerationView: View {
         }
         .padding(.top, AppTheme.Spacing.md)
         .onGeometryChange(for: CGFloat.self) { $0.size.height } action: { measuredPanelHeight = $0 }
-        .background { panelChrome }
-        .overlay(alignment: .top) { resizeHandle }
+        .background {
+            Color.clear
+                .glassEffect(.regular, in: .rect(cornerRadius: AppTheme.Radius.xl))
+                .allowsHitTesting(false)
+        }
+        .overlay {
+            RoundedRectangle(cornerRadius: AppTheme.Radius.xl, style: .continuous)
+                .strokeBorder(
+                    isPromptFocused
+                        ? AppTheme.Accent.primary.opacity(AppTheme.Opacity.medium)
+                        : AppTheme.Text.primaryColor.opacity(AppTheme.Opacity.hint),
+                    lineWidth: isPromptFocused ? AppTheme.BorderWidth.thin : AppTheme.BorderWidth.hairline
+                )
+                .allowsHitTesting(false)
+        }
+        .animation(.easeOut(duration: 0.15), value: isPromptFocused)
+        .padding(.horizontal, AppTheme.Spacing.sm)
+        .padding(.bottom, AppTheme.Spacing.sm)
+        .frame(maxHeight: max(0, CGFloat(maxPanelHeight)), alignment: .top)
         .onAppear {
             let hadSeed = editor.pendingPanelSeed != nil
             consumePendingPanelSeed()
@@ -354,9 +381,10 @@ struct GenerationView: View {
     // MARK: - Resize handle
 
     private var resizeHandle: some View {
-        Color.clear
-            .frame(maxWidth: .infinity)
-            .frame(height: AppTheme.Spacing.md)
+        Capsule()
+            .fill(AppTheme.Text.primaryColor.opacity(AppTheme.Opacity.soft))
+            .frame(width: 24, height: 2)
+            .frame(maxWidth: .infinity, minHeight: AppTheme.Spacing.md)
             .contentShape(Rectangle())
             .pointerStyle(.rowResize)
             .offset(y: -AppTheme.Spacing.md / 2)
@@ -413,7 +441,7 @@ struct GenerationView: View {
     // MARK: - Secondary fields (lyrics / style instructions)
 
     private var inputDivider: some View {
-        Rectangle().fill(AppTheme.Interaction.fill(AppTheme.Opacity.hint)).frame(height: AppTheme.BorderWidth.hairline)
+        Rectangle().fill(AppTheme.Text.primaryColor.opacity(AppTheme.Opacity.hint)).frame(height: AppTheme.BorderWidth.hairline)
     }
 
     private func secondaryField(

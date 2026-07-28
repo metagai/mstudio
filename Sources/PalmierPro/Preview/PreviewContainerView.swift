@@ -17,14 +17,70 @@ struct PreviewContainerView: View {
                 .padding(.horizontal, AppTheme.Spacing.sm)
                 .panelHeaderBar()
 
-            if isSubtitle {
-                SubtitlePreviewView(url: activeMediaAsset?.url)
-            } else {
-                canvas
+            GeometryReader { geo in
+                let aspect = generatingAspect ?? CGFloat(editor.timeline.width) / CGFloat(editor.timeline.height)
+                let fitSize = fitSize(in: geo.size, aspect: aspect)
+                let scaledWidth = fitSize.width * editor.canvasZoom
+                let scaledHeight = fitSize.height * editor.canvasZoom
+                let timelineState = timelineFrameState
+                ZStack {
+                    PreviewView()
+                    if isImage {
+                        imagePreview
+                    }
+                    if let error = activeFailedError {
+                        failedPreview(error: error)
+                    }
+                    if let asset = activeMediaAsset, asset.isGenerating {
+                        generatingPreview(label: asset.generatingLabel)
+                    } else if case .generating(let label) = timelineState {
+                        generatingPreview(label: label)
+                    }
+                    if let overlay = offlineOverlay(timelineState: timelineState) {
+                        offlinePreview(assetId: overlay.assetId, path: overlay.path, isUnprocessable: overlay.isUnprocessable)
+                    }
+                    if editor.chromaKeySamplingClipId != nil {
+                        ChromaKeySamplerOverlayView()
+                    } else if editor.regionRemovalClipId != nil {
+                        RegionRemoveOverlayView()
+                    } else if editor.cropEditingActive {
+                        CropOverlayView()
+                    } else {
+                        TransformOverlayView()
+                    }
+                    if let slip = editor.slipPreview, isTimeline {
+                        SlipTwoUpView(state: slip)
+                    }
+                }
+                .frame(width: scaledWidth, height: scaledHeight)
+                .simultaneousGesture(
+                    SpatialTapGesture()
+                        .onEnded { value in
+                            guard isTimeline,
+                                  !editor.cropEditingActive,
+                                  editor.chromaKeySamplingClipId == nil,
+                                  editor.regionRemovalClipId == nil,
+                                  let id = PreviewHitTester.clipID(
+                                    at: value.location,
+                                    viewSize: CGSize(width: scaledWidth, height: scaledHeight),
+                                    editor: editor
+                                  ) else { return }
+                            editor.selectPreviewClip(id)
+                        }
+                )
+                .overlay(
+                    Rectangle()
+                        .stroke(AppTheme.Text.onDarkColor.opacity(editor.canvasZoom < 1.0 ? AppTheme.Opacity.moderate : 0), lineWidth: AppTheme.BorderWidth.thin)
+                )
+                .position(x: geo.size.width / 2, y: geo.size.height / 2)
+                .offset(x: editor.canvasOffset.width, y: editor.canvasOffset.height)
             }
-            if isImage {
-                imageSettingsBar
-            } else if !isSubtitle {
+            .clipped()
+            // 画面周围的舞台压成中性中灰：纯白包围会让视频显得发灰发暗（同时对比），
+            // 用户会据此做出错误的曝光判断。中性（R=G=B）是必须的 ——
+            // 带彩的包围会偏移对画面色彩的判断。
+            .background(AppTheme.Background.stageColor)
+            if !isImage {
                 scrubBar
                 transportBar
             }
@@ -683,11 +739,8 @@ struct PreviewContainerView: View {
                         .padding(.vertical, AppTheme.Spacing.sm)
                     }
                     .buttonStyle(.plain)
-                    .background(AppTheme.MediaOverlay.primaryColor.opacity(AppTheme.Opacity.soft), in: .capsule)
-                    .overlay(Capsule().strokeBorder(
-                        AppTheme.MediaOverlay.primaryColor.opacity(AppTheme.Opacity.muted),
-                        lineWidth: AppTheme.BorderWidth.hairline
-                    ))
+                    .background(AppTheme.Text.onDarkColor.opacity(AppTheme.Opacity.soft), in: .capsule)
+                    .overlay(Capsule().strokeBorder(AppTheme.Text.onDarkColor.opacity(AppTheme.Opacity.muted), lineWidth: AppTheme.BorderWidth.hairline))
                 }
             }
             .padding(AppTheme.Spacing.xl)
@@ -794,7 +847,7 @@ struct PreviewContainerView: View {
             let barHeight: CGFloat = active ? 4 : 3
             ZStack(alignment: .leading) {
                 Capsule()
-                    .fill(AppTheme.Interaction.fill(AppTheme.Opacity.soft))
+                    .fill(AppTheme.Text.primaryColor.opacity(AppTheme.Opacity.muted))
                     .frame(height: barHeight)
                 PreviewScrubProgress(
                     isTimeline: isTimeline,

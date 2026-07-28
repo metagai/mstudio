@@ -28,7 +28,7 @@
 	<key>CFBundleIconFile</key>
 	<string>AppIcon</string>
 	<key>CFBundleIdentifier</key>
-	<string>ai.metag</string>
+	<string>ai.metag.mac</string>
 	<key>CFBundleLocalizations</key>
 	<array>
 		<string>en</string>
@@ -44,12 +44,12 @@
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>
-	<string>0.6.14</string>
+	<string>0.1.8</string>
 	<key>CFBundleURLTypes</key>
 	<array>
 		<dict>
 			<key>CFBundleURLName</key>
-			<string>ai.metag</string>
+			<string>ai.metag.mac</string>
 			<key>CFBundleURLSchemes</key>
 			<array>
 				<string>palmier</string>
@@ -57,7 +57,7 @@
 		</dict>
 	</array>
 	<key>CFBundleVersion</key>
-	<string>75</string>
+	<string>85</string>
 	<key>LSMinimumSystemVersion</key>
 	<string>26.0</string>
 	<key>NSHighResolutionCapable</key>
@@ -65,7 +65,9 @@
 	<key>SUEnableAutomaticChecks</key>
 	<true/>
 	<key>SUFeedURL</key>
-	<string>https://raw.githubusercontent.com/metag-ai/metag-mac/main/appcast.xml</string>
+	<string>https://metag.ai/mac/appcast.xml</string>
+	<key>SUPublicEDKey</key>
+	<string>IDFXRRtUvZoWuQmOgnRHMw0IHNWM6Q74xcSqtaCnC6k=</string>
 	<key>UTExportedTypeDeclarations</key>
 	<array>
 		<dict>

@@ -333,6 +333,18 @@ final class TimelineView: NSView, NSPopoverDelegate {
             }
         }
 
+        if case .marquee(let marq) = inputController.dragState,
+           marq.current.width > 0 || marq.current.height > 0 {
+            // 拖拽 ghost 画在浅色时间轴底上：白色等于隐形，用品牌绿。
+            ctx.setStrokeColor(DesignTokens.accent.withAlphaComponent(0.75).cgColor)
+            ctx.setFillColor(DesignTokens.accent.withAlphaComponent(0.12).cgColor)
+            ctx.setLineWidth(1)
+            ctx.setLineDash(phase: 0, lengths: [3, 3])
+            ctx.addRect(marq.current)
+            ctx.drawPath(using: .fillStroke)
+            ctx.setLineDash(phase: 0, lengths: [])
+        }
+
         let activeDropTarget: TrackDropTarget? = {
             if case .moveClip(let drag) = inputController.dragState {
                 if case .newTrackAt = drag.dropTarget { return drag.dropTarget }
@@ -865,16 +877,16 @@ final class TimelineView: NSView, NSPopoverDelegate {
             transform: nil
         )
         ctx.addPath(sourcePath)
-        ctx.setStrokeColor(AppTheme.Text.primary.withAlphaComponent(AppTheme.Opacity.prominent).cgColor)
+        ctx.setStrokeColor(DesignTokens.accent.withAlphaComponent(AppTheme.Opacity.prominent).cgColor)
         ctx.setLineWidth(AppTheme.BorderWidth.medium)
         ctx.strokePath()
 
-        ctx.setStrokeColor(AppTheme.Text.primary.cgColor)
+        ctx.setStrokeColor(DesignTokens.accent.cgColor)
         ctx.setLineWidth(AppTheme.BorderWidth.thick)
         ctx.stroke(activeRect.insetBy(dx: AppTheme.BorderWidth.hairline, dy: AppTheme.BorderWidth.hairline))
 
         guard isSelected else { return }
-        ctx.setFillColor(AppTheme.Text.primary.cgColor)
+        ctx.setFillColor(DesignTokens.accent.cgColor)
         let handleWidth = AppTheme.BorderWidth.thick
         let handleHeight = min(activeRect.height, AppTheme.IconSize.md)
         let y = activeRect.minY
@@ -895,7 +907,7 @@ final class TimelineView: NSView, NSPopoverDelegate {
             width: maxX - minX,
             height: max(0, Double(bounds.height - geo.rulerHeight))
         )
-        ctx.setFillColor(AppTheme.Text.primary.withAlphaComponent(AppTheme.Opacity.hint).cgColor)
+        ctx.setFillColor(DesignTokens.accent.withAlphaComponent(AppTheme.Opacity.muted).cgColor)
         ctx.fill(rect)
     }
 
@@ -914,7 +926,7 @@ final class TimelineView: NSView, NSPopoverDelegate {
             height: Double(geo.rulerHeight)
         )
 
-        ctx.setFillColor(AppTheme.Text.primary.withAlphaComponent(AppTheme.Opacity.soft).cgColor)
+        ctx.setFillColor(DesignTokens.accent.withAlphaComponent(AppTheme.Opacity.moderate).cgColor)
         ctx.fill(rulerRect)
     }
 
@@ -945,8 +957,9 @@ final class TimelineView: NSView, NSPopoverDelegate {
         let maxX = geo.xForFrame(gap.range.end)
         let rect = NSRect(x: minX, y: y + 2, width: maxX - minX, height: height - 4)
 
-        ctx.setFillColor(AppTheme.Text.primary.withAlphaComponent(0.12).cgColor)
-        ctx.setStrokeColor(AppTheme.Text.primary.withAlphaComponent(0.9).cgColor)
+        // 间隙选中画在浅色时间轴底上：白色等于隐形。
+        ctx.setFillColor(DesignTokens.accent.withAlphaComponent(0.14).cgColor)
+        ctx.setStrokeColor(DesignTokens.accent.cgColor)
         ctx.setLineWidth(1)
         ctx.setLineDash(phase: 0, lengths: [3, 3])
         ctx.addRect(rect.insetBy(dx: 0.5, dy: 0.5))

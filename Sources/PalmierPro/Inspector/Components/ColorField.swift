@@ -17,7 +17,7 @@ struct ColorField: View {
                 .frame(width: swatchSize.width, height: swatchSize.height)
                 .overlay(
                     RoundedRectangle(cornerRadius: AppTheme.Radius.xs)
-                        .stroke(AppTheme.Border.dividerColor, lineWidth: AppTheme.BorderWidth.thin)
+                        .stroke(AppTheme.Text.primaryColor.opacity(AppTheme.Opacity.medium), lineWidth: AppTheme.BorderWidth.thin)
                 )
         }
         .buttonStyle(.plain)
