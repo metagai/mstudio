@@ -71,7 +71,7 @@ let package = Package(
             ],
             resources: [
                 .copy("Resources/Fonts"),
-                .copy("Resources/MCPB/palmier-pro.mcpb"),
+                .copy("Resources/MCPB/metag.mcpb"),
                 .copy("Resources/Images"),
                 .copy("Resources/Changelog"),
                 .copy("Resources/Localization"),

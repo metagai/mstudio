@@ -31,10 +31,17 @@ fi
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 PLIST="$ROOT/Sources/PalmierPro/Resources/Info.plist"
 APPCAST="$ROOT/appcast.xml"
-DMG="$ROOT/.build/PalmierPro.dmg"
+DMG="$ROOT/.build/METAG.dmg"
 cd "$ROOT"
 
 echo "==> Preflight"
+
+if ! git remote get-url origin >/dev/null 2>&1; then
+  echo "error: no 'origin' remote. Create the release repo and add it:" >&2
+  echo "  git remote add origin git@github.com:metag-ai/metag-mac.git" >&2
+  echo "  (must match SUFeedURL in Sources/PalmierPro/Resources/Info.plist)" >&2
+  exit 1
+fi
 
 BRANCH="$(git rev-parse --abbrev-ref HEAD)"
 if [ "$BRANCH" != "main" ]; then
@@ -65,7 +72,7 @@ if [ "$(git rev-parse HEAD)" != "$(git rev-parse origin/main)" ]; then
 fi
 
 echo "==> Generating release notes from commit log"
-NOTES_CLEAN="$(mktemp -t palmier-release.XXXXXX).md"
+NOTES_CLEAN="$(mktemp -t metag-release.XXXXXX).md"
 trap 'rm -f "$NOTES_CLEAN"' EXIT
 LAST_TAG="$(git describe --tags --abbrev=0 2>/dev/null || echo '')"
 {
@@ -98,7 +105,7 @@ fi
 echo "    $VERSION (build $NEW_BUILD)"
 
 echo "==> Building signed + notarized DMG"
-BUILD_LOG="$(mktemp -t palmier-build.XXXXXX).log"
+BUILD_LOG="$(mktemp -t metag-build.XXXXXX).log"
 trap 'rm -f "$NOTES_CLEAN" "$BUILD_LOG"' EXIT
 ./scripts/bundle.sh release --dist 2>&1 | tee "$BUILD_LOG"
 
@@ -136,7 +143,7 @@ b = os.environ["NEW_BUILD"]
 d = os.environ["PUBDATE"]
 l = os.environ["LENGTH"]
 s = os.environ["SIGNATURE"]
-url = f"https://github.com/palmier-io/palmier-pro/releases/download/v{v}/PalmierPro.dmg"
+url = f"https://github.com/metag-ai/metag-mac/releases/download/v{v}/METAG.dmg"
 
 item = f"""        <item>
             <title>Version {v}</title>
@@ -165,4 +172,4 @@ git push origin main
 
 echo ""
 echo "==> Released $TAG"
-echo "    https://github.com/palmier-io/palmier-pro/releases/tag/$TAG"
+echo "    https://github.com/metag-ai/metag-mac/releases/tag/$TAG"

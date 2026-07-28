@@ -127,7 +127,7 @@ struct ToolExecutorImportMediaTests {
         defer { try? FileManager.default.removeItem(at: root) }
 
         let h = ToolHarness()
-        h.editor.projectURL = root.appendingPathComponent("Import.palmier", isDirectory: true)
+        h.editor.projectURL = root.appendingPathComponent("Import.metag", isDirectory: true)
         let bytes = Data("fake-png".utf8).base64EncodedString()
 
         let result = await h.runRaw("import_media", args: [
@@ -149,7 +149,7 @@ struct ToolExecutorImportMediaTests {
         defer { try? FileManager.default.removeItem(at: root) }
 
         let h = ToolHarness()
-        let package = root.appendingPathComponent("Import.palmier", isDirectory: true)
+        let package = root.appendingPathComponent("Import.metag", isDirectory: true)
         h.editor.projectURL = package
         let bytes = Data("not-lottie".utf8).base64EncodedString()
 
@@ -171,7 +171,7 @@ struct ToolExecutorImportMediaTests {
         try writeTestPNG(to: source)
 
         let h = ToolHarness()
-        h.editor.projectURL = root.appendingPathComponent("Import.palmier", isDirectory: true)
+        h.editor.projectURL = root.appendingPathComponent("Import.metag", isDirectory: true)
         var checkpointCount = 0
         h.editor.onProjectCheckpointRequired = { checkpointCount += 1 }
 
@@ -207,7 +207,7 @@ struct ToolExecutorImportMediaTests {
         try Data("fake-png".utf8).write(to: source)
 
         let h = ToolHarness()
-        h.editor.projectURL = root.appendingPathComponent("Import.palmier", isDirectory: true)
+        h.editor.projectURL = root.appendingPathComponent("Import.metag", isDirectory: true)
 
         let result = await h.runRaw("import_media", args: [
             "source": ["path": source.path],

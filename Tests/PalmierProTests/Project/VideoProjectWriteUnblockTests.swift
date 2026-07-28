@@ -15,7 +15,7 @@ struct VideoProjectWriteUnblockTests {
 
     private func temporaryBundleURL() -> URL {
         FileManager.default.temporaryDirectory
-            .appendingPathComponent("vp-unblock-\(UUID().uuidString).palmier", isDirectory: true)
+            .appendingPathComponent("vp-unblock-\(UUID().uuidString).metag", isDirectory: true)
     }
 
     @Test func offMainWriteWithoutSnapshotThrowsButStillUnblocks() async {

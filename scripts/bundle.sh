@@ -33,18 +33,47 @@ if [ -f "$ROOT/$ENV_FILE" ]; then
   set +a
 fi
 
-SIGNING_IDENTITY="${SIGNING_IDENTITY:-Developer ID Application: Palmier, Inc. (MMFLRC7562)}"
-NOTARY_PROFILE="${NOTARY_PROFILE:-palmier-notary}"
+APPLE_TEAM_ID="${APPLE_TEAM_ID:-V969594VAF}"
+BUNDLE_ID="ai.metag"
+# No default identity: a wrong one silently produces an app nobody else can launch.
+SIGNING_IDENTITY="${SIGNING_IDENTITY:-}"
+NOTARY_PROFILE="${NOTARY_PROFILE:-metag-notary}"
 SENTRY_DSN="${SENTRY_DSN:-}"
 POSTHOG_PROJECT_TOKEN="${POSTHOG_PROJECT_TOKEN:-}"
 POSTHOG_HOST="${POSTHOG_HOST:-https://us.i.posthog.com}"
-PROVISION_PROFILE="${PROVISION_PROFILE:-$ROOT/scripts/Palmier_Pro_Developer_ID.provisionprofile}"
-ENTITLEMENTS="$ROOT/scripts/PalmierPro.entitlements"
-KEYCHAIN_ACCESS_GROUP="${KEYCHAIN_ACCESS_GROUP:-MMFLRC7562.ai.metag}"
+PROVISION_PROFILE="${PROVISION_PROFILE:-$ROOT/scripts/METAG_Developer_ID.provisionprofile}"
+ENTITLEMENTS="$ROOT/scripts/METAG.entitlements"
+KEYCHAIN_ACCESS_GROUP="${KEYCHAIN_ACCESS_GROUP:-$APPLE_TEAM_ID.$BUNDLE_ID}"
 RESOURCES="$ROOT/Sources/PalmierPro/Resources"
-APP="$ROOT/.build/PalmierPro.app"
-ZIP="$ROOT/.build/PalmierPro.zip"
-DMG="$ROOT/.build/PalmierPro.dmg"
+APP="$ROOT/.build/METAG.app"
+ZIP="$ROOT/.build/METAG.zip"
+DMG="$ROOT/.build/METAG.dmg"
+
+# Signing preflight up front: fail before a 90-second build, not after.
+if [ "$MODE" = "sign" ] || [ "$MODE" = "dist" ]; then
+  if [ -z "$SIGNING_IDENTITY" ]; then
+    echo "!! SIGNING_IDENTITY is not set." >&2
+    echo "   Set it in $ENV_FILE, e.g." >&2
+    echo "     SIGNING_IDENTITY=\"Developer ID Application: <Your Org> ($APPLE_TEAM_ID)\"" >&2
+    echo "   List installed identities with: security find-identity -v -p codesigning" >&2
+    exit 1
+  fi
+  if ! security find-identity -v -p codesigning | grep -qF "$SIGNING_IDENTITY"; then
+    echo "!! codesigning identity not found in any keychain: $SIGNING_IDENTITY" >&2
+    exit 1
+  fi
+fi
+
+# Entitlements drift breaks signing in ways that only show up on another Mac.
+if [ "$MODE" = "sign" ] || [ "$MODE" = "dist" ]; then
+  ENT_APP_ID="$(/usr/libexec/PlistBuddy -c "Print :com.apple.application-identifier" "$ENTITLEMENTS")"
+  PLIST_BUNDLE_ID="$(/usr/libexec/PlistBuddy -c "Print :CFBundleIdentifier" "$RESOURCES/Info.plist")"
+  if [ "$ENT_APP_ID" != "$APPLE_TEAM_ID.$PLIST_BUNDLE_ID" ]; then
+    echo "!! $ENTITLEMENTS declares application-identifier '$ENT_APP_ID'" >&2
+    echo "   but the team + bundle id are '$APPLE_TEAM_ID.$PLIST_BUNDLE_ID'" >&2
+    exit 1
+  fi
+fi
 
 echo "==> Building ($CONFIG)"
 TRAITS="BundledSpeech"
@@ -59,6 +88,8 @@ SPARKLE_FW="$ROOT/.build/artifacts/sparkle/Sparkle/Sparkle.xcframework/macos-arm
 echo "==> Assembling $APP"
 rm -rf "$APP"
 mkdir -p "$APP/Contents/MacOS" "$APP/Contents/Resources" "$APP/Contents/Frameworks"
+# The executable name stays PalmierPro: it is the SwiftPM product name and
+# CFBundleExecutable / NSDocumentClass in Info.plist depend on it.
 cp "$BIN" "$APP/Contents/MacOS/PalmierPro"
 cp "$RESOURCES/Info.plist" "$APP/Contents/Info.plist"
 
@@ -83,13 +114,15 @@ fi
 inject_plist() {
   local key="$1" value="$2"
   if [ -z "$value" ]; then
-    echo "!! $key not set in $ENV_FILE — app will fatalError on launch" >&2
+    echo "== $key not set in $ENV_FILE — the features reading it stay unavailable" >&2
     return
   fi
   /usr/libexec/PlistBuddy -c "Delete :$key" "$APP/Contents/Info.plist" 2>/dev/null || true
   /usr/libexec/PlistBuddy -c "Add :$key string $value" "$APP/Contents/Info.plist"
 }
 
+# Clerk/Convex only still drive the in-app Agent chat panel; generation and billing
+# moved to the METAG gateway. Unset here means that panel is unavailable, nothing else.
 echo "==> Injecting backend config into Info.plist"
 inject_plist PalmierClerkPublishableKey "${CLERK_PUBLISHABLE_KEY:-}"
 inject_plist PalmierConvexDeploymentURL "${CONVEX_DEPLOYMENT_URL:-}"
@@ -108,15 +141,15 @@ fi
 
 # Ensure the shipped Claude Desktop connector is always up to date with mcpb/ sources.
 MCPB_SRC="$ROOT/mcpb"
-MCPB_CHECKED_IN="$ROOT/Sources/PalmierPro/Resources/MCPB/palmier-pro.mcpb"
-MCPB_FRESH="$(mktemp -d)/palmier-pro.mcpb"
+MCPB_CHECKED_IN="$ROOT/Sources/PalmierPro/Resources/MCPB/metag.mcpb"
+MCPB_FRESH="$(mktemp -d)/metag.mcpb"
 (cd "$MCPB_SRC" && zip -q -X -r "$MCPB_FRESH" manifest.json icon.png server/index.js server/package.json)
 if ! unzip -p "$MCPB_CHECKED_IN" server/index.js 2>/dev/null | diff -q - <(unzip -p "$MCPB_FRESH" server/index.js) >/dev/null 2>&1 \
   || ! unzip -p "$MCPB_CHECKED_IN" manifest.json 2>/dev/null | diff -q - <(unzip -p "$MCPB_FRESH" manifest.json) >/dev/null 2>&1; then
-  echo "==> refreshing checked-in palmier-pro.mcpb from mcpb/ sources"
+  echo "==> refreshing checked-in metag.mcpb from mcpb/ sources"
   cp "$MCPB_FRESH" "$MCPB_CHECKED_IN"
 fi
-cp "$MCPB_FRESH" "$APP/Contents/Resources/palmier-pro.mcpb"
+cp "$MCPB_FRESH" "$APP/Contents/Resources/metag.mcpb"
 rm -rf "$(dirname "$MCPB_FRESH")"
 if [ -d "$RES_BUNDLE/Images" ]; then
   cp -R "$RES_BUNDLE/Images" "$APP/Contents/Resources/"
@@ -166,10 +199,13 @@ install_name_tool -add_rpath "@executable_path/../Frameworks" "$APP/Contents/Mac
 touch "$APP"
 
 if [ "$MODE" = "fast" ]; then
-  echo "==> Codesigning main app with $SIGNING_IDENTITY (no timestamp, no helpers)"
-  codesign --force --sign "$SIGNING_IDENTITY" "$APP"
+  # A stable identity keeps Keychain items and TCC grants across dev rebuilds;
+  # ad-hoc is the fallback so the dev loop works without a certificate.
+  FAST_IDENTITY="${SIGNING_IDENTITY:--}"
+  echo "==> Codesigning main app with ${FAST_IDENTITY} (no timestamp, no helpers)"
+  codesign --force --sign "$FAST_IDENTITY" "$APP"
   codesign --verify --deep --strict --verbose=2 "$APP"
-  echo "==> Done: $APP (fast mode — stable identity, no dSYM)"
+  echo "==> Done: $APP (fast mode — no dSYM)"
   exit 0
 fi
 
@@ -254,11 +290,11 @@ rm -f "$ZIP"
 echo "==> Building DMG"
 rm -f "$DMG"
 STAGING="$(mktemp -d)"
-cp -R "$APP" "$STAGING/PalmierPro.app"
+cp -R "$APP" "$STAGING/METAG.app"
 ln -s /Applications "$STAGING/Applications"
 cp "$RESOURCES/AppIcon.icns" "$STAGING/.VolumeIcon.icns"
 hdiutil create \
-  -volname "PalmierPro" \
+  -volname "METAG" \
   -srcfolder "$STAGING" \
   -ov -format UDZO \
   "$DMG"

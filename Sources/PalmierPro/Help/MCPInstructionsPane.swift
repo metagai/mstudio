@@ -7,18 +7,18 @@ struct MCPInstructionsPane: View {
     private var mcpEndpoint: String { "http://127.0.0.1:\(MCPService.port)/mcp" }
 
     private var claudeCodeCommand: String {
-        "claude mcp add --transport http palmier-pro \(mcpEndpoint)"
+        "claude mcp add --transport http metag-mac \(mcpEndpoint)"
     }
 
     private var codexCommand: String {
-        "codex mcp add palmier-pro --url \(mcpEndpoint)"
+        "codex mcp add metag-mac --url \(mcpEndpoint)"
     }
 
     private var cursorJSONConfig: String {
         """
         {
           "mcpServers": {
-            "palmier-pro": {
+            "metag-mac": {
               "type": "http",
               "url": "\(mcpEndpoint)"
             }
@@ -33,7 +33,7 @@ struct MCPInstructionsPane: View {
             let data = try? JSONSerialization.data(withJSONObject: config, options: [.sortedKeys]),
             let encoded = data.base64EncodedString().addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)
         else { return nil }
-        return URL(string: "cursor://anysphere.cursor-deeplink/mcp/install?name=palmier-pro&config=\(encoded)")
+        return URL(string: "cursor://anysphere.cursor-deeplink/mcp/install?name=metag-mac&config=\(encoded)")
     }
 
     var body: some View {
@@ -220,7 +220,7 @@ struct MCPInstructionsPane: View {
     }
 
     private var claudeDesktopBundleURL: URL? {
-        BundledResource.url("palmier-pro.mcpb")
+        BundledResource.url("metag.mcpb")
     }
 }
 

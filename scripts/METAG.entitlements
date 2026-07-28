@@ -4,11 +4,11 @@
 <dict>
 	<key>keychain-access-groups</key>
 	<array>
-		<string>MMFLRC7562.io.palmier.pro</string>
+		<string>V969594VAF.ai.metag</string>
 	</array>
 	<key>com.apple.application-identifier</key>
-	<string>MMFLRC7562.io.palmier.pro</string>
+	<string>V969594VAF.ai.metag</string>
 	<key>com.apple.developer.team-identifier</key>
-	<string>MMFLRC7562</string>
+	<string>V969594VAF</string>
 </dict>
 </plist>

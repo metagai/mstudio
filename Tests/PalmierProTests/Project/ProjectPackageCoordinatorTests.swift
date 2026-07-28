@@ -60,8 +60,8 @@ struct ProjectPackageCoordinatorTests {
     @Test func queuedMediaCommitUsesRebasedProjectURL() async throws {
         let root = FileManager.default.temporaryDirectory.appendingPathComponent("coordinator-\(UUID().uuidString)")
         defer { try? FileManager.default.removeItem(at: root) }
-        let oldURL = root.appendingPathComponent("Old.palmier", isDirectory: true)
-        let newURL = root.appendingPathComponent("New.palmier", isDirectory: true)
+        let oldURL = root.appendingPathComponent("Old.metag", isDirectory: true)
+        let newURL = root.appendingPathComponent("New.metag", isDirectory: true)
 
         let document = VideoProject()
         document.fileURL = oldURL
@@ -81,7 +81,7 @@ struct ProjectPackageCoordinatorTests {
 
     @Test func nativeCloseWaitsForAcceptedMutationAndRejectsLateWork() async throws {
         let package = FileManager.default.temporaryDirectory
-            .appendingPathComponent("native-close-\(UUID().uuidString).palmier", isDirectory: true)
+            .appendingPathComponent("native-close-\(UUID().uuidString).metag", isDirectory: true)
         defer { try? FileManager.default.removeItem(at: package) }
         let document = VideoProject()
         document.fileURL = package
@@ -106,7 +106,7 @@ struct ProjectPackageCoordinatorTests {
 
     @Test func admittedMediaWorkCommitsBeforeCloseSave() async throws {
         let package = FileManager.default.temporaryDirectory
-            .appendingPathComponent("admitted-work-\(UUID().uuidString).palmier", isDirectory: true)
+            .appendingPathComponent("admitted-work-\(UUID().uuidString).metag", isDirectory: true)
         defer { try? FileManager.default.removeItem(at: package) }
         let document = VideoProject()
         document.fileURL = package

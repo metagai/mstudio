@@ -9,7 +9,7 @@ struct ProjectDocumentIOTests {
 
     @Test func directWritePreservesExistingPackageMediaAndThumbnail() throws {
         let root = fm.temporaryDirectory.appendingPathComponent("pp-doc-io-\(UUID().uuidString)", isDirectory: true)
-        let package = root.appendingPathComponent("Project.palmier", isDirectory: true)
+        let package = root.appendingPathComponent("Project.metag", isDirectory: true)
         try makePackage(at: package)
         defer { try? fm.removeItem(at: root) }
 
@@ -23,8 +23,8 @@ struct ProjectDocumentIOTests {
 
     @Test func directWriteCopiesPackageMediaAndThumbnailToNewDestination() throws {
         let root = fm.temporaryDirectory.appendingPathComponent("pp-doc-io-\(UUID().uuidString)", isDirectory: true)
-        let source = root.appendingPathComponent("Source.palmier", isDirectory: true)
-        let destination = root.appendingPathComponent("Destination.palmier", isDirectory: true)
+        let source = root.appendingPathComponent("Source.metag", isDirectory: true)
+        let destination = root.appendingPathComponent("Destination.metag", isDirectory: true)
         try makePackage(at: source)
         defer { try? fm.removeItem(at: root) }
 
