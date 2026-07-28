@@ -15,7 +15,7 @@ struct ProjectRegistryTests {
     }
 
     private func makeProjectURL(_ name: String = "Test") -> URL {
-        URL(fileURLWithPath: "/tmp/\(name)-\(UUID().uuidString).palmier")
+        URL(fileURLWithPath: "/tmp/\(name)-\(UUID().uuidString).metag")
     }
 
     // MARK: - register
@@ -45,7 +45,7 @@ struct ProjectRegistryTests {
     @Test func registerTreatsPathsWithExtraSlashesAsTheSameProject() {
         // standardizedFileURL collapses redundant slashes, so /tmp/foo and /tmp//foo dedupe.
         let reg = makeRegistry()
-        let url1 = URL(fileURLWithPath: "/tmp/dedupe-\(UUID().uuidString).palmier")
+        let url1 = URL(fileURLWithPath: "/tmp/dedupe-\(UUID().uuidString).metag")
         let url2 = URL(string: "file://\(url1.path)")! // same path, different URL form
         reg.register(url1)
         reg.register(url2)
@@ -149,7 +149,7 @@ struct ProjectRegistryTests {
     @Test func projectEntryDerivesNameFromURL() {
         let entry = ProjectEntry(
             id: UUID(),
-            url: URL(fileURLWithPath: "/tmp/MyProject.palmier"),
+            url: URL(fileURLWithPath: "/tmp/MyProject.metag"),
             createdDate: Date(),
             lastOpenedDate: Date()
         )
@@ -158,14 +158,14 @@ struct ProjectRegistryTests {
 
     @Test func projectEntryIsAccessibleReflectsFileExistence() throws {
         let real = URL(fileURLWithPath: NSTemporaryDirectory())
-            .appendingPathComponent("entry-\(UUID().uuidString).palmier")
+            .appendingPathComponent("entry-\(UUID().uuidString).metag")
         FileManager.default.createFile(atPath: real.path, contents: Data())
         defer { try? FileManager.default.removeItem(at: real) }
 
         let present = ProjectEntry(id: UUID(), url: real, createdDate: Date(), lastOpenedDate: Date())
         let absent = ProjectEntry(
             id: UUID(),
-            url: URL(fileURLWithPath: "/tmp/does-not-exist-\(UUID().uuidString).palmier"),
+            url: URL(fileURLWithPath: "/tmp/does-not-exist-\(UUID().uuidString).metag"),
             createdDate: Date(),
             lastOpenedDate: Date()
         )

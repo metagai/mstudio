@@ -74,7 +74,7 @@ struct ExportQueueTests {
         #expect(queue.jobs(for: "project-a").isEmpty)
         #expect(queue.jobs(for: "project-b").map(\.id) == [second.jobID])
 
-        let url = temporaryURL("stable-project.palmier")
+        let url = temporaryURL("stable-project.metag")
         let firstEditor = EditorViewModel()
         let secondEditor = EditorViewModel()
         firstEditor.projectURL = url

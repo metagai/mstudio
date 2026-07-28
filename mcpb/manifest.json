@@ -1,19 +1,27 @@
 {
   "manifest_version": "0.4",
-  "name": "palmier-pro",
-  "display_name": "Palmier Pro",
+  "name": "metag-mac",
+  "display_name": "METAG for Mac",
   "version": "0.2.0",
-  "description": "Edit your videos with Palmier Pro from Claude Desktop.",
-  "long_description": "Connects Claude Desktop to the local MCP server inside Palmier Pro — an AI-native Mac video editor. Once installed, Claude can read your timeline, edit clips, generate media, and manage tracks.",
+  "description": "Edit the project open in METAG on this Mac, from Claude Desktop.",
+  "long_description": "Connects Claude Desktop to the MCP server running inside METAG on this Mac. Claude can read your timeline, edit clips, generate media, and manage tracks in the project you have open. This is the local editor connector; METAG's hosted generation API is a separate remote MCP server.",
   "icon": "icon.png",
   "author": {
-    "name": "Palmier",
-    "url": "https://palmier.io"
+    "name": "METAG",
+    "url": "https://metag.ai"
   },
-  "homepage": "https://palmier.io",
-  "keywords": ["video", "editor", "timeline", "creative", "media"],
+  "homepage": "https://metag.ai",
+  "keywords": [
+    "video",
+    "editor",
+    "timeline",
+    "creative",
+    "media"
+  ],
   "compatibility": {
-    "platforms": ["darwin"],
+    "platforms": [
+      "darwin"
+    ],
     "runtimes": {
       "node": ">=18.0.0"
     }
@@ -23,7 +31,9 @@
     "entry_point": "server/index.js",
     "mcp_config": {
       "command": "node",
-      "args": ["${__dirname}/server/index.js"]
+      "args": [
+        "${__dirname}/server/index.js"
+      ]
     }
   }
 }

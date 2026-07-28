@@ -250,7 +250,7 @@ struct CaptureFrameToolTests {
             .init(rgb: (20, 20, 240), seconds: 1),
         ], fps: 5, size: 64)
         let editor = EditorViewModel()
-        editor.projectURL = root.appendingPathComponent("Capture.palmier", isDirectory: true)
+        editor.projectURL = root.appendingPathComponent("Capture.metag", isDirectory: true)
         let source = MediaAsset(url: videoURL, type: .video, name: "Two colors", duration: 2)
         source.sourceWidth = 64
         source.sourceHeight = 64
