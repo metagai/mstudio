@@ -17,6 +17,8 @@ enum CaptionSpecBuilder {
         let textCase: EditorViewModel.CaptionCase
         let maxWords: Int?
         let animation: TextAnimation?
+
+        var canvas: CGSize { CGSize(width: canvasWidth, height: canvasHeight) }
     }
 
     @concurrent
@@ -35,12 +37,7 @@ enum CaptionSpecBuilder {
                 minDuration: AppTheme.Caption.minDisplayDuration,
                 fits: { text in
                     if Task.isCancelled { return true }
-                    return lineFits(
-                        text,
-                        style: input.style,
-                        canvasWidth: input.canvasWidth,
-                        canvasHeight: input.canvasHeight
-                    )
+                    return CaptionLayout.fits(text, style: input.style, canvas: input.canvas)
                 }
             )
             try Task.checkCancellation()
@@ -64,12 +61,8 @@ enum CaptionSpecBuilder {
                 animation: input.animation,
                 transformFor: { text in
                     guard !Task.isCancelled else { return nil }
-                    return transform(
-                        for: text,
-                        style: input.style,
-                        center: input.center,
-                        canvasWidth: input.canvasWidth,
-                        canvasHeight: input.canvasHeight
+                    return CaptionLayout.transform(
+                        for: text, style: input.style, center: input.center, canvas: input.canvas
                     )
                 }
             ))
@@ -78,40 +71,4 @@ enum CaptionSpecBuilder {
         return specs
     }
 
-    private static func lineFits(
-        _ text: String,
-        style: TextStyle,
-        canvasWidth: Int,
-        canvasHeight: Int
-    ) -> Bool {
-        let size = TextLayout.naturalSize(
-            content: text,
-            style: style,
-            maxWidth: .greatestFiniteMagnitude,
-            canvasHeight: CGFloat(canvasHeight)
-        )
-        return size.width <= CGFloat(canvasWidth) * AppTheme.ComponentSize.captionPreviewMaxTextWidthRatio
-    }
-
-    private static func transform(
-        for text: String,
-        style: TextStyle,
-        center: CGPoint,
-        canvasWidth: Int,
-        canvasHeight: Int
-    ) -> Transform {
-        let width = Double(canvasWidth)
-        let height = Double(canvasHeight)
-        let natural = TextLayout.naturalSize(
-            content: text,
-            style: style,
-            maxWidth: CGFloat(width) * AppTheme.ComponentSize.captionPreviewMaxTextWidthRatio,
-            canvasHeight: CGFloat(height)
-        )
-        return Transform(
-            center: (Double(center.x), Double(center.y)),
-            width: Double(natural.width) / width,
-            height: Double(natural.height) / height
-        )
-    }
 }

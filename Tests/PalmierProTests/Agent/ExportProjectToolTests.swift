@@ -107,9 +107,10 @@ struct ExportProjectToolTests {
 
         let unknown = await h.runRaw("export_project", args: ["mode": "xml", "outputPath": "/tmp/x.xml", "timelineId": "ffffffff"])
         #expect(unknown.isError)
-        let palmier = await h.runRaw("export_project", args: ["mode": "palmier", "outputPath": "/tmp/x.palmier", "timelineId": String(other.id.prefix(8))])
+        // "palmier" is the pre-rebrand mode name and must still resolve to the .metag package mode.
+        let palmier = await h.runRaw("export_project", args: ["mode": "palmier", "outputPath": "/tmp/x.metag", "timelineId": String(other.id.prefix(8))])
         #expect(palmier.isError)
-        #expect(ToolHarness.textOf(palmier).contains("palmier"))
+        #expect(ToolHarness.textOf(palmier).contains("metag"))
     }
 
     @Test func exportsXML() async throws {
@@ -136,10 +137,10 @@ struct ExportProjectToolTests {
             source: .external(absolutePath: "/tmp/missing-\(UUID().uuidString).mov"), duration: 1
         )]
         let palmierURL = FileManager.default.temporaryDirectory
-            .appendingPathComponent("export-tool-\(UUID().uuidString).palmier")
+            .appendingPathComponent("export-tool-\(UUID().uuidString).metag")
         defer { try? FileManager.default.removeItem(at: palmierURL) }
         let palmier = try await h.runOK("export_project", args: [
-            "mode": "palmier", "outputPath": palmierURL.path,
+            "mode": "metag", "outputPath": palmierURL.path,
         ]) as? [String: Any]
         try await waitForJob(from: palmier, in: h.exportQueue)
         let listed = try await h.runOK("manage_exports", args: ["action": "list"]) as? [String: Any]

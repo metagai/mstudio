@@ -40,6 +40,8 @@ struct PreviewContainerView: View {
                     }
                     if editor.chromaKeySamplingClipId != nil {
                         ChromaKeySamplerOverlayView()
+                    } else if editor.regionRemovalClipId != nil {
+                        RegionRemoveOverlayView()
                     } else if editor.cropEditingActive {
                         CropOverlayView()
                     } else {
@@ -56,6 +58,7 @@ struct PreviewContainerView: View {
                             guard isTimeline,
                                   !editor.cropEditingActive,
                                   editor.chromaKeySamplingClipId == nil,
+                                  editor.regionRemovalClipId == nil,
                                   let id = PreviewHitTester.clipID(
                                     at: value.location,
                                     viewSize: CGSize(width: scaledWidth, height: scaledHeight),

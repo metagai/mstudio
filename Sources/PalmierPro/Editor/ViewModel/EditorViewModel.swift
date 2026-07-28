@@ -143,6 +143,8 @@ final class EditorViewModel {
     var pendingReplacements: Set<String> = []
     var cropEditingActive: Bool = false
     var chromaKeySamplingClipId: String?
+    /// Clip whose region-removal rectangle is being drawn on the canvas.
+    var regionRemovalClipId: String?
     /// Two-up in/out frames shown in the viewer while a slip drag is active.
     var slipPreview: SlipPreviewState?
     var cropAspectLock: CropAspectLock = .free

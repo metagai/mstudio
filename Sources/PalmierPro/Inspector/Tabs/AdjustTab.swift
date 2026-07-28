@@ -262,6 +262,17 @@ extension InspectorView {
                     .help(sampling ? "Cancel key color sampling" : "Sample key color")
                     .accessibilityLabel(sampling ? "Cancel Key Color Sampling" : "Sample Key Color")
                 }
+                if title == "Region Removal", clips.count == 1, let clip = clips.first {
+                    let drawing = editor.regionRemovalClipId == clip.id
+                    Button { editor.toggleRegionRemovalEditing(clipId: clip.id) } label: {
+                        Image(systemName: "rectangle.dashed")
+                            .foregroundStyle(drawing ? AppTheme.Accent.primary : AppTheme.Text.secondaryColor)
+                    }
+                    .buttonStyle(.plain)
+                    .disabled(editor.activePreviewTab != .timeline)
+                    .help(drawing ? "Finish drawing the region" : "Draw the region on the canvas")
+                    .accessibilityLabel(drawing ? "Finish Region" : "Draw Region")
+                }
             }
             .padding(.leading, adjustSubgroupInset)
             .contentShape(Rectangle())
@@ -331,7 +342,7 @@ extension InspectorView {
                 } else if let descriptor = EffectRegistry.descriptor(id: "stylize.invert") {
                     effects.insert(
                         descriptor.makeEffect(),
-                        at: alwaysOnInsertIndex(effects, for: "stylize.invert")
+                        at: EffectRegistry.insertIndex(effects, for: "stylize.invert")
                     )
                 }
             } else {
@@ -392,7 +403,7 @@ extension InspectorView {
         } else {
             var effect = Effect(type: "color.curves")
             effect.params["curve"] = EffectParam(string: json)
-            effects.insert(effect, at: alwaysOnInsertIndex(effects, for: "color.curves"))
+            effects.insert(effect, at: EffectRegistry.insertIndex(effects, for: "color.curves"))
         }
     }
 
@@ -463,16 +474,12 @@ extension InspectorView {
 
     /// Both pad axes upserted in one mutation so a drag is a single undo entry.
     private func setWheelColor(_ prefix: String, _ x: Double, _ y: Double, clips: [Clip], commit: Bool) {
-        let xc = EffectControl(effectId: "color.wheels", paramKey: "\(prefix)_x")
-        let yc = EffectControl(effectId: "color.wheels", paramKey: "\(prefix)_y")
-        let mutate: (inout [Effect]) -> Void = { [self] effects in
-            upsertControl(&effects, control: xc, value: x)
-            upsertControl(&effects, control: yc, value: y)
-        }
+        let ids = clips.map(\.id)
+        let values = ["\(prefix)_x": x, "\(prefix)_y": y]
         if commit {
-            commitEffects(clips, actionName: "Adjust \(prefix.capitalized)", mutate)
+            editor.commitEffectParams(clipIds: ids, effectId: "color.wheels", values: values, actionName: "Adjust \(prefix.capitalized)")
         } else {
-            applyEffects(clips, mutate)
+            editor.applyEffectParams(clipIds: ids, effectId: "color.wheels", values: values)
         }
     }
 
@@ -567,7 +574,7 @@ extension InspectorView {
             } else {
                 var effect = Effect(type: "color.lut")
                 effect.params["path"] = EffectParam(string: stored)
-                effects.insert(effect, at: alwaysOnInsertIndex(effects, for: "color.lut"))
+                effects.insert(effect, at: EffectRegistry.insertIndex(effects, for: "color.lut"))
             }
         }
     }
@@ -623,38 +630,13 @@ extension InspectorView {
     private func setControlParam(
         _ control: EffectControl, label: String, value: Double, clips: [Clip], commit: Bool
     ) {
-        let mutate: (inout [Effect]) -> Void = { [self] effects in
-            upsertControl(&effects, control: control, value: value)
-        }
+        let ids = clips.map(\.id)
+        let values = [control.paramKey: value]
         if commit {
-            commitEffects(clips, actionName: "Change \(label)", mutate)
+            editor.commitEffectParams(clipIds: ids, effectId: control.effectId, values: values, actionName: "Change \(label)")
         } else {
-            applyEffects(clips, mutate)
+            editor.applyEffectParams(clipIds: ids, effectId: control.effectId, values: values)
         }
-    }
-
-    /// Upsert one param into the singleton effect of its type, inserting in canonical
-    /// order when first touched and pruning it when every param returns to default
-    /// (so a neutral adjustment carries no effect / no render pass).
-    private func upsertControl(_ effects: inout [Effect], control: EffectControl, value: Double) {
-        guard let descriptor = EffectRegistry.descriptor(id: control.effectId) else { return }
-        if let i = effects.firstIndex(where: { $0.type == control.effectId }) {
-            effects[i].params[control.paramKey] = EffectParam(value: value)
-            let allDefault = descriptor.params.allSatisfy { spec in
-                (effects[i].params[spec.key]?.value ?? spec.defaultValue) == spec.defaultValue
-            }
-            if allDefault { effects.remove(at: i) }
-        } else {
-            let paramDefault = descriptor.params.first { $0.key == control.paramKey }?.defaultValue
-            guard value != paramDefault else { return }
-            var effect = descriptor.makeEffect()
-            effect.params[control.paramKey] = EffectParam(value: value)
-            effects.insert(effect, at: alwaysOnInsertIndex(effects, for: control.effectId))
-        }
-    }
-
-    private func alwaysOnInsertIndex(_ effects: [Effect], for effectId: String) -> Int {
-        EffectRegistry.insertIndex(effects, for: effectId)
     }
 
     private func resetEffects(_ ids: Set<String>, clips: [Clip], actionName: String) {

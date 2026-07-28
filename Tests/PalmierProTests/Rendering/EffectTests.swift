@@ -25,6 +25,28 @@ struct EffectModelTests {
         #expect(result === image)
     }
 
+    /// Inspector sliders and the canvas overlay share this upsert, so insert order and the
+    /// prune-when-neutral rule must hold for single- and multi-param writes alike.
+    @Test func effectParamUpsertInsertsInCanonicalOrderAndPrunesWhenNeutral() {
+        var effects: [Effect] = [Effect.make("stylize.vignette", ["amount": -0.5])]
+
+        EditorViewModel.upsertEffectParams(
+            &effects, effectId: "stylize.regionRemove",
+            values: ["x": 0.1, "y": 0.2, "width": 0.3, "height": 0.4]
+        )
+        #expect(effects.map(\.type) == ["stylize.regionRemove", "stylize.vignette"])
+        #expect(effects[0].params["width"]?.value == 0.3)
+
+        EditorViewModel.upsertEffectParams(&effects, effectId: "stylize.regionRemove", values: ["width": 0, "height": 0])
+        #expect(effects.map(\.type) == ["stylize.regionRemove", "stylize.vignette"])
+
+        EditorViewModel.upsertEffectParams(&effects, effectId: "stylize.regionRemove", values: ["x": 0, "y": 0])
+        #expect(effects.map(\.type) == ["stylize.vignette"])
+
+        EditorViewModel.upsertEffectParams(&effects, effectId: "stylize.regionRemove", values: ["x": 0, "y": 0])
+        #expect(effects.map(\.type) == ["stylize.vignette"])
+    }
+
     @Test func clipEffectsRoundTripThroughCodable() throws {
         var clip = Fixtures.clip(id: "c1", mediaRef: "m", start: 0, duration: 30)
         clip.effects = [Effect.make("color.exposure", ["ev": 1.5])]

@@ -38,15 +38,7 @@ struct CaptionAnimatedPreview: View {
     }
 
     private var previewClip: Clip {
-        let natural = TextLayout.naturalSize(
-            content: text, style: style,
-            maxWidth: canvas.width * AppTheme.ComponentSize.captionPreviewMaxTextWidthRatio,
-            canvasHeight: canvas.height
-        )
-        let transform = Transform(
-            centerX: center.x, centerY: center.y,
-            width: natural.width / canvas.width, height: natural.height / canvas.height
-        )
+        let transform = CaptionLayout.transform(for: text, style: style, center: center, canvas: canvas)
         return CaptionPreviewRender.clip(content: text, style: style, transform: transform, preset: preset, highlight: highlight)
     }
 }

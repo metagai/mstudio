@@ -151,7 +151,27 @@ struct CaptionTab: View {
             ) {
                 ForEach(CaptionTemplate.all) { templateCell($0) }
             }
+            if !editor.captionTextClipIds.isEmpty {
+                Button(action: applyTemplateToExistingCaptions) {
+                    Text("Apply to Existing Captions")
+                        .frame(maxWidth: .infinity)
+                }
+                .buttonStyle(.capsule(.secondary))
+                .focusable(false)
+                .disabled(selectedTemplate == nil)
+                .help("Restyle the captions already on the timeline. Undoable as one step.")
+            }
         }
+    }
+
+    private var selectedTemplate: CaptionTemplate? {
+        CaptionTemplate.all.first { $0.id == templateId }
+    }
+
+    private func applyTemplateToExistingCaptions() {
+        guard let template = selectedTemplate else { return }
+        let count = editor.applyCaptionTemplate(template)
+        note = count == 0 ? "No captions to restyle." : "Restyled \(count) caption\(count == 1 ? "" : "s")."
     }
 
     private func templateCell(_ template: CaptionTemplate) -> some View {
