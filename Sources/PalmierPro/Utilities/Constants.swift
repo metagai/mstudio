@@ -87,7 +87,8 @@ enum Trim {
 enum Project {
     static let fileExtension = "metag"
     static let registryFilename = "project-registry.json"
-    static let typeIdentifier = "ai.metagject"
+    /// Must match `UTTypeIdentifier` / `LSItemContentTypes` in Info.plist.
+    static let typeIdentifier = "ai.metag.project"
     static let defaultProjectName = "Untitled Project"
     static let timelineFilename = "project.json"
     static let manifestFilename = "media.json"

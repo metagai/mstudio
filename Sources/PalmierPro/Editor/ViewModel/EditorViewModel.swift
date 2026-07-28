@@ -186,6 +186,8 @@ final class EditorViewModel {
     @ObservationIgnored var agentActivityClearTask: Task<Void, Never>?
     var cropEditingActive: Bool = false
     var chromaKeySamplingClipId: String?
+    /// Clip whose region-removal rectangle is being drawn on the canvas.
+    var regionRemovalClipId: String?
     /// Two-up in/out frames shown in the viewer while a slip drag is active.
     var slipPreview: SlipPreviewState?
     var captionPreviewConfiguration: CaptionPreviewConfiguration?

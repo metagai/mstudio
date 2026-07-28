@@ -90,7 +90,7 @@ extension ToolExecutor {
         let timeline: Timeline
         if let id = input.timelineId {
             guard mode != .palmier else {
-                throw ToolError("export_project: timelineId doesn't apply to palmier mode — the package carries every timeline")
+                throw ToolError("export_project: timelineId doesn't apply to metag mode — the package carries every timeline")
             }
             guard let t = editor.timeline(for: id) else {
                 throw ToolError("export_project: no timeline with id '\(id)'. get_timeline lists the project's timelines.")
@@ -340,15 +340,17 @@ private enum ExportProjectMode: String {
     case video
     case xml
     case fcpxml
-    case palmier
+    case palmier = "metag"
 
     init(named raw: String?) throws {
         guard let raw else {
             self = .video
             return
         }
-        guard let mode = Self(rawValue: raw.normalizedExportOption) else {
-            throw ToolError("export_project: mode must be video, xml, fcpxml, or palmier")
+        let normalized = raw.normalizedExportOption
+        // `palmier` is the pre-rebrand spelling; still accepted so older prompts keep working.
+        guard let mode = Self(rawValue: normalized == "palmier" ? "metag" : normalized) else {
+            throw ToolError("export_project: mode must be video, xml, fcpxml, or metag")
         }
         self = mode
     }
@@ -373,7 +375,7 @@ private enum ExportProjectMode: String {
         case .video: format?.displayName ?? "Video"
         case .xml: "XML"
         case .fcpxml: "FCPXML"
-        case .palmier: "METAGject"
+        case .palmier: "METAG Project"
         }
     }
 }

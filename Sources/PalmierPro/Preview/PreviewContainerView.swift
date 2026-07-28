@@ -64,6 +64,8 @@ struct PreviewContainerView: View {
                 CanvasViewingOverlay(selection: canvasOverlays)
                 if editor.chromaKeySamplingClipId != nil {
                     ChromaKeySamplerOverlayView()
+                } else if editor.regionRemovalClipId != nil {
+                    RegionRemoveOverlayView()
                 } else if editor.cropEditingActive {
                     CropOverlayView()
                 } else if let configuration = captionPreview {
