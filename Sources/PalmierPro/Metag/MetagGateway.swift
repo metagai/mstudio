@@ -17,6 +17,11 @@ enum MetagGateway {
 
     static var isSignedIn: Bool { token != nil }
 
+    /// 托管 Agent 对话（MetagAgentClient）需要网关侧的 /api/v1/agent/chat。
+    /// 该端点尚未上线：还缺模型供应商与按 token 的计价口径，两者都要创始人拍板。
+    /// 端点上线后把默认值改成 true；本地联调用 METAG_HOSTED_AGENT=1 提前打开。
+    static let hostedAgentEnabled = ProcessInfo.processInfo.environment["METAG_HOSTED_AGENT"] == "1"
+
     struct Account: Decodable, Sendable {
         let sub: String
         let credits: Int

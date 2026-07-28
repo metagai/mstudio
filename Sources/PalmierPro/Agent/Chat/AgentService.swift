@@ -47,7 +47,9 @@ final class AgentService {
         AgentRouting.route(
             model: model,
             credentials: credentials,
-            hasHostedCredits: AccountService.shared.isSignedIn && AccountService.shared.hasCredits,
+            // 网关托管对话尚未上线；没有这个开关时只有 BYOK 能真正发起流式请求
+            hasHostedCredits: MetagGateway.hostedAgentEnabled
+                && AccountService.shared.isSignedIn && AccountService.shared.hasCredits,
             hasPaidPlan: AccountService.shared.isPaid
         )
     }
@@ -98,7 +100,7 @@ final class AgentService {
                 settings: settings
             )
         case .hosted:
-            return PalmierClient(settings: settings)
+            return MetagAgentClient(settings: settings)
         case .unavailable:
             return nil
         }

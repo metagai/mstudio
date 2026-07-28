@@ -1,7 +1,8 @@
 import Foundation
-import ClerkKit
 
-struct PalmierClient: AgentClient {
+/// 托管 Agent 对话：METAG 网关 JWT（Keychain）+ 供应商线格式 SSE。
+/// 生成类工具不走这里，仍走 GenerationBackend → create_job，计费入口只有一条。
+struct MetagAgentClient: AgentClient {
     let settings: AgentRunSettings
 
     func stream(
@@ -28,15 +29,8 @@ struct PalmierClient: AgentClient {
         context: AgentRequestContext,
         continuation: AsyncThrowingStream<AgentStreamEvent, Error>.Continuation
     ) async throws {
-        guard let baseURL = BackendConfig.convexHttpURL else {
-            throw AgentServiceError.upstream("Backend not configured")
-        }
-        let endpoint = baseURL.appendingPathComponent("v1/agent/stream")
-
-        guard let session = await Clerk.shared.session, session.status == .active else {
-            throw AgentServiceError.unauthenticated
-        }
-        guard let jwt = try await session.getToken(), !jwt.isEmpty else {
+        let endpoint = MetagGateway.baseURL.appendingPathComponent("api/v1/agent/stream")
+        guard let jwt = MetagGateway.token, !jwt.isEmpty else {
             throw AgentServiceError.unauthenticated
         }
 
@@ -51,19 +45,36 @@ struct PalmierClient: AgentClient {
             options: [.sortedKeys]
         )
 
-        let bytes = try await AgentHTTP.bytes(for: request) { status, body in
-            AgentServiceError.from(status: status, body: body)
+        let bytes: URLSession.AsyncBytes
+        do {
+            bytes = try await AgentHTTP.bytes(for: request) { status, body in
+                AgentServiceError.from(status: status, body: body)
+            }
+        } catch let error as AgentServiceError {
+            // 网关判定登录态失效时丢弃本地 JWT，避免面板反复撞 401
+            if case .unauthenticated = error { MetagGateway.token = nil }
+            throw error
         }
         try await settings.model.provider.parseSSE(bytes: bytes, continuation: continuation)
     }
 }
 
-enum AgentServiceError: Error {
+enum AgentServiceError: LocalizedError {
     case unauthenticated
     case insufficientCredits(String)
     case unavailable(AgentModel)
     case refusal(AgentModel)
     case upstream(String)
+
+    var errorDescription: String? {
+        switch self {
+        case .unauthenticated: L10n.key("Sign in to use the AI agent.")
+        case .insufficientCredits(let m), .upstream(let m): m
+        // 模型名是产品名词，不进翻译串；本地化的是它前后那句话
+        case .unavailable(let model): "\(model.displayName): " + L10n.key("unavailable right now.")
+        case .refusal(let model): "\(model.displayName): " + L10n.key("declined this request.")
+        }
+    }
 
     static func from(status: Int, body: String) -> AgentServiceError {
         let parsed = parseErrorEnvelope(body)

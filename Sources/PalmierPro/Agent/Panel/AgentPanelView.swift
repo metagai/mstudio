@@ -413,9 +413,15 @@ struct AgentPanelView: View {
     @ViewBuilder
     private var missingKeyState: some View {
         let account = AccountService.shared
+        // 托管对话未上线时不提供登录 CTA —— 登录也开不了口，只会把用户引到死路
+        let offersHostedAgent = MetagGateway.hostedAgentEnabled && !account.isSignedIn
         VStack(spacing: AppTheme.Spacing.mdLg) {
             Button {
-                missingKeyPrimaryAction(account: account)
+                if offersHostedAgent {
+                    Task { await account.signInWithGoogle() }
+                } else {
+                    SettingsWindowController.shared.show(tab: .agent)
+                }
             } label: {
                 HStack(spacing: AppTheme.Spacing.sm) {
                     if let icon = missingKeyPrimaryIcon(account: account) {
