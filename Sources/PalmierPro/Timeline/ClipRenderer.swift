@@ -90,7 +90,7 @@ enum ClipRenderer {
         if usesCompactRendering(in: rect) {
             let color = isMissing && !isGenerating
                 ? AppTheme.Status.error
-                : (isSelected ? AppTheme.Text.primary : colorType.themeColor)
+                : (isSelected ? DesignTokens.accent : colorType.themeColor)
             context.setFillColor(color.cgColor)
             context.fill(rect)
             if opacity < 1.0 { context.restoreGState() }
@@ -157,7 +157,8 @@ enum ClipRenderer {
         }
 
         if isSelected {
-            context.setStrokeColor(AppTheme.Text.primary.cgColor)
+            // 选中描边画在深色片段上：墨色会糊进去，用品牌绿才切得出来。
+            context.setStrokeColor(DesignTokens.accent.cgColor)
             context.setLineWidth(AppTheme.BorderWidth.medium)
             context.addPath(path)
             context.strokePath()
@@ -165,7 +166,8 @@ enum ClipRenderer {
 
         // Subtle wash while the clip's media is being rendered/generated.
         if isGenerating {
-            context.setFillColor(NSColor.white.withAlphaComponent(AppTheme.Opacity.faint).cgColor)
+            // 叠在深色片段之上，所以仍然是浅色洗亮（不随主题反相）。
+            context.setFillColor(AppTheme.Text.onDark.withAlphaComponent(AppTheme.Opacity.faint).cgColor)
             context.addPath(path)
             context.fillPath()
         }
@@ -337,7 +339,8 @@ enum ClipRenderer {
         let lastBar = min(barCount, Int(ceil(visible.maxX - drawRect.minX)))
         guard firstBar < lastBar else { return }
 
-        context.setFillColor(AppTheme.Text.primary.withAlphaComponent(AppTheme.Opacity.high).cgColor)
+        // 波形画在深色片段【内部】—— 必须保持浅色，不能跟着界面转成墨色。
+        context.setFillColor(AppTheme.Text.onDark.withAlphaComponent(AppTheme.Opacity.high).cgColor)
 
         let dur = CGFloat(max(1, clip.durationFrames))
         let frameStep = dur / CGFloat(barCount)
@@ -432,8 +435,9 @@ enum ClipRenderer {
 
         let body = clipBodyRect(in: rect)
         let alpha: CGFloat = showsFadeControls ? 0.95 : 0.75
-        let lineColor = NSColor.white.withAlphaComponent(alpha).cgColor
-        let fadeColor = NSColor.white.withAlphaComponent(alpha * 0.7).cgColor
+        // 画在深色片段内部，保持浅色。
+        let lineColor = AppTheme.Text.onDark.withAlphaComponent(alpha).cgColor
+        let fadeColor = AppTheme.Text.onDark.withAlphaComponent(alpha * 0.7).cgColor
 
         // 1) Volume line — through kfs, or flat at static volume when no kfs.
         context.setStrokeColor(lineColor)
@@ -549,8 +553,9 @@ enum ClipRenderer {
 
         let body = clipBodyRect(in: rect)
         let alpha: CGFloat = showsFadeControls ? 0.95 : 0.75
-        let lineColor = NSColor.white.withAlphaComponent(alpha).cgColor
-        let fadeColor = NSColor.white.withAlphaComponent(alpha * 0.7).cgColor
+        // 画在深色片段内部，保持浅色。
+        let lineColor = AppTheme.Text.onDark.withAlphaComponent(alpha).cgColor
+        let fadeColor = AppTheme.Text.onDark.withAlphaComponent(alpha * 0.7).cgColor
 
         let leftOffset = min(clip.fadeInFrames, clip.durationFrames)
         let rightOffset = max(0, clip.durationFrames - clip.fadeOutFrames)
@@ -840,7 +845,7 @@ enum ClipRenderer {
 
         let baseAttrs: [NSAttributedString.Key: Any] = [
             .font: NSFont.systemFont(ofSize: AppTheme.FontSize.xs, weight: .medium),
-            .foregroundColor: AppTheme.Text.primary,
+            .foregroundColor: AppTheme.Text.onDark,
         ]
         let attributed = NSMutableAttributedString(string: text, attributes: baseAttrs)
         if clip.linkGroupId != nil {
@@ -879,7 +884,7 @@ enum ClipRenderer {
         ]).size().width + padH * 2
         let x = rect.maxX - Trim.handleWidth - width - AppTheme.Spacing.xxs
         guard x > rect.minX + AppTheme.Spacing.sm else { return }
-        drawPill(text, textColor: .white, fill: offsetBadgeColor, fontSize: AppTheme.FontSize.xs,
+        drawPill(text, textColor: AppTheme.Text.onDark, fill: offsetBadgeColor, fontSize: AppTheme.FontSize.xs,
                  at: NSPoint(x: x, y: rect.minY + AppTheme.Spacing.xxs), maxWidth: width, context: context)
     }
 

@@ -28,10 +28,10 @@ struct HelpView: View {
 
             detail
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
-                .background(Color.black.opacity(AppTheme.Opacity.medium))
+                .background(AppTheme.Background.baseColor)
         }
         .frame(minWidth: 820, idealWidth: 900, minHeight: 520, idealHeight: 560)
-        .background(.ultraThinMaterial)
+        .background(AppTheme.Background.surfaceColor)
         .focusEffectDisabled()
     }
 
@@ -103,9 +103,11 @@ final class HelpWindowController: NSWindowController {
         window.minSize = NSSize(width: 820, height: 520)
         window.title = "Help"
         window.setFrameAutosaveName("PalmierProHelp-v1")
-        window.appearance = NSAppearance(named: .darkAqua)
-        window.backgroundColor = AppTheme.Background.base.withAlphaComponent(0.4)
-        window.isOpaque = false
+        // 显式锁 .aqua（而不是删掉这行）：删掉会跟随系统，
+        // 系统切深色时 .ultraThinMaterial 和 systemXxx 会翻，纸感主题就半坏了。
+        window.appearance = NSAppearance(named: .aqua)
+        window.backgroundColor = AppTheme.Background.base
+        window.isOpaque = true
         window.titleVisibility = .hidden
         window.titlebarAppearsTransparent = true
         window.isMovableByWindowBackground = true

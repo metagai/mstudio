@@ -817,7 +817,7 @@ final class TimelineInputController {
             arrow.close()
             arrow.lineJoinStyle = .round
             arrow.lineWidth = AppTheme.BorderWidth.thick
-            AppTheme.Text.primary.setStroke()
+            DesignTokens.accent.setStroke()   // ghost 画在浅色底上，墨色会和片段糊在一起
             arrow.stroke()
             AppTheme.Status.error.setFill()
             arrow.fill()
@@ -859,7 +859,7 @@ final class TimelineInputController {
             arrow.close()
             arrow.lineJoinStyle = .round
             arrow.lineWidth = AppTheme.BorderWidth.thick
-            AppTheme.Text.primary.setStroke()
+            DesignTokens.accent.setStroke()   // ghost 画在浅色底上，墨色会和片段糊在一起
             arrow.stroke()
             AppTheme.Status.error.setFill()
             arrow.fill()

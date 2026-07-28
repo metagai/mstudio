@@ -1,15 +1,27 @@
 import AppKit
 import SwiftUI
 
+/// 颜色一律来自 `DesignTokens`（由 metag 根仓库的 design/tokens.json 生成）。
+/// 这个文件里不应该再出现任何 `NSColor(red:…)` 字面量 —— 除了明确标注为
+/// 「内容语义而非主题」的那几处（亮度滑块的黑→白、示波器的红绿黄）。
+///
+/// 深色 → 纸感浅色不是机械反相：
+///   深色靠「抬亮」分层（base 最暗，越浮起越亮）；
+///   浅色靠「压暗 + 细描边」分层，而且白就是天花板 ——
+///   所以浮起的东西是白 + 阴影，退后的面板往暗走。两条轴方向不同。
 enum AppTheme {
 
     // MARK: - Backgrounds
 
     enum Background {
-        static let base = NSColor(red: 10/255, green: 10/255, blue: 10/255, alpha: 1)
-        static let surface = NSColor(red: 22/255, green: 22/255, blue: 22/255, alpha: 1)
-        static let raised = NSColor(red: 30/255, green: 30/255, blue: 30/255, alpha: 1)
-        static let prominent = NSColor(red: 44/255, green: 44/255, blue: 44/255, alpha: 1)
+        /// 窗口画布。
+        static let base = DesignTokens.surfaceBase
+        /// 面板底（侧栏、时间轴区、各种头部）—— 比画布深一档，靠压暗后退。
+        static let surface = DesignTokens.surfacePanel
+        /// 浮起的东西（卡片、磁贴、菜单、弹层）—— 纯白 + 阴影，靠抬亮前进。
+        static let raised = DesignTokens.surfaceRaised
+        /// 面板里的凹槽 / 需要强调的小块。
+        static let prominent = DesignTokens.surfaceInset
 
         /// Alias — empty media slot is a raised plate.
         static let placeholder = raised
@@ -18,7 +30,11 @@ enum AppTheme {
         static var surfaceColor: Color { Color(surface) }
         static var raisedColor: Color { Color(raised) }
         static var prominentColor: Color { Color(prominent) }
-        static var previewCanvasColor: Color { .black }
+        /// 预览画布恒定纯黑：黑边紧贴画面，白色会把画面冲淡（同时对比）。
+        static var previewCanvasColor: Color { DesignTokens.screenBgColor }
+        /// 画面【周围】的舞台：中性中灰，既不是白也不是黑。
+        /// 中性（R=G=B）是必须的 —— 带彩的包围会偏移对画面色彩的判断。
+        static var stageColor: Color { DesignTokens.stageBgColor }
         static var placeholderColor: Color { Color(placeholder) }
         static var clearColor: Color { .clear }
     }
@@ -26,10 +42,12 @@ enum AppTheme {
     // MARK: - Borders
 
     enum Border {
-        static let primary = NSColor.white.withAlphaComponent(0.16)
-        static let subtle = NSColor.white.withAlphaComponent(0.12)
-        static let divider = NSColor.white.withAlphaComponent(0.44)
-        static let timelineClip = NSColor.black
+        static let primary = DesignTokens.lineDefault
+        static let subtle = DesignTokens.lineSubtle
+        static let divider = DesignTokens.lineStrong
+        /// 片段之间的缝。片段填充是深色块，缝用纸色才切得开；
+        /// 沿用深色时代的纯黑会和片段糊成一片。
+        static let timelineClip = DesignTokens.surfaceBase
 
         static var primaryColor: Color { Color(primary) }
         static var subtleColor: Color { Color(subtle) }
@@ -47,11 +65,21 @@ enum AppTheme {
     // MARK: - Accent
 
     enum Accent {
-        static let timecodeNSColor = NSColor(red: 0.95, green: 0.6, blue: 0.2, alpha: 1)
+        /// 琥珀时间码。这是 NLE 惯例（Premiere / Resolve 同样偏暖），
+        /// 与品牌绿是【两个语义角色】，不是同一意图的两个值 —— 所以不收敛成绿色。
+        static let timecodeNSColor = DesignTokens.timecodeFg
         static let timecodeColor = Color(timecodeNSColor)
 
-        /// Warm off-white
-        static let primary = Color(red: 0.961, green: 0.937, blue: 0.894)
+        /// 最高对比度的强调前景/填充（74 处在用）。
+        /// 深色时代它是暖白；纸感浅色下同一个角色就是墨色。
+        /// 注意：凡是拿它当【填充】的地方，压在上面的文字必须用 `onPrimary`。
+        static let primary = DesignTokens.contentPrimaryColor
+        /// 压在 `primary` 填充之上的前景。
+        static let onPrimary = DesignTokens.surfaceBaseColor
+
+        /// 品牌绿。填充用它时，前景用 `onBrand`。
+        static let brand = DesignTokens.accentColor
+        static let onBrand = DesignTokens.contentOnAccentColor
 
         static let link = Color(nsColor: .linkColor)
 
@@ -107,7 +135,8 @@ enum AppTheme {
         static let padSize: CGFloat = 96
         static let puckSize: CGFloat = 10
         static let ringWidth: CGFloat = 1
-        static let crosshairColor = Color.white.opacity(AppTheme.Opacity.faint)
+        /// 十字线压在彩色色轮上，用墨色才切得出来（原先是白 8%，纸感下等于没有）。
+        static let crosshairColor = AppTheme.Text.primaryColor.opacity(AppTheme.Opacity.moderate)
     }
 
     enum Curve {
@@ -115,19 +144,22 @@ enum AppTheme {
         static let pointDiameter: CGFloat = 9
         /// Invisible grab target around each point — much larger than the dot so it's easy to hit.
         static let pointHitDiameter: CGFloat = 30
-        static let lumaColor = Color(red: 1, green: 1, blue: 1)
+        /// luma 曲线画在浅色网格上，纯白等于隐形 —— 用墨色。
+        /// 下面 RGB 三条是通道指示色，属内容语义，不随主题走。
+        static let lumaColor = AppTheme.Text.primaryColor
         static let redColor = Color(red: 1, green: 0.22, blue: 0.18)
         static let greenColor = Color(red: 0.32, green: 0.82, blue: 0.36)
         static let blueColor = Color(red: 0.32, green: 0.56, blue: 1)
     }
 
-    /// Monochrome silver shimmer
+    /// AI 微光。深色时代是银白渐变；纸感浅色下必须反过来做成【墨色微光】，
+    /// 否则压在纸上完全看不见。亮暗关系反相，但"金属反光"的质感保留。
     static let aiGradient = LinearGradient(
         stops: [
-            .init(color: Color(white: 1.00), location: 0.00),
-            .init(color: Color(white: 0.78), location: 0.45),
-            .init(color: Color(white: 0.60), location: 0.55),
-            .init(color: Color(white: 1.00), location: 1.00),
+            .init(color: Color(white: 0.10), location: 0.00),
+            .init(color: Color(white: 0.34), location: 0.45),
+            .init(color: Color(white: 0.52), location: 0.55),
+            .init(color: Color(white: 0.10), location: 1.00),
         ],
         startPoint: .topLeading,
         endPoint: .bottomTrailing
@@ -136,14 +168,16 @@ enum AppTheme {
     // MARK: - Status
 
     enum Status {
-        static let error = NSColor(red: 0xE5/255.0, green: 0x4F/255.0, blue: 0x4F/255.0, alpha: 1)
+        static let error = DesignTokens.statusDanger
 
         static var errorColor: Color { Color(error) }
 
-        static let success = NSColor(red: 0x4F/255.0, green: 0xB8/255.0, blue: 0x5F/255.0, alpha: 1)
+        static let success = DesignTokens.statusSuccess
 
         static var successColor: Color { Color(success) }
 
+        /// systemOrange 会跟随系统 appearance / 辅助功能设置自动调整，
+        /// 换成固定 hex 会丢掉这个能力，所以这一个不收敛。
         static let warning = NSColor.systemOrange
 
         static var warningColor: Color { Color(warning) }
@@ -152,15 +186,20 @@ enum AppTheme {
     // MARK: - Text
 
     enum Text {
-        static let primary = NSColor.white.withAlphaComponent(1.0)
-        static let secondary = NSColor.white.withAlphaComponent(0.80)
-        static let tertiary = NSColor.white.withAlphaComponent(0.62)
-        static let muted = NSColor.white.withAlphaComponent(0.34)
+        static let primary = DesignTokens.contentPrimary
+        static let secondary = DesignTokens.contentSecondary
+        static let tertiary = DesignTokens.contentTertiary
+        static let muted = DesignTokens.contentMuted
 
         static var primaryColor: Color { Color(primary) }
         static var secondaryColor: Color { Color(secondary) }
         static var tertiaryColor: Color { Color(tertiary) }
         static var mutedColor: Color { Color(muted) }
+
+        /// 压在深色块（片段、视频、深色胶囊）之上的文字。
+        /// 纸感浅色下 `primary` 是墨色，压在深色片段上会读不出 —— 那种地方用这个。
+        static let onDark = DesignTokens.surfaceBase
+        static var onDarkColor: Color { Color(onDark) }
     }
 
     // MARK: - Opacity
@@ -392,10 +431,12 @@ enum AppTheme {
         let y: CGFloat
     }
 
+    /// 纸感浅色下阴影必须大幅减轻：深色里 0.3 的黑影是"看不太出来的深"，
+    /// 压在纸上会变成一圈脏灰边。浅色靠的是极淡的阴影 + 细描边，不是重投影。
     enum Shadow {
-        static let sm = ShadowStyle(color: .black.opacity(0.3), radius: 1, x: 0, y: 0.5)
-        static let md = ShadowStyle(color: .black.opacity(0.3), radius: 4, x: 0, y: 2)
-        static let lg = ShadowStyle(color: .black.opacity(0.25), radius: 24, x: 0, y: 8)
+        static let sm = ShadowStyle(color: .black.opacity(0.06), radius: 1, x: 0, y: 0.5)
+        static let md = ShadowStyle(color: .black.opacity(0.08), radius: 4, x: 0, y: 2)
+        static let lg = ShadowStyle(color: .black.opacity(0.12), radius: 24, x: 0, y: 8)
     }
 
     // MARK: - Animation durations

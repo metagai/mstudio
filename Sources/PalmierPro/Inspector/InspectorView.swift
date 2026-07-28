@@ -899,7 +899,7 @@ struct InspectorView: View {
                 .frame(width: AppTheme.IconSize.md, height: AppTheme.IconSize.md)
                 .background(
                     RoundedRectangle(cornerRadius: AppTheme.Radius.xs)
-                        .fill(Color.white.opacity(isOn ? AppTheme.Opacity.subtle : 0))
+                        .fill(AppTheme.Text.primaryColor.opacity(isOn ? AppTheme.Opacity.subtle : 0))
                 )
                 .hoverHighlight()
         }
@@ -1108,7 +1108,7 @@ struct InspectorView: View {
             .padding(.vertical, AppTheme.Spacing.xxs)
             .overlay(
                 RoundedRectangle(cornerRadius: AppTheme.Radius.sm)
-                    .strokeBorder(Color.white.opacity(AppTheme.Opacity.muted), lineWidth: AppTheme.BorderWidth.hairline)
+                    .strokeBorder(AppTheme.Text.primaryColor.opacity(AppTheme.Opacity.muted), lineWidth: AppTheme.BorderWidth.hairline)
             )
     }
 

@@ -24,9 +24,10 @@ struct HoverHighlight: ViewModifier {
         guard isEnabled else { return .clear }
         if isActive, let activeFill { return activeFill }
         return switch (isActive, isHovered) {
-        case (true, true): Color.white.opacity(AppTheme.Opacity.muted)
-        case (true, false): Color.white.opacity(AppTheme.Opacity.soft)
-        case (false, true): Color.white.opacity(AppTheme.Opacity.faint)
+        // 纸感浅色：hover/选中靠【压暗】表达，不是提亮。
+        case (true, true): AppTheme.Text.primaryColor.opacity(AppTheme.Opacity.soft)
+        case (true, false): AppTheme.Text.primaryColor.opacity(AppTheme.Opacity.hint)
+        case (false, true): AppTheme.Text.primaryColor.opacity(AppTheme.Opacity.subtle)
         case (false, false): .clear
         }
     }

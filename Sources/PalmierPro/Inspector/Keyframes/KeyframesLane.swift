@@ -44,7 +44,7 @@ struct ClipRulerBlock: View {
                     .overlay(alignment: .leading) {
                         Text(editor.clipDisplayLabel(for: clip))
                             .font(.system(size: AppTheme.FontSize.xxs, weight: .medium))
-                            .foregroundStyle(.white.opacity(0.95))
+                            .foregroundStyle(AppTheme.Text.primaryColor.opacity(0.95))
                             .padding(.horizontal, AppTheme.Spacing.sm)
                             .lineLimit(1)
                     }
@@ -89,7 +89,7 @@ struct KeyframesLaneRow: View {
     var body: some View {
         GeometryReader { proxy in
             ZStack(alignment: .leading) {
-                Rectangle().fill(.white.opacity(AppTheme.Opacity.subtle))
+                Rectangle().fill(AppTheme.Text.primaryColor.opacity(AppTheme.Opacity.subtle))
                 Canvas { ctx, size in
                     let half = KeyframesMetrics.diamondSize / 2
                     let y = size.height / 2
