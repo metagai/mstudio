@@ -49,7 +49,7 @@ enum MetagGateway {
         }
     }
 
-    private static func request(_ path: String, method: String = "GET", body: [String: Any]? = nil) throws -> URLRequest {
+    static func request(_ path: String, method: String = "GET", body: [String: Any]? = nil) throws -> URLRequest {
         guard let token else { throw Failure.signedOut }
         var req = URLRequest(url: baseURL.appendingPathComponent(path))
         req.httpMethod = method
@@ -61,7 +61,7 @@ enum MetagGateway {
         return req
     }
 
-    private static func send<T: Decodable>(_ req: URLRequest, as: T.Type) async throws -> T {
+    static func send<T: Decodable>(_ req: URLRequest, as: T.Type) async throws -> T {
         let (data, response) = try await URLSession.shared.data(for: req)
         let code = (response as? HTTPURLResponse)?.statusCode ?? 0
         switch code {

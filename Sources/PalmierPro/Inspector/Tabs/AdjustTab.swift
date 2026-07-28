@@ -105,6 +105,16 @@ extension InspectorView {
         ]
     }
 
+    /// Rect is normalized to the source frame, Y from the top. Zero size means the effect is off.
+    private var regionRemoveControls: [EffectControl] {
+        [
+            EffectControl(effectId: "stylize.regionRemove", paramKey: "x", label: "X"),
+            EffectControl(effectId: "stylize.regionRemove", paramKey: "y", label: "Y"),
+            EffectControl(effectId: "stylize.regionRemove", paramKey: "width", label: "Width"),
+            EffectControl(effectId: "stylize.regionRemove", paramKey: "height", label: "Height"),
+        ]
+    }
+
     private var detailControls: [EffectControl] {
         [
             EffectControl(effectId: "blur.sharpen", paramKey: "amount", label: L10n.string("Sharpen")),
@@ -119,7 +129,7 @@ extension InspectorView {
     }
 
     private var effectsEffectIds: Set<String> {
-        Set((detailControls + blurControls + motionBlurControls + vignetteControls + grainControls + glowControls + chromaKeyControls).map(\.effectId))
+        Set((detailControls + regionRemoveControls + blurControls + motionBlurControls + vignetteControls + grainControls + glowControls + chromaKeyControls).map(\.effectId))
             .union(["stylize.invert"])
     }
 
@@ -145,6 +155,7 @@ extension InspectorView {
             }
             adjustSection(title: L10n.string("Effects"), effectIds: effectsEffectIds, clips: clips) {
                 adjustSubgroup(title: L10n.string("Detail"), controls: detailControls, clips: clips)
+                adjustSubgroup(title: L10n.string("Region Removal"), controls: regionRemoveControls, clips: clips)
                 adjustSubgroup(title: L10n.string("Blur"), controls: blurControls, clips: clips)
                 adjustSubgroup(title: L10n.string("Motion Blur"), controls: motionBlurControls, clips: clips)
                 adjustSubgroup(title: L10n.string("Vignette"), controls: vignetteControls, clips: clips)

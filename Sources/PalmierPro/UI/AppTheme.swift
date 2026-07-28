@@ -501,6 +501,15 @@ enum AppTheme {
         static let defaultCenter = CGPoint(x: centerSnapValue, y: defaultCenterY)
     }
 
+    enum Director {
+        /// Gateway shots are fixed-length; placeholders use it until the real asset lands.
+        static let shotDuration = 5
+        static let pollInterval: Duration = .seconds(5)
+        static let sheetWidth: CGFloat = 520
+        static let storyboardMaxHeight: CGFloat = 160
+        static let progressBarHeight: CGFloat = 4
+    }
+
     enum GenerationPanel {
         static let typeTabWidth: CGFloat = IconSize.xl + Spacing.lg
         static let minimumWidthAdjustment: CGFloat = typeTabWidth + Spacing.xxl

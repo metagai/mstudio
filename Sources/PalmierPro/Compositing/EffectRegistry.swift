@@ -302,6 +302,19 @@ enum EffectRegistry {
             }
         ),
         EffectDescriptor(
+            id: "stylize.regionRemove", displayName: "Region Removal", category: "Stylize",
+            params: [
+                EffectParamSpec(key: "x", label: "X", range: 0...1, defaultValue: 0, unit: ""),
+                EffectParamSpec(key: "y", label: "Y", range: 0...1, defaultValue: 0, unit: ""),
+                EffectParamSpec(key: "width", label: "Width", range: 0...1, defaultValue: 0, unit: ""),
+                EffectParamSpec(key: "height", label: "Height", range: 0...1, defaultValue: 0, unit: ""),
+            ],
+            apply: { image, p, extent in
+                RegionRemoveKernel.apply(image, extent: extent, x: p.value("x"), y: p.value("y"),
+                                         width: p.value("width"), height: p.value("height"))
+            }
+        ),
+        EffectDescriptor(
             id: "stylize.grain", displayName: "Film Grain", category: "Stylize",
             params: [
                 EffectParamSpec(key: "amount", label: "Amount", range: 0...1, defaultValue: 0, unit: ""),
@@ -378,6 +391,8 @@ enum EffectRegistry {
 
     /// Canonical order the always-on adjustment sections insert their effects in.
     static let canonicalOrder: [String] = [
+        // Repairs the source before anything grades or blurs it.
+        "stylize.regionRemove",
         "color.exposure", "color.contrast", "color.highlightsShadows", "color.blacksWhites",
         "color.temperature", "color.vibrance", "color.saturation", "color.wheels", "color.curves",
         "color.hueCurves", "color.lut", "detail.clarity", "key.chroma", "blur.gaussian", "blur.sharpen",

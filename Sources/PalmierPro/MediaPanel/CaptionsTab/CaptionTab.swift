@@ -26,6 +26,8 @@ struct CaptionTab: View {
     @State private var isGenerating = false
     @State private var estimatedCloudCost: Int?
     @State private var note: String?
+    @State private var templateId: String?
+    @State private var templatesExpanded = true
     @State private var sourceExpanded = true
     @State private var settingsExpanded = true
     @State private var styleExpanded = false
@@ -129,6 +131,7 @@ struct CaptionTab: View {
             VStack(spacing: AppTheme.Spacing.zero) {
                 ScrollView {
                     VStack(alignment: .leading, spacing: AppTheme.Spacing.zero) {
+                        templateSection
                         sourceSection
                         if isTranscriptOnly {
                             generateBar
@@ -189,6 +192,67 @@ struct CaptionTab: View {
             guard !Task.isCancelled else { return }
             estimatedCloudCost = cost
         }
+    }
+
+    /// Templates seed the style, animation, and placement below — the preview and Generate path are unchanged.
+    private var templateSection: some View {
+        EditorPanelGroup("Template", isExpanded: $templatesExpanded) {
+            LazyVGrid(
+                columns: [
+                    GridItem(.flexible(), spacing: AppTheme.Spacing.xs),
+                    GridItem(.flexible(), spacing: AppTheme.Spacing.xs),
+                ],
+                spacing: AppTheme.Spacing.xs
+            ) {
+                ForEach(CaptionTemplate.all) { templateCell($0) }
+            }
+        }
+    }
+
+    private func templateCell(_ template: CaptionTemplate) -> some View {
+        let selected = templateId == template.id
+        return Button {
+            apply(template)
+        } label: {
+            VStack(alignment: .leading, spacing: AppTheme.Spacing.xxs) {
+                Text(template.name)
+                    .font(.system(size: AppTheme.FontSize.xs, weight: AppTheme.FontWeight.semibold))
+                    .foregroundStyle(AppTheme.Text.primaryColor)
+                    .lineLimit(1)
+                Text(template.tagline)
+                    .font(.system(size: AppTheme.FontSize.xxs))
+                    .foregroundStyle(AppTheme.Text.tertiaryColor)
+                    .lineLimit(2)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+            }
+            .padding(AppTheme.Spacing.xs)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .background(
+                RoundedRectangle(cornerRadius: AppTheme.Radius.sm)
+                    .fill(AppTheme.Background.raisedColor)
+            )
+            .overlay(
+                RoundedRectangle(cornerRadius: AppTheme.Radius.sm)
+                    .strokeBorder(
+                        selected ? AppTheme.Accent.timecodeColor : AppTheme.Border.subtleColor,
+                        lineWidth: selected ? AppTheme.BorderWidth.medium : AppTheme.BorderWidth.hairline
+                    )
+            )
+            .contentShape(RoundedRectangle(cornerRadius: AppTheme.Radius.sm))
+        }
+        .buttonStyle(.plain)
+        .focusable(false)
+        .help(template.tagline)
+    }
+
+    private func apply(_ template: CaptionTemplate) {
+        templateId = template.id
+        style = template.style
+        animationPreset = template.animation.preset
+        animationHighlight = template.animation.highlight ?? TextAnimation.defaultHighlight
+        center = template.center
+        styleExpanded = true
+        animationExpanded = true
     }
 
     private var sourceSection: some View {

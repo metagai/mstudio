@@ -19,6 +19,22 @@ struct EffectModelTests {
         return pixel
     }
 
+    /// A zero-size or out-of-frame rect must be a passthrough — the inspector relies on
+    /// default params leaving no render pass behind.
+    @Test(arguments: [
+        (0.0, 0.0, 0.0, 0.0),
+        (0.2, 0.2, 0.0, 0.5),
+        (1.0, 0.0, 0.5, 0.5),
+    ])
+    func regionRemovePassesThroughDegenerateRects(rect: (Double, Double, Double, Double)) {
+        let image = CIImage(color: .gray).cropped(to: CGRect(x: 0, y: 0, width: 64, height: 64))
+        let result = RegionRemoveKernel.apply(
+            image, extent: image.extent,
+            x: rect.0, y: rect.1, width: rect.2, height: rect.3
+        )
+        #expect(result === image)
+    }
+
     @Test func clipEffectsRoundTripThroughCodable() throws {
         var clip = Fixtures.clip(id: "c1", mediaRef: "m", start: 0, duration: 30)
         clip.effects = [Effect.make("color.exposure", ["ev": 1.5])]
@@ -242,6 +258,7 @@ struct EffectRenderingTests {
             "blur.gaussian": ["radius": 30],
             "blur.sharpen": ["amount": 2],
             "stylize.vignette": ["amount": -1, "midpoint": 0.2],
+            "stylize.regionRemove": ["x": 0.3, "y": 0.3, "width": 0.4, "height": 0.4],
             "stylize.grain": ["amount": 1, "size": 1.5],
             "detail.clarity": ["clarity": 1, "dehaze": 0],
             "key.chroma": ["keyHue": 0.333, "tolerance": 0.5],
