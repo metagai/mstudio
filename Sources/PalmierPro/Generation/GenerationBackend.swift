@@ -112,11 +112,8 @@ enum GenerationBackend {
     }
 
     static func engine(for model: String) -> String {
-        let id = model.lowercased()
-        if id.contains("seedance") { return "seedance" }
-        if id.contains("happyhorse") || id.contains("hh") { return "hh" }
-        if id.contains("wan") || id.contains("cloud") { return "cloud" }
-        return "local"
+        let id = model.trimmingCharacters(in: .whitespacesAndNewlines).lowercased()
+        return id.isEmpty ? "local" : id
     }
 
 }

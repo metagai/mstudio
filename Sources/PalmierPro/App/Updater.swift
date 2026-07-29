@@ -27,8 +27,17 @@ final class Updater: NSObject {
         checkForUpdateInformation()
     }
 
+    /// Sparkle needs a feed *and* an EdDSA public key to install anything. Until METAG has a
+    /// signing identity there is neither, so the menu item sends people to the download page
+    /// instead of opening a dialog that can only ever fail.
+    static let downloadPage = URL(string: "https://metag.ai/#pillars")!
+
     @objc func checkForUpdates(_ sender: Any?) {
-        controller?.checkForUpdates(sender)
+        guard let controller else {
+            NSWorkspace.shared.open(Self.downloadPage)
+            return
+        }
+        controller.checkForUpdates(sender)
     }
 
     private func checkForUpdateInformation() {

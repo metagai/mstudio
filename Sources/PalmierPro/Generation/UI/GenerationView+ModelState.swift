@@ -1,9 +1,10 @@
 import SwiftUI
 
 struct VideoModelProviderGroup: Identifiable {
-    let name: String
+    /// nil when the models carry no provider, so the menu draws no section header.
+    let name: String?
     let models: [(index: Int, model: VideoModelConfig)]
-    var id: String { name }
+    var id: String { name ?? "" }
     var providerIconKey: String? { models.first?.model.entry.providerIconKey }
 }
 
@@ -66,11 +67,13 @@ extension GenerationView {
         var names: [String] = []
         var modelsByName: [String: [(index: Int, model: VideoModelConfig)]] = [:]
         for item in enabledVideoModels {
-            let name = item.model.providerName ?? "Other"
+            let name = item.model.providerName ?? ""
             if modelsByName[name] == nil { names.append(name) }
             modelsByName[name, default: []].append(item)
         }
-        return names.map { VideoModelProviderGroup(name: $0, models: modelsByName[$0] ?? []) }
+        return names.map {
+            VideoModelProviderGroup(name: $0.isEmpty ? nil : $0, models: modelsByName[$0] ?? [])
+        }
     }
     var enabledImageModels: [(index: Int, model: ImageModelConfig)] {
         imageModels.enumerated()

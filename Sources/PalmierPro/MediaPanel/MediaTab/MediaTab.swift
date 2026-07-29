@@ -831,6 +831,13 @@ struct MediaTab: View {
     // MARK: - Import
 
     private func importMedia() {
+        Self.presentImportPanel(into: currentFolderId, editor: editor)
+    }
+
+    /// Shared by the panel's Import button and File ▸ Import Media…, which runs on the window
+    /// controller and has no MediaTab instance to route through.
+    @MainActor
+    static func presentImportPanel(into folderId: String?, editor: EditorViewModel) {
         let panel = NSOpenPanel()
         panel.allowsMultipleSelection = true
         panel.canChooseDirectories = true
@@ -842,9 +849,8 @@ struct MediaTab: View {
         panel.begin { response in
             guard response == .OK else { return }
             let urls = panel.urls
-            let folderId = currentFolderId
             Task { @MainActor in
-                await Self.handlePanelFinderDrop(urls: urls, into: folderId, editor: editor)
+                await handlePanelFinderDrop(urls: urls, into: folderId, editor: editor)
             }
         }
     }

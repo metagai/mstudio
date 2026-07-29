@@ -172,10 +172,10 @@ extension GenerationView {
         if let iconKey = group.providerIconKey {
             HStack(spacing: AppTheme.Spacing.xs) {
                 ProviderLogo(iconKey: iconKey, size: AppTheme.IconSize.xs)
-                Text(group.name)
+                Text(group.name ?? "")
             }
         } else {
-            Text(group.name)
+            Text(group.name ?? "")
         }
     }
 

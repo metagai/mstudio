@@ -45,7 +45,27 @@ enum EditAction {
         case .lottie, .sequence, .subtitle: candidates = []
         }
         return candidates.filter {
-            $0.availability(for: asset, effectiveDurationOverride: effectiveDurationOverride).isAvailable
+            $0.catalogSupported
+                && $0.availability(for: asset, effectiveDurationOverride: effectiveDurationOverride).isAvailable
+        }
+    }
+
+    /// 目录里没有能干这件事的模型，这个入口就不该出现。
+    ///
+    /// 上游的候选表是按素材类型写死的，不问后端；我们的网关只卖它登记过的那几档，
+    /// 于是每加一个上游功能就多一个点了没反应的菜单项。**灰着或点了没反应的按钮
+    /// 比没有这个按钮更廉价**，而逐个删是会烂的 —— 上游每加一个我们就要再删一次。
+    /// 判断落在这一处，网关卖什么就出现什么。
+    @MainActor
+    var catalogSupported: Bool {
+        let catalog = ModelCatalog.shared
+        switch self {
+        case .upscale: return !catalog.upscale.isEmpty
+        case .edit: return !catalog.image.isEmpty
+        case .createVideo, .lipSync, .reframe: return !catalog.video.isEmpty
+        case .generateMusic, .generateSFX: return !catalog.audio.isEmpty
+        // 重跑用的是素材自己那一档；草案增强另有 asset.canEnhanceDraft 把关。
+        case .rerun, .enhanceDraft: return true
         }
     }
 
@@ -97,6 +117,9 @@ enum EditAction {
             if let error = model.validateSourceDuration(duration) {
                 return .disabled(reason: error)
             }
+            guard !UpscaleModelConfig.models(for: asset.type).isEmpty else {
+                return .disabled(reason: "No upscale model available")
+            }
             return .available
 
         case .edit:
@@ -130,6 +153,9 @@ enum EditAction {
             if asset.isGenerating {
                 return .disabled(reason: L10n.string("Generation in progress"))
             }
+            guard EditSubmitter.editSeed(for: asset) != nil else {
+                return .disabled(reason: "No editing model available")
+            }
             return .available
 
         case .generateMusic:
@@ -152,6 +178,11 @@ enum EditAction {
             }
             if asset.isGenerating {
                 return .disabled(reason: L10n.string("Generation in progress"))
+            }
+            guard EditSubmitter.createVideoSeed(for: asset, asReference: false) != nil
+                || EditSubmitter.createVideoSeed(for: asset, asReference: true) != nil
+            else {
+                return .disabled(reason: "No video model accepts a source image")
             }
             return .available
 
