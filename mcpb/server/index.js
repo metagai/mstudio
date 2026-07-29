@@ -1,11 +1,18 @@
 // Stdio→HTTP shim for Claude Desktop
 const http = require('node:http');
+const fs = require('node:fs');
+const os = require('node:os');
+const path = require('node:path');
 
 const URL_BASE = 'http://127.0.0.1:19789/mcp';
+// METAG writes this at launch, mode 0600. Reading it here is what keeps the
+// Claude Desktop install one click: the user never copies a token by hand.
+const TOKEN_PATH = path.join(os.homedir(), 'Library/Application Support/PalmierPro/mcp-token');
 const RETRY_MS_MIN = 500;
 const RETRY_MS_MAX = 5000;
 const REQUEST_REPLAY_MS = 25000; // fail held requests before Claude Desktop's own 60s timeout
 
+let accessToken = null;
 let sessionId = null;
 let protocolVersion = '2025-06-18';
 let initializeParams = null; // replayed on reconnect
@@ -17,6 +24,17 @@ const log = (...a) => console.error('[metag-shim]', ...a);
 const writeOut = (msg) => process.stdout.write(JSON.stringify(msg) + '\n');
 const sleep = (ms) => new Promise(r => setTimeout(r, ms));
 
+// Re-read on every refusal so a token rotated in METAG is picked up without a restart.
+function readAccessToken() {
+  try {
+    const raw = fs.readFileSync(TOKEN_PATH, 'utf8').trim();
+    accessToken = raw.length > 0 ? raw : null;
+  } catch {
+    accessToken = null;
+  }
+  return accessToken;
+}
+
 function headers(extra = {}) {
   const h = {
     'Content-Type': 'application/json',
@@ -25,6 +43,7 @@ function headers(extra = {}) {
     ...extra,
   };
   if (sessionId) h['Mcp-Session-Id'] = sessionId;
+  if (accessToken) h['Authorization'] = `Bearer ${accessToken}`;
   return h;
 }
 
@@ -60,6 +79,10 @@ async function post(message, onMessage) {
       headers: headers(),
       body: JSON.stringify(message),
     });
+    if (res.status === 403) {
+      readAccessToken();
+      throw new Error(accessToken ? 'access token rejected' : `no access token at ${TOKEN_PATH}; open METAG once`);
+    }
     if (res.status === 404) throw new Error('session expired');
     if (!res.ok && res.status !== 202) throw new Error(`HTTP ${res.status}`);
     const assigned = res.headers.get('mcp-session-id');
@@ -118,6 +141,7 @@ async function establishSession() {
   for (;;) {
     try {
       sessionId = null;
+      readAccessToken();
       const id = `shim-init-${++internalId}`;
       let result = null;
       await post({ jsonrpc: '2.0', id, method: 'initialize', params: initializeParams }, (msg) => {

@@ -96,6 +96,31 @@ enum AppNotifications {
         }
     }
 
+    /// Fires once per launch. An agent configured before access tokens shipped would otherwise
+    /// just stop working with nothing on screen to explain it.
+    static func mcpAgentRefused(_ refusal: MCPAccessRefusal) {
+        guard canUseUserNotifications, isEnabled else { return }
+
+        let content = UNMutableNotificationContent()
+        content.title = "External agent refused"
+        content.body = refusal == .browserRequest
+            ? "A web page tried to reach METAG's MCP server and was blocked."
+            : "An agent connected without a valid access token. Open Help → MCP Instructions to copy the current configuration."
+        content.sound = .default
+        content.userInfo = ["openHelpTab": HelpTab.mcp.rawValue]
+
+        let request = UNNotificationRequest(
+            identifier: "mcp-agent-refused-\(UUID().uuidString)",
+            content: content,
+            trigger: nil
+        )
+        UNUserNotificationCenter.current().add(request) { error in
+            if let error {
+                Log.app.warning("notification delivery failed error=\(error.localizedDescription)")
+            }
+        }
+    }
+
     static func exportFailed(name: String, reason: String) {
         guard canUseUserNotifications, isEnabled else { return }
 
@@ -150,6 +175,10 @@ private final class AppNotificationDelegate: NSObject, UNUserNotificationCenterD
         didReceive response: UNNotificationResponse
     ) async {
         let userInfo = response.notification.request.content.userInfo
+        if let rawTab = userInfo["openHelpTab"] as? String, let tab = HelpTab(rawValue: rawTab) {
+            await MainActor.run { HelpWindowController.shared.show(tab: tab) }
+            return
+        }
         if let exportPath = userInfo["exportPath"] as? String {
             let url = URL(fileURLWithPath: exportPath)
             await MainActor.run { NSWorkspace.shared.activateFileViewerSelecting([url]) }
