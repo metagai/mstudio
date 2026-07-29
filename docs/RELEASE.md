@@ -150,5 +150,6 @@ xcrun stapler validate .build/METAG.app
   every timeline tool work; only the in-app chat does not. Porting it to the gateway is a
   separate piece of work.
 - **`SUPublicEDKey` is missing** (item E). Ship without it and the first update will not install.
-- **The local MCP server has no authentication.** It binds to `127.0.0.1:19789` only, but any
-  local process can drive all 46 tools against the frontmost project.
+- **Translated READMEs still show the pre-token MCP setup.** `docs/readme/README.*.md` hand out a
+  config with no access token, which the server now refuses. The refusal message points at
+  `Help` -> `MCP Instructions`, so it is not silent, but the translations need updating.

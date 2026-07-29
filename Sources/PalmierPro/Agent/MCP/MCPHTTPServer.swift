@@ -12,6 +12,8 @@ actor MCPHTTPServer {
 
     private let port: UInt16
     private let makeServer: @Sendable () async -> MCPServerInstance
+    private let onRefusal: @Sendable (MCPAccessRefusal) -> Void
+    private var gate: MCPAccessGate
     private nonisolated(unsafe) var listener: NWListener?
 
     private struct Session {
@@ -25,16 +27,34 @@ actor MCPHTTPServer {
     private var fallback: (server: Server, transport: StatelessHTTPServerTransport)?
     private static let sessionIdleLimit: Duration = .seconds(3600)
     private static let sessionCountLimit = 32
+    private static let refusalReportInterval: Duration = .seconds(30)
+    private var lastRefusalReport: ContinuousClock.Instant?
 
     init(
         port: UInt16,
+        token: String,
+        onRefusal: @escaping @Sendable (MCPAccessRefusal) -> Void = { _ in },
         makeServer: @escaping @Sendable () async -> MCPServerInstance
     ) {
         self.port = port
+        self.gate = MCPAccessGate(token: token)
+        self.onRefusal = onRefusal
         self.makeServer = makeServer
     }
 
-    func start() throws {
+    /// Rotation must revoke live sessions too, otherwise an agent that already authenticated
+    /// keeps working with the retired token.
+    func setToken(_ token: String) {
+        gate = MCPAccessGate(token: token)
+        let closing = sessions.values.map(\.transport)
+        sessions.removeAll()
+        Task { for transport in closing { await transport.disconnect() } }
+        Log.mcp.notice("access token replaced; \(closing.count) session(s) revoked")
+    }
+
+    /// Returns only once the socket is actually accepting, so a failed bind reports failure
+    /// instead of leaving the app claiming a server that is not there.
+    func start() async throws {
         Log.mcp.info("listener start port=\(self.port)")
         guard let endpointPort = NWEndpoint.Port(rawValue: port) else {
             Log.mcp.fault("invalid port \(self.port)")
@@ -44,15 +64,50 @@ actor MCPHTTPServer {
         params.allowLocalEndpointReuse = true
         // Bind to IPv4 loopback only so the server is never reachable from the LAN.
         params.requiredLocalEndpoint = .hostPort(host: "127.0.0.1", port: endpointPort)
-        listener = try NWListener(using: params)
+        let listener = try NWListener(using: params)
+        self.listener = listener
 
-        listener?.newConnectionHandler = { [weak self] connection in
+        listener.newConnectionHandler = { [weak self] connection in
             guard let self else { return }
             connection.start(queue: .global(qos: .userInitiated))
             Task { await self.receive(on: connection) }
         }
 
-        listener?.start(queue: .global(qos: .userInitiated))
+        let queue = DispatchQueue(label: "ai.metag.mcp.listener")
+        let readiness = ListenerReadiness()
+        do {
+            try await withCheckedThrowingContinuation { continuation in
+                // Serial queue: the handler never runs concurrently with itself.
+                listener.stateUpdateHandler = { state in
+                    switch state {
+                    case .ready:
+                        readiness.resume(continuation, with: .success(()))
+                    case .failed(let error):
+                        readiness.resume(continuation, with: .failure(error))
+                    case .cancelled:
+                        readiness.resume(continuation, with: .failure(CancellationError()))
+                    default:
+                        break
+                    }
+                }
+                listener.start(queue: queue)
+            }
+        } catch {
+            listener.cancel()
+            self.listener = nil
+            throw error
+        }
+    }
+
+    /// Resume-exactly-once guard for the listener readiness continuation.
+    private final class ListenerReadiness: @unchecked Sendable {
+        private var resumed = false
+
+        func resume(_ continuation: CheckedContinuation<Void, any Error>, with result: Result<Void, any Error>) {
+            guard !resumed else { return }
+            resumed = true
+            continuation.resume(with: result)
+        }
     }
 
     func stop() {
@@ -89,12 +144,18 @@ actor MCPHTTPServer {
         case .invalid:
             sendRaw("HTTP/1.1 400 Bad Request\r\nContent-Length: 0\r\n\r\n", on: connection, keepAlive: false)
         case .complete:
-            guard let request = parseHTTPRequest(buffer) else {
+            guard let parsed = parseHTTPRequest(buffer) else {
                 sendRaw("HTTP/1.1 400 Bad Request\r\nContent-Length: 0\r\n\r\n", on: connection, keepAlive: false)
                 return
             }
-            await handle(request: request, connection: connection)
+            await handle(parsed, connection: connection)
         }
+    }
+
+    private struct ParsedRequest {
+        let request: HTTPRequest
+        let path: String
+        let query: String?
     }
 
     private enum Framing { case needMoreData, complete, invalid }
@@ -119,7 +180,17 @@ actor MCPHTTPServer {
 
     // MARK: - Routing
 
-    private func handle(request: HTTPRequest, connection: NWConnection) async {
+    private func handle(_ parsed: ParsedRequest, connection: NWConnection) async {
+        let request = parsed.request
+
+        // Single choke point: every route below is unreachable without a valid token.
+        if let refusal = gate.refusal(path: parsed.path, headers: request.headers, query: parsed.query) {
+            Log.mcp.notice("request refused reason=\(refusal.rawValue) path=\(parsed.path)")
+            reportRefusal(refusal)
+            refuse(refusal, on: connection)
+            return
+        }
+
         if request.path == "/.well-known/oauth-protected-resource" {
             let body = "{\"resource\":\"http://127.0.0.1:\(port)\"}"
             sendRaw("HTTP/1.1 200 OK\r\nContent-Type: application/json\r\nContent-Length: \(body.utf8.count)\r\n\r\n\(body)", on: connection, keepAlive: true)
@@ -234,6 +305,35 @@ actor MCPHTTPServer {
         Task { await session.transport.disconnect() }
     }
 
+    // MARK: - Refusal
+
+    /// Throttled: a client retrying in a loop must not flood the main actor with UI updates.
+    private func reportRefusal(_ refusal: MCPAccessRefusal) {
+        let now = ContinuousClock.now
+        if let last = lastRefusalReport, now - last < Self.refusalReportInterval { return }
+        lastRefusalReport = now
+        onRefusal(refusal)
+    }
+
+    /// 403 rather than 401: a `WWW-Authenticate` challenge sends OAuth-capable clients down a
+    /// discovery flow this server does not implement. No `Access-Control-Allow-*` header is ever
+    /// emitted, so a browser cannot read this body either.
+    private nonisolated func refuse(_ refusal: MCPAccessRefusal, on connection: NWConnection) {
+        let payload: [String: Any] = [
+            "jsonrpc": "2.0",
+            "id": NSNull(),
+            "error": ["code": -32600, "message": refusal.message],
+        ]
+        let body = (try? JSONSerialization.data(withJSONObject: payload)) ?? Data()
+        var head = "HTTP/1.1 \(refusal.statusCode) Forbidden\r\n"
+        head += "Content-Type: application/json\r\n"
+        head += "Cache-Control: no-store\r\n"
+        head += "Content-Length: \(body.count)\r\n\r\n"
+        var response = Data(head.utf8)
+        response.append(body)
+        connection.send(content: response, completion: .contentProcessed { _ in connection.cancel() })
+    }
+
     // MARK: - Response writing
 
     private func writeResponse(_ response: HTTPResponse, on connection: NWConnection) {
@@ -269,7 +369,7 @@ actor MCPHTTPServer {
 
     // MARK: - HTTP Parsing
 
-    private nonisolated func parseHTTPRequest(_ data: Data) -> HTTPRequest? {
+    private nonisolated func parseHTTPRequest(_ data: Data) -> ParsedRequest? {
         guard let string = String(data: data, encoding: .utf8) else { return nil }
         let parts = string.components(separatedBy: "\r\n\r\n")
         guard let headerSection = parts.first else { return nil }
@@ -280,7 +380,9 @@ actor MCPHTTPServer {
 
         let method = String(tokens[0])
         let rawPath = String(tokens[1])
-        let path = rawPath.split(separator: "?").first.map(String.init) ?? rawPath
+        let splitIndex = rawPath.firstIndex(of: "?")
+        let path = splitIndex.map { String(rawPath[..<$0]) } ?? rawPath
+        let query = splitIndex.map { String(rawPath[rawPath.index(after: $0)...]) }
 
         var headers: [String: String] = [:]
         for line in lines.dropFirst() {
@@ -292,7 +394,11 @@ actor MCPHTTPServer {
 
         let bodyString = parts.dropFirst().joined(separator: "\r\n\r\n")
         let body = bodyString.isEmpty ? nil : bodyString.data(using: .utf8)
-        return HTTPRequest(method: method, headers: headers, body: body, path: path)
+        return ParsedRequest(
+            request: HTTPRequest(method: method, headers: headers, body: body, path: path),
+            path: path,
+            query: query
+        )
     }
 
     private nonisolated func sendRaw(_ string: String, on connection: NWConnection, keepAlive: Bool) {

@@ -23,17 +23,51 @@ final class MCPService {
 
     private(set) var isRunning: Bool = false
 
+    /// Set when an agent is turned away for a missing or stale token, so the UI can explain the
+    /// break instead of letting a previously working connection fail silently.
+    private(set) var lastRefusal: MCPAccessRefusal?
+    private(set) var refusalCount: Int = 0
+
     @ObservationIgnored
     private let projectProvider: () -> VideoProject?
     @ObservationIgnored
     private var httpServer: MCPHTTPServer?
+    @ObservationIgnored
+    private var announcedRefusal = false
+    /// Bumped by every start and stop so a token load that finishes after `stop()` cannot
+    /// resurrect the listener.
+    @ObservationIgnored
+    private var lifecycleGeneration = 0
 
     init(projectProvider: @escaping () -> VideoProject?) {
         self.projectProvider = projectProvider
     }
 
     func start() {
-        let httpServer = MCPHTTPServer(port: Self.port) { [self] in
+        lifecycleGeneration += 1
+        let generation = lifecycleGeneration
+        Task { @MainActor [weak self] in
+            guard let self else { return }
+            do {
+                let token = try await MCPAccessTokenStore.shared.current()
+                guard generation == lifecycleGeneration else { return }
+                try await startServer(token: token)
+            } catch {
+                // No token means no way to authenticate callers, so the port stays closed.
+                Log.mcp.error("http server not started: \(Log.detail(error))")
+                isRunning = false
+            }
+        }
+    }
+
+    private func startServer(token: String) async throws {
+        let httpServer = MCPHTTPServer(
+            port: Self.port,
+            token: token,
+            onRefusal: { refusal in
+                Task { @MainActor in AppState.shared.mcpService?.recordRefusal(refusal) }
+            }
+        ) { [self] in
             let toolExecutor = await makeSessionToolExecutor()
             let server = Server(
                 name: "metag-mac",
@@ -51,16 +85,27 @@ final class MCPService {
             }
         }
         self.httpServer = httpServer
-        Task { @MainActor [weak self] in
-            do {
-                try await httpServer.start()
-                Log.mcp.notice("http server started port=\(Self.port)")
-                self?.isRunning = true
-            } catch {
-                Log.mcp.error("http server failed to start: \(error.localizedDescription)")
-                self?.isRunning = false
-            }
-        }
+        try await httpServer.start()
+        Log.mcp.notice("http server started port=\(Self.port)")
+        isRunning = true
+    }
+
+    /// Issues a new token and revokes the old one everywhere it is still accepted.
+    func rotateAccessToken() async throws -> String {
+        let token = try await MCPAccessTokenStore.shared.rotate()
+        await httpServer?.setToken(token)
+        lastRefusal = nil
+        refusalCount = 0
+        announcedRefusal = false
+        return token
+    }
+
+    func recordRefusal(_ refusal: MCPAccessRefusal) {
+        lastRefusal = refusal
+        refusalCount += 1
+        guard !announcedRefusal else { return }
+        announcedRefusal = true
+        AppNotifications.mcpAgentRefused(refusal)
     }
 
     func makeSessionToolExecutor() -> ToolExecutor {
@@ -68,6 +113,7 @@ final class MCPService {
     }
 
     func stop() {
+        lifecycleGeneration += 1
         if let server = httpServer {
             Task { await server.stop() }
         }

@@ -2,7 +2,7 @@
   "manifest_version": "0.4",
   "name": "metag-mac",
   "display_name": "METAG for Mac",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "Edit the project open in METAG on this Mac, from Claude Desktop.",
   "long_description": "Connects Claude Desktop to the MCP server running inside METAG on this Mac. Claude can read your timeline, edit clips, generate media, and manage tracks in the project you have open. This is the local editor connector; METAG's hosted generation API is a separate remote MCP server.",
   "icon": "icon.png",

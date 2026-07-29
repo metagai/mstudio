@@ -61,6 +61,12 @@ final class AppState {
         mcpService = nil
     }
 
+    /// Routed through the live service when there is one so rotation also revokes open sessions.
+    func rotateMCPAccessToken() async throws -> String {
+        if let mcpService { return try await mcpService.rotateAccessToken() }
+        return try await MCPAccessTokenStore.shared.rotate()
+    }
+
     func setMCPEnabled(_ enabled: Bool) {
         MCPService.isEnabledPreference = enabled
         if enabled {

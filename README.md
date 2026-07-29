@@ -56,28 +56,38 @@ Connects your Claude/Codex/Cursor via MCP, or use the in-app agent to work on th
 
 ## MCP server
 
-When the app is open, it exposes an MCP server at `http://127.0.0.1:19789/mcp` via HTTP. To connect:
+When the app is open, it exposes an MCP server at `http://127.0.0.1:19789/mcp` via HTTP.
+
+The server is bound to loopback and requires an access token. METAG generates one on first launch
+and stores it at `~/Library/Application Support/PalmierPro/mcp-token`, readable only by you.
+Requests without the token are refused, and so is anything a browser sends — a web page cannot
+drive your timeline. Rotate the token any time from `Help` -> `MCP Instructions` -> `Regenerate`;
+every connected agent then has to be re-added.
+
+`Help` -> `MCP Instructions` shows the ready-made command or config for each agent with the token
+already filled in, so the fastest path is to copy it from there. The forms are:
 
 **Claude Code**
 ```bash
-claude mcp add --transport http palmier-pro http://127.0.0.1:19789/mcp
+claude mcp add --transport http metag-mac http://127.0.0.1:19789/mcp \
+  --header "Authorization: Bearer $(cat ~/Library/Application\ Support/PalmierPro/mcp-token)"
 ```
 
 **Codex**
 ```bash
-codex mcp add palmier-pro --url http://127.0.0.1:19789/mcp
+codex mcp add metag-mac --url "http://127.0.0.1:19789/mcp?key=$(cat ~/Library/Application\ Support/PalmierPro/mcp-token)"
 ```
 
 **Cursor**
 
-The easiest way is go inside the app `Help` -> `MCP Instructions` -> `Install in Cursor`, or install manually by adding this to `~/.cursor/mcp.json`:
+The easiest way is go inside the app `Help` -> `MCP Instructions` -> `Install in Cursor`, or install manually by adding this to `~/.cursor/mcp.json` with `TOKEN` replaced by the token shown in the app:
 
 ```
 {
   "mcpServers": {
-    "palmier-pro": {
+    "metag-mac": {
       "type": "http",
-      "url": "http://127.0.0.1:19789/mcp"
+      "url": "http://127.0.0.1:19789/mcp?key=TOKEN"
     }
   }
 }
@@ -85,7 +95,7 @@ The easiest way is go inside the app `Help` -> `MCP Instructions` -> `Install in
 
 **Claude Desktop**
 
-We bundle a [mcpb](https://github.com/modelcontextprotocol/mcpb) with the app that allows a one click install Desktop Extension on Claude Desktop. Go to `Help` -> `MCP Instructions` -> `Install in Claude Desktop`
+We bundle a [mcpb](https://github.com/modelcontextprotocol/mcpb) with the app that allows a one click install Desktop Extension on Claude Desktop. Go to `Help` -> `MCP Instructions` -> `Install in Claude Desktop`. The bundled connector reads the token file itself, so there is nothing to paste.
 
 ## FAQ
 
