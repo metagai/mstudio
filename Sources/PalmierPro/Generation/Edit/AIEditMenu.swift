@@ -43,8 +43,12 @@ struct AIEditMenu: View {
                 }
                 if availableActions.contains(.createVideo) {
                     Menu("Create Video") {
-                        Button("Set as first frame") { createVideo(asReference: false) }
-                        Button("Set as reference") { createVideo(asReference: true) }
+                        if EditSubmitter.canCreateVideo(from: asset, asReference: false) {
+                            Button("Set as first frame") { createVideo(asReference: false) }
+                        }
+                        if EditSubmitter.canCreateVideo(from: asset, asReference: true) {
+                            Button("Set as reference") { createVideo(asReference: true) }
+                        }
                     }
                 }
             }

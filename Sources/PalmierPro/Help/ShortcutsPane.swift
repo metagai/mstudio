@@ -12,6 +12,7 @@ struct ShortcutsPane: View {
         ShortcutGroup(title: "Tools", shortcuts: [
             ("V", "Selection Tool"),
             ("C", "Razor Tool"),
+            ("T", "Trim Tool"),
         ]),
         ShortcutGroup(title: "Editing", shortcuts: [
             ("A", "Select Forward on Track"),

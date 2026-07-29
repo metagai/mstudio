@@ -313,8 +313,12 @@ struct AIEditTab: View {
             .disabled(!isEnabled)
         case .createVideo:
             Menu(title) {
-                Button("Set as first frame") { sendToVideo(asReference: false) }
-                Button("Set as reference") { sendToVideo(asReference: true) }
+                if EditSubmitter.canCreateVideo(from: asset, asReference: false) {
+                    Button("Set as first frame") { sendToVideo(asReference: false) }
+                }
+                if EditSubmitter.canCreateVideo(from: asset, asReference: true) {
+                    Button("Set as reference") { sendToVideo(asReference: true) }
+                }
             }
             .menuStyle(.borderlessButton)
             .fixedSize()

@@ -34,6 +34,9 @@ enum EditAction {
             if asset.isGenerating {
                 return .disabled(reason: "Generation in progress")
             }
+            guard !UpscaleModelConfig.models(for: asset.type).isEmpty else {
+                return .disabled(reason: "No upscale model available")
+            }
             return .available
 
         case .edit:
@@ -60,6 +63,9 @@ enum EditAction {
             if asset.isGenerating {
                 return .disabled(reason: "Generation in progress")
             }
+            guard EditSubmitter.editSeed(for: asset) != nil else {
+                return .disabled(reason: "No editing model available")
+            }
             return .available
 
         case .generateMusic:
@@ -82,6 +88,11 @@ enum EditAction {
             }
             if asset.isGenerating {
                 return .disabled(reason: "Generation in progress")
+            }
+            guard EditSubmitter.createVideoSeed(for: asset, asReference: false) != nil
+                || EditSubmitter.createVideoSeed(for: asset, asReference: true) != nil
+            else {
+                return .disabled(reason: "No video model accepts a source image")
             }
             return .available
 

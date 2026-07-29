@@ -176,7 +176,6 @@ enum MainMenuBuilder {
         menu.addItem(withTitle: L("Keyboard Shortcuts"), action: #selector(AppDelegate.showKeyboardShortcuts(_:)), keyEquivalent: "?")
         menu.addItem(withTitle: L("MCP Instructions"), action: #selector(AppDelegate.showMCPInstructions(_:)), keyEquivalent: "")
         menu.addItem(withTitle: L("Send Feedback…"), action: #selector(AppDelegate.showFeedback(_:)), keyEquivalent: "")
-        menu.addItem(.separator())
         item.submenu = menu
         return item
     }

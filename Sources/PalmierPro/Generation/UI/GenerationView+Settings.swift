@@ -68,7 +68,13 @@ extension GenerationView {
             switch selectedType {
             case .video:
                 ForEach(enabledVideoModelsByProvider) { group in
-                    Section(group.name) {
+                    if let name = group.name {
+                        Section(name) {
+                            ForEach(group.models, id: \.index) { item in
+                                Button(item.model.displayName) { selectedVideoModelIndex = item.index }
+                            }
+                        }
+                    } else {
                         ForEach(group.models, id: \.index) { item in
                             Button(item.model.displayName) { selectedVideoModelIndex = item.index }
                         }

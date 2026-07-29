@@ -22,6 +22,13 @@ extension EditSubmitter {
         return stored
     }
 
+    /// Same predicate `createVideoSeed` applies, so a menu item never renders for a seed
+    /// that cannot be built.
+    @MainActor
+    static func canCreateVideo(from asset: MediaAsset, asReference: Bool) -> Bool {
+        createVideoSeed(for: asset, asReference: asReference) != nil
+    }
+
     static func createVideoSeed(for asset: MediaAsset, asReference: Bool) -> GenerationInput? {
         guard let model = VideoModelConfig.allModels.first(where: {
             !$0.requiresSourceVideo && (asReference ? $0.supportsReferences : $0.supportsFirstFrame)

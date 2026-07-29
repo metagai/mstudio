@@ -270,7 +270,8 @@ extension EditorWindowController: EditorActions {
         }
     }
     @objc func importMedia(_ sender: Any?) {
-        // Handled by MediaTab directly
+        editorViewModel.mediaPanelShowMediaTabTick &+= 1
+        MediaTab.presentImportPanel(into: editorViewModel.mediaPanelCurrentFolderId, editor: editorViewModel)
     }
 
     @objc func newMediaFolder(_ sender: Any?) {

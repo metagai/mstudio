@@ -100,13 +100,11 @@ enum GenerationBackend {
         )
     }
 
-    /// 模型 id → METAG 引擎档位。未知模型走本地档（最便宜，不会意外扣大额）。
+    /// Catalog ids come straight from `GET /api/v1/pricing`, so a model id *is* a gateway
+    /// engine id. Empty falls back to the cheapest tier rather than letting the gateway reject it.
     static func engine(for model: String) -> String {
-        let id = model.lowercased()
-        if id.contains("seedance") { return "seedance" }
-        if id.contains("happyhorse") || id.contains("hh") { return "hh" }
-        if id.contains("wan") || id.contains("cloud") { return "cloud" }
-        return "local"
+        let id = model.trimmingCharacters(in: .whitespacesAndNewlines).lowercased()
+        return id.isEmpty ? "local" : id
     }
 }
 
