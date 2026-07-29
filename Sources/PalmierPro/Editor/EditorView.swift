@@ -461,7 +461,6 @@ final class EditorSplitViewController: PaddedDividerSplitViewController {
         pendingPositioning = nil
         work()
         updateTourFrame()
-        updateEditorTitlebarFill()
     }
 }
 
