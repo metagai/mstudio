@@ -64,9 +64,14 @@ final class ModelDownloader: @unchecked Sendable {
     }
 
     /// Idempotent: returns immediately if already installed. `progress` is 0...1 across both files.
+    ///
+    /// `baseURLs` is tried in order (METAG mirror first, upstream second). A source that fails
+    /// to download *or* fails SHA-256 verification falls through to the next one, so a deleted
+    /// upstream repo and a corrupted mirror are both survivable. The error from the last source
+    /// is rethrown if every source fails.
     func install(
         manifest: Manifest,
-        baseURL: URL,
+        baseURLs: [URL],
         progress: (@Sendable (Double) -> Void)? = nil
     ) async throws -> InstalledModel {
         if let existing = Self.installed(for: manifest) { return existing }
@@ -83,10 +88,9 @@ final class ModelDownloader: @unchecked Sendable {
 
         for file in files {
             let base = Double(doneBytes)
-            let zipURL = try await download(baseURL.appendingPathComponent(file.name), to: staging) { fileFraction in
+            let zipURL = try await downloadVerified(file, from: baseURLs, to: staging) { fileFraction in
                 progress?((base + fileFraction * Double(file.bytes)) / Double(totalBytes))
             }
-            try Self.verify(zipURL, sha256: file.sha256)
             let extracted = try Self.unzip(zipURL, in: staging)
             // Encoder zips contain an .mlpackage to compile; the tokenizer zip is plain files.
             if extracted.pathExtension == "mlpackage" {
@@ -113,6 +117,35 @@ final class ModelDownloader: @unchecked Sendable {
         return installed
     }
 
+    /// Downloads one manifest file, walking `bases` in order until one yields bytes whose
+    /// SHA-256 matches the digest pinned in the manifest. Returns the verified file on disk.
+    func downloadVerified(
+        _ file: Manifest.File,
+        from bases: [URL],
+        to staging: URL,
+        progress: @escaping @Sendable (Double) -> Void
+    ) async throws -> URL {
+        var lastError: Error = DownloadError.missingPackage(file.name)
+
+        for base in bases {
+            let source = base.appendingPathComponent(file.name)
+            do {
+                let zipURL = try await download(source, to: staging, progress: progress)
+                try Self.verify(zipURL, sha256: file.sha256)
+                Log.search.notice("model file \(file.name) verified from \(base.absoluteString)")
+                return zipURL
+            } catch {
+                lastError = error
+                // Drop the rejected bytes so the next source can write the same filename.
+                try? FileManager.default.removeItem(at: staging.appendingPathComponent(file.name))
+                Log.search.error(
+                    "model file \(file.name) failed from \(base.absoluteString): \(error.localizedDescription)"
+                )
+            }
+        }
+        throw lastError
+    }
+
     private final class ProgressDelegate: NSObject, URLSessionDownloadDelegate, @unchecked Sendable {
         let onProgress: @Sendable (Double) -> Void
         init(onProgress: @escaping @Sendable (Double) -> Void) { self.onProgress = onProgress }
@@ -134,7 +167,11 @@ final class ModelDownloader: @unchecked Sendable {
         progress: @escaping @Sendable (Double) -> Void
     ) async throws -> URL {
         let delegate = ProgressDelegate(onProgress: progress)
-        let (temp, response) = try await URLSession.shared.download(from: url, delegate: delegate)
+        // Inactivity timeout, not a total budget: a healthy multi-hundred-MB download is unaffected,
+        // but an unreachable mirror fails over to upstream quickly.
+        var request = URLRequest(url: url)
+        request.timeoutInterval = 20
+        let (temp, response) = try await URLSession.shared.download(for: request, delegate: delegate)
         if let http = response as? HTTPURLResponse, !(200..<300).contains(http.statusCode) {
             throw DownloadError.httpError(http.statusCode, url.lastPathComponent)
         }

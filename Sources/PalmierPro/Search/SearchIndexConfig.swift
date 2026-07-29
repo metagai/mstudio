@@ -3,20 +3,26 @@ import Foundation
 enum SearchIndexConfig {
     static let enabledDefaultsKey = "searchIndexEnabled"
     static let visualMatchCosineFloor: Float = 0.05
+    /// Upstream source. Third-party org: treated as the fallback, not the primary.
     static let hostedURL = URL(string: "https://huggingface.co/palmier-io/siglip2-base-coreml/resolve/main")!
+    /// Path of the METAG mirror under `VendorMirror.base`.
+    static let mirrorPath = "siglip2-base-coreml/v1"
 
     static var enabled: Bool {
         get { UserDefaults.standard.object(forKey: enabledDefaultsKey) as? Bool ?? true }
         set { UserDefaults.standard.set(newValue, forKey: enabledDefaultsKey) }
     }
 
-    static var baseURL: URL {
+    /// Ordered download sources: METAG mirror first, upstream HuggingFace as fallback.
+    /// Every file is SHA-256 verified against `manifest`, so a bad source is rejected and
+    /// the next one is tried.
+    static var baseURLs: [URL] {
         #if DEBUG
         if let raw = UserDefaults.standard.string(forKey: "searchIndexModelBaseURL"), let url = URL(string: raw) {
-            return url
+            return [url]
         }
         #endif
-        return hostedURL
+        return VendorMirror.sources(mirrorPath: mirrorPath, upstream: hostedURL.absoluteString)
     }
 
     static let manifest = ModelDownloader.Manifest(

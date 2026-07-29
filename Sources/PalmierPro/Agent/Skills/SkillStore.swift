@@ -230,11 +230,13 @@ final class SkillStore {
     @discardableResult
     func install(_ entry: SkillCatalogEntry, automatically: Bool = false) async -> Bool {
         guard ledger != nil else { return false }
-        guard let url = SkillCatalog.bodyURL(path: entry.path) else { return false }
+        guard let url = SkillCatalog.bodyURLs(path: entry.path).first else { return false }
         guard let dir = Self.skillDirectory(for: entry.id, directory: storageDirectory) else {
             Log.agent.error("install skill \(entry.id) rejected: invalid id")
             return false
         }
+        let sources = SkillCatalog.bodyURLs(path: entry.path)
+        guard !sources.isEmpty else { return false }
         do {
             let data = try await SkillCatalog.fetch(url)
             try Task.checkCancellation()
