@@ -1,23 +1,27 @@
 {
-  "changelogURL": "https://github.com/palmier-io/palmier-pro/releases",
+  "changelogURL": "https://metag.ai/docs",
   "entries": [
     {
-      "version": "0.6.15",
-      "date": "2026-07-26",
+      "version": "0.1.0",
+      "date": "2026-07-29",
       "sections": [
         {
-          "heading": "AI Features",
+          "heading": "First public release",
           "items": [
-            "Seed Audio 1.0: Generate music, multilingual speech, sound effects all in one model",
-            "Sonilo Music and Sound Effects: Create music and sound effects from a text prompt with Sonilo",
-            "More upscale controls: Many more video upscale options with ByteDance Upscaler and Topaz, including upscaling to 60 fps and 4k."
+            "Multi-track editing, colour, effects, captions, and export all run on your Mac",
+            "AI shot generation goes through the METAG gateway: sign in once, pay per shot, failed jobs are refunded",
+            "On-device transcription and captions via Apple SpeechAnalyzer — audio never leaves your Mac, and it is free",
+            "Agent panel drives the timeline with your own Anthropic key; the same tools are exposed over local MCP",
+            "Interface available in English, Simplified Chinese, and Spanish"
           ]
         },
         {
-          "heading": "Improved",
+          "heading": "Known limits",
           "items": [
-            "Better media panel usability: Select, navigate, and delete multiple media browser items with standard Mac controls",
-            "New effect: Invert Colors in the Adjust inspector"
+            "This build is not signed or notarised by Apple: the first launch needs Privacy & Security → Open Anyway",
+            "Generation covers video only — image, audio, and upscale models are not offered yet",
+            "Reference images and reference video are not accepted, which keeps your footage on your machine",
+            "There is no in-app updater yet: Check for Updates opens the download page"
           ]
         }
       ]
