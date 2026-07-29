@@ -121,13 +121,14 @@ final class SkillStore {
 
     @discardableResult
     func install(_ entry: SkillCatalogEntry) async -> Bool {
-        guard let url = SkillCatalog.bodyURL(path: entry.path) else { return false }
         guard let dir = Self.skillDirectory(for: entry.id) else {
             Log.agent.error("install skill \(entry.id) rejected: invalid id")
             return false
         }
+        let sources = SkillCatalog.bodyURLs(path: entry.path)
+        guard !sources.isEmpty else { return false }
         do {
-            let data = try await SkillCatalog.fetch(url)
+            guard let data = await Self.fetchVerifiedBody(entry, from: sources) else { return false }
             guard let text = String(data: data, encoding: .utf8) else {
                 Log.agent.error("install skill \(entry.id) rejected: invalid UTF-8")
                 return false
@@ -152,6 +153,34 @@ final class SkillStore {
             Log.agent.error("install skill \(entry.id) failed: \(error.localizedDescription)")
             return false
         }
+    }
+
+    /// Walks the sources in order (METAG mirror, then upstream) and returns the first body whose
+    /// SHA-256 matches `entry.sha`. Bodies served by a mirror are never trusted unverified.
+    static func fetchVerifiedBody(_ entry: SkillCatalogEntry, from sources: [URL]) async -> Data? {
+        for url in sources {
+            do {
+                let data = try await SkillCatalog.fetch(url)
+                guard bodyMatchesCatalogSha(data, entry.sha) else {
+                    Log.agent.error("install skill \(entry.id) rejected from \(url.absoluteString): sha mismatch")
+                    continue
+                }
+                return data
+            } catch {
+                Log.agent.error("install skill \(entry.id) fetch failed (\(url.absoluteString)): \(error.localizedDescription)")
+            }
+        }
+        return nil
+    }
+
+    /// `catalog.json` publishes a truncated hex prefix of the body's SHA-256, so compare by prefix.
+    nonisolated static func bodyMatchesCatalogSha(_ data: Data, _ expected: String) -> Bool {
+        let normalized = expected.lowercased()
+        guard !normalized.isEmpty, normalized.count <= 64,
+              normalized.allSatisfy({ $0.isHexDigit })
+        else { return false }
+        let digest = SHA256.hash(data: data).map { String(format: "%02x", $0) }.joined()
+        return digest.hasPrefix(normalized)
     }
 
     /// Resolves `~/.palmier/skills/<id>/` only when `id` is a single safe path component.
