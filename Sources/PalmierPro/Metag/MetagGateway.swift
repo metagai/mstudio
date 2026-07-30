@@ -78,6 +78,10 @@ enum MetagGateway {
         let error: String?
         let shots: [Shot]
         let cover: String?
+        /// 已经跑完的镜头数。**镜头是串行生成的**（一张卡每镜约 36s），
+        /// 所以一部 8 镜的片子要 5 分钟 —— 而第 1 镜 36 秒就好了。
+        /// 有了它才能边好边填，让人提前几分钟开始剪。
+        let shots_done: Int?
     }
 
     enum Failure: LocalizedError {
