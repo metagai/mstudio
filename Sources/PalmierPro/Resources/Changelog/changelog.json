@@ -2,6 +2,31 @@
   "changelogURL": "https://metag.ai/docs",
   "entries": [
     {
+      "version": "0.1.5",
+      "date": "2026-07-30",
+      "sections": [
+        {
+          "heading": "Fix flagged shots in one step",
+          "items": [
+            "Right-click any generated clip → Re-shoot → Fix Flagged Shots. Only shots an automatic check thinks are broken get re-run",
+            "The machine judges whether a shot is usable — frozen, flickering, solid colour. Whether it is good stays your call, so nothing is picked on taste",
+            "What you already have is kept as a take, and each swap is one undo"
+          ]
+        },
+        {
+          "heading": "Known limits",
+          "items": [
+            "This build is not signed or notarised by Apple: the first launch needs Privacy & Security → Open Anyway",
+            "Generation covers video only — image, audio, and upscale models are not offered yet",
+            "Reference images and reference video are not accepted, which keeps your footage on your machine",
+            "There is no in-app updater yet: Check for Updates opens the download page",
+            "The speech panel's silence controls are English-only for now",
+            "Exported recipes carry the visuals, not the narration text; comparing takes side by side is still web-only"
+          ]
+        }
+      ]
+    },
+    {
       "version": "0.1.4",
       "date": "2026-07-30",
       "sections": [

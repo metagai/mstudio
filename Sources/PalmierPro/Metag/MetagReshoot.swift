@@ -29,7 +29,6 @@ enum MetagReshoot {
         editor: EditorViewModel
     ) async {
         guard let (job, index) = eligibleShot(for: asset) else { return }
-        let previousURL = asset.url
         do {
             try await MetagGateway.reshoot(job: job, shot: index, reroll: reroll, candidates: candidates)
         } catch {
@@ -38,10 +37,61 @@ enum MetagReshoot {
         }
         editor.mediaPanelToast = MediaPanelToast(message: L10n.threadSafe("Re-shooting — the new take replaces this shot when it lands."), kind: .progress)
 
-        guard let take = await waitForTake(job: job, shot: index) else {
+        guard await adoptNewTake(job: job, shot: index, asset: asset, editor: editor) else {
             editor.mediaPanelToast = MediaPanelToast(message: L10n.threadSafe("The re-shoot did not finish. Nothing was charged."), kind: .warning)
             return
         }
+        editor.mediaPanelToast = MediaPanelToast(message: L10n.threadSafe("New take is in the timeline."), kind: .success)
+    }
+
+    /// Re-run only the shots the quality gate flagged, then swap in whatever it improved.
+    ///
+    /// The gate only judges whether a shot is usable — frozen, flickering, solid colour.
+    /// Whether a shot is *good* stays with the person, so nothing here picks on taste.
+    static func fixFlagged(asset: MediaAsset, editor: EditorViewModel) async {
+        guard let (job, _) = eligibleShot(for: asset) else { return }
+        let result: MetagGateway.Converged
+        do {
+            result = try await MetagGateway.converge(job: job, rounds: 2, candidates: 2)
+        } catch {
+            editor.mediaPanelToast = MediaPanelToast(message: message(for: error))
+            return
+        }
+        guard !result.queued.isEmpty else {
+            // Say why. "Clicked and nothing happened" and "nothing needed fixing" look identical.
+            let reason = result.skipped.first?.reason
+            editor.mediaPanelToast = MediaPanelToast(
+                message: reason.map { L10n.threadSafe("Nothing to fix — %@", [$0]) }
+                    ?? L10n.threadSafe("Nothing to fix."),
+                kind: .success
+            )
+            return
+        }
+        editor.mediaPanelToast = MediaPanelToast(
+            message: L10n.threadSafe("Fixing %@ shots.", [result.queued.count.formatted()]),
+            kind: .progress
+        )
+        // Each flagged shot is swapped independently: one that cannot be improved must not
+        // hold back the ones that were.
+        for shot in result.queued {
+            guard let target = editor.asset(forJob: job, shotIndex: shot) else { continue }
+            await adoptNewTake(job: job, shot: shot, asset: target, editor: editor)
+        }
+        editor.mediaPanelToast = MediaPanelToast(
+            message: L10n.threadSafe("Finished fixing flagged shots."), kind: .success
+        )
+    }
+
+    /// Wait for a shot's re-shoot and swap the clip's media to the result.
+    @discardableResult
+    private static func adoptNewTake(
+        job: String,
+        shot: Int,
+        asset: MediaAsset,
+        editor: EditorViewModel
+    ) async -> Bool {
+        guard let take = await waitForTake(job: job, shot: shot) else { return false }
+        let previousURL = asset.url
         do {
             let remote = try await MetagGateway.download(job: job, name: take, to: FileManager.default.temporaryDirectory)
             let installed = try await editor.commitStagedProjectMedia(remote, filename: remote.lastPathComponent)
@@ -51,9 +101,10 @@ enum MetagReshoot {
                 }
                 editor.relinkAsset(id: asset.id, to: installed)
             }
-            editor.mediaPanelToast = MediaPanelToast(message: L10n.threadSafe("New take is in the timeline."), kind: .success)
+            return true
         } catch {
-            editor.mediaPanelToast = MediaPanelToast(message: message(for: error), kind: .warning)
+            editor.mediaPanelToast = MediaPanelToast(message: message(for: error))
+            return false
         }
     }
 

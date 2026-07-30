@@ -84,6 +84,8 @@ enum MetagGateway {
         let reshoot: [String?]?
         /// Per-shot takes, best first. The delivered take is always element 0.
         let alts: [[Take]]?
+        /// Per-shot quality score. Below 0.75 the gate thinks the shot is broken.
+        let scores: [Double?]?
 
         struct Take: Decodable, Sendable {
             let file: String
@@ -177,6 +179,26 @@ enum MetagGateway {
         ]
         let req = try request("api/v1/agent/generate", method: "POST", body: body)
         return try await send(req, as: Response.self).job_id
+    }
+
+    /// Re-run only the shots the quality gate flagged, keeping what you have as a take.
+    struct Converged: Decodable, Sendable {
+        struct Skip: Decodable, Sendable {
+            let shot: Int
+            let score: Double?
+            let reason: String
+        }
+        let queued: [Int]
+        let skipped: [Skip]
+    }
+
+    static func converge(job id: String, rounds: Int, candidates: Int) async throws -> Converged {
+        let req = try request(
+            "api/v1/jobs/\(id)/converge",
+            method: "POST",
+            body: ["rounds": rounds, "candidates": candidates]
+        )
+        return try await send(req, as: Converged.self)
     }
 
     /// Re-shoot one shot of a finished film. The delivered take is never overwritten —

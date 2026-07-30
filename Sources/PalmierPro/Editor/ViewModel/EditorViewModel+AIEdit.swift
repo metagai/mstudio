@@ -131,6 +131,14 @@ extension EditorViewModel {
         pendingPanelSeed = nil
     }
 
+    /// The generated asset for a shot, matched on provenance rather than position — clips get
+    /// reordered and deleted, and swapping the wrong shot is worse than swapping none.
+    func asset(forJob job: String, shotIndex: Int) -> MediaAsset? {
+        mediaAssets.first {
+            $0.generationInput?.backendJobId == job && $0.generationInput?.outputIndex == shotIndex
+        }
+    }
+
     /// The media backing a clip. Shared with the re-shoot menu so both resolve identically.
     func generatedAsset(clipId: String) -> MediaAsset? {
         aiEditClipAsset(clipId)?.asset

@@ -40,6 +40,23 @@ struct MetagReshootTests {
         #expect(MetagReshoot.eligibleShot(for: asset(job: "j1", index: nil, model: "local")) == nil)
     }
 
+    /// Matching on position instead of provenance silently swaps the wrong shot once a clip
+    /// has been reordered or deleted, and a wrong swap is worse than no swap.
+    @Test("按来源回找素材，不按位置猜")
+    func resolvesAssetByProvenanceNotPosition() {
+        let editor = EditorViewModel()
+        let second = asset(job: "j1", index: 1, model: "local")
+        let first = asset(job: "j1", index: 0, model: "local")
+        let other = asset(job: "j2", index: 0, model: "local")
+        // Deliberately out of order, as a reordered timeline would leave them.
+        editor.mediaAssets = [second, first, other]
+
+        #expect(editor.asset(forJob: "j1", shotIndex: 1)?.id == second.id)
+        #expect(editor.asset(forJob: "j1", shotIndex: 0)?.id == first.id)
+        #expect(editor.asset(forJob: "j2", shotIndex: 0)?.id == other.id)
+        #expect(editor.asset(forJob: "j1", shotIndex: 7) == nil)
+    }
+
     @Test("导入的素材没有来源，不该出现重拍入口")
     func importedFootageIsNotEligible() {
         let a = MediaAsset(
