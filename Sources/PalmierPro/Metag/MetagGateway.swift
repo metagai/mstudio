@@ -80,6 +80,15 @@ enum MetagGateway {
         let cover: String?
         /// Shots finish serially (~36s each), so fill placeholders as they land.
         let shots_done: Int?
+        /// Per-shot re-shoot state: queued / running / done / "failed: …", nil when never re-shot.
+        let reshoot: [String?]?
+        /// Per-shot takes, best first. The delivered take is always element 0.
+        let alts: [[Take]]?
+
+        struct Take: Decodable, Sendable {
+            let file: String
+            let score: Double
+        }
     }
 
     enum Failure: LocalizedError {
@@ -159,6 +168,16 @@ enum MetagGateway {
     }
 
     /// 取件票据：5 分钟一次性，避免把 7 天 JWT 写进 URL（会进日志/历史）
+    /// Re-shoot one shot of a finished film. The delivered take is never overwritten —
+    /// the result arrives as an extra take, so the choice stays reversible.
+    static func reshoot(job id: String, shot: Int, reroll: Bool, candidates: Int) async throws {
+        var body: [String: Any] = ["shot": shot, "candidates": candidates]
+        if reroll { body["reroll"] = true }
+        let req = try request("/api/v1/jobs/\(id)/reshoot", method: "POST", body: body)
+        struct Response: Decodable { let status: String }
+        _ = try await send(req, as: Response.self)
+    }
+
     static func fileTicket(job id: String) async throws -> String {
         struct Response: Decodable { let ticket: String }
         return try await send(request("api/v1/jobs/\(id)/ticket", method: "POST"), as: Response.self).ticket
