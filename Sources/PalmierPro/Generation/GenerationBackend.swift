@@ -149,6 +149,6 @@ struct BackendGenerationJob: Decodable, Sendable {
     let errorMessage: String?
     let costCredits: Int?
     let completedAt: Double?
-    /// 已经可取的镜头数。0 = 还没有任何一镜跑完。
+    /// Shots available for download so far.
     var readyCount: Int = 0
 }
