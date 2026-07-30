@@ -218,18 +218,6 @@ enum MetagGateway {
     }
 
     /// 轮询至终态。取消由调用方通过 Task 取消传递。
-    static func waitForCompletion(_ id: String, pollInterval: Duration = .seconds(3)) async throws -> Job {
-        while true {
-            try Task.checkCancellation()
-            let job = try await self.job(id)
-            switch job.status {
-            case "done": return job
-            case "failed": throw Failure.http(500)
-            default: try await Task.sleep(for: pollInterval)
-            }
-        }
-    }
-
     /// 下载镜头文件到临时目录，返回本地 URL。`name` 为 shots[i].video/audio。
     static func download(job id: String, name: String, to directory: URL) async throws -> URL {
         // 绝对 URL 说明结果已落 S3（付费档），直接取；否则走网关流式端点
