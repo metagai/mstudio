@@ -22,7 +22,26 @@ extension TimelineView {
             item.representedObject = ["clipId": clipId, "reroll": reroll, "candidates": candidates]
             menu.addItem(item)
         }
+        menu.addItem(.separator())
+        // Always offered rather than shown only when a shot is flagged: menu construction is
+        // synchronous and the scores live on the server. Clicking says what it found, including
+        // that nothing needed fixing.
+        let fix = NSMenuItem(title: L10n.key("Fix Flagged Shots"), action: #selector(performFixFlagged(_:)), keyEquivalent: "")
+        fix.target = self
+        fix.representedObject = clipId
+        fix.toolTip = L10n.key("Re-runs only shots the automatic check flagged. What you have is kept as a take.")
+        menu.addItem(fix)
         return menu
+    }
+
+    @objc func performFixFlagged(_ sender: Any?) {
+        guard let clipId = (sender as? NSMenuItem)?.representedObject as? String,
+              let asset = editor.generatedAsset(clipId: clipId)
+        else { return }
+        let editor = self.editor
+        Task { @MainActor in
+            await MetagReshoot.fixFlagged(asset: asset, editor: editor)
+        }
     }
 
     @objc func performReshoot(_ sender: Any?) {
