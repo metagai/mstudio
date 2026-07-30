@@ -2,6 +2,37 @@
   "changelogURL": "https://metag.ai/docs",
   "entries": [
     {
+      "version": "0.1.1",
+      "date": "2026-07-30",
+      "sections": [
+        {
+          "heading": "Fixes carried over from upstream",
+          "items": [
+            "Saving a project no longer races the snapshot it is writing — a save issued mid-edit could previously block or drop the newest change",
+            "The open and save panels are pre-warmed at launch, so the first Open no longer stalls for a second",
+            "Scrubbing no longer fills the audio cache automatically, which kept the timeline responsive on long projects"
+          ]
+        },
+        {
+          "heading": "New",
+          "items": [
+            "Remove Dead Air is now configurable: set the minimum pause it should cut and how much speech padding to keep",
+            "Word-level removal is available to the agent panel as a tool, so you can ask for a phrase to be cut by name"
+          ]
+        },
+        {
+          "heading": "Known limits",
+          "items": [
+            "This build is not signed or notarised by Apple: the first launch needs Privacy & Security → Open Anyway",
+            "Generation covers video only — image, audio, and upscale models are not offered yet",
+            "Reference images and reference video are not accepted, which keeps your footage on your machine",
+            "There is no in-app updater yet: Check for Updates opens the download page",
+            "The speech panel's new silence controls are English-only for now"
+          ]
+        }
+      ]
+    },
+    {
       "version": "0.1.0",
       "date": "2026-07-29",
       "sections": [
