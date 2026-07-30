@@ -9,6 +9,8 @@ set -euo pipefail
 #   scripts/bundle.sh debug --all                # include all optional traits
 #   scripts/bundle.sh release --sign            # build + Developer ID codesign
 #   scripts/bundle.sh release --dist            # build + sign + notarize + staple + DMG
+#   scripts/bundle.sh release --dmg             # build + ad-hoc sign + DMG (what we actually ship
+#                                               #   until there is a Developer ID certificate)
 
 CONFIG="release"
 MODE="dev"
@@ -21,6 +23,7 @@ for arg in "$@"; do
     --fast)        MODE="fast" ;;
     --sign)        MODE="sign" ;;
     --dist)        MODE="dist" ;;
+    --dmg)         MODE="dmg" ;;
     --speech)      INCLUDE_BUNDLED_SPEECH=true ;;
     --telemetry)   INCLUDE_PRODUCTION_TELEMETRY=true ;;
     --all)
@@ -271,11 +274,29 @@ upload_dsyms() {
   sentry-cli debug-files upload --include-sources "$DSYM" || echo "!! sentry-cli upload failed (continuing)"
 }
 
-if [ "$MODE" = "dev" ]; then
+if [ "$MODE" = "dev" ] || [ "$MODE" = "dmg" ]; then
   echo "==> Ad-hoc signing dev app"
   codesign --force --deep --sign - "$APP"
   codesign --verify --strict --verbose=2 "$APP"
   upload_dsyms
+  if [ "$MODE" = "dmg" ]; then
+    # 我们发的就是这个未公证的包（没有 Developer ID 证书）。
+    # 以前这几步是每次发版手敲的 —— 手敲的步骤一定会漂，而漂掉的那一次
+    # 用户拿到的是一个装不上或版本号不对的 DMG。
+    VER="$(/usr/libexec/PlistBuddy -c "Print :CFBundleShortVersionString" "$APP/Contents/Info.plist")"
+    DMG="$ROOT/.build/METAG-$VER-mac.dmg"
+    echo "==> Building DMG $DMG"
+    rm -f "$DMG"
+    STAGING="$(mktemp -d)"
+    cp -R "$APP" "$STAGING/METAG.app"
+    ln -s /Applications "$STAGING/Applications"
+    cp "$RESOURCES/AppIcon.icns" "$STAGING/.VolumeIcon.icns"
+    hdiutil create -volname "METAG" -srcfolder "$STAGING" -ov -format UDZO "$DMG"
+    rm -rf "$STAGING"
+    echo "==> Done: $DMG (ad-hoc signed, NOT notarised —"
+    echo "    first launch needs Privacy & Security -> Open Anyway)"
+    exit 0
+  fi
   echo "==> Done: $APP (ad-hoc signed)"
   exit 0
 fi
