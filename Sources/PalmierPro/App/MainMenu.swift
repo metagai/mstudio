@@ -60,6 +60,10 @@ enum MainMenuBuilder {
         exportItem.keyEquivalentModifierMask = [.command]
         menu.addItem(exportItem)
 
+        menu.addItem(.separator())
+        menu.addItem(NSMenuItem(title: L10n.key("Export Recipe…"), action: #selector(EditorActions.exportRecipe(_:)), keyEquivalent: ""))
+        menu.addItem(NSMenuItem(title: L10n.key("Import Recipe…"), action: #selector(EditorActions.importRecipe(_:)), keyEquivalent: ""))
+
         item.submenu = menu
         return item
     }
@@ -200,6 +204,8 @@ enum MainMenuBuilder {
     func importMedia(_ sender: Any?)
     func newMediaFolder(_ sender: Any?)
     func showExport(_ sender: Any?)
+    func exportRecipe(_ sender: Any?)
+    func importRecipe(_ sender: Any?)
     func toggleMediaPanel(_ sender: Any?)
     func toggleInspectorPanel(_ sender: Any?)
     func toggleAgentPanel(_ sender: Any?)
