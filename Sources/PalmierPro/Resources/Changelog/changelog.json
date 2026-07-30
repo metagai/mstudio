@@ -2,6 +2,31 @@
   "changelogURL": "https://metag.ai/docs",
   "entries": [
     {
+      "version": "0.1.3",
+      "date": "2026-07-30",
+      "sections": [
+        {
+          "heading": "Re-shoot one shot from the timeline",
+          "items": [
+            "Right-click a generated clip: Re-shoot This Shot, Another Composition, or Three More Takes",
+            "The shot you already have is never overwritten — a re-shoot adds a take, and the swap is a single undo away",
+            "Free on your subscription, and only offered on shots made with our own engine"
+          ]
+        },
+        {
+          "heading": "Known limits",
+          "items": [
+            "This build is not signed or notarised by Apple: the first launch needs Privacy & Security → Open Anyway",
+            "Generation covers video only — image, audio, and upscale models are not offered yet",
+            "Reference images and reference video are not accepted, which keeps your footage on your machine",
+            "There is no in-app updater yet: Check for Updates opens the download page",
+            "The speech panel's silence controls are English-only for now",
+            "Comparing takes side by side and film recipes are still web-only"
+          ]
+        }
+      ]
+    },
+    {
       "version": "0.1.2",
       "date": "2026-07-30",
       "sections": [

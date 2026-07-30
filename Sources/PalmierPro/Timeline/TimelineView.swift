@@ -1102,6 +1102,11 @@ final class TimelineView: NSView {
             aiEditItem.submenu = aiEditSubmenu
             aiItems.append(aiEditItem)
         }
+        if let reshootSubmenu = reshootSubmenu(for: clip.id) {
+            let item = NSMenuItem(title: L10n.threadSafe("Re-shoot"), action: nil, keyEquivalent: "")
+            item.submenu = reshootSubmenu
+            aiItems.append(item)
+        }
 
         // Nest
         var nestItems: [NSMenuItem] = []

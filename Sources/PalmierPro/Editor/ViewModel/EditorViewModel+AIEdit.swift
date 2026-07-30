@@ -131,6 +131,11 @@ extension EditorViewModel {
         pendingPanelSeed = nil
     }
 
+    /// The media backing a clip. Shared with the re-shoot menu so both resolve identically.
+    func generatedAsset(clipId: String) -> MediaAsset? {
+        aiEditClipAsset(clipId)?.asset
+    }
+
     private func aiEditClipAsset(_ clipId: String) -> (clip: Clip, asset: MediaAsset)? {
         guard let clip = clipFor(id: clipId),
               let asset = mediaAssets.first(where: { $0.id == clip.mediaRef }) else { return nil }
