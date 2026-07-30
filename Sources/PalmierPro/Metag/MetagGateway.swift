@@ -165,6 +165,20 @@ enum MetagGateway {
     }
 
     /// 取件票据：5 分钟一次性，避免把 7 天 JWT 写进 URL（会进日志/历史）
+    /// Rebuild a film from a storyboard we already have, skipping the LLM.
+    static func submitStoryboard(title: String, prompts: [String], narrations: [String]) async throws -> String {
+        struct Response: Decodable { let job_id: String }
+        let body: [String: Any] = [
+            "prompt": title,
+            "engine": "local",
+            "shots": prompts.count,
+            "lang": await currentLanguageCode(),
+            "storyboard": ["video_prompts": prompts, "narrations": narrations],
+        ]
+        let req = try request("api/v1/agent/generate", method: "POST", body: body)
+        return try await send(req, as: Response.self).job_id
+    }
+
     /// Re-shoot one shot of a finished film. The delivered take is never overwritten —
     /// the result arrives as an extra take, so the choice stays reversible.
     static func reshoot(job id: String, shot: Int, reroll: Bool, candidates: Int) async throws {
