@@ -631,6 +631,26 @@ final class GenerationService {
             ) {
                 editor.onProjectCheckpointRequired?()
             }
+            // 边好边填：镜头是**串行**生成的（一张卡每镜约 36s），
+            // 一部 8 镜片子要 5 分钟，而第 1 镜 36 秒就好了。
+            // 等全片再填，用户对着占位干等几分钟，手里其实早就有能剪的东西。
+            // 只处理还停在 .generating 的占位 —— 轮询每 3 秒来一次，
+            // 不加这道判断会把同一镜重复下载。
+            if job.readyCount > 0, let urls = job.resultUrls {
+                for placeholder in placeholders {
+                    let idx = placeholder.generationInput?.outputIndex ?? 0
+                    guard idx < job.readyCount, idx < urls.count,
+                          placeholder.generationStatus == .generating,
+                          let remote = URL(string: urls[idx])
+                    else { continue }
+                    updateGenerationMetadata(placeholder, editor: editor, status: .downloading) { input in
+                        input.resultURLs = urls
+                    }
+                    if await downloadAndFinalize(asset: placeholder, remoteURL: remote, editor: editor) {
+                        onComplete?(placeholder)
+                    }
+                }
+            }
             return false
         }
     }

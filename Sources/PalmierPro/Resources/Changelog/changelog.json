@@ -2,6 +2,30 @@
   "changelogURL": "https://metag.ai/docs",
   "entries": [
     {
+      "version": "0.1.2",
+      "date": "2026-07-30",
+      "sections": [
+        {
+          "heading": "Generation feels faster",
+          "items": [
+            "Shots now land on the timeline as each one finishes, instead of all at once at the end",
+            "Measured: on an 8-shot film the first shot is ready in about 40 seconds while the whole film takes five minutes — you can start cutting while the rest renders"
+          ]
+        },
+        {
+          "heading": "Known limits",
+          "items": [
+            "This build is not signed or notarised by Apple: the first launch needs Privacy & Security → Open Anyway",
+            "Generation covers video only — image, audio, and upscale models are not offered yet",
+            "Reference images and reference video are not accepted, which keeps your footage on your machine",
+            "There is no in-app updater yet: Check for Updates opens the download page",
+            "The speech panel's silence controls are English-only for now",
+            "Re-shooting one shot, picking between takes, and film recipes are available on the web editor but not here yet"
+          ]
+        }
+      ]
+    },
+    {
       "version": "0.1.1",
       "date": "2026-07-30",
       "sections": [

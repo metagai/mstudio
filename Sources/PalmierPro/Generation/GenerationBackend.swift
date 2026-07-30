@@ -22,7 +22,8 @@ enum GenerationBackend {
                         resultUrls: job.shots.isEmpty ? nil : job.shots.map { fileURL(job: jobId, name: $0.video, ticket: ticket) },
                         errorMessage: job.error,
                         costCredits: nil,
-                        completedAt: nil
+                        completedAt: nil,
+                        readyCount: job.shots_done ?? 0
                     )
                     subject.send(update)
                     if update.status == .succeeded || update.status == .failed {
@@ -37,7 +38,8 @@ enum GenerationBackend {
                             resultUrls: nil,
                             errorMessage: error.localizedDescription,
                             costCredits: nil,
-                            completedAt: nil
+                            completedAt: nil,
+                            readyCount: 0
                         )
                     )
                     subject.send(completion: .finished)
@@ -147,4 +149,6 @@ struct BackendGenerationJob: Decodable, Sendable {
     let errorMessage: String?
     let costCredits: Int?
     let completedAt: Double?
+    /// 已经可取的镜头数。0 = 还没有任何一镜跑完。
+    var readyCount: Int = 0
 }
