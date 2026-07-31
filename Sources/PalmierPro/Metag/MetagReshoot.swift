@@ -71,14 +71,44 @@ enum MetagReshoot {
             message: L10n.threadSafe("Fixing %@ shots.", [result.queued.count.formatted()]),
             kind: .progress
         )
-        // Each flagged shot is swapped independently: one that cannot be improved must not
-        // hold back the ones that were.
+        // Download everything first, then swap in one transaction. One user intent has to
+        // undo as one action, and `undo.perform` takes a synchronous closure — so the
+        // awaits cannot live inside it. A shot that cannot be improved is skipped rather
+        // than holding back the ones that were.
+        var staged: [(asset: MediaAsset, from: URL, to: URL)] = []
         for shot in result.queued {
-            guard let target = editor.asset(forJob: job, shotIndex: shot) else { continue }
-            await adoptNewTake(job: job, shot: shot, asset: target, editor: editor)
+            guard let target = editor.asset(forJob: job, shotIndex: shot),
+                  let take = await waitForTake(job: job, shot: shot)
+            else { continue }
+            do {
+                let remote = try await MetagGateway.download(
+                    job: job, name: take, to: FileManager.default.temporaryDirectory
+                )
+                let installed = try await editor.commitStagedProjectMedia(
+                    remote, filename: remote.lastPathComponent
+                )
+                // The asset may have been deleted while we waited, so resolve it again.
+                guard let current = editor.asset(forJob: job, shotIndex: shot) else { continue }
+                staged.append((current, current.url, installed))
+            } catch {
+                editor.mediaPanelToast = MediaPanelToast(message: message(for: error))
+            }
+        }
+        guard !staged.isEmpty else {
+            editor.mediaPanelToast = MediaPanelToast(
+                message: L10n.threadSafe("Nothing could be improved. Nothing was changed."),
+                kind: .warning
+            )
+            return
+        }
+        editor.undo.perform(L10n.threadSafe("Fix Flagged Shots")) {
+            editor.registerTimelineUndo(L10n.threadSafe("Fix Flagged Shots")) { vm in
+                for item in staged { vm.relinkAsset(id: item.asset.id, to: item.from) }
+            }
+            for item in staged { editor.relinkAsset(id: item.asset.id, to: item.to) }
         }
         editor.mediaPanelToast = MediaPanelToast(
-            message: L10n.threadSafe("Finished fixing flagged shots."), kind: .success
+            message: L10n.threadSafe("Fixed %@ shots.", [staged.count.formatted()]), kind: .success
         )
     }
 
@@ -91,10 +121,13 @@ enum MetagReshoot {
         editor: EditorViewModel
     ) async -> Bool {
         guard let take = await waitForTake(job: job, shot: shot) else { return false }
-        let previousURL = asset.url
         do {
             let remote = try await MetagGateway.download(job: job, name: take, to: FileManager.default.temporaryDirectory)
             let installed = try await editor.commitStagedProjectMedia(remote, filename: remote.lastPathComponent)
+            // Waiting can take minutes; the clip may be gone by now. relinkAsset would
+            // silently no-op and we would still report success, so check before claiming it.
+            guard editor.mediaAssets.contains(where: { $0.id == asset.id }) else { return false }
+            let previousURL = asset.url
             editor.undo.perform(L10n.threadSafe("Re-shoot")) {
                 editor.registerTimelineUndo(L10n.threadSafe("Re-shoot")) { vm in
                     vm.relinkAsset(id: asset.id, to: previousURL)
