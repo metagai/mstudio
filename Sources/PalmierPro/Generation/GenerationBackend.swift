@@ -93,10 +93,19 @@ enum GenerationBackend {
         if case .video(let p) = params, let start = p.startFrameURL, let url = URL(string: start), url.isFileURL {
             frameId = try await MetagGateway.uploadFrame(url)
         }
+        // 带了图却选了吃不下图的档，就当场说清楚，别让他白付钱。
+        // seedance / veo / cloud 的提交体里只有 prompt —— 图会被静默丢弃，
+        // 而按 26~60 credits/镜已经扣了。网关也会 400 拦一次，
+        // 这里先拦是为了给出**能读懂的原因**，而不是一个 HTTP 状态码。
+        let chosen = engine(for: model)
+        if frameId != nil, let e = try? await MetagGateway.pricing().engines.first(where: { $0.id == chosen }),
+           !e.acceptsImage {
+            throw BackendError.imageNotSupported(engine: e.displayName(for: await MetagGateway.currentLanguageCode()))
+        }
         // macOS 端是"生成一个镜头"的意图，按镜头计价
         return try await MetagGateway.submit(
             prompt: prompt,
-            engine: engine(for: model),
+            engine: chosen,
             shots: 1,
             firstFrame: frameId
         )

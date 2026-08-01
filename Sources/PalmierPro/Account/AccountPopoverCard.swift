@@ -4,6 +4,7 @@ import SwiftUI
 struct AccountPopoverCard: View {
     @Bindable private var account = AccountService.shared
     @Environment(\.dismiss) private var dismiss
+    @State private var showCredits = false
 
     private static let cardWidth: CGFloat = 280
 
@@ -58,7 +59,17 @@ struct AccountPopoverCard: View {
                     .font(.system(size: AppTheme.FontSize.md, weight: .semibold))
                     .foregroundStyle(AppTheme.Text.primaryColor)
                 Spacer(minLength: 0)
-                CreditSummaryView(style: .compact)
+                // 点余额看流水，而不是只显示一个数字。用户最想知道的是"我的钱去哪了"，
+                // 尤其在出过事之后 —— 这张表此前只写不读，他连自己被退过款都看不见。
+                Button {
+                    showCredits.toggle()
+                } label: {
+                    CreditSummaryView(style: .compact)
+                }
+                .buttonStyle(.plain)
+                .popover(isPresented: $showCredits, arrowEdge: .bottom) {
+                    MetagCreditsView()
+                }
             }
 
             if !account.isPaid {

@@ -4,6 +4,8 @@ set -euo pipefail
 # Usage:
 #   scripts/bundle.sh [release|debug]           # ad-hoc signed dev build
 #   scripts/bundle.sh debug --fast              # fastest: skip dSYM + deep sign, just env+build
+#   scripts/bundle.sh debug --speech             # include bundled speech and MLX
+#   scripts/bundle.sh debug --all                # include all optional traits
 #   scripts/bundle.sh release --sign            # build + Developer ID codesign
 #   scripts/bundle.sh release --dist            # build + sign + notarize + staple + DMG
 #   scripts/bundle.sh release --dmg             # build + ad-hoc sign + DMG (what we actually ship
@@ -11,6 +13,8 @@ set -euo pipefail
 
 CONFIG="release"
 MODE="dev"
+ENABLE_ALL_TRAITS=false
+INCLUDE_BUNDLED_SPEECH=false
 for arg in "$@"; do
   case "$arg" in
     release|debug) CONFIG="$arg" ;;
@@ -18,9 +22,25 @@ for arg in "$@"; do
     --sign)        MODE="sign" ;;
     --dist)        MODE="dist" ;;
     --dmg)         MODE="dmg" ;;
+    # 开发构建默认不带打包语音与 MLX（上游 #440）—— 每次 debug 都编一遍
+    # MLX 是纯浪费；release 仍然全带，见下面的 CONFIG 分支。
+    --speech)      INCLUDE_BUNDLED_SPEECH=true ;;
+    --all)
+      ENABLE_ALL_TRAITS=true
+      INCLUDE_BUNDLED_SPEECH=true
+      ;;
     *) echo "unknown arg: $arg" >&2; exit 1 ;;
   esac
 done
+
+if [ "$CONFIG" = "release" ]; then
+  # release 用 --enable-all-traits，行为与改动前一致（含 ProductionTelemetry：
+  # Sentry + PostHog，我们本来就在发版里带它，隐私政策里已披露）。
+  # 改的只有 debug：默认不再编 BundledSpeech / MLX —— 每次开发构建都编一遍是纯浪费。
+  # 需要时 `--speech` 或 `--all` 显式打开。
+  ENABLE_ALL_TRAITS=true
+  INCLUDE_BUNDLED_SPEECH=true
+fi
 
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 
@@ -78,12 +98,21 @@ if [ "$MODE" = "sign" ] || [ "$MODE" = "dist" ]; then
   fi
 fi
 
-echo "==> Building ($CONFIG)"
-TRAITS="BundledSpeech"
-if [ "$CONFIG" = "release" ]; then
-  TRAITS="$TRAITS,ProductionTelemetry"
+BUILD_ARGS=(-c "$CONFIG")
+if $ENABLE_ALL_TRAITS; then
+  TRAITS="all"
+  BUILD_ARGS+=(--enable-all-traits)
+else
+  TRAITS=""
+  if $INCLUDE_BUNDLED_SPEECH; then
+    TRAITS="BundledSpeech"
+  fi
+  if [ -n "$TRAITS" ]; then
+    BUILD_ARGS+=(--traits "$TRAITS")
+  fi
 fi
-BUILD_ARGS=(-c "$CONFIG" --traits "$TRAITS")
+
+echo "==> Building ($CONFIG, traits: ${TRAITS:-none})"
 swift build "${BUILD_ARGS[@]}"
 BIN="$(swift build "${BUILD_ARGS[@]}" --show-bin-path)/PalmierPro"
 SPARKLE_FW="$ROOT/.build/artifacts/sparkle/Sparkle/Sparkle.xcframework/macos-arm64_x86_64/Sparkle.framework"
@@ -186,17 +215,19 @@ if ! ls "$RES_BUNDLE"/*.metallib >/dev/null 2>&1; then
 fi
 cp "$RES_BUNDLE"/*.metallib "$APP/Contents/Resources/"
 
-MLX_METALLIB="$ROOT/.build/$CONFIG/mlx.metallib"
-if [ ! -f "$MLX_METALLIB" ]; then
-  echo "==> Building MLX metallib ($CONFIG)"
-  BUILD_DIR="$ROOT/.build" "$ROOT/.build/checkouts/speech-swift/scripts/build_mlx_metallib.sh" "$CONFIG"
+if $INCLUDE_BUNDLED_SPEECH; then
+  MLX_METALLIB="$ROOT/.build/$CONFIG/mlx.metallib"
+  if [ ! -f "$MLX_METALLIB" ]; then
+    echo "==> Building MLX metallib ($CONFIG)"
+    BUILD_DIR="$ROOT/.build" "$ROOT/.build/checkouts/speech-swift/scripts/build_mlx_metallib.sh" "$CONFIG"
+  fi
+  if [ ! -f "$MLX_METALLIB" ]; then
+    echo "!! missing $MLX_METALLIB — on-device speech features (VAD, speaker ID) would die silently" >&2
+    exit 1
+  fi
+  mkdir -p "$APP/Contents/Resources/mlx-swift_Cmlx.bundle"
+  cp "$MLX_METALLIB" "$APP/Contents/Resources/mlx-swift_Cmlx.bundle/default.metallib"
 fi
-if [ ! -f "$MLX_METALLIB" ]; then
-  echo "!! missing $MLX_METALLIB — on-device speech features (VAD, speaker ID) would die silently" >&2
-  exit 1
-fi
-mkdir -p "$APP/Contents/Resources/mlx-swift_Cmlx.bundle"
-cp "$MLX_METALLIB" "$APP/Contents/Resources/mlx-swift_Cmlx.bundle/default.metallib"
 
 install_name_tool -add_rpath "@executable_path/../Frameworks" "$APP/Contents/MacOS/PalmierPro"
 touch "$APP"
