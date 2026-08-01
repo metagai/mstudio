@@ -56,6 +56,14 @@ enum MetagGateway {
             let duration_s: Int?
             let native_audio: Bool
             let credits_per_shot: Int
+            /// 这一档吃不吃用户上传的图。**不是所有档都吃** ——
+            /// seedance / veo / cloud 的提交体里只有 prompt，图会被静默丢弃，
+            /// 而用户按 26~60 credits/镜付了钱，成片却和他的图毫无关系。
+            /// 老网关不回这个字段时按 true 处理：宁可让网关去拦，也不要误挡住可用的档。
+            /// 默认 nil：新增的可选字段不该逼所有构造点改一遍；
+            /// 老网关不回这个字段时也自然落到「按可用处理」。
+            var accepts_image: Bool? = nil
+            var acceptsImage: Bool { accepts_image ?? true }
 
             /// Display name for `code` (`zh` | `en` | `es`), falling back to the legacy `name`.
             func displayName(for code: String) -> String {
@@ -137,6 +145,96 @@ enum MetagGateway {
     }
 
     /// 价格与赠额的单价真源。无需登录 —— 登录页也要报出赠额，所以不能挂在 JWT 上。
+    /// 我的作品。**这个接口此前不存在** —— 用户只能靠自己还留着的深链打开某一单，
+    /// 关掉窗口就再也找不回来，而 credits 已经扣了。
+    /// 数据全部来自服务端的 PostgreSQL（持久），不读 Redis：
+    /// 那里的任务 24 小时后就没了，而"我买过什么"必须比那久得多。
+    struct FilmRow: Decodable, Sendable, Identifiable {
+        let job_id: String
+        let status: String
+        let engine: String
+        let shots: Int
+        let credits: Int
+        let created_at: Double
+        let prompt: String?
+        /// 产物还取不取得到。**扣了钱就必须取得到** ——
+        /// 取不到要如实标出，不能假装能打开。
+        let retrievable: Bool
+        var id: String { job_id }
+    }
+
+    /// 额度流水。**这张表此前只写不读** —— 用户看不到自己的钱去哪了。
+    /// 2026-08-01 的事故里我们弄丢了一位用户付过钱的成片、退了额度、重出了一版，
+    /// 而他在产品里没有任何地方能看到这件事发生过。信任不会因为修好了就自动回来。
+    ///
+    /// 服务端只回枚举，文案在客户端本地化 —— 服务端拼中文，英文界面上就会冒出中文。
+    struct CreditEntry: Decodable, Sendable, Identifiable {
+        let at: Double
+        let reason: String
+        let delta: Int
+        let job_id: String?
+        /// 到期后 prompt 会被隐私清扫抹掉，那时没有标题可显示
+        let title: String?
+        var id: String { "\(at)-\(reason)-\(delta)" }
+    }
+
+    static func creditActivity() async throws -> [CreditEntry] {
+        struct Response: Decodable { let items: [CreditEntry] }
+        return try await send(request("api/v1/credits/activity"), as: Response.self).items
+    }
+
+    static func myFilms() async throws -> [FilmRow] {
+        struct Response: Decodable { let jobs: [FilmRow] }
+        return try await send(request("api/v1/jobs"), as: Response.self).jobs
+    }
+
+    // ---------- 免费草案：先看片，再决定付不付钱 ----------
+    //
+    // web 端一直有这条路，macOS 端此前没有 —— 用户从生成对话框直接走付费出片。
+    // 而"先看后买"正是首页对外的承诺，两端不一致等于对一半用户失约。
+
+    /// 起草。0 credits。`firstFrame` 给了就用它当第 0 镜的首帧，
+    /// 后续镜头靠 continuity 把同一主体带下去。
+    static func preview(
+        prompt: String,
+        shots: Int = 4,
+        firstFrame: String? = nil
+    ) async throws -> String {
+        struct Response: Decodable { let job_id: String }
+        var body: [String: Any] = [
+            "prompt": prompt, "shots": shots,
+            "lang": await currentLanguageCode(),
+        ]
+        if let firstFrame { body["first_frame"] = firstFrame }
+        return try await send(request("api/v1/preview", method: "POST", body: body), as: Response.self).job_id
+    }
+
+    /// 逐镜修改草案，仍然 0 credits。**只重做被改的那几镜** ——
+    /// 改一个字就全片重来，"修改"就等于"重来"，也就失去了意义。
+    struct ReviseEdit: Encodable, Sendable {
+        let index: Int
+        var narration: String?
+        var reroll: Bool?
+    }
+
+    static func revisePreview(id: String, edits: [ReviseEdit]) async throws {
+        struct Ack: Decodable { let status: String? }
+        let data = try JSONEncoder().encode(["edits": edits])
+        let obj = try JSONSerialization.jsonObject(with: data) as? [String: Any] ?? [:]
+        _ = try await send(request("api/v1/preview/\(id)/revise", method: "POST", body: obj), as: Ack.self)
+    }
+
+    /// 确认出片：**此刻才计费**，从用户看过的那批首帧出发。
+    static func approvePreview(id: String, engine: String, allShots: Bool = false) async throws -> String {
+        struct Response: Decodable { let job_id: String }
+        var body: [String: Any] = ["engine": engine]
+        // 用户选的引擎是**上限**：默认只有需要口型同步的镜头才用它，其余降到 local。
+        // allShots 打开时每一镜都用 —— 否则最贵的档对没有口播的片子实际上买不到。
+        if allShots { body["all_shots"] = true }
+        return try await send(request("api/v1/preview/\(id)/approve", method: "POST", body: body),
+                              as: Response.self).job_id
+    }
+
     static func pricing() async throws -> Pricing {
         try await send(URLRequest(url: baseURL.appendingPathComponent("api/v1/pricing")), as: Pricing.self)
     }

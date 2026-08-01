@@ -24,6 +24,7 @@ for arg in "$@"; do
     --sign)        MODE="sign" ;;
     --dist)        MODE="dist" ;;
     --dmg)         MODE="dmg" ;;
+    # 开发构建默认不带打包语音与 MLX（上游 #440）—— 每次 debug 都编一遍 MLX 是纯浪费。
     --speech)      INCLUDE_BUNDLED_SPEECH=true ;;
     --telemetry)   INCLUDE_PRODUCTION_TELEMETRY=true ;;
     --all)

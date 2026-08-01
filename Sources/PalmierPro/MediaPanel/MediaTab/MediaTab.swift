@@ -36,6 +36,7 @@ struct MediaTab: View {
     @State private var mediaPanelHeight: CGFloat = 600
     @State private var showMatteSheet = false
     @State private var showDirectorSheet = false
+    @State private var showDraftSheet = false
 
     enum ViewMode: String, CaseIterable {
         case folder, flat, grouped
@@ -87,6 +88,15 @@ struct MediaTab: View {
     var body: some View {
         VStack(spacing: 0) {
             toolbar
+
+            // 我的作品：**此前没有这个入口** —— 用户只能靠自己还留着的深链
+            // 打开某一单，关掉窗口就再也找不回来，而 credits 已经扣了。
+            // 放在素材面板而不是首页：打开过去的作品本来就是"导进当前工程"。
+            MetagMyFilmsView { film in
+                Task { await MetagJobOpener.open(jobId: film.job_id, into: editor) }
+            }
+            .padding(.horizontal, AppTheme.Spacing.sm)
+            .padding(.bottom, AppTheme.Spacing.sm)
 
             if editor.pendingSwapClipId != nil {
                 swapBanner
@@ -175,6 +185,11 @@ struct MediaTab: View {
         }
         .sheet(isPresented: $showDirectorSheet) {
             MetagDirectorSheet(isPresented: $showDirectorSheet)
+        }
+        // 免费草案：先看片，再决定付不付钱。
+        // web 端一直有这条路，macOS 端此前没有 —— 而"先看后买"是首页对外的承诺。
+        .sheet(isPresented: $showDraftSheet) {
+            MetagDraftSheet()
         }
     }
 
@@ -642,6 +657,9 @@ struct MediaTab: View {
                 Label(L10n.string("Create Matte"), systemImage: "square.fill")
             }
             if !AccountService.shared.isMisconfigured {
+                Button { showDraftSheet = true } label: {
+                    Label("Draft a film…", systemImage: "text.viewfinder")
+                }
                 Button { showDirectorSheet = true } label: {
                     Label("Auto Director…", systemImage: "film.stack")
                 }
