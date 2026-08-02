@@ -69,7 +69,11 @@ final class EditorViewModel {
     var denoiseBaked: Set<String> = []
     var speechAnalyzingCount: Int = 0
     var speakerRegistry: [SpeakerRegistryEntry] = []
-    var multicamGroups: [MulticamSource] = []
+    var multicamGroups: [MulticamSource] = [] {
+        didSet {
+            if multicamGroups != oldValue { deadAirMaskCache.reset() }
+        }
+    }
     var speakerAssignments: [String: [String: Int]] = [:]
     var speakerIdentifyPhase: String?
     var speakerIdentifyInFlight: Bool { speakerIdentifyPhase != nil }
@@ -178,6 +182,7 @@ final class EditorViewModel {
     var missingMediaRefs: Set<String> = []
     @ObservationIgnored var missingMediaRefreshTask: Task<Void, Never>?
     let mediaVisualCache = MediaVisualCache()
+    let deadAirMaskCache = DeadAirMaskCache()
     let searchIndex = SearchIndexCoordinator()
     var projectURL: URL? {
         didSet {
@@ -297,6 +302,13 @@ final class EditorViewModel {
         mediaVisualCache.speech.onAnalyzingCountChange = { [weak self] count in
             self?.speechAnalyzingCount = count
         }
+        // 素材缩略缓存失效时一并清掉静音掩码缓存 —— 画面变了，静音区间也就不作数了（上游 #461）
+        mediaVisualCache.onDeadAirCacheInvalidated = { [weak self] in
+            self?.deadAirMaskCache.reset()
+        }
+        // 上游同一个 hunk 里还挂了 undo.onActionCommitted -> captureCommittedEdit，
+        // 那属于 #457（编辑行为遥测归因），是我们明确拒绝的一条 ——
+        // 它依赖的 EditorUndo.onActionCommitted 在我们树里也不存在。只取 #461 的这一半。
 
         // Re-check media presence when the app regains focus: a user may have
         // deleted/moved backing files in Finder (or ejected a volume) while we
