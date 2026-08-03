@@ -28,6 +28,10 @@ struct MetagReachabilityTests {
         // 拒绝它，而用户看到的是"配音失败"，与真正的失败无从区分。
         // 那个判断值得一条断言，而断言需要它可见。
         "audioExtension",       // internal, 由 speak() 按响应体魔数选扩展名
+        // 同上：只被 highlights() 调用，不设成 private 是为了能测。
+        // 一分钟素材的包络是 24000 个点，抽稀写错（比如只取前 200 个）不会报错，
+        // 只会让我们"只看了头 0.5 秒"就去找亮点。
+        "downsample",           // internal, 由 highlights() 抽稀能量曲线
     ]
 
     private func sources(under directory: URL) throws -> [URL] {

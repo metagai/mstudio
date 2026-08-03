@@ -248,3 +248,32 @@
 "Built-in (free)" = "Built-in (free)";
 "Voiceover added to your media" = "Voiceover added to your media";
 "Generated audio lands in your media panel — drag it onto the timeline." = "Generated audio lands in your media panel — drag it onto the timeline.";
+
+// 择优 / 改图 / 找亮点
+"Pick a take" = "Pick a take";
+"Pick a Take…" = "Pick a Take…";
+"Compare the takes this shot already has and choose one." = "Compare the takes this shot already has and choose one.";
+"Fetching takes…" = "Fetching takes…";
+"This shot has only one take. Re-shoot with more takes to compare." = "This shot has only one take. Re-shoot with more takes to compare.";
+"Quality %@" = "Quality %@";
+"Use this" = "Use this";
+"Edit with a sentence" = "Edit with a sentence";
+"Edit with a sentence…" = "Edit with a sentence…";
+"Original" = "Original";
+"Edited · %@ credits" = "Edited · %@ credits";
+"What should change? e.g. make it night, add rain" = "What should change? e.g. make it night, add rain";
+"Edit · %@ credits" = "Edit · %@ credits";
+"Edit again" = "Edit again";
+"Edit again · %@ credits" = "Edit again · %@ credits";
+"Add to media" = "Add to media";
+"Find Highlights…" = "Find Highlights…";
+"Find the good parts" = "Find the good parts";
+"Find highlights" = "Find highlights";
+"Transcription and audio analysis run on this Mac. Only the text leaves." = "Transcription and audio analysis run on this Mac. Only the text leaves.";
+"Anything specific? e.g. 3 clips, 10 seconds each" = "Anything specific? e.g. 3 clips, 10 seconds each";
+"Transcribing on this Mac…" = "Transcribing on this Mac…";
+"Measuring the audio…" = "Measuring the audio…";
+"Looking for the good parts…" = "Looking for the good parts…";
+"Nothing stood out in this one." = "Nothing stood out in this one.";
+"Search again" = "Search again";
+"Add" = "Add";

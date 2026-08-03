@@ -295,20 +295,7 @@ private struct MomentThumbnail: View {
         }
         .task(id: "\(url?.path ?? "")@\(time)") {
             guard let url else { return }
-            image = await Self.thumbnail(url: url, time: time)
+            image = await VideoThumbnail.image(url: url, at: time)
         }
-    }
-
-    private static func thumbnail(url: URL, time: Double) async -> CGImage? {
-        let asset = AVURLAsset(url: url)
-        guard (try? await asset.loadTracks(withMediaType: .video).first) != nil else { return nil }
-        let generator = AVAssetImageGenerator(asset: asset)
-        generator.appliesPreferredTrackTransform = true
-        generator.maximumSize = CGSize(width: 240, height: 240)
-        let tolerance = CMTime(seconds: 1, preferredTimescale: 600)
-        generator.requestedTimeToleranceBefore = tolerance
-        generator.requestedTimeToleranceAfter = tolerance
-        let cmTime = CMTime(seconds: time, preferredTimescale: 600)
-        return try? await generator.image(at: cmTime).image
     }
 }
