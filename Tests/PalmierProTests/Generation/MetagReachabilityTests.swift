@@ -23,6 +23,11 @@ struct MetagReachabilityTests {
         // 那会让一次成功的删除看起来像失败。与 send 同类，都是传输原语。
         "sendNoContent",        // internal transport (204 无响应体)
         "currentLanguageCode",  // internal, used while building bodies
+        // 与上面几个同类：只被 speak() 调用的内部原语。
+        // **它不是 private，是为了能测** —— 拿 WAV 当 .mp3 存，AVFoundation 会
+        // 拒绝它，而用户看到的是"配音失败"，与真正的失败无从区分。
+        // 那个判断值得一条断言，而断言需要它可见。
+        "audioExtension",       // internal, 由 speak() 按响应体魔数选扩展名
     ]
 
     private func sources(under directory: URL) throws -> [URL] {
