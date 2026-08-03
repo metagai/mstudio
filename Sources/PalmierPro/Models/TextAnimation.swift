@@ -53,6 +53,21 @@ struct TextAnimation: Codable, Sendable, Equatable {
         static let perLine: [Preset] = [.fadeIn, .popIn, .slideUp, .typewriter]
         static let perWord: [Preset] = [.wordReveal, .wordSlide, .wordPop, .wordCycle,
                                         .highlightPop, .highlightBlock]
+
+        /// 这一条字幕的入场动画会不会"接管"前一条留下的空档。
+        ///
+        /// 有入场动画的字幕在第 0 帧还没显形，如果前一条正好在这时结束，
+        /// 中间就会闪一下。让前一条多盖住 1 帧，交接才连得上。
+        /// 没有入场动画的（直接出现）不需要，多盖反而会重影。
+        var needsIncomingCaptionCoverage: Bool {
+            switch self {
+            case .fadeIn, .popIn, .slideUp, .typewriter,
+                 .wordReveal, .wordSlide, .wordPop, .wordCycle:
+                true
+            default:
+                false
+            }
+        }
     }
 
     var isActive: Bool { preset != .none }
