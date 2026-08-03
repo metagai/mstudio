@@ -23,6 +23,14 @@ extension TimelineView {
             menu.addItem(item)
         }
         menu.addItem(.separator())
+        // 挑一条：候选一直躺在 job.alts 里，而"Three More Takes"是自动采用最后一条。
+        // 用户为几个候选付了钱，挑选权就该在他手里。
+        let pick = NSMenuItem(title: L10n.threadSafe("Pick a Take…"), action: #selector(performPickTake(_:)), keyEquivalent: "")
+        pick.target = self
+        pick.representedObject = clipId
+        pick.toolTip = L10n.threadSafe("Compare the takes this shot already has and choose one.")
+        menu.addItem(pick)
+
         // Always offered rather than shown only when a shot is flagged: menu construction is
         // synchronous and the scores live on the server. Clicking says what it found, including
         // that nothing needed fixing.
@@ -42,6 +50,14 @@ extension TimelineView {
         Task { @MainActor in
             await MetagReshoot.fixFlagged(asset: asset, editor: editor)
         }
+    }
+
+    @objc func performPickTake(_ sender: Any?) {
+        guard let clipId = (sender as? NSMenuItem)?.representedObject as? String,
+              let asset = editor.generatedAsset(clipId: clipId),
+              let (job, index) = MetagReshoot.eligibleShot(for: asset)
+        else { return }
+        editor.pendingTakePick = TakePick(job: job, shot: index, assetId: asset.id)
     }
 
     @objc func performReshoot(_ sender: Any?) {

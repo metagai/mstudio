@@ -89,6 +89,19 @@ struct AssetThumbnailView: View {
             }
             Button(L10n.string("Rename")) { beginRename() }
             AIEditMenu(asset: asset)
+            // 一句话改图：只对图片给。结果是**新素材**，原图不动 ——
+            // 改图是加一版，不是替换；一次没改对，原图还在。
+            if asset.type == .image, !AccountService.shared.isMisconfigured {
+                Button(L("Edit with a sentence…")) {
+                    editor.pendingImageEdit = ImageEditRequest(source: asset.url)
+                }
+            }
+            // 找亮点：有声音才有得找。转写和能量分析都在本机跑。
+            if asset.type != .image, !AccountService.shared.isMisconfigured {
+                Button(L("Find Highlights…")) {
+                    editor.pendingHighlights = HighlightRequest(assetId: asset.id)
+                }
+            }
             Divider()
         }
         if ids.contains(where: { id in

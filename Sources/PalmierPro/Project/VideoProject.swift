@@ -462,6 +462,20 @@ class VideoProject: NSDocument {
                 ExportView()
                     .environment(editorViewModel)
             }
+            .sheet(item: Bindable(editorViewModel).pendingHighlights) { [editorViewModel] req in
+                if let asset = editorViewModel.mediaAssets.first(where: { $0.id == req.assetId }) {
+                    MetagHighlightsSheet(asset: asset)
+                        .environment(editorViewModel)
+                }
+            }
+            .sheet(item: Bindable(editorViewModel).pendingImageEdit) { [editorViewModel] req in
+                MetagImageEditSheet(source: req.source)
+                    .environment(editorViewModel)
+            }
+            .sheet(item: Bindable(editorViewModel).pendingTakePick) { [editorViewModel] pick in
+                MetagTakePicker(job: pick.job, shot: pick.shot, assetId: pick.assetId)
+                    .environment(editorViewModel)
+            }
             .sheet(item: Bindable(editorViewModel).pendingSettingsMismatch) { [editorViewModel] mismatch in
                 ProjectSettingsMismatchView(mismatch: mismatch)
                     .environment(editorViewModel)

@@ -1292,3 +1292,32 @@
 "Built-in (free)" = "Integrada (gratis)";
 "Voiceover added to your media" = "Locución añadida a tus medios";
 "Generated audio lands in your media panel — drag it onto the timeline." = "El audio generado aparece en tu panel de medios; arrástralo a la línea de tiempo.";
+
+// 择优 / 改图 / 找亮点
+"Pick a take" = "Elige una toma";
+"Pick a Take…" = "Elige una toma…";
+"Compare the takes this shot already has and choose one." = "Compara las tomas que ya tiene esta escena y elige una.";
+"Fetching takes…" = "Obteniendo tomas…";
+"This shot has only one take. Re-shoot with more takes to compare." = "Esta escena solo tiene una toma. Vuelve a rodar con más tomas para comparar.";
+"Quality %@" = "Calidad %@";
+"Use this" = "Usar esta";
+"Edit with a sentence" = "Editar con una frase";
+"Edit with a sentence…" = "Editar con una frase…";
+"Original" = "Original";
+"Edited · %@ credits" = "Editada · %@ créditos";
+"What should change? e.g. make it night, add rain" = "¿Qué debe cambiar? p. ej. que sea de noche, añade lluvia";
+"Edit · %@ credits" = "Editar · %@ créditos";
+"Edit again" = "Editar otra vez";
+"Edit again · %@ credits" = "Editar otra vez · %@ créditos";
+"Add to media" = "Añadir a medios";
+"Find Highlights…" = "Buscar momentos…";
+"Find the good parts" = "Encuentra lo mejor";
+"Find highlights" = "Buscar momentos";
+"Transcription and audio analysis run on this Mac. Only the text leaves." = "La transcripción y el análisis de audio se hacen en este Mac. Solo sale el texto.";
+"Anything specific? e.g. 3 clips, 10 seconds each" = "¿Algo concreto? p. ej. 3 clips de 10 segundos";
+"Transcribing on this Mac…" = "Transcribiendo en este Mac…";
+"Measuring the audio…" = "Analizando el audio…";
+"Looking for the good parts…" = "Buscando lo mejor…";
+"Nothing stood out in this one." = "No destacó nada en este.";
+"Search again" = "Buscar otra vez";
+"Add" = "Añadir";

@@ -1291,3 +1291,32 @@
 "Built-in (free)" = "内置音色（免费）";
 "Voiceover added to your media" = "配音已加入素材面板";
 "Generated audio lands in your media panel — drag it onto the timeline." = "生成的音频会出现在素材面板，拖到时间线上即可。";
+
+// 择优 / 改图 / 找亮点
+"Pick a take" = "挑一条";
+"Pick a Take…" = "挑一条…";
+"Compare the takes this shot already has and choose one." = "对比这一镜已有的几条，挑一条用。";
+"Fetching takes…" = "正在取候选…";
+"This shot has only one take. Re-shoot with more takes to compare." = "这一镜只有一条，没得挑。重拍时多要几条才能对比。";
+"Quality %@" = "质量 %@";
+"Use this" = "用这条";
+"Edit with a sentence" = "一句话改图";
+"Edit with a sentence…" = "一句话改图…";
+"Original" = "原图";
+"Edited · %@ credits" = "改后 · %@ credits";
+"What should change? e.g. make it night, add rain" = "想改成什么？比如：改成夜景、加上雨";
+"Edit · %@ credits" = "改图 · %@ credits";
+"Edit again" = "再改一次";
+"Edit again · %@ credits" = "再改一次 · %@ credits";
+"Add to media" = "加入素材";
+"Find Highlights…" = "找亮点…";
+"Find the good parts" = "找出精彩的部分";
+"Find highlights" = "找亮点";
+"Transcription and audio analysis run on this Mac. Only the text leaves." = "转写和音频分析都在这台 Mac 上跑，只有文字会离开本机。";
+"Anything specific? e.g. 3 clips, 10 seconds each" = "有具体要求吗？比如：3 段，每段 10 秒";
+"Transcribing on this Mac…" = "正在本机转写…";
+"Measuring the audio…" = "正在分析音频…";
+"Looking for the good parts…" = "正在找精彩的部分…";
+"Nothing stood out in this one." = "这一条里没有特别突出的段落。";
+"Search again" = "再找一次";
+"Add" = "加入";

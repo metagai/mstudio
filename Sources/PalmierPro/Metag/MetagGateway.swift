@@ -466,6 +466,82 @@ enum MetagGateway {
         try await send(request("api/v1/jobs/\(id)"), as: Job.self)
     }
 
+    /// 一句话改图。返回的 frame_id 可以直接当图生视频的首帧。
+    ///
+    /// `frameId` 必须是 uploadFrame 回的那个，且属于本人 —— 网关会校验。
+    /// 指令上限 500 字，超了 400。
+    static func editImage(frameId: String, instruction: String) async throws -> (frameId: String, cost: Int) {
+        struct Response: Decodable { let frame_id: String; let cost: Int }
+        let req = try request("api/v1/image/edit", method: "POST",
+                              body: ["frame_id": frameId, "instruction": instruction])
+        let r = try await send(req, as: Response.self)
+        return (r.frame_id, r.cost)
+    }
+
+    /// 取回一张上传/改过的图。
+    ///
+    /// 改图只回一个 frame_id，没有这条路由的话用户**看不见自己花钱改出来的东西** ——
+    /// 只能生成之后才知道改成了什么样。为此在网关加了 GET /api/v1/frames/{id}。
+    static func frame(_ frameId: String, to directory: URL) async throws -> URL {
+        guard let token else { throw Failure.signedOut }
+        var req = URLRequest(url: baseURL.appendingPathComponent("api/v1/frames/\(frameId)"))
+        req.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
+        let (data, response) = try await URLSession.shared.data(for: req)
+        let code = (response as? HTTPURLResponse)?.statusCode ?? 0
+        guard (200..<300).contains(code) else { throw Failure.http(code) }
+        // frame_id 自带扩展名（{uuid}.png），直接拿来当文件名
+        let url = directory.appendingPathComponent(frameId)
+        try data.write(to: url)
+        return url
+    }
+
+    /// 把某一镜的某个候选定为交付版本。
+    ///
+    /// 重拍本来就会生成 N 个候选（用户为它们付了钱），而此前 Mac 端**自动采用最后
+    /// 一个** —— 挑选权从来没交到用户手里。候选数据一直在 job.alts 里躺着。
+    static func promoteTake(job id: String, shot: Int, file: String) async throws {
+        let req = try request("api/v1/jobs/\(id)/takes/promote", method: "POST",
+                              body: ["shot": shot, "file": file])
+        // 返回体我们不看：成功与否已经由状态码回答了。
+        struct Ignored: Decodable {}
+        _ = try await send(req, as: Ignored.self)
+    }
+
+    /// 找亮点：把**文字和能量曲线**发上去，素材本身不出设备。
+    ///
+    /// 转写在本机做（端侧 ASR），能量曲线也在本机算（AudioEnvelope），
+    /// 出设备的只有一份摘要 —— 这是我们能做而云端剪辑工具做不到的事，
+    /// 别为了省事把音视频传上去。
+    static func highlights(
+        transcript: String, energy: [Float], duration: Double, preferences: String
+    ) async throws -> [Highlight] {
+        struct Response: Decodable { let highlights: [Highlight] }
+        let req = try request("api/v1/highlights", method: "POST", body: [
+            "transcript": transcript,
+            // 能量曲线抽稀到 200 点：网关只拿它判断"哪里有劲"，
+            // 逐帧发过去只是把一条跨太平洋的请求变慢。
+            "energy": downsample(energy, to: 200).map { Double(($0 * 100).rounded()) / 100 },
+            "duration": duration,
+            "preferences": preferences,
+        ])
+        return try await send(req, as: Response.self).highlights
+    }
+
+    struct Highlight: Decodable, Sendable, Identifiable {
+        let start: Double
+        let end: Double
+        let score: Double
+        let title: String
+        let reason: String
+        var id: String { "\(start)-\(end)" }
+    }
+
+    /// 等距抽稀。`count` 不小于原长时原样返回。
+    static func downsample(_ values: [Float], to count: Int) -> [Float] {
+        guard count > 0, values.count > count else { return values }
+        return (0..<count).map { values[$0 * values.count / count] }
+    }
+
     /// 音频字节该存成什么扩展名。
     ///
     /// **扩展名要跟着实际内容走。** 拿 WAV 当 .mp3 存，AVFoundation 会拒绝它，

@@ -170,6 +170,13 @@ final class EditorViewModel {
     var isScrubbing: Bool = false
     var toolMode: ToolMode = .pointer
     var showExportDialog: Bool = false
+    /// 正在挑选候选的那一镜。TimelineView 是 AppKit 侧的右键菜单，
+    /// 弹 SwiftUI 面板要经过这里。
+    var pendingTakePick: TakePick?
+    /// 正在改的那张图。素材面板的右键菜单要弹 SwiftUI 面板，经过这里。
+    var pendingImageEdit: ImageEditRequest?
+    /// 正在找亮点的素材。同上，AppKit/SwiftUI 之间的一个交接点。
+    var pendingHighlights: HighlightRequest?
     var showGenerationPanel: Bool = false {
         didSet {
             if showGenerationPanel && !oldValue { showMediaPanelMediaTab() } else if !showGenerationPanel && oldValue { clearPendingGenerationPanelState() }
