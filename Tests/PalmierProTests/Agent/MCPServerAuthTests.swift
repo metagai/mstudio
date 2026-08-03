@@ -176,15 +176,36 @@ import Testing
 
 /// The server binds with `allowLocalEndpointReuse`, so two suites that draw the same random port
 /// both bind it and steal each other's connections. Hand out distinct ports instead.
+/// 向内核要一个空闲端口，而不是猜。
+///
+/// 原来是"随机起点自增"，**从不检查那个号有没有被占用** —— 撞上机器上任何
+/// 别的监听者（或上一轮测试留下的 TIME_WAIT）就是 EADDRINUSE，整条 MCP 套件
+/// 集体红，而且只在别人正好占着时才复现：2026-08-03 验收就这么红了一次，
+/// 前两轮同样的代码是绿的。靠运气的测试比没有测试更糟，它会教你忽略红灯。
+///
+/// bind 到 0 让内核挑，读回号再关掉。仍有极小的 TOCTOU 窗口（关掉到服务器
+/// 重新 bind 之间），但内核只会挑真正空闲的号，这比自增猜号强一个量级。
 enum MCPTestPort {
-    private static let lock = NSLock()
-    nonisolated(unsafe) private static var next = UInt16.random(in: 49_500...58_000)
-
     static func reserve() -> UInt16 {
-        lock.lock()
-        defer { lock.unlock() }
-        next += 1
-        return next
+        let fd = socket(AF_INET, SOCK_STREAM, 0)
+        precondition(fd >= 0, "socket() 失败")
+        defer { close(fd) }
+
+        var addr = sockaddr_in()
+        addr.sin_family = sa_family_t(AF_INET)
+        addr.sin_port = 0  // 0 = 由内核分配
+        addr.sin_addr.s_addr = INADDR_ANY.bigEndian
+        var len = socklen_t(MemoryLayout<sockaddr_in>.size)
+
+        let bound = withUnsafePointer(to: &addr) {
+            $0.withMemoryRebound(to: sockaddr.self, capacity: 1) { bind(fd, $0, len) }
+        }
+        precondition(bound == 0, "bind(0) 失败")
+        let named = withUnsafeMutablePointer(to: &addr) {
+            $0.withMemoryRebound(to: sockaddr.self, capacity: 1) { getsockname(fd, $0, &len) }
+        }
+        precondition(named == 0, "getsockname 失败")
+        return UInt16(bigEndian: addr.sin_port)
     }
 }
 
