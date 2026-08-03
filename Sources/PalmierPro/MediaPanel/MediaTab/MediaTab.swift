@@ -35,6 +35,7 @@ struct MediaTab: View {
     @State private var mediaPanelHeight: CGFloat = 600
     @State private var showMatteSheet = false
     @State private var showDirectorSheet = false
+    @State private var showVoiceSheet = false
     @State private var showDraftSheet = false
 
     enum ViewMode: String, CaseIterable {
@@ -182,6 +183,10 @@ struct MediaTab: View {
         }
         .sheet(isPresented: $showDirectorSheet) {
             MetagDirectorSheet(isPresented: $showDirectorSheet)
+        }
+        // 配音落在素材面板里，所以入口也在这里 —— 它是创作动作，不是账户设置。
+        .sheet(isPresented: $showVoiceSheet) {
+            MetagVoiceSheet()
         }
         // 免费草案：先看片，再决定付不付钱。
         // web 端一直有这条路，macOS 端此前没有 —— 而"先看后买"是首页对外的承诺。
@@ -654,6 +659,9 @@ struct MediaTab: View {
                 }
                 Button { showDirectorSheet = true } label: {
                     Label("Auto Director…", systemImage: "film.stack")
+                }
+                Button { showVoiceSheet = true } label: {
+                    Label("Voices & Voiceover…", systemImage: "waveform")
                 }
             }
             if canOrganize {

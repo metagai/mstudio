@@ -19,12 +19,14 @@ enum MetagJobOpener {
                 return
             }
             var added = 0
-            for (i, shot) in job.shots.enumerated() {
+            for shot in job.shots {
                 guard let url = try? await MetagGateway.download(
                     job: jobId, name: shot.video, to: FileManager.default.temporaryDirectory)
                 else { continue }
-                if editor.addMediaAsset(from: url, type: .video) != nil { added += 1 }
-                _ = i
+                // addMediaAsset 返回非可选，原来那句 `!= nil` 恒真、每次构建都报警告。
+                // 计数没错过（它本来就总会加），错的是那句判断在假装自己在判断。
+                editor.addMediaAsset(from: url, type: .video)
+                added += 1
             }
             editor.mediaPanelToast = MediaPanelToast(
                 message: added > 0

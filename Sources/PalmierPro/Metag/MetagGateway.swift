@@ -79,6 +79,9 @@ enum MetagGateway {
         let signup_free_credits: Int
         let plans: [Plan]
         let engines: [Engine]
+        /// 非出片项的单价（voice_clone、image_edit、cover…）。
+        /// 可选：老网关不回这个字段时不该让整个定价解不出来。
+        var extras: [String: Int]? = nil
     }
 
     struct Job: Decodable, Sendable {
@@ -458,6 +461,80 @@ enum MetagGateway {
 
     static func job(_ id: String) async throws -> Job {
         try await send(request("api/v1/jobs/\(id)"), as: Job.self)
+    }
+
+    /// 音频字节该存成什么扩展名。
+    ///
+    /// **扩展名要跟着实际内容走。** 拿 WAV 当 .mp3 存，AVFoundation 会拒绝它，
+    /// 而用户看到的是"配音失败" —— 与真正的失败无从区分，也就无从排查。
+    /// 认不出来时按 mp3：网关的 TTS 只会回这两种。
+    static func audioExtension(for data: Data) -> String {
+        data.starts(with: Array("RIFF".utf8)) ? "wav" : "mp3"
+    }
+
+    // MARK: - 声音复刻
+    //
+    // 音色属人身权：网关要求 consent 必须为 true，否则一律 403，并会记下来源 IP。
+    // 界面上那个勾**不许预勾选**，也不许由"继续"隐含 —— 它是授权，不是偏好。
+
+    struct Voice: Decodable, Sendable, Identifiable, Hashable {
+        let id: String
+        let name: String
+        /// 实扣金额。**只有 /voice/clone 会回**（列表接口没有）。
+        /// 对用户宣称扣了多少，一律用它，不要拿本地单价重算：
+        /// 复刻失败不扣费，只有成功那次才有这个数。
+        var cost: Int? = nil
+    }
+
+    static func voices() async throws -> [Voice] {
+        struct Response: Decodable { let voices: [Voice] }
+        return try await send(request("api/v1/voices"), as: Response.self).voices
+    }
+
+    /// 样本传对象存储，拿到语音服务商能拉到的地址。
+    /// 网关只认 WAV / MP3 / M4A 的魔数，上限 16 MB，每小时 20 次。
+    static func uploadVoiceSample(_ fileURL: URL) async throws -> String {
+        struct Response: Decodable { let sample_url: String }
+        guard let token else { throw Failure.signedOut }
+        let data = try Data(contentsOf: fileURL)
+        var req = URLRequest(url: baseURL.appendingPathComponent("api/v1/upload/voice-sample"))
+        req.httpMethod = "POST"
+        req.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
+        req.httpBody = data
+        return try await send(req, as: Response.self).sample_url
+    }
+
+    static func cloneVoice(sampleURL: String, name: String) async throws -> Voice {
+        let req = try request("api/v1/voice/clone", method: "POST",
+                              body: ["sample_url": sampleURL, "name": name, "consent": true])
+        return try await send(req, as: Voice.self)
+    }
+
+    /// 本地记录与平台侧一起删 —— 人身权数据不该留在别人服务器上。
+    static func deleteVoice(_ id: String) async throws {
+        try await sendNoContent(request("api/v1/voices/\(id)", method: "DELETE"))
+    }
+
+    /// 用某个音色把一段文字合成语音，落到 `directory`，返回本地文件。
+    ///
+    /// `voiceId` 为 nil 时走本地免费合成；给了就是云端 + 按字数计费。
+    /// **响应体是音频字节，不是 JSON** —— 不能走 send<T: Decodable>。
+    static func speak(text: String, voiceId: String?, to directory: URL) async throws -> URL {
+        var body: [String: Any] = ["text": text]
+        if let voiceId { body["voice_id"] = voiceId }
+        let req = try request("api/v1/tts", method: "POST", body: body)
+        let (data, response) = try await URLSession.shared.data(for: req)
+        let code = (response as? HTTPURLResponse)?.statusCode ?? 0
+        switch code {
+        case 200..<300: break
+        case 401: token = nil; throw Failure.signedOut
+        case 402: throw Failure.insufficientCredits
+        default: throw Failure.http(code)
+        }
+        let url = directory
+            .appendingPathComponent("metag-voice-\(UUID().uuidString).\(audioExtension(for: data))")
+        try data.write(to: url)
+        return url
     }
 
     /// 轮询至终态。取消由调用方通过 Task 取消传递。
