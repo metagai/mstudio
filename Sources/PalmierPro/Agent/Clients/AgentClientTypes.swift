@@ -67,12 +67,17 @@ enum AgentReasoningEffort: String, CaseIterable, Sendable {
         case .max: L10n.key("Max")
         }
     }
+
+    var maxOutputTokens: Int { 128_000 }
 }
 
 enum AgentModel: String, CaseIterable, Codable, Sendable {
     case sonnet5 = "claude-sonnet-5"
     case opus5 = "claude-opus-5"
     case fable5 = "claude-fable-5"
+    // 上游 #459 顺手删了 Haiku。那是他们的机型取舍 —— 对自带 key 的用户，
+    // 它是最便宜的那一档，拿掉等于抬高了自己带钥匙进来的门槛。不配 thinking 即可。
+    case haiku45 = "claude-haiku-4-5-20251001"
     case luna = "gpt-5.6-luna"
     case terra = "gpt-5.6-terra"
     case sol = "gpt-5.6-sol"
@@ -84,6 +89,7 @@ enum AgentModel: String, CaseIterable, Codable, Sendable {
         case .sonnet5: "Sonnet 5"
         case .opus5: "Opus 5"
         case .fable5: "Fable 5"
+        case .haiku45: "Haiku 4.5"
         case .luna: "GPT-5.6 Luna"
         case .terra: "GPT-5.6 Terra"
         case .sol: "GPT-5.6 Sol"
@@ -92,7 +98,7 @@ enum AgentModel: String, CaseIterable, Codable, Sendable {
 
     var provider: AgentProvider {
         switch self {
-        case .sonnet5, .opus5, .fable5: .anthropic
+        case .sonnet5, .opus5, .fable5, .haiku45: .anthropic
         case .luna, .terra, .sol: .openAI
         }
     }
