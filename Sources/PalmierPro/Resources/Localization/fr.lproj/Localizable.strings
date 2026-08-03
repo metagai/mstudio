@@ -1143,3 +1143,37 @@
 "Everyone is generating right now — try again in a few minutes" = "Tout le monde génère en ce moment — réessaie dans quelques minutes";
 "That engine is temporarily unavailable — pick another" = "Ce moteur est indisponible — choisis-en un autre";
 "Temporarily unavailable — try again shortly" = "Temporairement indisponible — réessaie bientôt";
+
+/* 引导流程（Onboarding，上游 94394bb）*/
+"Welcome to METAG" = "Bienvenue sur METAG";
+"Tell us about your work" = "Parle-nous de ton travail";
+"What best describes your role?" = "Qu'est-ce qui décrit le mieux ton rôle ?";
+"What do you make?" = "Que crées-tu ?";
+"What interests you most about METAG?" = "Qu'est-ce qui t'intéresse le plus dans METAG ?";
+"Watch the tutorial or start creating." = "Regarde le tutoriel ou commence directement.";
+"Sign in to receive %@ free credits for AI chat and generation." = "Connecte-toi et reçois %@ crédits offerts.";
+"Sign in to start generating." = "Connecte-toi pour commencer à générer.";
+"Sample project couldn’t be opened. Try again." = "Impossible d'ouvrir le projet exemple.";
+"Sign-in couldn’t be completed. Try again." = "La connexion n'a pas abouti.";
+"Welcome, %@" = "Bienvenue, %@";
+"Welcome" = "Bienvenue";
+"Content creator" = "Content creator";
+"Filmmaker" = "Filmmaker";
+"Marketer" = "Marketer";
+"Designer" = "Designer";
+"Founder" = "Founder";
+"Student" = "Student";
+"Hobbyist" = "Hobbyist";
+"Video editor" = "Video editor";
+"Other" = "Other";
+"Short-form and social" = "Short-form and social";
+"YouTube" = "YouTube";
+"Podcast" = "Podcast";
+"AI videos" = "AI videos";
+"Ads and branded content" = "Ads and branded content";
+"Product demos" = "Product demos";
+"Education and tutorials" = "Education and tutorials";
+"Agentic editing" = "Agentic editing";
+"AI transcription" = "AI transcription";
+"Video automation" = "Video automation";
+"Integration with your own agent" = "Integration with your own agent";

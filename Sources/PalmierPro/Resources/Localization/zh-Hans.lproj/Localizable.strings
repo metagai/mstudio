@@ -1191,3 +1191,36 @@
 "Everyone is generating right now — try again in a few minutes" = "此刻大家都在生成，过几分钟再试";
 "That engine is temporarily unavailable — pick another" = "这一档暂时不可用，换一档";
 "Temporarily unavailable — try again shortly" = "暂时不可用，稍后再试";
+
+/* 引导流程（Onboarding，上游 94394bb）*/
+"Tell us about your work" = "说说你在做什么";
+"What best describes your role?" = "你的角色更接近哪一个？";
+"What do you make?" = "你做什么类型的片子？";
+"What interests you most about METAG?" = "METAG 最吸引你的是什么？";
+"Watch the tutorial or start creating." = "看教程，或者直接开始。";
+"Sign in to receive %@ free credits for AI chat and generation." = "登录即送 %@ credits，可用于 AI 对话与生成。";
+"Sign in to start generating." = "登录即可开始生成。";
+"Sample project couldn’t be opened. Try again." = "示例项目打不开，请重试。";
+"Sign-in couldn’t be completed. Try again." = "登录未完成，请重试。";
+"Welcome, %@" = "欢迎，%@";
+"Welcome" = "欢迎";
+"Content creator" = "内容创作者";
+"Filmmaker" = "影视创作者";
+"Marketer" = "市场营销";
+"Designer" = "设计师";
+"Founder" = "创业者";
+"Student" = "学生";
+"Hobbyist" = "爱好者";
+"Video editor" = "剪辑师";
+"Other" = "其他";
+"Short-form and social" = "短视频与社交";
+"YouTube" = "YouTube";
+"Podcast" = "播客";
+"AI videos" = "AI 视频";
+"Ads and branded content" = "广告与品牌内容";
+"Product demos" = "产品演示";
+"Education and tutorials" = "教育与教程";
+"Agentic editing" = "智能体剪辑";
+"AI transcription" = "AI 转写";
+"Video automation" = "视频自动化";
+"Integration with your own agent" = "接入你自己的智能体";

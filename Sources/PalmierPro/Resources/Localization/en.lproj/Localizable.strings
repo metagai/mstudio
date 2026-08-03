@@ -1194,3 +1194,36 @@
 "Everyone is generating right now — try again in a few minutes" = "Everyone is generating right now — try again in a few minutes";
 "That engine is temporarily unavailable — pick another" = "That engine is temporarily unavailable — pick another";
 "Temporarily unavailable — try again shortly" = "Temporarily unavailable — try again shortly";
+
+/* 引导流程（Onboarding，上游 94394bb）*/
+"Tell us about your work" = "Tell us about your work";
+"What best describes your role?" = "What best describes your role?";
+"What do you make?" = "What do you make?";
+"What interests you most about METAG?" = "What interests you most about METAG?";
+"Watch the tutorial or start creating." = "Watch the tutorial or start creating.";
+"Sign in to receive %@ free credits for AI chat and generation." = "Sign in to receive %@ free credits for AI chat and generation.";
+"Sign in to start generating." = "Sign in to start generating.";
+"Sample project couldn’t be opened. Try again." = "Sample project couldn’t be opened. Try again.";
+"Sign-in couldn’t be completed. Try again." = "Sign-in couldn’t be completed. Try again.";
+"Welcome, %@" = "Welcome, %@";
+"Welcome" = "Welcome";
+"Content creator" = "Content creator";
+"Filmmaker" = "Filmmaker";
+"Marketer" = "Marketer";
+"Designer" = "Designer";
+"Founder" = "Founder";
+"Student" = "Student";
+"Hobbyist" = "Hobbyist";
+"Video editor" = "Video editor";
+"Other" = "Other";
+"Short-form and social" = "Short-form and social";
+"YouTube" = "YouTube";
+"Podcast" = "Podcast";
+"AI videos" = "AI videos";
+"Ads and branded content" = "Ads and branded content";
+"Product demos" = "Product demos";
+"Education and tutorials" = "Education and tutorials";
+"Agentic editing" = "Agentic editing";
+"AI transcription" = "AI transcription";
+"Video automation" = "Video automation";
+"Integration with your own agent" = "Integration with your own agent";
