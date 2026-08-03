@@ -123,3 +123,65 @@ struct FilmEventTests {
                 "帧转秒出现了不止一处")
     }
 }
+
+/// 引导流程（上游 94394bb）拿进来时的适配守卫。
+///
+/// 照抄上游最危险的不是编译错误 —— 那会当场发现。危险的是**照抄了一句
+/// 我们兑现不了的承诺**：上游文案写着"登录送 250 free credits"，
+/// 而我们的赠额是网关的 signup_free_credits（当前 20）。
+/// 那句话会出现在产品的第一屏。
+@Suite("引导流程")
+struct OnboardingAdaptationTests {
+    private static func source(_ name: String) -> String {
+        (try? String(contentsOfFile: FileManager.default.currentDirectoryPath
+            + "/Sources/PalmierPro/Home/Onboarding/\(name)", encoding: .utf8)) ?? ""
+    }
+
+    @Test("赠额不写死 —— 它来自网关的定价端点")
+    func freeCreditsAreNotHardcoded() {
+        // **只查字符串字面量，不查注释。** 第一版直接 contains("250")，
+        // 结果被我自己写的"不要照抄上游的 250"那句注释判红 ——
+        // 断言太粗会训练人忽略它。
+        let src = Self.source("OnboardingSteps.swift")
+        let literals = src.split(separator: "\n")
+            .filter { !$0.trimmingCharacters(in: .whitespaces).hasPrefix("//") }
+            .joined(separator: "\n")
+        #expect(!literals.contains("250 free"), "又出现了写死的赠额数字")
+        #expect(src.contains("signup_free_credits"),
+                "赠额没有取自定价端点 —— 网关是单一真源")
+        // 取不到时不提数字，宁可少说一句也不要说错一个数
+        #expect(src.contains("Sign in to start generating."))
+    }
+
+    @Test("品牌名已换成 METAG")
+    func brandIsOurs() {
+        for f in ["OnboardingSteps.swift", "OnboardingModels.swift", "OnboardingOverlay.swift"] {
+            #expect(!Self.source(f).contains("Palmier Pro"), "\(f) 里还留着上游品牌名")
+        }
+    }
+
+    @Test("选项存的是 key，不是已本地化的字符串")
+    func modelsStoreKeys() {
+        // 在类型初始化时本地化会让**切换语言不生效**（静态常量只算一次）。
+        // 字段名就叫 labelKey，语义必须对得上。
+        let src = Self.source("OnboardingModels.swift")
+        #expect(src.contains("labelKey: \"other\"") || src.contains("labelKey: \"Other\""),
+                "选项标签不再是裸 key")
+        #expect(!src.contains("L(\""), "Models 里不该本地化 —— 渲染处才调 L()")
+    }
+
+    @Test("引导文案在三种界面语言里都有")
+    func copyIsTranslated() {
+        // L10n 只暴露 en / zh-Hans / es；缺翻译会退回英文，
+        // 而"欢迎来到 METAG"是中文用户看到的第一句话。
+        for lang in ["en", "zh-Hans", "es"] {
+            let path = FileManager.default.currentDirectoryPath
+                + "/Sources/PalmierPro/Resources/Localization/\(lang).lproj/Localizable.strings"
+            let table = (try? String(contentsOfFile: path, encoding: .utf8)) ?? ""
+            for key in ["Welcome to METAG", "What best describes your role?",
+                        "Sign in to start generating."] {
+                #expect(table.contains("\"\(key)\""), "\(lang) 缺文案：\(key)")
+            }
+        }
+    }
+}

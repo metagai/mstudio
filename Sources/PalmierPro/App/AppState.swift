@@ -255,6 +255,7 @@ final class AppState {
 
     @discardableResult
     func openProjectAsync(at url: URL, register: Bool = true, options: ProjectOpenOptions = .init()) async throws -> VideoProject {
+        try Task.checkCancellation()
         let resolved = url.standardizedFileURL
         guard !projectPathsBeingDeleted.contains(resolved.path) else {
             throw ProjectError.deletionInProgress(resolved)
@@ -271,6 +272,7 @@ final class AppState {
             }
         }
         let doc = try await VideoProject.load(from: resolved)
+        try Task.checkCancellation()
         guard !projectPathsBeingDeleted.contains(resolved.path) else {
             throw ProjectError.deletionInProgress(resolved)
         }
