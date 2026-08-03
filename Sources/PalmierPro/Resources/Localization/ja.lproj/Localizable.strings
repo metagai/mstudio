@@ -1135,3 +1135,11 @@
 "using Anthropic API key" = "Anthropic APIキーを使用中";
 "using OpenAI API key" = "OpenAI APIキーを使用中";
 "you@example.com — so we can reply" = "you@example.com — 返信先として使用します";
+
+/* --- METAG --- */
+"Appearance" = "外観";
+"Applies immediately. Dark is easier on the eyes for long sessions." = "すぐに反映されます。長時間の編集にはダークが目にやさしい。";
+"You already have two films rendering — wait for one to finish" = "すでに 2 本が生成中です。1 本終わるまでお待ちください";
+"Everyone is generating right now — try again in a few minutes" = "現在混み合っています。数分後にお試しください";
+"That engine is temporarily unavailable — pick another" = "このエンジンは一時的に利用できません。別のものを選んでください";
+"Temporarily unavailable — try again shortly" = "一時的に利用できません。しばらくしてからお試しください";

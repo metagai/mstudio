@@ -1184,3 +1184,13 @@
 "Not enough credits." = "Not enough credits.";
 "METAG request failed (%@)." = "METAG request failed (%@).";
 "~%@s · %@ credits · ~%@ min" = "~%@s · %@ credits · ~%@ min";
+
+/* --- METAG --- */
+"Log in for free credits" = "Log in for %@ free credits";
+"Log in for free credits (no number)" = "Log in for free credits";
+"Appearance" = "Appearance";
+"Applies immediately. Dark is easier on the eyes for long sessions." = "Applies immediately. Dark is easier on the eyes for long sessions.";
+"You already have two films rendering — wait for one to finish" = "You already have two films rendering — wait for one to finish";
+"Everyone is generating right now — try again in a few minutes" = "Everyone is generating right now — try again in a few minutes";
+"That engine is temporarily unavailable — pick another" = "That engine is temporarily unavailable — pick another";
+"Temporarily unavailable — try again shortly" = "Temporarily unavailable — try again shortly";

@@ -1182,3 +1182,13 @@
 "Not enough credits." = "Créditos insuficientes.";
 "METAG request failed (%@)." = "La solicitud a METAG falló (%@).";
 "~%@s · %@ credits · ~%@ min" = "~%@ s · %@ créditos · ~%@ min";
+
+/* --- METAG --- */
+"Log in for free credits" = "Inicia sesión y obtén %@ créditos gratis";
+"Log in for free credits (no number)" = "Inicia sesión y obtén créditos gratis";
+"Appearance" = "Apariencia";
+"Applies immediately. Dark is easier on the eyes for long sessions." = "Se aplica al instante. El modo oscuro cansa menos la vista en sesiones largas.";
+"You already have two films rendering — wait for one to finish" = "Ya tienes dos vídeos generándose: espera a que termine uno";
+"Everyone is generating right now — try again in a few minutes" = "Ahora mismo todos están generando: inténtalo en unos minutos";
+"That engine is temporarily unavailable — pick another" = "Ese motor no está disponible: elige otro";
+"Temporarily unavailable — try again shortly" = "No disponible temporalmente: inténtalo en breve";

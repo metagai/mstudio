@@ -1181,3 +1181,13 @@
 "Not enough credits." = "积分不足。";
 "METAG request failed (%@)." = "METAG 请求失败（%@）。";
 "~%@s · %@ credits · ~%@ min" = "约 %@ 秒 · %@ 积分 · 约 %@ 分钟";
+
+/* --- METAG --- */
+"Log in for free credits" = "登录即可获得 %@ 积分";
+"Log in for free credits (no number)" = "登录即可获得免费积分";
+"Appearance" = "外观";
+"Applies immediately. Dark is easier on the eyes for long sessions." = "立即生效。长时间剪辑用暗色更护眼。";
+"You already have two films rendering — wait for one to finish" = "你已经有两条片子在生成，等一条完成再来";
+"Everyone is generating right now — try again in a few minutes" = "此刻大家都在生成，过几分钟再试";
+"That engine is temporarily unavailable — pick another" = "这一档暂时不可用，换一档";
+"Temporarily unavailable — try again shortly" = "暂时不可用，稍后再试";

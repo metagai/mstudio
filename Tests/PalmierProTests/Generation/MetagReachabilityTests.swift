@@ -19,6 +19,9 @@ struct MetagReachabilityTests {
     private static let exempt: Set<String> = [
         "request",              // internal request builder
         "send",                 // internal transport
+        // 204 没有响应体，`send<T: Decodable>` 会试着解 JSON 而必然失败 ——
+        // 那会让一次成功的删除看起来像失败。与 send 同类，都是传输原语。
+        "sendNoContent",        // internal transport (204 无响应体)
         "currentLanguageCode",  // internal, used while building bodies
     ]
 

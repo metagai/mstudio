@@ -26,9 +26,22 @@ eac669e|blocked|同上，靠 id contains \"reframe\"；拿过来是个找不到�
 452b2fe|refused|本地化重构，我们有自己的 L10n；合它会带来 74 个冲突且收益为零
 98de811|refused|同上，是本地化那一摞的落地提交，不是普通修复
 432e60e|review|我们已有 9:16 等预设，缺的只是自定义画幅 —— 锦上添花
+8d5648d|refused|已按我们的需要拿过（941bfe4c），删掉了上游的 --telemetry 开关，所以补丁内容不同
+c1061bd|refused|外观设置动 69 个文件 1421 行，是主题系统；冲突大、对我们收益小
+bee6314|refused|供应商 logo 是给上游 KieAI 那批供应商的，我们的模型菜单显示自家档位
+674b5e8|refused|上游的贡献指南，与我们的仓库无关
+ef6b51d|refused|已按我们的需要拿过（cd38b500），去掉了同一 hunk 里属于 #457 遥测的那一半
+94394bb|review|引导式上手流程，产品取舍；注意它常与 analytics 打包
+ed60fe0|review|流式思考过程，需要我们的网关支持流式返回才有意义
+255dfc5|refused|试过：8 处冲突。工具描述里写着"额度够就用云端转写"，而我们是一律端侧且免费——那是立场差异，合进去等于在 LLM 读的描述里写一个我们没有的行为。有价值的只有 trackIndex 一小块，按我们的方式重写比拆冲突便宜
+5ba45f4|review|clip link 管理工具，先看我们的 agent 操作集需不需要
+8ba926a|taken|已拿（bc1ddb87）：scrub 音频解码移出协作线程池
+ffc3e2d|taken|已拿（bc1ddb87）：时间线访问冲突，先改本地副本再提交
+521106e|taken|已拿（bc1ddb87）：scrub reader 取消竞态
+168b1e6|taken|已拿（bc1ddb87）：时间线符号快照崩溃
 "
 
-take=(); blocked=(); refused=(); review=()
+take=(); blocked=(); refused=(); review=(); gone=(); taken_already=()
 while read -r _ sha msg; do
   short="${sha:0:7}"
   # 先看有没有做过判断
@@ -38,12 +51,35 @@ while read -r _ sha msg; do
     why=$(echo "$decided" | cut -d'|' -f3)
     case "$kind" in
       blocked) blocked+=("$short  $msg  —— $why") ;;
+      taken)   taken_already+=("$short  $msg  —— $why") ;;
       refused) refused+=("$short  $msg  —— $why") ;;
       *)       review+=("$short  $msg  —— $why") ;;
     esac
     continue
   fi
   files=$(git show --format="" --name-only "$sha" | tr '\n' ' ')
+
+  # **落点还在不在。** 一个补丁不依赖上游后端，不等于它能落到我们树上 ——
+  # 我们替换掉的模块（agent 客户端、本地化、模型目录）里的文件根本不存在，
+  # 补丁打不上去。原来只判断"依不依赖后端"，于是 e0df4c3（改 OpenAIProvider.swift）
+  # 被归进【该拿】，而我们压根没有那个文件。
+  #
+  # 只看**源码**文件：测试文件是新增的，本来就不存在，不能作为判据。
+  # **变量名不要和外层的 $missing 撞。** 第一版就叫 missing，
+  # 把外层那份（git cherry 的全部结果）覆盖成了单个文件名，
+  # 于是"合计缺 37 条"静默变成"合计缺 1 条"，而列表照常打印 37 行 ——
+  # 报告自相矛盾却不报错，是最难发现的那种坏。
+  absent=""
+  for f in $files; do
+    case "$f" in
+      Sources/*) [ -e "$f" ] || absent="$absent $f" ;;
+    esac
+  done
+  if [ -n "$absent" ]; then
+    gone+=("$short  $msg  —— 落点不存在：$(echo $absent | cut -c1-70)")
+    continue
+  fi
+
   case "$msg" in
     *"[fix]"*|*"[perf]"*|*"[fix/"*)   take+=("$short  $msg") ;;
     *telemetry*|*analytics*|*Telemetry*)
@@ -63,8 +99,12 @@ done <<< "$missing"
 
 show() { [ ${#2} -eq 0 ] && return 0; echo; echo "$1"; printf '  %s\n' "${@:2}"; }
 show "【该拿】修复与性能，与后端无关：" "${take[@]:-}"
+printf '\n【落点不存在】我们替换掉了那部分，补丁打不上去：\n'
+printf '  %s\n' "${gone[@]:-（无）}"
 show "【拿不了】依赖上游后端，硬拿会得到死按钮：" "${blocked[@]:-}"
 show "【不拿】立场或版本线问题：" "${refused[@]:-}"
 show "【要人判断】产品取舍：" "${review[@]:-}"
+# 已拿过的：squash 提交后 patch-id 对不上，不记录就会每次重复建议
+show "【已拿】内容已在树上（提交被合并过，git cherry 认不出）：" "${taken_already[@]:-}"
 echo
 echo "  合计缺 $(echo "$missing" | wc -l | tr -d ' ') 条；【该拿】$( [ -n "${take[*]:-}" ] && echo ${#take[@]} || echo 0 ) 条需要处理。"

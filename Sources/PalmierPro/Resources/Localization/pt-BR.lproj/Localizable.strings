@@ -1134,3 +1134,12 @@
 "using Anthropic API key" = "usando chave de API da Anthropic";
 "using OpenAI API key" = "usando chave de API da OpenAI";
 "you@example.com — so we can reply" = "you@example.com — para podermos responder";
+
+/* --- METAG --- */
+"Open Settings" = "Abrir configurações";
+"Appearance" = "Aparência";
+"Applies immediately. Dark is easier on the eyes for long sessions." = "Aplica-se imediatamente. O modo escuro cansa menos a vista.";
+"You already have two films rendering — wait for one to finish" = "Já há dois vídeos sendo gerados — espere um terminar";
+"Everyone is generating right now — try again in a few minutes" = "Todos estão gerando agora — tente em alguns minutos";
+"That engine is temporarily unavailable — pick another" = "Esse motor está indisponível — escolha outro";
+"Temporarily unavailable — try again shortly" = "Temporariamente indisponível — tente em breve";

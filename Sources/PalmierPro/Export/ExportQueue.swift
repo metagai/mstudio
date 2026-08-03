@@ -31,6 +31,14 @@ enum ExportJobStatus: String, Sendable {
     var isPending: Bool { self == .waiting || isRunning }
 }
 
+/// 导出成功时要上报的时间线事实。**只有形状，没有内容** ——
+/// 几个片段、多长、里面有没有 AI 生成的镜头。没有片名、没有提示词、没有画面。
+struct FilmExportStats: Sendable {
+    let shots: Int
+    let seconds: Double
+    let metag: Bool
+}
+
 struct ExportJob: Identifiable, Sendable {
     let id: UUID
     let projectID: String
@@ -43,6 +51,8 @@ struct ExportJob: Identifiable, Sendable {
     var error: String?
     var warnings: [String]
     var palmierReport: PalmierProjectExporter.Report?
+    /// 导出成功后上报用。nil = 不上报（测试入队、工程文件导出等）。
+    var stats: FilmExportStats?
 }
 
 struct ExportQueueSubmission: Sendable {
@@ -109,12 +119,23 @@ final class ExportQueue {
         warnings: [String] = []
     ) throws -> ExportQueueSubmission {
         let resolver = resolver.snapshot()
+        // 时间线在这里，别处没有 —— 统计要在入队时算好带下去。
+        let clips = timeline.tracks.flatMap(\.clips)
+        let fps = Double(max(timeline.fps, 1))
+        let stats = FilmExportStats(
+            shots: clips.count,
+            // 帧转秒只在这里做一次。**时间线的真源是帧**，秒只是上报口径 ——
+            // 别处再算一遍就会因为 fps 取错而对不上。
+            seconds: Double(clips.map { $0.startFrame + $0.durationFrames }.max() ?? 0) / fps,
+            metag: clips.contains { resolver.isGenerated($0.mediaRef) }
+        )
         let analyticsInput = ExportTimelineAnalyticsInput(
             scope: .exportedTimeline(root: timeline, resolveTimeline: resolveTimeline),
             manifest: resolver.manifestSnapshot(),
             exportFilename: outputURL.lastPathComponent
         )
-        return try enqueue(outputURL: outputURL, projectID: projectID, source: source, warnings: warnings) { service in
+        return try enqueue(outputURL: outputURL, projectID: projectID, source: source,
+                           warnings: warnings, stats: stats) { service in
             await service.export(
                 timeline: timeline,
                 resolver: resolver,
@@ -212,6 +233,7 @@ final class ExportQueue {
         projectID: String,
         source: ExportJobSource,
         warnings: [String] = [],
+        stats: FilmExportStats? = nil,
         operation: @escaping Operation
     ) throws -> ExportQueueSubmission {
         guard !isDestinationReserved(outputURL) else {
@@ -229,7 +251,8 @@ final class ExportQueue {
             status: .waiting,
             progress: 0,
             warnings: warnings,
-            palmierReport: nil
+            palmierReport: nil,
+            stats: stats
         ))
         operations[id] = operation
         startNext()
@@ -295,6 +318,14 @@ final class ExportQueue {
 
     private func finish(_ id: UUID, status: ExportJobStatus, service: ExportService) {
         guard let index = jobs.firstIndex(where: { $0.id == id }) else { return }
+        // 导出成功是**唯一能说明产品交付了价值**的信号，而我们此前在 Mac 上
+        // 完全看不到它（Web 端已经在报）。放在 finish 里而不是那段
+        // `guard source == .agent` 之后 —— 那段只覆盖 agent 发起的导出，
+        // 而人手动导出的才是大多数。
+        if status == .completed, let stats = jobs[index].stats {
+            MetagGateway.filmEvent(kind: "export", shots: stats.shots,
+                                   seconds: stats.seconds, metag: stats.metag)
+        }
         jobs[index].status = status
         jobs[index].progress = status == .completed ? 1 : service.progress
         jobs[index].error = service.error

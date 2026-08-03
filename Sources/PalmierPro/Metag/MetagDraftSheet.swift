@@ -20,7 +20,22 @@ final class MetagDraftModel: ObservableObject {
     @Published var rerolls: Set<Int> = []
 
     var narrations: [String] { job?.shots.map(\.narration) ?? [] }
+    /// 当前旁白人格。网关认不出的值一律当没有 —— 宁可不显示，也不显示一个错的。
+    var narrator: MetagNarrator? { job?.narrator.flatMap(MetagNarrator.init(rawValue:)) }
     var ready: Bool { job?.status == "done" && !(job?.shots.isEmpty ?? true) }
+    /// 已经取回的首帧，按镜号。**等待期间就开始填** ——
+    /// 首帧比成片早得多，没有理由让用户对着转圈干等。
+    @Published private(set) var frames: [Int: NSImage] = [:]
+
+    private func fetchFrames(_ id: String, _ job: MetagGateway.Job) async {
+        guard let names = job.first_frames else { return }
+        for (i, name) in names.enumerated() where frames[i] == nil {
+            guard let url = try? await MetagGateway.download(
+                job: id, name: name, to: FileManager.default.temporaryDirectory),
+                  let img = NSImage(contentsOf: url) else { continue }
+            frames[i] = img
+        }
+    }
 
     /// 真正会改变草案的编辑条数。不能直接数 `edits` 的键 ——
     /// 用户打了个字又删回去，键还在，于是"重做 1 镜"会拿着一模一样的旁白再合成一遍。
@@ -61,6 +76,20 @@ final class MetagDraftModel: ObservableObject {
         }
     }
 
+    /// 换旁白音色：整片重合成声音，**画面一帧不动，仍然 0 credits**。
+    /// 比逐镜重做快得多（只跑 TTS，不占 GPU），所以用户可以随便试。
+    func swapNarrator(_ n: MetagNarrator) async {
+        guard let id = jobId, !busy, n != narrator else { return }
+        busy = true; note = nil
+        defer { busy = false }
+        do {
+            try await MetagGateway.revisePreview(id: id, narrator: n)
+            await poll(id)
+        } catch {
+            note = error.localizedDescription
+        }
+    }
+
     /// 确认出片。**此刻才计费** —— 返回成片任务 id 交给调用方去等。
     func approve(engine: String, allShots: Bool) async -> String? {
         guard let id = jobId, !busy else { return nil }
@@ -78,6 +107,7 @@ final class MetagDraftModel: ObservableObject {
         for _ in 0..<90 {
             if let j = try? await MetagGateway.job(id) {
                 job = j
+                await fetchFrames(id, j)
                 if j.status == "done" || j.status == "failed" { return }
             }
             try? await Task.sleep(for: .seconds(4))
@@ -100,6 +130,18 @@ struct MetagDraftSheet: View {
     /// 所以只在"全片使用"时按贵引擎报价，否则按 local 报 —— 宁可少报也不能多报。
     private var quote: Int { allShots ? perShot * model.shots : model.shots }
 
+    /// 有没有档位坏到不能出片。
+    ///
+    /// 两种都要拦：选中的上限档停售了，**或者 local 停售了** ——
+    /// 没有口播的镜头一律回落到 local，所以 local 一坏任何组合都出不了片。
+    /// 不拦的话用户点下去拿一个 503，而他刚看完草案、正准备付钱。
+    private var blocked: String? {
+        func down(_ id: String) -> Bool { engines.first { $0.id == id }?.isAvailable == false }
+        if down("local") { return "出片暂时不可用，稍后再试 —— 不会扣任何 credits" }
+        if down(engine) { return "这一档暂时不可用，换一档" }
+        return nil
+    }
+
     var body: some View {
         VStack(alignment: .leading, spacing: AppTheme.Spacing.md) {
             Text("先看草案，再决定出片").font(.headline)
@@ -108,9 +150,29 @@ struct MetagDraftSheet: View {
             } else if model.ready {
                 draftStage
             } else {
-                ProgressView().controlSize(.small)
-                Text("正在起草…约 40 秒，不扣 credits")
-                    .font(.caption).foregroundStyle(.secondary)
+                VStack(alignment: .leading, spacing: AppTheme.Spacing.sm) {
+                    HStack(spacing: AppTheme.Spacing.xs) {
+                        ProgressView().controlSize(.small)
+                        Text(model.frames.isEmpty
+                             ? "正在起草…约 40 秒，不扣 credits"
+                             : "画面陆续出来了，还在写旁白…")
+                            .font(.caption).foregroundStyle(.secondary)
+                    }
+                    // 首帧一到就摆出来。等待不该是空白 —— 用户此刻最想看的
+                    // 恰恰是"我的片子长什么样"，而这个答案已经有一半了。
+                    if !model.frames.isEmpty {
+                        HStack(spacing: AppTheme.Spacing.xs) {
+                            ForEach(model.frames.keys.sorted(), id: \.self) { i in
+                                if let img = model.frames[i] {
+                                    Image(nsImage: img)
+                                        .resizable().aspectRatio(contentMode: .fill)
+                                        .frame(width: 84, height: 48)
+                                        .clipShape(RoundedRectangle(cornerRadius: 4))
+                                }
+                            }
+                        }
+                    }
+                }
             }
             if let n = model.note {
                 Text(n).font(.caption).foregroundStyle(.orange)
@@ -158,9 +220,30 @@ struct MetagDraftSheet: View {
                 }
             }
             Divider()
+            // 音色摆在引擎上面：用户先关心"谁在讲我的片子"，再关心画质档位。
+            // 免费必须写出来，否则他不敢点 —— 而"敢试"正是这个交互的全部价值。
+            if let current = model.narrator {
+                Picker("旁白音色", selection: Binding(
+                    get: { current },
+                    set: { n in Task { await model.swapNarrator(n) } }
+                )) {
+                    ForEach(MetagNarrator.allCases, id: \.self) { n in
+                        Text(n.displayName(for: "zh")).tag(n)
+                    }
+                }
+                .font(.caption)
+                .disabled(model.busy)
+                Text("换音色免费，只重录声音，画面不变")
+                    .font(.caption2).foregroundStyle(.secondary)
+            }
             Picker("引擎", selection: $engine) {
                 ForEach(engines, id: \.id) { e in
-                    Text("\(e.displayName(for: "zh")) · \(e.credits_per_shot)cr").tag(e.id)
+                    // 停售的档位标出来但**不隐藏** —— 抹掉会让用户以为
+                    // "我昨天用的那档去哪了"，而让他选中再拿 503 更糟。
+                    Text(e.isAvailable
+                         ? "\(e.displayName(for: "zh")) · \(e.credits_per_shot)cr"
+                         : "\(e.displayName(for: "zh")) · 暂不可用")
+                        .tag(e.id)
                 }
             }
             .font(.caption)
@@ -189,7 +272,11 @@ struct MetagDraftSheet: View {
                     }
                 }
                 .buttonStyle(.borderedProminent)
-                .disabled(model.busy)
+                .disabled(model.busy || blocked != nil)
+            }
+            if let blocked {
+                // 说出原因，而不是给一个禁用的按钮让用户猜
+                Text(blocked).font(.caption2).foregroundStyle(.orange)
             }
         }
     }
