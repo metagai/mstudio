@@ -277,3 +277,35 @@
 "Nothing stood out in this one." = "这一条里没有特别突出的段落。";
 "Search again" = "再找一次";
 "Add" = "加入";
+
+// 常见失败的可行动文案
+"That job is gone — jobs are kept for 24 hours, free files for 60 minutes." = "这个任务已经不在了 —— 任务保留 24 小时，免费产物保留 60 分钟。";
+"Not ready — the draft is still rendering, or this one was already produced." = "还不能出片 —— 草案还在生成，或者这一份已经出过了。";
+"That file is too large — images up to 8 MB, voice samples up to 16 MB." = "文件太大了 —— 图片上限 8 MB，音色样本上限 16 MB。";
+"That file type is not supported — images as PNG/JPEG/WebP, audio as WAV/MP3/M4A." = "不支持这个格式 —— 图片用 PNG/JPEG/WebP，音频用 WAV/MP3/M4A。";
+"That is not yours to open." = "这不是你的内容。";
+"The provider did not answer — try again in a moment." = "上游服务没有响应 —— 稍后再试一次。";
+
+// 草案 / 额度 / 作品面板
+"See the draft first, then decide" = "先看草案，再决定出片";
+"Drafts are free — no credits charged" = "草案免费，不扣任何 credits";
+"Draft it" = "起草";
+"Changing the voice is free — only the narration is re-recorded" = "换音色免费，只重录声音，画面不变";
+"By default only lip-sync shots use it; the rest stay on the standard tier" = "默认只有需要对口型的镜头用它，其余走标准档";
+"Redo the edited shots" = "重做改过的镜头";
+"Produce" = "确认出片";
+"Credit activity" = "额度流水";
+"No credit activity yet" = "还没有额度变动";
+"My films" = "我的作品";
+"No films yet — generate one and it shows up here" = "还没有作品 —— 生成一条就会出现在这里";
+"Charges %@ credits on confirm" = "确认后扣 %@ credits";
+"%@ shots · %@ credits" = "%@ 镜 · %@ credits";
+
+// 草案各阶段
+"Writing the shot list…" = "正在写分镜…";
+"Choosing a narrator voice…" = "正在挑旁白音色…";
+"Recording the narration…" = "正在录旁白…";
+"Painting the first frames…" = "正在画首帧…";
+"Scoring it…" = "正在配乐…";
+"Drafting… this one is free" = "正在起草…这一步不扣 credits";
+"Frames are landing, still writing the narration…" = "画面陆续出来了，还在写旁白…";

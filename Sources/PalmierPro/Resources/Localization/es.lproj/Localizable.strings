@@ -277,3 +277,35 @@
 "Nothing stood out in this one." = "No destacó nada en este.";
 "Search again" = "Buscar otra vez";
 "Add" = "Añadir";
+
+// 常见失败的可行动文案
+"That job is gone — jobs are kept for 24 hours, free files for 60 minutes." = "Ese trabajo ya no está: se guardan 24 horas, y los archivos gratuitos 60 minutos.";
+"Not ready — the draft is still rendering, or this one was already produced." = "Aún no: el borrador sigue generándose, o este ya se produjo.";
+"That file is too large — images up to 8 MB, voice samples up to 16 MB." = "Archivo demasiado grande: imágenes hasta 8 MB, muestras de voz hasta 16 MB.";
+"That file type is not supported — images as PNG/JPEG/WebP, audio as WAV/MP3/M4A." = "Formato no admitido: imágenes en PNG/JPEG/WebP, audio en WAV/MP3/M4A.";
+"That is not yours to open." = "Eso no es tuyo.";
+"The provider did not answer — try again in a moment." = "El proveedor no respondió: inténtalo de nuevo en un momento.";
+
+// 草案 / 额度 / 作品面板
+"See the draft first, then decide" = "Mira el borrador y luego decide";
+"Drafts are free — no credits charged" = "Los borradores son gratis: no se cobran créditos";
+"Draft it" = "Crear borrador";
+"Changing the voice is free — only the narration is re-recorded" = "Cambiar la voz es gratis: solo se regraba la narración";
+"By default only lip-sync shots use it; the rest stay on the standard tier" = "Por defecto solo las tomas con sincronía labial lo usan; el resto va al nivel estándar";
+"Redo the edited shots" = "Rehacer las tomas editadas";
+"Produce" = "Producir";
+"Credit activity" = "Actividad de créditos";
+"No credit activity yet" = "Aún no hay movimientos";
+"My films" = "Mis películas";
+"No films yet — generate one and it shows up here" = "Aún no hay películas: genera una y aparecerá aquí";
+"Charges %@ credits on confirm" = "Se cobrarán %@ créditos al confirmar";
+"%@ shots · %@ credits" = "%@ tomas · %@ créditos";
+
+// 草案各阶段
+"Writing the shot list…" = "Escribiendo el guion técnico…";
+"Choosing a narrator voice…" = "Eligiendo la voz del narrador…";
+"Recording the narration…" = "Grabando la narración…";
+"Painting the first frames…" = "Pintando los primeros fotogramas…";
+"Scoring it…" = "Poniendo la música…";
+"Drafting… this one is free" = "Creando el borrador… es gratis";
+"Frames are landing, still writing the narration…" = "Van llegando los fotogramas; aún se escribe la narración…";

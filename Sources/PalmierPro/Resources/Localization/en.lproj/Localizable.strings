@@ -277,3 +277,35 @@
 "Nothing stood out in this one." = "Nothing stood out in this one.";
 "Search again" = "Search again";
 "Add" = "Add";
+
+// 常见失败的可行动文案
+"That job is gone — jobs are kept for 24 hours, free files for 60 minutes." = "That job is gone — jobs are kept for 24 hours, free files for 60 minutes.";
+"Not ready — the draft is still rendering, or this one was already produced." = "Not ready — the draft is still rendering, or this one was already produced.";
+"That file is too large — images up to 8 MB, voice samples up to 16 MB." = "That file is too large — images up to 8 MB, voice samples up to 16 MB.";
+"That file type is not supported — images as PNG/JPEG/WebP, audio as WAV/MP3/M4A." = "That file type is not supported — images as PNG/JPEG/WebP, audio as WAV/MP3/M4A.";
+"That is not yours to open." = "That is not yours to open.";
+"The provider did not answer — try again in a moment." = "The provider did not answer — try again in a moment.";
+
+// 草案 / 额度 / 作品面板
+"See the draft first, then decide" = "See the draft first, then decide";
+"Drafts are free — no credits charged" = "Drafts are free — no credits charged";
+"Draft it" = "Draft it";
+"Changing the voice is free — only the narration is re-recorded" = "Changing the voice is free — only the narration is re-recorded";
+"By default only lip-sync shots use it; the rest stay on the standard tier" = "By default only lip-sync shots use it; the rest stay on the standard tier";
+"Redo the edited shots" = "Redo the edited shots";
+"Produce" = "Produce";
+"Credit activity" = "Credit activity";
+"No credit activity yet" = "No credit activity yet";
+"My films" = "My films";
+"No films yet — generate one and it shows up here" = "No films yet — generate one and it shows up here";
+"Charges %@ credits on confirm" = "Charges %@ credits on confirm";
+"%@ shots · %@ credits" = "%@ shots · %@ credits";
+
+// 草案各阶段
+"Writing the shot list…" = "Writing the shot list…";
+"Choosing a narrator voice…" = "Choosing a narrator voice…";
+"Recording the narration…" = "Recording the narration…";
+"Painting the first frames…" = "Painting the first frames…";
+"Scoring it…" = "Scoring it…";
+"Drafting… this one is free" = "Drafting… this one is free";
+"Frames are landing, still writing the narration…" = "Frames are landing, still writing the narration…";
