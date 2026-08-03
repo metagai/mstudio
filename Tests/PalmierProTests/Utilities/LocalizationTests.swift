@@ -88,7 +88,7 @@ struct LocalizationTests {
     }
 
     @Test func threadSafeLookupSubstitutesPlaceholders() async {
-        let text = await Task.detached { L10n.key("METAG request failed (%@).", ["503"]) }.value
+        let text = await Task.detached { L10n.string("METAG request failed (\(["503"])).") }.value
         #expect(text.contains("503"))
         #expect(!text.contains("%@"))
     }

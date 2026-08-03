@@ -97,6 +97,10 @@ enum MetagGateway {
         let cover: String?
         /// Shots finish serially (~36s each), so fill placeholders as they land.
         let shots_done: Int?
+        /// 正在做哪一步（storyboard / voice / narration / frames / music）。
+        /// **草案 84 秒里有 82 秒，状态只有"正在起草"四个字一动不动。**
+        /// 机器码，文案在客户端 —— 本地化不进机器契约。
+        let stage: String?
         /// 逐镜首帧。**等待期间用它把空白换成真实画面** ——
         /// 图早就画好了（草案阶段或出片时画的），只是从没回给过客户端。
         /// 盯着一个转圈和盯着自己片子的开场画面，是两种等待。
@@ -129,6 +133,24 @@ enum MetagGateway {
             switch self {
             case .signedOut: return L10n.key("Sign in to METAG to generate.")
             case .insufficientCredits: return L10n.key("Not enough credits.")
+            // 这几条以前全都落到下面那句 "METAG request failed (404)"，
+            // 而**紧挨着的注释就写着**"用户看到的必须是能据此行动的话"。
+            // 它们不是罕见情况，是最常见的那几种：打开昨天的链接、连点两次出片、
+            // 传了一张大图、上游抖动。
+            case .http(404):
+                // 404 同时表示"过期"和"不是你的"，措辞要两边都成立 ——
+                // 说"已过期"对拿到别人链接的人是假话。
+                return L10n.key("That job is gone — jobs are kept for 24 hours, free files for 60 minutes.")
+            case .http(409):
+                return L10n.key("Not ready — the draft is still rendering, or this one was already produced.")
+            case .http(413):
+                return L10n.key("That file is too large — images up to 8 MB, voice samples up to 16 MB.")
+            case .http(415):
+                return L10n.key("That file type is not supported — images as PNG/JPEG/WebP, audio as WAV/MP3/M4A.")
+            case .http(403):
+                return L10n.key("That is not yours to open.")
+            case .http(502), .http(504):
+                return L10n.key("The provider did not answer — try again in a moment.")
             case .http(let code): return L10n.key("METAG request failed.") + " (\(code))"
             case .rejected(_, let reason):
                 switch reason {

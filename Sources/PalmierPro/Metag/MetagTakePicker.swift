@@ -58,14 +58,14 @@ struct MetagTakePicker: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: AppTheme.Spacing.lg) {
-            Text(L("Pick a take"))
+            Text(L10n.key("Pick a take"))
                 .font(.system(size: AppTheme.FontSize.lg, weight: AppTheme.FontWeight.medium))
                 .foregroundStyle(AppTheme.Text.primaryColor)
 
             if model.loading {
                 HStack(spacing: AppTheme.Spacing.sm) {
                     ProgressView().controlSize(.small)
-                    Text(L("Fetching takes…"))
+                    Text(L10n.key("Fetching takes…"))
                         .font(.system(size: AppTheme.FontSize.xs))
                         .foregroundStyle(AppTheme.Text.tertiaryColor)
                 }
@@ -75,7 +75,7 @@ struct MetagTakePicker: View {
                     .foregroundStyle(AppTheme.Status.errorColor)
             } else if model.candidates.count < 2 {
                 // 只有一条时说清楚为什么没得挑，不要给一个空面板。
-                Text(L("This shot has only one take. Re-shoot with more takes to compare."))
+                Text(L10n.key("This shot has only one take. Re-shoot with more takes to compare."))
                     .font(.system(size: AppTheme.FontSize.xs))
                     .foregroundStyle(AppTheme.Text.tertiaryColor)
             } else {
@@ -86,7 +86,7 @@ struct MetagTakePicker: View {
 
             HStack {
                 Spacer()
-                Button(L("Cancel")) { dismiss() }.keyboardShortcut(.cancelAction)
+                Button(L10n.key("Cancel")) { dismiss() }.keyboardShortcut(.cancelAction)
             }
         }
         .padding(AppTheme.Spacing.lg)
@@ -108,11 +108,11 @@ struct MetagTakePicker: View {
             .clipShape(RoundedRectangle(cornerRadius: AppTheme.Radius.sm, style: .continuous))
 
             // 分数如实标成"技术质量"：它判的是能不能用，不是好不好看。
-            Text(L("Quality %@", (c.score * 100).rounded().formatted()))
+            Text(L10n.string("Quality \((c.score * 100).rounded().formatted())"))
                 .font(.system(size: AppTheme.FontSize.xxs))
                 .foregroundStyle(AppTheme.Text.tertiaryColor)
 
-            Button(promoting == c.file ? L("Working…") : L("Use this")) {
+            Button(promoting == c.file ? L10n.key("Working…") : L10n.key("Use this")) {
                 promoting = c.file
                 Task { await use(c) }
             }
@@ -134,8 +134,8 @@ struct MetagTakePicker: View {
                 return
             }
             let previousURL = asset.url
-            editor.undo.perform(L("Pick a take")) {
-                editor.registerTimelineUndo(L("Pick a take")) { vm in
+            editor.undo.perform(L10n.key("Pick a take")) {
+                editor.registerTimelineUndo(L10n.key("Pick a take")) { vm in
                     vm.relinkAsset(id: assetId, to: previousURL)
                 }
                 editor.relinkAsset(id: assetId, to: installed)

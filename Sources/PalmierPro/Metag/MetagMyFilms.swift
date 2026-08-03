@@ -66,7 +66,7 @@ struct MetagMyFilmsView: View {
     var body: some View {
         VStack(alignment: .leading, spacing: AppTheme.Spacing.sm) {
             HStack {
-                Text("我的作品").font(.headline)
+                Text(L10n.key("My films")).font(.headline)
                 Spacer()
                 if model.failedCount > 0 {
                     Button(model.busy == "__all__"
@@ -80,11 +80,11 @@ struct MetagMyFilmsView: View {
                 }
             }
             if model.loading && model.films.isEmpty {
-                Text("加载中…").foregroundStyle(.secondary).font(.caption)
+                Text(L10n.key("Loading…")).foregroundStyle(.secondary).font(.caption)
             } else if let e = model.error {
                 Text(e).foregroundStyle(.secondary).font(.caption)
             } else if model.films.isEmpty {
-                Text("还没有作品 —— 生成一条就会出现在这里")
+                Text(L10n.key("No films yet — generate one and it shows up here"))
                     .foregroundStyle(.secondary).font(.caption)
             } else {
                 ForEach(model.films) { f in
@@ -114,7 +114,7 @@ struct MetagMyFilmsView: View {
         HStack(alignment: .top, spacing: AppTheme.Spacing.sm) {
             VStack(alignment: .leading, spacing: 2) {
                 Text(f.prompt ?? "未命名").lineLimit(1)
-                Text("\(f.shots) 镜 · \(f.credits) credits · \(Self.when(f.created_at))")
+                Text(L10n.string("\(f.shots.formatted()) shots · \(f.credits.formatted()) credits") + " · " + Self.when(f.created_at))
                     .font(.caption).foregroundStyle(.secondary)
             }
             Spacer()

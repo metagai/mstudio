@@ -30,13 +30,13 @@ struct MetagCreditsView: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: AppTheme.Spacing.sm) {
-            Text("额度流水").font(.headline)
+            Text(L10n.key("Credit activity")).font(.headline)
             if model.loading && model.items.isEmpty {
-                Text("加载中…").font(.caption).foregroundStyle(.secondary)
+                Text(L10n.key("Loading…")).font(.caption).foregroundStyle(.secondary)
             } else if let e = model.error {
                 Text(e).font(.caption).foregroundStyle(.secondary)
             } else if model.items.isEmpty {
-                Text("还没有额度变动").font(.caption).foregroundStyle(.secondary)
+                Text(L10n.key("No credit activity yet")).font(.caption).foregroundStyle(.secondary)
             } else {
                 ScrollView {
                     VStack(alignment: .leading, spacing: 6) {

@@ -50,18 +50,18 @@ struct MetagImageEditSheet: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: AppTheme.Spacing.lg) {
-            Text(L("Edit with a sentence"))
+            Text(L10n.key("Edit with a sentence"))
                 .font(.system(size: AppTheme.FontSize.lg, weight: AppTheme.FontWeight.medium))
                 .foregroundStyle(AppTheme.Text.primaryColor)
 
             HStack(alignment: .top, spacing: AppTheme.Spacing.smMd) {
-                imageBox(url: source, caption: L("Original"))
+                imageBox(url: source, caption: L10n.key("Original"))
                 if let p = model.preview {
-                    imageBox(url: p.url, caption: L("Edited · %@ credits", p.cost.formatted()))
+                    imageBox(url: p.url, caption: L10n.string("Edited · \(p.cost.formatted()) credits"))
                 }
             }
 
-            TextField(L("What should change? e.g. make it night, add rain"),
+            TextField(L10n.key("What should change? e.g. make it night, add rain"),
                       text: $model.instruction, axis: .vertical)
                 .lineLimit(1...3)
                 .disabled(model.busy)
@@ -75,9 +75,9 @@ struct MetagImageEditSheet: View {
             HStack(spacing: AppTheme.Spacing.smMd) {
                 if model.busy { ProgressView().controlSize(.small) }
                 Spacer()
-                Button(L("Cancel")) { dismiss() }.keyboardShortcut(.cancelAction)
+                Button(L10n.key("Cancel")) { dismiss() }.keyboardShortcut(.cancelAction)
                 if let p = model.preview {
-                    Button(L("Add to media")) {
+                    Button(L10n.key("Add to media")) {
                         editor.addMediaAsset(from: p.url, type: .image)
                         dismiss()
                     }
@@ -100,10 +100,10 @@ struct MetagImageEditSheet: View {
     private var runLabel: String {
         if let c = model.cost {
             return model.preview == nil
-                ? L("Edit · %@ credits", c.formatted())
-                : L("Edit again · %@ credits", c.formatted())
+                ? L10n.string("Edit · \(c.formatted()) credits")
+                : L10n.string("Edit again · \(c.formatted()) credits")
         }
-        return model.preview == nil ? L("Edit") : L("Edit again")
+        return model.preview == nil ? L10n.key("Edit") : L10n.key("Edit again")
     }
 
     private func imageBox(url: URL, caption: String) -> some View {

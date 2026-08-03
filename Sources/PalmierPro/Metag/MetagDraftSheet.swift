@@ -19,6 +19,26 @@ final class MetagDraftModel: ObservableObject {
     @Published var edits: [Int: String] = [:]
     @Published var rerolls: Set<Int> = []
 
+    /// 等待时那一行字。**说正在做哪一步，而不是一个不动的"正在起草"。**
+    ///
+    /// 实测草案 53–97 秒，其中 planning 一段就占 26–36 秒 —— 那段时间里
+    /// 我们依次在写分镜、挑音色、录旁白，只是从没说出来过。
+    var stageText: String {
+        switch job?.stage {
+        case "storyboard": return L10n.key("Writing the shot list…")
+        case "voice": return L10n.key("Choosing a narrator voice…")
+        case "narration": return L10n.key("Recording the narration…")
+        case "frames": return L10n.key("Painting the first frames…")
+        case "music": return L10n.key("Scoring it…")
+        default:
+            // 阶段还没上来（刚提交、或老网关）。**不给数字** ——
+            // 原来那句写着"约 40 秒"而实测是 53–97 秒，给错的数字比不给更糟。
+            return frames.isEmpty
+                ? L10n.key("Drafting… this one is free")
+                : L10n.key("Frames are landing, still writing the narration…")
+        }
+    }
+
     var narrations: [String] { job?.shots.map(\.narration) ?? [] }
     /// 当前旁白人格。网关认不出的值一律当没有 —— 宁可不显示，也不显示一个错的。
     var narrator: MetagNarrator? { job?.narrator.flatMap(MetagNarrator.init(rawValue:)) }
@@ -144,7 +164,7 @@ struct MetagDraftSheet: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: AppTheme.Spacing.md) {
-            Text("先看草案，再决定出片").font(.headline)
+            Text(L10n.key("See the draft first, then decide")).font(.headline)
             if model.jobId == nil {
                 promptStage
             } else if model.ready {
@@ -153,9 +173,12 @@ struct MetagDraftSheet: View {
                 VStack(alignment: .leading, spacing: AppTheme.Spacing.sm) {
                     HStack(spacing: AppTheme.Spacing.xs) {
                         ProgressView().controlSize(.small)
-                        Text(model.frames.isEmpty
-                             ? "正在起草…约 40 秒，不扣 credits"
-                             : "画面陆续出来了，还在写旁白…")
+                        // 说正在做哪一步，而不是一个不动的"正在起草"。
+                        // **原来那句写着"约 40 秒"，而实测是 53–97 秒** ——
+                        // 被告知 40 秒却等了 90 秒的人会觉得产品坏了；同样 90 秒，
+                        // 说的是"约一分半"就只是正常等待。数字宁可不给，
+                        // 也不要给一个我们兑现不了的。
+                        Text(model.stageText)
                             .font(.caption).foregroundStyle(.secondary)
                     }
                     // 首帧一到就摆出来。等待不该是空白 —— 用户此刻最想看的
@@ -192,11 +215,11 @@ struct MetagDraftSheet: View {
             Stepper("\(model.shots) 个镜头", value: $model.shots, in: 1...8)
                 .font(.caption)
             // 把代价说在前面：草案免费。不说清楚的话，用户不敢点。
-            Text("草案免费，不扣任何 credits").font(.caption).foregroundStyle(.green)
+            Text(L10n.key("Drafts are free — no credits charged")).font(.caption).foregroundStyle(.green)
             HStack {
                 Spacer()
-                Button("取消") { dismiss() }
-                Button("起草") { Task { await model.draft() } }
+                Button(L10n.key("Cancel")) { dismiss() }
+                Button(L10n.key("Draft it")) { Task { await model.draft() } }
                     .buttonStyle(.borderedProminent)
                     .disabled(model.busy || model.prompt.trimmingCharacters(in: .whitespaces).isEmpty)
             }
@@ -233,7 +256,7 @@ struct MetagDraftSheet: View {
                 }
                 .font(.caption)
                 .disabled(model.busy)
-                Text("换音色免费，只重录声音，画面不变")
+                Text(L10n.key("Changing the voice is free — only the narration is re-recorded"))
                     .font(.caption2).foregroundStyle(.secondary)
             }
             Picker("引擎", selection: $engine) {
@@ -251,16 +274,16 @@ struct MetagDraftSheet: View {
                 Toggle("全片都用这一档", isOn: $allShots).font(.caption2)
                 if !allShots {
                     // 说清楚默认会发生什么，而不是让他看完成片再问"为什么画质没变"
-                    Text("默认只有需要对口型的镜头用它，其余走标准档")
+                    Text(L10n.key("By default only lip-sync shots use it; the rest stay on the standard tier"))
                         .font(.caption2).foregroundStyle(.secondary)
                 }
             }
             HStack {
-                Button("重做改过的镜头") { Task { await model.revise() } }
+                Button(L10n.key("Redo the edited shots")) { Task { await model.revise() } }
                     .disabled(model.busy || model.effectiveEdits.isEmpty)
                 Spacer()
-                Text("确认后扣 \(quote) credits").font(.caption).foregroundStyle(.secondary)
-                Button("确认出片") {
+                Text(L10n.string("Charges \(quote.formatted()) credits on confirm")).font(.caption).foregroundStyle(.secondary)
+                Button(L10n.key("Produce")) {
                     Task {
                         if let job = await model.approve(engine: engine, allShots: allShots) {
                             editor.mediaPanelToast = MediaPanelToast(
