@@ -15,7 +15,45 @@ struct TitleBarLeadingView: View {
             }
             .buttonStyle(.plain)
             .help(L("Toggle Agent Panel"))
+
+            HStack(spacing: AppTheme.Spacing.xxs) {
+                PanelVisibilityButton("sidebar.left", L("Media Panel"), editor.mediaPanelVisible) {
+                    editor.mediaPanelVisible.toggle()
+                }
+                PanelVisibilityButton("sidebar.right", L("Inspector Panel"), editor.inspectorPanelVisible) {
+                    editor.inspectorPanelVisible.toggle()
+                }
+            }
         }
+    }
+}
+
+/// 三个面板里原本只有 Agent 在标题栏有按钮，Media/Inspector 只能走菜单。
+private struct PanelVisibilityButton: View {
+    let systemName: String
+    let label: String
+    let isVisible: Bool
+    let action: () -> Void
+
+    init(_ systemName: String, _ label: String, _ isVisible: Bool, action: @escaping () -> Void) {
+        self.systemName = systemName
+        self.label = label
+        self.isVisible = isVisible
+        self.action = action
+    }
+
+    var body: some View {
+        Button(action: action) {
+            Image(systemName: systemName)
+                .font(.system(size: AppTheme.FontSize.md, weight: AppTheme.FontWeight.medium))
+                .foregroundStyle(isVisible ? AppTheme.Text.primaryColor : AppTheme.Text.tertiaryColor)
+                .frame(width: AppTheme.IconSize.lg, height: AppTheme.IconSize.lg)
+                .hoverHighlight()
+        }
+        .buttonStyle(.plain)
+        .accessibilityLabel(Text(verbatim: label))
+        .accessibilityAddTraits(isVisible ? .isSelected : [])
+        .help(label)
     }
 }
 

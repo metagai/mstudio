@@ -128,7 +128,7 @@ enum MainMenuBuilder {
         mediaItem.keyEquivalentModifierMask = [.command]
         menu.addItem(mediaItem)
 
-        let inspectorItem = NSMenuItem(title: L("Inspector"), action: #selector(EditorActions.toggleInspectorPanel(_:)), keyEquivalent: "0")
+        let inspectorItem = NSMenuItem(title: L("Inspector Panel"), action: #selector(EditorActions.toggleInspectorPanel(_:)), keyEquivalent: "0")
         inspectorItem.keyEquivalentModifierMask = [.command, .option]
         menu.addItem(inspectorItem)
 

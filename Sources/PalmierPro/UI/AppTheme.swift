@@ -373,6 +373,9 @@ enum AppTheme {
             width: 960 + GenerationPanel.minimumWidthAdjustment,
             height: 600
         )
+        /// 三个面板按钮 + 组间距。窗口标题栏的宿主视图是定宽的，短了会裁掉按钮。
+        static let projectTitlebarLeadingWidth: CGFloat =
+            IconSize.lg * 3 + Spacing.smMd + Spacing.xxs + Spacing.sm
         static let projectTitlebarTrailingWidth: CGFloat = 280
         static let settingsDefault = NSSize(width: 1200, height: 800)
         static let settingsMin = NSSize(width: 860, height: 640)
