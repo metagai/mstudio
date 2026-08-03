@@ -485,9 +485,6 @@ class VideoProject: NSDocument {
 
         let window = NSWindow(contentViewController: hostingController)
         window.minSize = AppTheme.Window.projectMin
-        // 显式锁 .aqua（而不是删掉这行）：删掉会跟随系统，
-        // 系统切深色时 .ultraThinMaterial 和 systemXxx 会翻，纸感主题就半坏了。
-        window.appearance = NSAppearance(named: .aqua)
         window.titleVisibility = .visible
         window.titlebarAppearsTransparent = true
         window.backgroundColor = NSColor(AppTheme.Background.surfaceColor)

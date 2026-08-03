@@ -5,3 +5,13 @@
 "or use your own Anthropic key" = "oder eigenen Anthropic-Schlüssel verwenden";
 "Subscribe" = "Abonnieren";
 "Open Settings" = "Einstellungen öffnen";
+
+/* 界面明暗（AppearancePane）*/
+"Appearance" = "Erscheinungsbild";
+"Applies immediately. Dark is easier on the eyes for long sessions." = "Wird sofort übernommen. Dunkel schont die Augen bei langen Sitzungen.";
+
+/* 拒绝原因 → 能据此行动的一句话 */
+"You already have two films rendering — wait for one to finish" = "Es werden bereits zwei Filme gerendert — warte, bis einer fertig ist";
+"Everyone is generating right now — try again in a few minutes" = "Gerade generieren alle — versuch es in ein paar Minuten";
+"That engine is temporarily unavailable — pick another" = "Diese Engine ist vorübergehend nicht verfügbar — wähl eine andere";
+"Temporarily unavailable — try again shortly" = "Vorübergehend nicht verfügbar — versuch es gleich noch mal";

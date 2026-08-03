@@ -24,6 +24,12 @@ final class MediaResolver: @unchecked Sendable {
         Self.expectedURLMap(entries: manifest().entries, projectURL: projectURL())
     }
 
+    /// 这个素材是不是 AI 生成的。导出统计要回答"这条时间轴里有没有我们生成的镜头" ——
+    /// 判据与 `MediaAsset.isGenerated` 保持一致（都看 generationInput）。
+    func isGenerated(_ assetId: String) -> Bool {
+        entry(for: assetId)?.generationInput != nil
+    }
+
     func snapshot() -> MediaResolver {
         let manifest = manifest()
         let projectURL = projectURL()

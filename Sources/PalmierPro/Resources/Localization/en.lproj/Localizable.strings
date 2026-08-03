@@ -184,3 +184,13 @@
 
 "Log in for free credits" = "Log in for %@ free credits";
 "Log in for free credits (no number)" = "Log in for free credits";
+
+/* 界面明暗（AppearancePane）*/
+"Appearance" = "Appearance";
+"Applies immediately. Dark is easier on the eyes for long sessions." = "Applies immediately. Dark is easier on the eyes for long sessions.";
+
+/* 拒绝原因 → 能据此行动的一句话 */
+"You already have two films rendering — wait for one to finish" = "You already have two films rendering — wait for one to finish";
+"Everyone is generating right now — try again in a few minutes" = "Everyone is generating right now — try again in a few minutes";
+"That engine is temporarily unavailable — pick another" = "That engine is temporarily unavailable — pick another";
+"Temporarily unavailable — try again shortly" = "Temporarily unavailable — try again shortly";

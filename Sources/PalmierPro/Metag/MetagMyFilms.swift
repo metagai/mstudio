@@ -15,6 +15,36 @@ final class MetagMyFilmsModel: ObservableObject {
     @Published private(set) var films: [MetagGateway.FilmRow] = []
     @Published private(set) var loading = false
     @Published private(set) var error: String?
+    /// 正在删的那一条（或 "__all__" 表示批量清理）。**删除期间要禁用按钮** ——
+    /// 连点两次会对同一条发两次 DELETE，第二次拿 404，看起来像出错了。
+    @Published private(set) var busy: String?
+
+    var failedCount: Int { films.filter { $0.status == "failed" }.count }
+
+    /// 删一条。**乐观移除**：服务端已经删掉了，再拉一次列表只是让用户多等一轮。
+    func remove(_ id: String) async {
+        busy = id
+        defer { busy = nil }
+        do {
+            try await MetagGateway.deleteFilm(id)
+            films.removeAll { $0.job_id == id }
+        } catch {
+            self.error = error.localizedDescription
+        }
+    }
+
+    /// 一键清空失败的。**一条条点是在让用户重复面对失败** ——
+    /// 而失败记录恰恰是他最想让它消失的东西。
+    /// 单条失败不拦住其余：删不掉一条不该让整次清理停下。
+    func clearFailed() async {
+        busy = "__all__"
+        defer { busy = nil }
+        for f in films where f.status == "failed" {
+            if (try? await MetagGateway.deleteFilm(f.job_id)) != nil {
+                films.removeAll { $0.job_id == f.job_id }
+            }
+        }
+    }
 
     func load() async {
         loading = true
@@ -35,8 +65,20 @@ struct MetagMyFilmsView: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: AppTheme.Spacing.sm) {
-            Text("我的作品")
-                .font(.headline)
+            HStack {
+                Text("我的作品").font(.headline)
+                Spacer()
+                if model.failedCount > 0 {
+                    Button(model.busy == "__all__"
+                           ? "清理中…" : "清空 \(model.failedCount) 条失败") {
+                        Task { await model.clearFailed() }
+                    }
+                    .buttonStyle(.plain)
+                    .font(.caption)
+                    .foregroundStyle(.orange)
+                    .disabled(model.busy != nil)
+                }
+            }
             if model.loading && model.films.isEmpty {
                 Text("加载中…").foregroundStyle(.secondary).font(.caption)
             } else if let e = model.error {
@@ -46,10 +88,22 @@ struct MetagMyFilmsView: View {
                     .foregroundStyle(.secondary).font(.caption)
             } else {
                 ForEach(model.films) { f in
-                    Button { onOpen(f) } label: { row(f) }
+                    HStack(spacing: AppTheme.Spacing.xs) {
+                        Button { onOpen(f) } label: { row(f) }
+                            .buttonStyle(.plain)
+                            .disabled(!f.retrievable || model.busy != nil)
+                            .opacity(f.retrievable ? 1 : 0.55)
+                        Button {
+                            Task { await model.remove(f.job_id) }
+                        } label: {
+                            Image(systemName: "xmark")
+                                .font(.system(size: AppTheme.FontSize.xs))
+                        }
                         .buttonStyle(.plain)
-                        .disabled(!f.retrievable)
-                        .opacity(f.retrievable ? 1 : 0.55)
+                        .foregroundStyle(.secondary)
+                        .disabled(model.busy != nil)
+                        .help("删除")
+                    }
                 }
             }
         }
@@ -65,9 +119,11 @@ struct MetagMyFilmsView: View {
             }
             Spacer()
             // 如实说：这一单的产物已经不在了。含糊其辞比说不出口更伤信任。
-            Text(f.retrievable ? "打开" : "产物已过期")
+            Text(f.status == "failed" ? "失败"
+                 : (f.retrievable ? "打开" : "产物已过期"))
                 .font(.caption)
-                .foregroundStyle(f.retrievable ? Color.accentColor : .orange)
+                .foregroundStyle(f.status == "failed" ? .orange
+                                 : (f.retrievable ? Color.accentColor : .orange))
         }
         .contentShape(Rectangle())
     }

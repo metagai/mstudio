@@ -132,6 +132,10 @@ private struct SettingsDetail: View {
                             case .account:
                                 AccountPane()
                             case .general:
+                                // 明暗排在最前：长时间剪辑的人第一件想调的就是它
+                                SettingsSection(title: L("Appearance")) {
+                                    AppearancePane()
+                                }
                                 SettingsSection(title: L("Language")) {
                                     LanguagePane()
                                 }
@@ -244,9 +248,6 @@ final class SettingsWindowController: NSWindowController {
         window.setContentSize(AppTheme.Window.settingsDefault)
         window.minSize = AppTheme.Window.settingsMin
         window.title = "Settings"
-        // 显式锁 .aqua（而不是删掉这行）：删掉会跟随系统，
-        // 系统切深色时 .ultraThinMaterial 和 systemXxx 会翻，纸感主题就半坏了。
-        window.appearance = NSAppearance(named: .aqua)
         window.backgroundColor = AppTheme.Background.base
         window.isOpaque = true
         window.titleVisibility = .hidden

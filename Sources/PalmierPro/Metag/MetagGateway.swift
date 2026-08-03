@@ -64,6 +64,12 @@ enum MetagGateway {
             /// 老网关不回这个字段时也自然落到「按可用处理」。
             var accepts_image: Bool? = nil
             var acceptsImage: Bool { accepts_image ?? true }
+            /// 这一档此刻能不能买。服务端探到上游或本地依赖坏掉时置 false ——
+            /// **界面要提前禁用**，而不是让用户点下去拿一个 503。
+            /// 老网关不回这个字段时按可售处理：把"不知道"当成"坏了"，
+            /// 一次回滚就会让所有档位从界面上消失。
+            var available: Bool? = nil
+            var isAvailable: Bool { available ?? true }
 
             /// Display name for `code` (`zh` | `en` | `es`), falling back to the legacy `name`.
             func displayName(for code: String) -> String {
@@ -88,12 +94,18 @@ enum MetagGateway {
         let cover: String?
         /// Shots finish serially (~36s each), so fill placeholders as they land.
         let shots_done: Int?
+        /// 逐镜首帧。**等待期间用它把空白换成真实画面** ——
+        /// 图早就画好了（草案阶段或出片时画的），只是从没回给过客户端。
+        /// 盯着一个转圈和盯着自己片子的开场画面，是两种等待。
+        let first_frames: [String]?
         /// Per-shot re-shoot state: queued / running / done / "failed: …", nil when never re-shot.
         let reshoot: [String?]?
         /// Per-shot takes, best first. The delivered take is always element 0.
         let alts: [[Take]]?
         /// Per-shot quality score. Below 0.75 the gate thinks the shot is broken.
         let scores: [Double?]?
+        /// 当前旁白人格 id。界面文案在 MetagNarrator —— 契约里只有 id。
+        let narrator: String?
 
         struct Take: Decodable, Sendable {
             let file: String
@@ -105,12 +117,29 @@ enum MetagGateway {
         case signedOut
         case insufficientCredits
         case http(Int)
+        /// 带原因码的拒绝。**用户看到的必须是能据此行动的话，不是 "METAG request failed (429)"。**
+        /// 两种 429 原来显示同一句：inflight_limit 是用户自己的正常状态，
+        /// 却看起来像我们坏了。
+        case rejected(Int, String)
 
         var errorDescription: String? {
             switch self {
             case .signedOut: return L10n.threadSafe("Sign in to METAG to generate.")
             case .insufficientCredits: return L10n.threadSafe("Not enough credits.")
             case .http(let code): return L10n.threadSafe("METAG request failed (%@).", [code.formatted()])
+            case .rejected(_, let reason):
+                switch reason {
+                case "inflight_limit":
+                    return L10n.threadSafe("You already have two films rendering — wait for one to finish")
+                case "queue_full":
+                    return L10n.threadSafe("Everyone is generating right now — try again in a few minutes")
+                case "insufficient_credits":
+                    return L10n.threadSafe("Not enough credits.")
+                case "engine_degraded":
+                    return L10n.threadSafe("That engine is temporarily unavailable — pick another")
+                default:
+                    return L10n.threadSafe("Temporarily unavailable — try again shortly")
+                }
             }
         }
     }
@@ -127,17 +156,71 @@ enum MetagGateway {
         return req
     }
 
+    /// 204 之类没有响应体的请求。`send<T: Decodable>` 会试着解 JSON，
+    /// 对空 body 必然失败 —— 那会让一次成功的删除看起来像失败。
+    @discardableResult
+    private static func sendNoContent(_ req: URLRequest) async throws -> Int {
+        let (_, resp) = try await URLSession.shared.data(for: req)
+        let code = (resp as? HTTPURLResponse)?.statusCode ?? 0
+        guard (200..<300).contains(code) else { throw Failure.http(code) }
+        return code
+    }
+
+    /// 只有幂等方法能自动重试。POST 可能已经在服务端生效了，重试会变成第二次下单。
+    private static let retryableMethods: Set<String> = ["GET", "HEAD"]
+
+    /// 发一个请求。**带重试。**
+    ///
+    /// 起因：服务器在美国弗吉尼亚，用户在中国。实测这条链路 RTT 230ms、
+    /// 丢包 6.7%–20%、一次普通 API 调用 1.0–2.7 秒。零重试意味着
+    /// **一次网络抖动就是用户眼里的一次报错** —— 而那类错误根本到不了
+    /// 我们的服务器，任何日志里都没有。
+    ///
+    /// 只重试"没拿到答案"的情况：网络层错误与 5xx。
+    /// 服务端已经答过的（401/402/4xx）不重试 —— 重试只会拿到同一个答案，
+    /// 还会把一次"额度不足"变成连续三次。
     static func send<T: Decodable>(_ req: URLRequest, as: T.Type) async throws -> T {
-        let (data, response) = try await URLSession.shared.data(for: req)
-        let code = (response as? HTTPURLResponse)?.statusCode ?? 0
-        switch code {
-        case 200..<300: return try JSONDecoder().decode(T.self, from: data)
-        case 401:
-            token = nil
-            throw Failure.signedOut
-        case 402: throw Failure.insufficientCredits
-        default: throw Failure.http(code)
+        let canRetry = retryableMethods.contains(req.httpMethod?.uppercased() ?? "GET")
+        let attempts = canRetry ? 3 : 1
+        var lastError: Error = Failure.http(0)
+
+        for attempt in 0..<attempts {
+            do {
+                let (data, response) = try await URLSession.shared.data(for: req)
+                let code = (response as? HTTPURLResponse)?.statusCode ?? 0
+                switch code {
+                case 200..<300: return try JSONDecoder().decode(T.self, from: data)
+                case 401:
+                    token = nil
+                    throw Failure.signedOut
+                case 402: throw Failure.insufficientCredits
+                case 429, 503:
+                    // 原因码在响应体里。解不出来就退回通用文案 ——
+                    // 但**绝不退回裸状态码**，那对用户毫无意义。
+                    let reason = (try? JSONDecoder().decode([String: String].self, from: data))?["reason"] ?? ""
+                    if code == 503 && reason.isEmpty { lastError = Failure.http(code); if attempt == attempts - 1 { throw lastError } }
+                    else { throw Failure.rejected(code, reason) }
+                case 502, 504:
+                    lastError = Failure.http(code)
+                    if attempt == attempts - 1 { throw lastError }
+                default: throw Failure.http(code)
+                }
+            } catch let e as Failure {
+                // 服务端给过答案的直接抛；只有 5xx 走到这里且还有重试机会时继续
+                if case .http(let c) = e, (502...504).contains(c), attempt < attempts - 1 {
+                    lastError = e
+                } else {
+                    throw e
+                }
+            } catch {
+                // 网络层错误（超时、连接中断、丢包导致的失败）
+                lastError = error
+                if attempt == attempts - 1 { throw error }
+            }
+            // 退避：200ms、600ms。**丢包往往成串**，立刻重试大概率再丢一次。
+            try? await Task.sleep(for: .milliseconds(200 * Int(pow(3.0, Double(attempt)))))
         }
+        throw lastError
     }
 
     static func account() async throws -> Account {
@@ -188,6 +271,16 @@ enum MetagGateway {
         return try await send(request("api/v1/jobs"), as: Response.self).jobs
     }
 
+    /// 删掉一条作品。**用户对失败作品最基本的诉求就是让它消失** ——
+    /// 一屏永远擦不掉的失败记录，是"这产品不靠谱"最直接的证据，
+    /// 而且每次打开都要再看一遍。
+    ///
+    /// 服务端会一并清掉对象存储里的产物与索引。**额度不退**：
+    /// 失败时已经退过一次，删除不该变成第二次退款。
+    static func deleteFilm(_ jobId: String) async throws {
+        _ = try await sendNoContent(request("api/v1/jobs/\(jobId)", method: "DELETE"))
+    }
+
     // ---------- 免费草案：先看片，再决定付不付钱 ----------
     //
     // web 端一直有这条路，macOS 端此前没有 —— 用户从生成对话框直接走付费出片。
@@ -217,12 +310,42 @@ enum MetagGateway {
         var reroll: Bool?
     }
 
-    static func revisePreview(id: String, edits: [ReviseEdit]) async throws {
+    /// `narrator` 是**整片级**的修改：只重合成旁白，画面一帧不动。
+    /// 只换音色时 `edits` 可以为空。
+    static func revisePreview(id: String, edits: [ReviseEdit] = [], narrator: MetagNarrator? = nil) async throws {
         struct Ack: Decodable { let status: String? }
-        let data = try JSONEncoder().encode(["edits": edits])
-        let obj = try JSONSerialization.jsonObject(with: data) as? [String: Any] ?? [:]
+        // 键名是 **shots**，不是 edits —— 网关按 shots 解析，发 edits 会拿到 400
+        // 且不带任何说明。这条路此前在 Mac 上从来没成功过。
+        var obj: [String: Any] = [:]
+        if !edits.isEmpty {
+            let data = try JSONEncoder().encode(edits)
+            obj["shots"] = try JSONSerialization.jsonObject(with: data)
+        }
+        if let narrator { obj["narrator"] = narrator.rawValue }
+        guard !obj.isEmpty else { return }   // 什么都不改就别发，网关会 400
         _ = try await send(request("api/v1/preview/\(id)/revise", method: "POST", body: obj), as: Ack.self)
     }
+
+    /// 成片事件。**只报"发生了什么"，不报内容。**
+    ///
+    /// 起因：我们对导出这件事完全没有可见性 —— 片子做出来之后发生了什么，
+    /// 一无所知。而那正是"产品有没有交付价值"的唯一答案：做出来了却没人导出，
+    /// 等于没交付。Web 端已经在报，Mac 不报的话这个数是残的。
+    ///
+    /// 没登录就什么都不发；失败静默 —— 用户已经拿到文件了，
+    /// 不该因为一条统计没记上而看到报错。
+    static func filmEvent(kind: String, shots: Int, seconds: Double, metag: Bool) {
+        Task {
+            guard isSignedIn else { return }
+            _ = try? await send(
+                request("api/v1/films/event", method: "POST",
+                        body: ["kind": kind, "shots": shots,
+                               "seconds": seconds, "metag": metag]),
+                as: Ack.self)
+        }
+    }
+
+    private struct Ack: Decodable { let ok: Bool? }
 
     /// 确认出片：**此刻才计费**，从用户看过的那批首帧出发。
     static func approvePreview(id: String, engine: String, allShots: Bool = false) async throws -> String {

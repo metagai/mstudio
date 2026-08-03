@@ -5,3 +5,13 @@
 "or use your own Anthropic key" = "または自分のAnthropic APIキーを使用";
 "Subscribe" = "登録する";
 "Open Settings" = "設定を開く";
+
+/* 界面明暗（AppearancePane）*/
+"Appearance" = "外観";
+"Applies immediately. Dark is easier on the eyes for long sessions." = "すぐに反映されます。長時間の編集にはダークが目にやさしい。";
+
+/* 拒绝原因 → 能据此行动的一句话 */
+"You already have two films rendering — wait for one to finish" = "すでに 2 本が生成中です。1 本終わるまでお待ちください";
+"Everyone is generating right now — try again in a few minutes" = "現在混み合っています。数分後にお試しください";
+"That engine is temporarily unavailable — pick another" = "このエンジンは一時的に利用できません。別のものを選んでください";
+"Temporarily unavailable — try again shortly" = "一時的に利用できません。しばらくしてからお試しください";
