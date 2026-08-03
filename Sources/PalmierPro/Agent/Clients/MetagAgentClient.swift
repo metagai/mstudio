@@ -4,7 +4,7 @@ import Foundation
 /// 生成类工具不走这里，仍走 GenerationBackend → create_job，计费入口只有一条。
 struct MetagAgentClient: AgentClient {
     let model: AnthropicModel
-    var maxTokens: Int = 8192
+    var maxTokens: Int { model.maxOutputTokens }
 
     static let path = "api/v1/agent/chat"
 
