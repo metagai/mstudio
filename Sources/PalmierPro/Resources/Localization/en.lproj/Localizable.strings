@@ -1274,3 +1274,23 @@
 "AI transcription" = "AI transcription";
 "Video automation" = "Video automation";
 "Integration with your own agent" = "Integration with your own agent";
+
+// 声音复刻与配音
+"Your voices" = "Your voices";
+"No cloned voices yet." = "No cloned voices yet.";
+"Clone a voice" = "Clone a voice";
+"Choose sample…" = "Choose sample…";
+"WAV, MP3 or M4A · up to 16 MB" = "WAV, MP3 or M4A · up to 16 MB";
+"Name this voice" = "Name this voice";
+"This sample is my own voice, or I have permission to use it." = "This sample is my own voice, or I have permission to use it.";
+"Clone" = "Clone";
+"Clone · %@ credits" = "Clone · %@ credits";
+"Pick a clear 10–30 second sample of the voice." = "Pick a clear 10–30 second sample of the voice.";
+"Voice “%@” is ready" = "Voice “%@” is ready";
+"Voice “%@” is ready — %@ credits" = "Voice “%@” is ready — %@ credits";
+"Record a voiceover" = "Record a voiceover";
+"What should it say?" = "What should it say?";
+"Voice" = "Voice";
+"Built-in (free)" = "Built-in (free)";
+"Voiceover added to your media" = "Voiceover added to your media";
+"Generated audio lands in your media panel — drag it onto the timeline." = "Generated audio lands in your media panel — drag it onto the timeline.";

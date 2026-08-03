@@ -1271,3 +1271,23 @@
 "AI transcription" = "AI 转写";
 "Video automation" = "视频自动化";
 "Integration with your own agent" = "接入你自己的智能体";
+
+// 声音复刻与配音
+"Your voices" = "我的音色";
+"No cloned voices yet." = "还没有复刻的音色。";
+"Clone a voice" = "复刻一个音色";
+"Choose sample…" = "选择样本…";
+"WAV, MP3 or M4A · up to 16 MB" = "WAV、MP3 或 M4A · 不超过 16 MB";
+"Name this voice" = "给这个音色起个名字";
+"This sample is my own voice, or I have permission to use it." = "这段样本是我本人的声音，或我已获得使用授权。";
+"Clone" = "复刻";
+"Clone · %@ credits" = "复刻 · %@ credits";
+"Pick a clear 10–30 second sample of the voice." = "选一段 10–30 秒、清晰的人声样本。";
+"Voice “%@” is ready" = "音色「%@」已就绪";
+"Voice “%@” is ready — %@ credits" = "音色「%@」已就绪 —— 扣除 %@ credits";
+"Record a voiceover" = "录一段配音";
+"What should it say?" = "要说什么？";
+"Voice" = "音色";
+"Built-in (free)" = "内置音色（免费）";
+"Voiceover added to your media" = "配音已加入素材面板";
+"Generated audio lands in your media panel — drag it onto the timeline." = "生成的音频会出现在素材面板，拖到时间线上即可。";
