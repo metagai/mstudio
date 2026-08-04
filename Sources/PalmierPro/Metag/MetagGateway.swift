@@ -650,11 +650,35 @@ enum MetagGateway {
             url = baseURL.appendingPathComponent("files/\(id)/\(name)")
                 .appending(queryItems: [URLQueryItem(name: "token", value: token)])
         }
-        let (temp, response) = try await URLSession.shared.download(from: url)
-        let code = (response as? HTTPURLResponse)?.statusCode ?? 0
-        guard (200..<300).contains(code) else { throw Failure.http(code) }
-        let destination = directory.appendingPathComponent("\(UUID().uuidString)-\(name)")
-        try FileManager.default.moveItem(at: temp, to: destination)
-        return destination
+        // **下载也要重试。** API 调用早就有重试了（这条链路实测丢包 6.7%–20%），
+        // 而下载的文件比一次 API 响应大两个数量级 —— 中途断掉的概率高得多，
+        // 却一直是裸调用。它的调用方大多写 `try?`，于是一次网络抖动
+        // **静默变成"少了一镜"**，用户看到的是一部缺画面的片子。
+        //
+        // 下载是幂等的（GET 同一个文件），重试没有副作用 ——
+        // 这一点和 POST 不同，那边只重试"没拿到答案"的情况。
+        var lastError: Error = Failure.http(0)
+        for attempt in 0..<3 {
+            do {
+                let (temp, response) = try await URLSession.shared.download(from: url)
+                let code = (response as? HTTPURLResponse)?.statusCode ?? 0
+                // 4xx 不重试：服务端已经答过了，重试只会拿到同一个答案。
+                if (400..<500).contains(code) { throw Failure.http(code) }
+                guard (200..<300).contains(code) else { throw Failure.http(code) }
+                let destination = directory.appendingPathComponent("\(UUID().uuidString)-\(name)")
+                try FileManager.default.moveItem(at: temp, to: destination)
+                return destination
+            } catch let e as Failure {
+                if case .http(let c) = e, (400..<500).contains(c) { throw e }
+                lastError = e
+            } catch {
+                lastError = error
+            }
+            if attempt < 2 {
+                // 丢包成串：立刻重试大概率再丢一次
+                try? await Task.sleep(for: .seconds(pow(2.0, Double(attempt))))
+            }
+        }
+        throw lastError
     }
 }
