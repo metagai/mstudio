@@ -165,6 +165,9 @@ enum MetagGateway {
                 // 频控此前一律回裸 429，于是这几种都落到下面那句"稍后再试" ——
                 // 而它们是**用户自己的配额**，不是我们忙。把用户的正常状态说成
                 // 我们坏了，他会以为产品有问题，而不是知道歇一会儿。
+                // 并发和配额是两件事：前者"等一条跑完就行"，后者"这一小时别再来了"。
+                case "draft_inflight":
+                    return L10n.threadSafe("You already have a few drafts running — one will free up in a moment.")
                 case "draft_quota":
                     return L10n.key("You've made a lot of drafts this hour — take a break and come back shortly.")
                 case "generate_quota":
