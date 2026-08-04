@@ -138,14 +138,14 @@ struct MetagHighlightsSheet: View {
     /// 把这一段接到时间线末尾。用现成的 addClips(segments:)，
     /// **不另造一套裁切**：一处算错的裁切迟早和别处对不上。
     private func add(_ h: MetagGateway.Highlight) {
-        guard h.end > h.start else { return }
+        guard let range = HighlightRange.clamp(start: h.start, end: h.end,
+                                               duration: asset.duration) else { return }
         let track = editor.timeline.tracks.firstIndex { $0.type == .video } ?? 0
         let end = editor.timeline.tracks.indices.contains(track)
             ? (editor.timeline.tracks[track].clips.map { $0.startFrame + $0.durationFrames }.max() ?? 0)
             : 0
-        editor.addClips(
-            assets: [asset], trackIndex: track, startFrame: end,
-            segments: [asset.id: h.start...h.end])
+        editor.addClips(assets: [asset], trackIndex: track, startFrame: end,
+                        segments: [asset.id: range])
     }
 
     private func timecode(_ seconds: Double) -> String {
@@ -158,4 +158,22 @@ struct MetagHighlightsSheet: View {
 struct HighlightRequest: Identifiable, Equatable {
     let assetId: String
     var id: String { assetId }
+}
+
+
+/// 亮点区间落到素材上。**抽出来是为了能测**：它直接构造 ClosedRange，
+/// 而 `lower > upper` 是运行时崩溃，不是编译错误。
+///
+/// 区间来自模型返回的 JSON —— 那是外部输入，不能假设它合规：
+/// 负数、start ≥ end、超出素材时长，任何一种都可能出现。
+enum HighlightRange {
+    /// 收敛到素材内，不合法就返回 nil（宁可不加，也不要加一段错的）。
+    static func clamp(start: Double, end: Double, duration: Double) -> ClosedRange<Double>? {
+        guard duration > 0, start.isFinite, end.isFinite else { return nil }
+        let lo = max(0, min(start, duration))
+        let hi = max(0, min(end, duration))
+        // 至少要有 0.1 秒，否则铺上去是一个看不见的片段
+        guard hi - lo >= 0.1 else { return nil }
+        return lo...hi
+    }
 }

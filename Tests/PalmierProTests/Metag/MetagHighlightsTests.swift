@@ -33,3 +33,30 @@ struct EnergyDownsampleTests {
         #expect(MetagGateway.downsample([1, 2, 3], to: 0) == [1, 2, 3])
     }
 }
+
+/// 亮点区间来自模型返回的 JSON —— **那是外部输入**。
+/// 它直接构造 ClosedRange，而 `lower > upper` 是运行时崩溃，不是编译错误。
+struct HighlightRangeTests {
+    @Test func normalRangeSurvives() {
+        let r = HighlightRange.clamp(start: 3, end: 9, duration: 60)
+        #expect(r == 3...9)
+    }
+
+    @Test func clampsToTheAsset() {
+        // 模型给的区间越界：收敛，而不是崩
+        #expect(HighlightRange.clamp(start: -5, end: 9, duration: 60) == 0...9)
+        #expect(HighlightRange.clamp(start: 50, end: 999, duration: 60) == 50...60)
+    }
+
+    @Test func rejectsWhatCannotBeACut() {
+        // 倒置、零长、太短（铺上去看不见）、素材没时长、非有限数
+        #expect(HighlightRange.clamp(start: 9, end: 3, duration: 60) == nil)
+        #expect(HighlightRange.clamp(start: 5, end: 5, duration: 60) == nil)
+        #expect(HighlightRange.clamp(start: 5, end: 5.05, duration: 60) == nil)
+        #expect(HighlightRange.clamp(start: 0, end: 9, duration: 0) == nil)
+        #expect(HighlightRange.clamp(start: .nan, end: 9, duration: 60) == nil)
+        // 无穷**不是**"到结尾"，是一个坏响应。把坏数据悄悄解释成合理意图，
+        // 正是错误输出的来源 —— 宁可不加这一段。
+        #expect(HighlightRange.clamp(start: 0, end: .infinity, duration: 60) == nil)
+    }
+}
