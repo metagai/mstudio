@@ -162,6 +162,17 @@ enum MetagGateway {
                     return L10n.threadSafe("Not enough credits.")
                 case "engine_degraded":
                     return L10n.threadSafe("That engine is temporarily unavailable — pick another")
+                // 频控此前一律回裸 429，于是这几种都落到下面那句"稍后再试" ——
+                // 而它们是**用户自己的配额**，不是我们忙。把用户的正常状态说成
+                // 我们坏了，他会以为产品有问题，而不是知道歇一会儿。
+                case "draft_quota":
+                    return L10n.threadSafe("You've made a lot of drafts this hour — take a break and come back shortly.")
+                case "generate_quota":
+                    return L10n.threadSafe("You've produced a lot this hour — take a break and come back shortly.")
+                case "voice_quota", "upload_quota":
+                    return L10n.threadSafe("Too many requests this hour — try again later.")
+                case "tts_quota", "highlight_quota", "plan_quota":
+                    return L10n.threadSafe("Too many requests this minute — try again in a moment.")
                 default:
                     return L10n.threadSafe("Temporarily unavailable — try again shortly")
                 }

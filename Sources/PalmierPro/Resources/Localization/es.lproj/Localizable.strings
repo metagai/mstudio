@@ -309,3 +309,9 @@
 "Scoring it…" = "Poniendo la música…";
 "Drafting… this one is free" = "Creando el borrador… es gratis";
 "Frames are landing, still writing the narration…" = "Van llegando los fotogramas; aún se escribe la narración…";
+
+// 频控文案
+"You've made a lot of drafts this hour — take a break and come back shortly." = "Has hecho muchos borradores esta hora: descansa un momento y vuelve.";
+"You've produced a lot this hour — take a break and come back shortly." = "Has producido mucho esta hora: descansa un momento y vuelve.";
+"Too many requests this hour — try again later." = "Demasiadas solicitudes esta hora: inténtalo más tarde.";
+"Too many requests this minute — try again in a moment." = "Demasiadas solicitudes este minuto: inténtalo en un momento.";

@@ -309,3 +309,9 @@
 "Scoring it…" = "Scoring it…";
 "Drafting… this one is free" = "Drafting… this one is free";
 "Frames are landing, still writing the narration…" = "Frames are landing, still writing the narration…";
+
+// 频控文案
+"You've made a lot of drafts this hour — take a break and come back shortly." = "You've made a lot of drafts this hour — take a break and come back shortly.";
+"You've produced a lot this hour — take a break and come back shortly." = "You've produced a lot this hour — take a break and come back shortly.";
+"Too many requests this hour — try again later." = "Too many requests this hour — try again later.";
+"Too many requests this minute — try again in a moment." = "Too many requests this minute — try again in a moment.";

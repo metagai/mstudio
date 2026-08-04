@@ -309,3 +309,9 @@
 "Scoring it…" = "正在配乐…";
 "Drafting… this one is free" = "正在起草…这一步不扣 credits";
 "Frames are landing, still writing the narration…" = "画面陆续出来了，还在写旁白…";
+
+// 频控文案
+"You've made a lot of drafts this hour — take a break and come back shortly." = "这一小时里你已经起了很多草案 —— 歇一会儿再来。";
+"You've produced a lot this hour — take a break and come back shortly." = "这一小时里你已经出了很多片 —— 歇一会儿再来。";
+"Too many requests this hour — try again later." = "这一小时的请求次数太多了 —— 稍后再试。";
+"Too many requests this minute — try again in a moment." = "这一分钟的请求次数太多了 —— 稍等一下再试。";
