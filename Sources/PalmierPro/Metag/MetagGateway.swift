@@ -643,9 +643,24 @@ enum MetagGateway {
         if let absolute = URL(string: name), absolute.scheme != nil {
             url = absolute
         } else {
-            guard let token else { throw Failure.signedOut }
+            // **用票据，不要把 JWT 放进 URL。**
+            //
+            // 查询串会进浏览器历史、Referer、以及任何一天有人打开访问日志时的日志文件。
+            // 而我们的 JWT 是 7 天有效、全端点权限 —— 泄漏一次等于账号被接管。
+            // 票据只活 300 秒、只绑这一个任务：泄漏的代价从"整个账号七天"
+            // 降到"一个任务五分钟"。
+            //
+            // web 端早就在用票据了（fileUrl），只有这里还在发完整 JWT。
+            // 取不到票据时退回 token：宁可下载得到，也不要因为鉴权升级而变得取不到片子。
+            let query: URLQueryItem
+            if let ticket = try? await fileTicket(job: id) {
+                query = URLQueryItem(name: "ticket", value: ticket)
+            } else {
+                guard let token else { throw Failure.signedOut }
+                query = URLQueryItem(name: "token", value: token)
+            }
             url = baseURL.appendingPathComponent("files/\(id)/\(name)")
-                .appending(queryItems: [URLQueryItem(name: "token", value: token)])
+                .appending(queryItems: [query])
         }
         // **下载也要重试。** API 调用早就有重试了（这条链路实测丢包 6.7%–20%），
         // 而下载的文件比一次 API 响应大两个数量级 —— 中途断掉的概率高得多，
