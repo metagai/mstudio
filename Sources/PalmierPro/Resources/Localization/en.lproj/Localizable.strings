@@ -1362,3 +1362,16 @@
 "Too many requests this hour — try again later." = "Too many requests this hour — try again later.";
 "Too many requests this minute — try again in a moment." = "Too many requests this minute — try again in a moment.";
 "You already have a few drafts running — one will free up in a moment." = "You already have a few drafts running — one will free up in a moment.";
+
+// 免费试渲一镜 / 档位
+"Engine" = "Engine";
+"unavailable" = "unavailable";
+"Use this tier for every shot" = "Use this tier for every shot";
+"See one shot for real — free, once" = "See one shot for real — free, once";
+"Rendering a sample shot…" = "Rendering a sample shot…";
+"Sample shot is rendering — it appears in the draft when ready." = "Sample shot is rendering — it appears in the draft when ready.";
+"You've already used your free preview shot." = "You've already used your free preview shot.";
+"Pick a premium tier to preview — the built-in one is always free." = "Pick a premium tier to preview — the built-in one is always free.";
+"The draft is still rendering — wait a moment." = "The draft is still rendering — wait a moment.";
+"Different composition" = "Different composition";
+"Narrator voice" = "Narrator voice";

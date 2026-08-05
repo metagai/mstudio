@@ -142,6 +142,19 @@ struct MetagDraftSheet: View {
     @StateObject private var model = MetagDraftModel()
     @State private var engines: [MetagGateway.Pricing.Engine] = []
     @State private var engine = "local"
+    // 免费试渲：一人一次，所以只有"没用过 / 正在渲 / 已经用过"三种
+    @State private var sampling = false
+    @State private var sampled = false
+    @State private var sampleError: String?
+    /// 界面语言，映射到网关的 zh/en/es。引擎名要跟着它走 —— 此前写死 "zh"，
+    /// 英文和西语用户在**决定花多少钱的那一步**看到的是中文档位名。
+    private var uiLang: String {
+        switch L10n.shared.resolved {
+        case .zhHans: "zh"
+        case .es: "es"
+        default: "en"
+        }
+    }
     /// 全片使用所选引擎。**默认关** —— 默认只有口播镜用贵引擎，其余降到 local。
     @State private var allShots = false
 
@@ -158,7 +171,7 @@ struct MetagDraftSheet: View {
     private var blocked: String? {
         func down(_ id: String) -> Bool { engines.first { $0.id == id }?.isAvailable == false }
         if down("local") { return "出片暂时不可用，稍后再试 —— 不会扣任何 credits" }
-        if down(engine) { return "这一档暂时不可用，换一档" }
+        if down(engine) { return L("That engine is temporarily unavailable — pick another") }
         return nil
     }
 
@@ -235,7 +248,7 @@ struct MetagDraftSheet: View {
                         set: { model.edits[i] = $0 }
                     ))
                     .font(.caption)
-                    Toggle("换个画面", isOn: Binding(
+                    Toggle(L("Different composition"), isOn: Binding(
                         get: { model.rerolls.contains(i) },
                         set: { on in if on { model.rerolls.insert(i) } else { model.rerolls.remove(i) } }
                     ))
@@ -246,7 +259,7 @@ struct MetagDraftSheet: View {
             // 音色摆在引擎上面：用户先关心"谁在讲我的片子"，再关心画质档位。
             // 免费必须写出来，否则他不敢点 —— 而"敢试"正是这个交互的全部价值。
             if let current = model.narrator {
-                Picker("旁白音色", selection: Binding(
+                Picker(L("Narrator voice"), selection: Binding(
                     get: { current },
                     set: { n in Task { await model.swapNarrator(n) } }
                 )) {
@@ -259,19 +272,52 @@ struct MetagDraftSheet: View {
                 Text(L10n.key("Changing the voice is free — only the narration is re-recorded"))
                     .font(.caption2).foregroundStyle(.secondary)
             }
-            Picker("引擎", selection: $engine) {
+            Picker(L("Engine"), selection: $engine) {
                 ForEach(engines, id: \.id) { e in
                     // 停售的档位标出来但**不隐藏** —— 抹掉会让用户以为
                     // "我昨天用的那档去哪了"，而让他选中再拿 503 更糟。
+                    //
+                    // 引擎名跟随界面语言。**原来写死 "zh"** —— 英文和西语用户
+                    // 在选档这一步看到的是中文档位名，而这是他决定花多少钱的地方。
                     Text(e.isAvailable
-                         ? "\(e.displayName(for: "zh")) · \(e.credits_per_shot)cr"
-                         : "\(e.displayName(for: "zh")) · 暂不可用")
+                         ? "\(e.displayName(for: uiLang)) · \(e.credits_per_shot)cr"
+                         : "\(e.displayName(for: uiLang)) · \(L("unavailable"))")
                         .tag(e.id)
                 }
             }
             .font(.caption)
+
+            // 免费试渲一镜。**这是用户唯一一次看见付费档长什么样的机会** ——
+            // 草案是静帧，回答不了"动起来好不好看"，而那正是他付钱买的东西。
+            if engine != "local" && !sampled {
+                HStack(spacing: AppTheme.Spacing.xs) {
+                    Button(sampling ? L("Rendering a sample shot…")
+                                    : L("See one shot for real — free, once")) {
+                        sampling = true
+                        Task {
+                            do {
+                                try await MetagGateway.sampleShot(id: model.jobId ?? "", engine: engine)
+                                sampled = true
+                            } catch {
+                                sampleError = error.localizedDescription
+                            }
+                            sampling = false
+                        }
+                    }
+                    .disabled(sampling || model.busy || model.jobId == nil)
+                    if sampling { ProgressView().controlSize(.small) }
+                }
+                .font(.caption2)
+            }
+            if sampled {
+                Text(L("Sample shot is rendering — it appears in the draft when ready."))
+                    .font(.caption2).foregroundStyle(.secondary)
+            }
+            if let e = sampleError {
+                Text(e).font(.caption2).foregroundStyle(AppTheme.Status.errorColor)
+            }
             if engine != "local" {
-                Toggle("全片都用这一档", isOn: $allShots).font(.caption2)
+                Toggle(L("Use this tier for every shot"), isOn: $allShots).font(.caption2)
                 if !allShots {
                     // 说清楚默认会发生什么，而不是让他看完成片再问"为什么画质没变"
                     Text(L10n.key("By default only lip-sync shots use it; the rest stay on the standard tier"))
