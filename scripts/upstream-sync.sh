@@ -30,6 +30,17 @@ eac669e|blocked|同上，靠 id contains \"reframe\"；拿过来是个找不到�
 c1061bd|refused|外观设置动 69 个文件 1421 行，是主题系统；冲突大、对我们收益小
 bee6314|refused|供应商 logo 是给上游 KieAI 那批供应商的，我们的模型菜单显示自家档位
 674b5e8|refused|上游的贡献指南，与我们的仓库无关
+94394bb|taken|已拿（53559d3c）并按我们的产品改过；squash 后 git cherry 认不出
+a2cf030|blocked|只有一行，但它依赖 TrackSize.defaultHeight —— 那个符号来自我们没拿的提交，编译不过；而"高一点"的分数常量在我们树上没有消费方
+287ce76|blocked|依赖 themeForegroundColor，来自我们拒过的外观系统 c1061bd；且工具描述里写着"额度够就用云端转写"，与我们一律端侧免费的立场冲突
+896d0b6|taken|已拿（a4b9b33e）：媒体搜索显示匹配的时间线；冲突只来自上游 L10n，按我们的写法解掉了
+1d76782|review|字幕间隙合并是真瑕疵，但 8 处冲突且捎带改 ToolDefinitions；两位用户说产品太复杂，字幕微调排在接住首页那句话之后
+c2b52be|refused|Agent 侧边栏周边装修，而我们的 agent 面板已分叉（砍掉 Convex/Clerk）
+6aafb86|refused|重设计选中素材检查器，9 文件 430 行；方向是往检查器继续加界面，与"太复杂"的反馈相反
+b36e5ab|blocked|Edit→Reframe 改用 MiniMax H3，绑上游模型目录；我们换了后端，拿来是死按钮（同 eac669e）
+9d06340|review|三栈布局是 agent 工具契约，模型提示词在网关侧；不同步更新就是模型永远不会调用的死工具
+ed60fe0|review|MetagAgentClient 已经收 SSE，但网关不发思考增量；先做网关，UI 才有意义
+8c0ae39|refused|上游 README 星标图，与我们的仓库无关
 ef6b51d|refused|已按我们的需要拿过（cd38b500），去掉了同一 hunk 里属于 #457 遥测的那一半
 94394bb|review|引导式上手流程，产品取舍；注意它常与 analytics 打包
 ed60fe0|review|流式思考过程，需要我们的网关支持流式返回才有意义
@@ -80,6 +91,10 @@ while read -r _ sha msg; do
     continue
   fi
 
+  # **文件在，不等于补丁能落地。** a2cf030 只改一个我们有的文件，却依赖
+  # TrackSize.defaultHeight —— 那个符号来自我们没拿的提交，拿了编译不过。
+  # 符号级检查做起来不便宜（要解析 Swift），所以这里只记教训：
+  # 【该拿】里的每一条，cherry-pick 之后必须 swift build 才算数。
   case "$msg" in
     *"[fix]"*|*"[perf]"*|*"[fix/"*)   take+=("$short  $msg") ;;
     *telemetry*|*analytics*|*Telemetry*)
