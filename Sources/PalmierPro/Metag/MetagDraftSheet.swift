@@ -305,6 +305,9 @@ struct MetagDraftSheet: View {
                         }
                     }
                     .disabled(sampling || model.busy || model.jobId == nil)
+                    // 流光只给这一个按钮：它是用户唯一一次免费看见付费档的入口。
+                    // 到处都转就成了噪音，谁都不再被看见。
+                    .borderBeam(active: !sampling, radius: AppTheme.Radius.xsSm)
                     if sampling { ProgressView().controlSize(.small) }
                 }
                 .font(.caption2)
