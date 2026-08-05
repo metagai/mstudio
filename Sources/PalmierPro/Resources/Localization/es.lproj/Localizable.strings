@@ -316,3 +316,16 @@
 "Too many requests this hour — try again later." = "Demasiadas solicitudes esta hora: inténtalo más tarde.";
 "Too many requests this minute — try again in a moment." = "Demasiadas solicitudes este minuto: inténtalo en un momento.";
 "You already have a few drafts running — one will free up in a moment." = "Ya tienes varios borradores en marcha: uno se liberará en un momento.";
+
+// 免费试渲一镜 / 档位
+"Engine" = "Motor";
+"unavailable" = "no disponible";
+"Use this tier for every shot" = "Usar este nivel en todas las tomas";
+"See one shot for real — free, once" = "Ver una toma real: gratis, una vez";
+"Rendering a sample shot…" = "Renderizando una toma de muestra…";
+"Sample shot is rendering — it appears in the draft when ready." = "Renderizando la muestra: aparecerá en el borrador cuando esté lista.";
+"You've already used your free preview shot." = "Ya usaste tu toma de vista previa gratuita.";
+"Pick a premium tier to preview — the built-in one is always free." = "Elige un nivel premium para la vista previa: el integrado siempre es gratis.";
+"The draft is still rendering — wait a moment." = "El borrador aún se está generando: espera un momento.";
+"Different composition" = "Otra composición";
+"Narrator voice" = "Voz del narrador";

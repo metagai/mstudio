@@ -33,7 +33,7 @@ struct MetagLocalizationTests {
                 let s = String(line)
                 // 注释里的中文是给我们看的，不是给用户看的
                 if s.trimmingCharacters(in: .whitespaces).hasPrefix("//") { continue }
-                guard let range = s.range(of: #"(Text|Button|Label)\("[^"]*[\u{4e00}-\u{9fff}]"#,
+                guard let range = s.range(of: #"(Text|Button|Label|Picker|Toggle)\("[^"]*[\u{4e00}-\u{9fff}]"#,
                                           options: .regularExpression) else { continue }
                 offenders.append("\(file.lastPathComponent):\(i + 1)  \(s[range])")
             }

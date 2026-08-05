@@ -316,3 +316,16 @@
 "Too many requests this hour — try again later." = "这一小时的请求次数太多了 —— 稍后再试。";
 "Too many requests this minute — try again in a moment." = "这一分钟的请求次数太多了 —— 稍等一下再试。";
 "You already have a few drafts running — one will free up in a moment." = "你已经有几条草案在跑了 —— 稍等一条跑完就能继续。";
+
+// 免费试渲一镜 / 档位
+"Engine" = "引擎";
+"unavailable" = "暂不可用";
+"Use this tier for every shot" = "全片都用这一档";
+"See one shot for real — free, once" = "看看真实效果 —— 免费，仅一次";
+"Rendering a sample shot…" = "正在试渲一镜…";
+"Sample shot is rendering — it appears in the draft when ready." = "试渲中 —— 好了会出现在草案里。";
+"You've already used your free preview shot." = "你的免费试渲已经用过了。";
+"Pick a premium tier to preview — the built-in one is always free." = "试渲要选付费档 —— 自研档本来就免费。";
+"The draft is still rendering — wait a moment." = "草案还在生成 —— 稍等一下。";
+"Different composition" = "换个画面";
+"Narrator voice" = "旁白音色";

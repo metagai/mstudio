@@ -166,6 +166,12 @@ enum MetagGateway {
                 // 而它们是**用户自己的配额**，不是我们忙。把用户的正常状态说成
                 // 我们坏了，他会以为产品有问题，而不是知道歇一会儿。
                 // 并发和配额是两件事：前者"等一条跑完就行"，后者"这一小时别再来了"。
+                case "sample_used":
+                    return L10n.threadSafe("You've already used your free preview shot.")
+                case "sample_engine":
+                    return L10n.threadSafe("Pick a premium tier to preview — the built-in one is always free.")
+                case "draft_not_ready":
+                    return L10n.threadSafe("The draft is still rendering — wait a moment.")
                 case "draft_inflight":
                     return L10n.threadSafe("You already have a few drafts running — one will free up in a moment.")
                 case "draft_quota":
@@ -351,6 +357,20 @@ enum MetagGateway {
 
     /// `narrator` 是**整片级**的修改：只重合成旁白，画面一帧不动。
     /// 只换音色时 `edits` 可以为空。
+    /// 免费试渲一镜：**让用户在掏钱之前看见他要买的那个东西。**
+    ///
+    /// 草案是静帧 + 旁白 —— 它回答"故事对不对"，回答不了"动起来好不好看"，
+    /// 而运动正是他付钱买的那件事。加上 20 credits 的赠额买不起任何付费档一镜，
+    /// 新用户的全部体验都是我们最弱的一档。
+    ///
+    /// 一人一次，对用户 0 credits。第二次网关回 402 / sample_used。
+    static func sampleShot(id: String, engine: String) async throws {
+        struct Response: Decodable { let cost: Int }
+        let req = try request("api/v1/preview/\(id)/sample", method: "POST",
+                              body: ["engine": engine])
+        _ = try await send(req, as: Response.self)
+    }
+
     static func revisePreview(id: String, edits: [ReviseEdit] = [], narrator: MetagNarrator? = nil) async throws {
         struct Ack: Decodable { let status: String? }
         // 键名是 **shots**，不是 edits —— 网关按 shots 解析，发 edits 会拿到 400
