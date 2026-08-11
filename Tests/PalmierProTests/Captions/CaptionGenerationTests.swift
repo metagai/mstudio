@@ -103,7 +103,8 @@ private func mediaAsset(_ id: String, hasAudio: Bool = true) -> MediaAsset {
     private func input(
         targets: [CaptionSpecBuilder.Target],
         maximumGapSeconds: Double = CaptionGapSettings.default.maximumGapSeconds,
-        animation: TextAnimation? = nil
+        animation: TextAnimation? = nil,
+        timelineEndFrame: Int = 0
     ) -> CaptionSpecBuilder.Input {
         CaptionSpecBuilder.Input(
             targets: targets,
@@ -115,6 +116,7 @@ private func mediaAsset(_ id: String, hasAudio: Bool = true) -> MediaAsset {
             textCase: .auto,
             maxWords: nil,
             animation: animation,
+            timelineEndFrame: timelineEndFrame,
             gapSettings: CaptionGapSettings(maximumGapSeconds: maximumGapSeconds) ?? .default
         )
     }
@@ -146,6 +148,7 @@ private func mediaAsset(_ id: String, hasAudio: Bool = true) -> MediaAsset {
             textCase: .upper,
             maxWords: nil,
             animation: nil,
+            timelineEndFrame: 60,
             gapSettings: .default
         )
 
@@ -245,8 +248,35 @@ private func mediaAsset(_ id: String, hasAudio: Bool = true) -> MediaAsset {
         #expect(specs.map(\.durationFrames) == [26, 5, 21])
     }
 
+    @Test(arguments: [(100, 36), (55, 28), (48, 21), (10, 21)])
+    func holdsTheFinalCaptionWithoutPassingTheTimelineEnd(
+        timelineEndFrame: Int,
+        expectedLastDuration: Int
+    ) async throws {
+        let specs = try await CaptionSpecBuilder.build(input(
+            targets: [
+                gapTarget(id: "one", startFrame: 0, durationFrames: 21),
+                gapTarget(id: "two", startFrame: 27, durationFrames: 30),
+            ],
+            timelineEndFrame: timelineEndFrame
+        ))
+
+        #expect(specs.map(\.durationFrames) == [27, expectedLastDuration])
+    }
+
+    @Test func heldFinalCaptionCarriesItsLastWordCycleWord() async throws {
+        let specs = try await CaptionSpecBuilder.build(input(
+            targets: [gapTarget(id: "one", startFrame: 0, durationFrames: 21)],
+            animation: TextAnimation(preset: .wordCycle),
+            timelineEndFrame: 100
+        ))
+
+        #expect(specs.map(\.durationFrames) == [36])
+        #expect(specs[0].words?.last?.endFrame == 36)
+    }
+
     @Test func captionGapSettingsValidateAndRoundDownToFrames() {
-        #expect(CaptionGapSettings.default.maximumGapFrames(fps: 30) == 7)
+        #expect(CaptionGapSettings.default.maximumGapFrames(fps: 30) == 15)
         #expect(CaptionGapSettings(maximumGapSeconds: 0)?.maximumGapFrames(fps: 30) == 0)
         #expect(CaptionGapSettings(maximumGapSeconds: -0.1) == nil)
         #expect(CaptionGapSettings(maximumGapSeconds: 2.1) == nil)

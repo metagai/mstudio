@@ -182,7 +182,8 @@ extension EditorViewModel {
             center: request.center,
             textCase: request.textCase,
             maxWords: request.maxWords,
-            animation: animation
+            animation: animation,
+            timelineEndFrame: preparationTimeline.totalFrames
         )
         let specs = try await CaptionSpecBuilder.build(input)
         try Task.checkCancellation()

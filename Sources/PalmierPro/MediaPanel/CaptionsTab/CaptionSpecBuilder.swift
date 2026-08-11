@@ -17,8 +17,10 @@ enum CaptionSpecBuilder {
         let textCase: EditorViewModel.CaptionCase
         let maxWords: Int?
         let animation: TextAnimation?
-        /// 跨过多短的停顿仍保持字幕可见。默认 0.25 秒 ——
-        /// 换气的空档大多在这个量级以内。
+        /// 时间线总帧数。最后一条字幕的延长不能越过片尾。
+        let timelineEndFrame: Int
+        /// 跨过多短的停顿仍保持字幕可见，同时也是最后一条的按住时长。
+        /// 默认 0.5 秒 —— 换气的空档大多在这个量级以内。
         var gapSettings: CaptionGapSettings = .default
 
         var canvas: CGSize { CGSize(width: canvasWidth, height: canvasHeight) }
@@ -71,10 +73,45 @@ enum CaptionSpecBuilder {
             ))
             try Task.checkCancellation()
         }
-        return closingShortGaps(in: specs, settings: input.gapSettings, fps: input.fps)
+        return adjustedCaptionTiming(
+            in: specs,
+            settings: input.gapSettings,
+            fps: input.fps,
+            timelineEndFrame: input.timelineEndFrame
+        )
     }
 
-    /// 把短于阈值的空档合并进前一条字幕。
+    /// 按 `durationFrames` 重建一条字幕。
+    ///
+    /// **重建而不是就地改。** TextClipSpec 的时间字段是 let，上游为这项改动把它们
+    /// 改成了 var —— 那是放宽一个被很多处依赖的公共类型的不可变性。
+    private static func resized(
+        _ spec: EditorViewModel.TextClipSpec,
+        durationFrames: Int
+    ) -> EditorViewModel.TextClipSpec {
+        var words = spec.words
+        // wordCycle 的最后一个词要跟着延长，否则字幕在延长段里是空的。
+        if spec.animation?.preset == .wordCycle, let last = words?.indices.last {
+            words?[last].endFrame = durationFrames
+        }
+        return EditorViewModel.TextClipSpec(
+            trackIndex: spec.trackIndex,
+            startFrame: spec.startFrame,
+            durationFrames: durationFrames,
+            content: spec.content,
+            style: spec.style,
+            transform: spec.transform,
+            captionGroupId: spec.captionGroupId,
+            words: words,
+            animation: spec.animation,
+            fillMode: spec.fillMode
+        )
+    }
+
+    /// 把短于阈值的空档合并进前一条字幕，并把最后一条按同一个阈值多按住一会儿。
+    ///
+    /// 最后一条没有"下一条"可以合并过去，于是一条很短的收尾字幕会闪一下就没了 ——
+    /// 那正是最需要读清楚的一句（上游 5ddc2fa）。延长量受片尾约束，不越过时间线。
     ///
     /// 来自上游 1d76782，**只取纯时间轴计算那部分**（那个提交把它和
     /// 云端转写 #429 捆在一起，而我们一律端侧）。
@@ -85,10 +122,11 @@ enum CaptionSpecBuilder {
     ///   · 有入场动画的下一条要多盖 1 帧，否则交接处会闪
     ///     （见 TextAnimation.Preset.needsIncomingCaptionCoverage）；
     ///   · wordCycle 的最后一个词要跟着延长，否则字幕在延长段里是空的。
-    private static func closingShortGaps(
+    private static func adjustedCaptionTiming(
         in specs: [EditorViewModel.TextClipSpec],
         settings: CaptionGapSettings,
-        fps: Int
+        fps: Int,
+        timelineEndFrame: Int
     ) -> [EditorViewModel.TextClipSpec] {
         let maximumGapFrames = settings.maximumGapFrames(fps: fps)
         guard maximumGapFrames > 0, !specs.isEmpty else { return specs }
@@ -116,26 +154,8 @@ enum CaptionSpecBuilder {
                     let (duration, durationOverflow) = closedEnd
                         .subtractingReportingOverflow(previousStart)
                     if !endOverflow, !durationOverflow, duration > 0 {
-                        // **重建而不是就地改。** TextClipSpec 的时间字段是 let，
-                        // 上游为这项改动把它们改成了 var —— 那是放宽一个被很多处
-                        // 依赖的公共类型的不可变性，代价远大于这里多写六行。
-                        let previous = adjusted[coverageIndex]
-                        var words = previous.words
-                        if previous.animation?.preset == .wordCycle,
-                           let last = words?.indices.last {
-                            words?[last].endFrame = duration
-                        }
-                        adjusted[coverageIndex] = EditorViewModel.TextClipSpec(
-                            trackIndex: previous.trackIndex,
-                            startFrame: previous.startFrame,
-                            durationFrames: duration,
-                            content: previous.content,
-                            style: previous.style,
-                            transform: previous.transform,
-                            captionGroupId: previous.captionGroupId,
-                            words: words,
-                            animation: previous.animation,
-                            fillMode: previous.fillMode
+                        adjusted[coverageIndex] = resized(
+                            adjusted[coverageIndex], durationFrames: duration
                         )
                         coverageEnd = closedEnd
                     }
@@ -147,6 +167,17 @@ enum CaptionSpecBuilder {
             if resolvedEnd >= coverageEnd {
                 coverageIndex = nextIndex
                 coverageEnd = resolvedEnd
+            }
+        }
+
+        let (available, availableOverflow) = timelineEndFrame
+            .subtractingReportingOverflow(coverageEnd)
+        if !availableOverflow, available > 0 {
+            let hold = min(maximumGapFrames, available)
+            let (held, heldOverflow) = adjusted[coverageIndex].durationFrames
+                .addingReportingOverflow(hold)
+            if hold > 0, !heldOverflow {
+                adjusted[coverageIndex] = resized(adjusted[coverageIndex], durationFrames: held)
             }
         }
         return adjusted
