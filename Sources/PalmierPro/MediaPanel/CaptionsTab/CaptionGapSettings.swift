@@ -1,5 +1,7 @@
 struct CaptionGapSettings: Equatable, Sendable {
     static let maximumGapRange = 0.0...2.0
+    /// 0.5 秒：这个阈值同时是最后一条字幕的按住时长（上游 5ddc2fa 一起调的），
+    /// 0.25 秒按不住一条一闪而过的收尾字幕。
     static let `default` = CaptionGapSettings(uncheckedMaximumGapSeconds: 0.5)
 
     let maximumGapSeconds: Double

@@ -167,13 +167,13 @@ enum MetagGateway {
                 // 我们坏了，他会以为产品有问题，而不是知道歇一会儿。
                 // 并发和配额是两件事：前者"等一条跑完就行"，后者"这一小时别再来了"。
                 case "sample_used":
-                    return L10n.threadSafe("You've already used your free preview shot.")
+                    return L10n.key("You've already used your free preview shot.")
                 case "sample_engine":
-                    return L10n.threadSafe("Pick a premium tier to preview — the built-in one is always free.")
+                    return L10n.key("Pick a premium tier to preview — the built-in one is always free.")
                 case "draft_not_ready":
-                    return L10n.threadSafe("The draft is still rendering — wait a moment.")
+                    return L10n.key("The draft is still rendering — wait a moment.")
                 case "draft_inflight":
-                    return L10n.threadSafe("You already have a few drafts running — one will free up in a moment.")
+                    return L10n.key("You already have a few drafts running — one will free up in a moment.")
                 case "draft_quota":
                     return L10n.key("You've made a lot of drafts this hour — take a break and come back shortly.")
                 case "generate_quota":
