@@ -84,17 +84,30 @@ asserts it matches `APPLE_TEAM_ID` + `CFBundleIdentifier` before signing.
 
 ### E. Sparkle EdDSA key pair — **BLOCKER for auto-update**
 
-The app ships Sparkle and `Info.plist` points `SUFeedURL` at
-`https://raw.githubusercontent.com/metag-ai/metag-mac/main/appcast.xml`, but there is
-**no `SUPublicEDKey` in `Info.plist`**. Until there is, released builds cannot verify an
-update and Sparkle will refuse to install one.
+This section used to say `Info.plist` already points `SUFeedURL` at the metag-mac appcast.
+**It does not.** `Sources/PalmierPro/Resources/Info.plist` contains neither `SUFeedURL` nor
+`SUPublicEDKey` — verify with `grep SU Sources/PalmierPro/Resources/Info.plist`, which
+prints nothing.
+
+That makes the gap wider than a missing key. `Updater.swift` only constructs
+`SPUStandardUpdaterController` when `SUFeedURL` is present, so today no shipped build ever
+fetches an appcast; "Check for Updates" opens the download page instead. Publishing an
+appcast entry therefore reaches nobody until **both** keys exist — and every copy already
+installed without `SUFeedURL` can never be auto-updated at all, no matter what is added
+later. Those users have to download a new build by hand once.
+
+`appcast.xml` in this repo is still **upstream's Palmier Pro feed**: `<title>Palmier Pro</title>`,
+enclosures pointing at `palmier-io/palmier-pro` releases, newest entry 0.6.15. No METAG
+release has ever been added to it. It needs to be replaced, not appended to.
 
 1. Generate the pair (the private key goes into the login keychain automatically):
    ```bash
    .build/artifacts/sparkle/Sparkle/bin/generate_keys
    ```
-2. Add the printed public key to `Sources/PalmierPro/Resources/Info.plist`:
+2. Add **both** keys to `Sources/PalmierPro/Resources/Info.plist`:
    ```xml
+   <key>SUFeedURL</key>
+   <string>https://raw.githubusercontent.com/metag-ai/metag-mac/main/appcast.xml</string>
    <key>SUPublicEDKey</key>
    <string><the printed public key></string>
    ```
@@ -149,7 +162,9 @@ xcrun stapler validate .build/METAG.app
   still streams through Convex + Clerk, which are no longer configured. The MCP server and
   every timeline tool work; only the in-app chat does not. Porting it to the gateway is a
   separate piece of work.
-- **`SUPublicEDKey` is missing** (item E). Ship without it and the first update will not install.
+- **Sparkle auto-update is entirely off** (item E). Neither `SUFeedURL` nor `SUPublicEDKey`
+  is in `Info.plist`, so the updater is never even started and `appcast.xml` is still
+  upstream's feed. Updating the appcast today changes nothing for anyone.
 - **Translated READMEs still show the pre-token MCP setup.** `docs/readme/README.*.md` hand out a
   config with no access token, which the server now refuses. The refusal message points at
   `Help` -> `MCP Instructions`, so it is not silent, but the translations need updating.
