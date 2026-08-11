@@ -1376,3 +1376,6 @@
 "Different composition" = "Different composition";
 "Narrator voice" = "Narrator voice";
 "See what a premium shot looks like — free, once" = "See what a premium shot looks like — free, once";
+"Loaded %@ shots and %@ narration tracks." = "Loaded %@ shots and %@ narration tracks.";
+"Kept the %@ shots that rendered before this one failed." = "Kept the %@ shots that rendered before this one failed.";
+"This tier records its own dialogue — the voice above applies to the draft only" = "This tier records its own dialogue — the voice above applies to the draft only";
