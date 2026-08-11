@@ -459,32 +459,19 @@ enum MetagGateway {
 
     /// 取件票据：5 分钟一次性，避免把 7 天 JWT 写进 URL（会进日志/历史）
     /// Rebuild a film from a storyboard we already have, skipping the LLM.
-    /// `seconds` 是逐镜时长。**给了才会生效** —— 此前 Mac 一条都不发，
-    /// 于是从时间线导出的配方带着每镜的真实长度出去，回来时全片被重置成引擎默认时长。
-    /// Veo 只认 4/6/8 秒，网关按这三档就近取；其余档位自己夹。
-    static func submitStoryboard(
-        title: String,
-        prompts: [String],
-        narrations: [String],
-        seconds: [Double?] = []
-    ) async throws -> String {
+    /// **逐镜时长不由客户端发。** `storyboard.shots[].seconds` 确实生效
+    /// （worker 的 `_shot_seconds` 读它，Veo 就近取 4/6/8），但写它的是服务端的导演，
+    /// 不是客户端；web 端的 `GenerateBody.storyboard` 里也只有这两个数组。
+    /// 配方里的 `seconds` 两端都注明只作参考 —— 重生成的长度由引擎决定。
+    /// 单方面从这里发出去只会让两个客户端各说各话。
+    static func submitStoryboard(title: String, prompts: [String], narrations: [String]) async throws -> String {
         struct Response: Decodable { let job_id: String }
-        var storyboard: [String: Any] = ["video_prompts": prompts, "narrations": narrations]
-        // 形状是**对象数组** `shots[].seconds`，不是裸数字数组 ——
-        // worker 读的是 `sb["shots"][i]["seconds"]`（cloud_worker._shot_seconds）。
-        // 一镜都没有时长就整个字段不发：全是空对象的数组只会让 worker 白读一遍。
-        if seconds.contains(where: { $0 != nil }) {
-            storyboard["shots"] = seconds.map { s -> [String: Any] in
-                guard let s, s.isFinite, s > 0 else { return [:] }
-                return ["seconds": s]
-            }
-        }
         let body: [String: Any] = [
             "prompt": title,
             "engine": "local",
             "shots": prompts.count,
             "lang": await currentLanguageCode(),
-            "storyboard": storyboard,
+            "storyboard": ["video_prompts": prompts, "narrations": narrations],
         ]
         let req = try request("api/v1/agent/generate", method: "POST", body: body)
         return try await send(req, as: Response.self).job_id

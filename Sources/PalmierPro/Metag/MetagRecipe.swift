@@ -70,10 +70,7 @@ enum MetagRecipeIO {
         try await MetagGateway.submitStoryboard(
             title: recipe.title ?? recipe.shots[0].prompt,
             prompts: recipe.shots.map(\.prompt),
-            narrations: recipe.shots.map(\.narration),
-            // 逐镜时长跟着走。`build` 一直在写它，`submit` 却从不发出去 ——
-            // 配方带着时间线上的真实长度出去，回来时全片被拉平成引擎默认时长。
-            seconds: recipe.shots.map(\.seconds)
+            narrations: recipe.shots.map(\.narration)
         )
     }
 
