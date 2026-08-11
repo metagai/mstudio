@@ -330,3 +330,6 @@
 "Different composition" = "Otra composición";
 "Narrator voice" = "Voz del narrador";
 "See what a premium shot looks like — free, once" = "Mira cómo se ve una toma de pago — gratis, una vez";
+"Loaded %@ shots and %@ narration tracks." = "Se cargaron %@ tomas y %@ pistas de narración.";
+"Kept the %@ shots that rendered before this one failed." = "Se conservaron las %@ tomas que sí se renderizaron antes del fallo.";
+"This tier records its own dialogue — the voice above applies to the draft only" = "Este nivel graba sus propios diálogos — la voz de arriba solo afecta al borrador";

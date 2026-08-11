@@ -330,3 +330,6 @@
 "Different composition" = "换个画面";
 "Narrator voice" = "旁白音色";
 "See what a premium shot looks like — free, once" = "看看付费档长什么样 —— 免费，仅一次";
+"Loaded %@ shots and %@ narration tracks." = "已载入 %@ 个镜头和 %@ 条旁白。";
+"Kept the %@ shots that rendered before this one failed." = "这一单失败了，但已渲好的 %@ 镜给你留着。";
+"This tier records its own dialogue — the voice above applies to the draft only" = "这一档自己会说话 —— 上面的音色只作用于草案";

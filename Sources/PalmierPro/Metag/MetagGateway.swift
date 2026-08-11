@@ -113,6 +113,14 @@ enum MetagGateway {
         let scores: [Double?]?
         /// 当前旁白人格 id。界面文案在 MetagNarrator —— 契约里只有 id。
         let narrator: String?
+        /// 逐镜实际使用的引擎。混档的片子（口播镜走 veo、空镜走 local）靠它逐镜判断，
+        /// 整片一刀切会让无声档的那几镜变哑。确认出片之前不存在。
+        let shot_engines: [String?]?
+        /// **整单失败，但这几镜其实渲好了。** worker 归档后写下的镜号。
+        /// 不认这个字段等于没抢救 —— 用户全额退了款，也一无所获。
+        let salvaged: [Int]?
+        /// 失败时额度退没退。用户在出事那一刻最想知道这个。
+        let refunded: Bool?
 
         struct Take: Decodable, Sendable {
             let file: String
@@ -448,14 +456,32 @@ enum MetagGateway {
 
     /// 取件票据：5 分钟一次性，避免把 7 天 JWT 写进 URL（会进日志/历史）
     /// Rebuild a film from a storyboard we already have, skipping the LLM.
-    static func submitStoryboard(title: String, prompts: [String], narrations: [String]) async throws -> String {
+    /// `seconds` 是逐镜时长。**给了才会生效** —— 此前 Mac 一条都不发，
+    /// 于是从时间线导出的配方带着每镜的真实长度出去，回来时全片被重置成引擎默认时长。
+    /// Veo 只认 4/6/8 秒，网关按这三档就近取；其余档位自己夹。
+    static func submitStoryboard(
+        title: String,
+        prompts: [String],
+        narrations: [String],
+        seconds: [Double?] = []
+    ) async throws -> String {
         struct Response: Decodable { let job_id: String }
+        var storyboard: [String: Any] = ["video_prompts": prompts, "narrations": narrations]
+        // 形状是**对象数组** `shots[].seconds`，不是裸数字数组 ——
+        // worker 读的是 `sb["shots"][i]["seconds"]`（cloud_worker._shot_seconds）。
+        // 一镜都没有时长就整个字段不发：全是空对象的数组只会让 worker 白读一遍。
+        if seconds.contains(where: { $0 != nil }) {
+            storyboard["shots"] = seconds.map { s -> [String: Any] in
+                guard let s, s.isFinite, s > 0 else { return [:] }
+                return ["seconds": s]
+            }
+        }
         let body: [String: Any] = [
             "prompt": title,
             "engine": "local",
             "shots": prompts.count,
             "lang": await currentLanguageCode(),
-            "storyboard": ["video_prompts": prompts, "narrations": narrations],
+            "storyboard": storyboard,
         ]
         let req = try request("api/v1/agent/generate", method: "POST", body: body)
         return try await send(req, as: Response.self).job_id

@@ -159,6 +159,11 @@ struct MetagDraftSheet: View {
     @State private var allShots = false
 
     private var perShot: Int { engines.first { $0.id == engine }?.credits_per_shot ?? 1 }
+    /// 选中的档位自带台词/音效/环境声。取自报价单，不硬编引擎名单 ——
+    /// 加一档模型时硬编的名单必然忘记更新，而忘记的后果是静默的。
+    private var selectedEngineHasNativeAudio: Bool {
+        engines.first { $0.id == engine }?.native_audio == true
+    }
     /// 报价必须等于实扣：默认路由下只有口播镜走贵引擎，这里没有逐镜口播标记，
     /// 所以只在"全片使用"时按贵引擎报价，否则按 local 报 —— 宁可少报也不能多报。
     private var quote: Int { allShots ? perShot * model.shots : model.shots }
@@ -271,6 +276,13 @@ struct MetagDraftSheet: View {
                 .disabled(model.busy)
                 Text(L("Changing the voice is free — only the narration is re-recorded"))
                     .font(.caption2).foregroundStyle(.secondary)
+                // 选中的档位自带音轨时，这个音色只作用于草案。**说出来** ——
+                // 否则用户挑了半天旁白，成片里说话的是模型自己，他会以为我们弄丢了。
+                // 判据取自报价单的 native_audio，不硬编引擎名单。
+                if selectedEngineHasNativeAudio {
+                    Text(L("This tier records its own dialogue — the voice above applies to the draft only"))
+                        .font(.caption2).foregroundStyle(.orange)
+                }
             }
             Picker(L("Engine"), selection: $engine) {
                 ForEach(engines, id: \.id) { e in
