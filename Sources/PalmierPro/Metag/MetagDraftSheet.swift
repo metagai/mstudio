@@ -289,14 +289,23 @@ struct MetagDraftSheet: View {
 
             // 免费试渲一镜。**这是用户唯一一次看见付费档长什么样的机会** ——
             // 草案是静帧，回答不了"动起来好不好看"，而那正是他付钱买的东西。
-            if engine != "local" && !sampled {
+            // 免费试渲一镜。**原来的条件是 `engine != "local"`** —— 只在用户
+            // 已经选了付费档之后才出现，而默认档就是自研档。线上实测这个功能
+            // 被使用 0 次：不是没人要，是给已经决定要买的人发试用。
+            // Web 端同一处判断、同一个后果，一起改。
+            if !sampled {
                 HStack(spacing: AppTheme.Spacing.xs) {
                     Button(sampling ? L("Rendering a sample shot…")
-                                    : L("See one shot for real — free, once")) {
+                                    : engine == "local"
+                                      ? L("See what a premium shot looks like — free, once")
+                                      : L("See one shot for real — free, once")) {
                         sampling = true
                         Task {
                             do {
-                                try await MetagGateway.sampleShot(id: model.jobId ?? "", engine: engine)
+                                // 没选过付费档时用性价比最优的那一档，不是最贵的 ——
+                                // 拿最贵的去试会让他之后看到的报价对不上。
+                                let tier = engine == "local" ? "seedance" : engine
+                                try await MetagGateway.sampleShot(id: model.jobId ?? "", engine: tier)
                                 sampled = true
                             } catch {
                                 sampleError = error.localizedDescription
