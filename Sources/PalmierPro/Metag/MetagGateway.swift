@@ -71,9 +71,18 @@ enum MetagGateway {
             var available: Bool? = nil
             var isAvailable: Bool { available ?? true }
 
+            /// 这一档适合拍什么，一句话。Web 端选档时就有这句；老网关不回它时是 nil，
+            /// 界面少一行，而不是显示一个键名。
+            var blurb_i18n: [String: String]? = nil
+
             /// Display name for `code` (`zh` | `en` | `es`), falling back to the legacy `name`.
             func displayName(for code: String) -> String {
                 name_i18n?[code] ?? name_i18n?["en"] ?? name
+            }
+
+            /// One-line description for `code`, or nil when the gateway does not supply one.
+            func blurb(for code: String) -> String? {
+                blurb_i18n?[code] ?? blurb_i18n?["en"]
             }
         }
         let signup_free_credits: Int

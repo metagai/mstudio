@@ -70,7 +70,8 @@ struct MetagMyFilmsView: View {
                 Spacer()
                 if model.failedCount > 0 {
                     Button(model.busy == "__all__"
-                           ? "清理中…" : "清空 \(model.failedCount) 条失败") {
+                           ? L10n.key("Clearing…")
+                           : L10n.string("Clear \(model.failedCount.formatted()) failed")) {
                         Task { await model.clearFailed() }
                     }
                     .buttonStyle(.plain)
@@ -102,7 +103,7 @@ struct MetagMyFilmsView: View {
                         .buttonStyle(.plain)
                         .foregroundStyle(.secondary)
                         .disabled(model.busy != nil)
-                        .help("删除")
+                        .help(L10n.key("Delete"))
                     }
                 }
             }
@@ -113,14 +114,14 @@ struct MetagMyFilmsView: View {
     private func row(_ f: MetagGateway.FilmRow) -> some View {
         HStack(alignment: .top, spacing: AppTheme.Spacing.sm) {
             VStack(alignment: .leading, spacing: 2) {
-                Text(f.prompt ?? "未命名").lineLimit(1)
+                Text(f.prompt ?? L10n.key("Untitled")).lineLimit(1)
                 Text(L10n.string("\(f.shots.formatted()) shots · \(f.credits.formatted()) credits") + " · " + Self.when(f.created_at))
                     .font(.caption).foregroundStyle(.secondary)
             }
             Spacer()
             // 如实说：这一单的产物已经不在了。含糊其辞比说不出口更伤信任。
-            Text(f.status == "failed" ? "失败"
-                 : (f.retrievable ? "打开" : "产物已过期"))
+            Text(f.status == "failed" ? L10n.key("Failed")
+                 : (f.retrievable ? L10n.key("Open") : L10n.key("Expired")))
                 .font(.caption)
                 .foregroundStyle(f.status == "failed" ? .orange
                                  : (f.retrievable ? Color.accentColor : .orange))

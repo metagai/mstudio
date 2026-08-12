@@ -27,10 +27,18 @@ struct MetagImageEngineTests {
         #expect(engine("local", accepts: nil).acceptsImage == true)
     }
 
-    @Test("报错文案要说清楚换哪一档，而不是只说不行")
-    func errorTellsWhatToDo() {
+    /// 这句话要说清楚**是哪一档不行**，但**不许点名"那就选 X"**。
+    ///
+    /// 上一版写的是「标准（自研）」或 Grok。后来 grok 停售、wan-flash 上架，
+    /// 这句话就开始把用户指向一档他买不到的模型 —— 而它当时是绿的，
+    /// 因为测试断言的正是那两个写死的名字。
+    /// 收不收图的真相在报价单的 `accepts_image` 里，选择器已经据此禁用了。
+    @Test("报错要点名是哪一档不行，但不许点名替代档 —— 那种名单必然过期")
+    func namesTheEngineButNotAReplacement() {
         let msg = BackendError.imageNotSupported(engine: "Seedance").errorDescription ?? ""
         #expect(msg.contains("Seedance"))
-        #expect(msg.contains("标准") || msg.contains("Grok"))
+        for staleName in ["Grok", "grok", "wan-flash", "seedance-25", "Veo", "标准"] {
+            #expect(!msg.contains(staleName), "文案里点了 \(staleName) 的名，这份名单会过期")
+        }
     }
 }
