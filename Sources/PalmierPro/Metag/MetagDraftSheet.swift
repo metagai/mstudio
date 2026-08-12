@@ -141,7 +141,7 @@ struct MetagDraftSheet: View {
     @Environment(EditorViewModel.self) private var editor
     @StateObject private var model = MetagDraftModel()
     @State private var engines: [MetagGateway.Pricing.Engine] = []
-    @State private var engine = "local"
+    @State private var engine = MetagDraftSheet.fallbackEngineID
     // 免费试渲：一人一次，所以只有"没用过 / 正在渲 / 已经用过"三种
     @State private var sampling = false
     @State private var sampled = false
@@ -158,7 +158,31 @@ struct MetagDraftSheet: View {
     /// 全片使用所选引擎。**默认关** —— 默认只有口播镜用贵引擎，其余降到 local。
     @State private var allShots = false
 
+    /// 没有口播的镜头一律回落到这一档 —— **这是服务端的路由规则，不是客户端能算出来的**，
+    /// 所以它是一个写明出处的常量，而不是一段假装在推导的代码。
+    /// 客户端唯一能做的是：拿它去报价单里查这一档还在不在。
+    private static let fallbackEngineID = "local"
+
     private var perShot: Int { engines.first { $0.id == engine }?.credits_per_shot ?? 1 }
+
+    /// 免费试渲用哪一档。
+    ///
+    /// **原来写死 `"seedance"`**。写死的那天 seedance 确实是最便宜的付费档；
+    /// 后来上了 wan-flash（7cr），seedance 涨到 34cr，而这一行没人改 ——
+    /// 于是"看看付费档长什么样"给新用户看的是一档他用注册赠额买不起的模型。
+    /// 现在取报价单里**最便宜的那一档付费档**：它既是新用户真买得起的，
+    /// 也让他之后看到的报价对得上。
+    private var sampleTier: MetagGateway.Pricing.Engine? {
+        // 已经选了付费档就试他选的那一档 —— 他想看的是自己要买的东西。
+        if engine != Self.fallbackEngineID,
+           let picked = engines.first(where: { $0.id == engine }), picked.isAvailable {
+            return picked
+        }
+        return engines
+            .filter { $0.isAvailable && $0.id != Self.fallbackEngineID }
+            .min { $0.credits_per_shot < $1.credits_per_shot }
+    }
+
     /// 选中的档位自带台词/音效/环境声。取自报价单，不硬编引擎名单 ——
     /// 加一档模型时硬编的名单必然忘记更新，而忘记的后果是静默的。
     private var selectedEngineHasNativeAudio: Bool {
@@ -175,7 +199,7 @@ struct MetagDraftSheet: View {
     /// 不拦的话用户点下去拿一个 503，而他刚看完草案、正准备付钱。
     private var blocked: String? {
         func down(_ id: String) -> Bool { engines.first { $0.id == id }?.isAvailable == false }
-        if down("local") { return "出片暂时不可用，稍后再试 —— 不会扣任何 credits" }
+        if down(Self.fallbackEngineID) { return L("Generation is unavailable right now — try again later, nothing will be charged") }
         if down(engine) { return L("That engine is temporarily unavailable — pick another") }
         return nil
     }
@@ -228,9 +252,9 @@ struct MetagDraftSheet: View {
 
     private var promptStage: some View {
         VStack(alignment: .leading, spacing: AppTheme.Spacing.sm) {
-            TextField("一句话说清楚要拍什么", text: $model.prompt, axis: .vertical)
+            TextField(L("Say what you want to film, in one line"), text: $model.prompt, axis: .vertical)
                 .lineLimit(2...4)
-            Stepper("\(model.shots) 个镜头", value: $model.shots, in: 1...8)
+            Stepper(L("%@ shots", model.shots.formatted()), value: $model.shots, in: 1...8)
                 .font(.caption)
             // 把代价说在前面：草案免费。不说清楚的话，用户不敢点。
             Text(L("Drafts are free — no credits charged")).font(.caption).foregroundStyle(.green)
@@ -248,7 +272,7 @@ struct MetagDraftSheet: View {
         VStack(alignment: .leading, spacing: AppTheme.Spacing.sm) {
             ForEach(Array(model.narrations.enumerated()), id: \.offset) { i, text in
                 VStack(alignment: .leading, spacing: 2) {
-                    TextField("第 \(i + 1) 镜旁白", text: Binding(
+                    TextField(L("Shot %@ narration", (i + 1).formatted()), text: Binding(
                         get: { model.edits[i] ?? text },
                         set: { model.edits[i] = $0 }
                     ))
@@ -299,24 +323,32 @@ struct MetagDraftSheet: View {
             }
             .font(.caption)
 
+            // 这一档适合拍什么，一句话。**Web 端选档时有这句，macOS 端此前没有** ——
+            // 同一个用户在两端看到的信息量不该不一样，何况这是他决定花多少钱的地方。
+            // 只给选中的那一档：菜单里每档都挂一句会把选择器变成一堵墙。
+            if let blurb = engines.first(where: { $0.id == engine })?.blurb(for: uiLang) {
+                Text(blurb).font(.caption2).foregroundStyle(.secondary)
+            }
+
             // 免费试渲一镜。**这是用户唯一一次看见付费档长什么样的机会** ——
             // 草案是静帧，回答不了"动起来好不好看"，而那正是他付钱买的东西。
             // 免费试渲一镜。**原来的条件是 `engine != "local"`** —— 只在用户
             // 已经选了付费档之后才出现，而默认档就是自研档。线上实测这个功能
             // 被使用 0 次：不是没人要，是给已经决定要买的人发试用。
             // Web 端同一处判断、同一个后果，一起改。
-            if !sampled {
+            // 一档付费档都买不到时不挂这个按钮：点下去只会拿一个 400。
+            if !sampled, sampleTier != nil {
                 HStack(spacing: AppTheme.Spacing.xs) {
+                    // 试渲哪一档就说哪一档的名字。**原来只说"付费档长什么样"** ——
+                    // 用户看完那一镜，并不知道自己看的是哪一档，也就无从判断
+                    // 报价单上哪个数字对应刚才那个画面。
                     Button(sampling ? L("Rendering a sample shot…")
-                                    : engine == "local"
-                                      ? L("See what a premium shot looks like — free, once")
-                                      : L("See one shot for real — free, once")) {
+                                    : L("See one %@ shot for real — free, once",
+                                        sampleTier?.displayName(for: uiLang) ?? "")) {
                         sampling = true
                         Task {
                             do {
-                                // 没选过付费档时用性价比最优的那一档，不是最贵的 ——
-                                // 拿最贵的去试会让他之后看到的报价对不上。
-                                let tier = engine == "local" ? "seedance" : engine
+                                guard let tier = sampleTier?.id else { return }
                                 try await MetagGateway.sampleShot(id: model.jobId ?? "", engine: tier)
                                 sampled = true
                             } catch {
@@ -325,7 +357,7 @@ struct MetagDraftSheet: View {
                             sampling = false
                         }
                     }
-                    .disabled(sampling || model.busy || model.jobId == nil)
+                    .disabled(sampling || model.busy || model.jobId == nil || sampleTier == nil)
                     // 流光只给这一个按钮：它是用户唯一一次免费看见付费档的入口。
                     // 到处都转就成了噪音，谁都不再被看见。
                     .borderBeam(active: !sampling, radius: AppTheme.Radius.xsSm)
@@ -352,8 +384,10 @@ struct MetagDraftSheet: View {
                 Button(L("Redo the edited shots")) { Task { await model.revise() } }
                     .disabled(model.busy || model.effectiveEdits.isEmpty)
                 Spacer()
-                Text(L("Charges %@ credits on confirm", quote.formatted())).font(.caption).foregroundStyle(.secondary)
-                Button(L("Produce")) {
+                // 价钱写在按钮上，不写在按钮旁边。**这是全站一致的规矩** ——
+                // 旁边那行会被换行、被挤走、被读屏跳过，而按钮不会。
+                // 导演台（MetagDirectorSheet）和 Web 端都是这么做的。
+                Button(L("Produce · %@ credits", quote.formatted())) {
                     Task {
                         if let job = await model.approve(engine: engine, allShots: allShots) {
                             editor.mediaPanelToast = MediaPanelToast(

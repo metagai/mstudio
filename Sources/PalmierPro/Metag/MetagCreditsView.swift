@@ -72,21 +72,26 @@ struct MetagCreditsView: View {
 
     /// 每一种流水说人话。**退款要说清楚为什么退** —— 只写"退款"等于没说，
     /// 而"系统原因"是推卸：是我们把它弄丢了。
+    ///
+    /// 文案走 `L()`：这里是**账单**，而账单用用户看不懂的语言写，等于没给。
+    @MainActor
     static func describe(_ e: MetagGateway.CreditEntry) -> (label: String, isRefund: Bool) {
         switch e.reason {
-        case "signup":               return ("新手额度", false)
-        case "purchase":             return ("充值", false)
-        case "refund":               return ("订阅退款", true)
-        case "refund_failed":        return ("已退还 —— 这次生成失败了", true)
-        case "refund_lost_artifact": return ("已退还 —— 这部片子被我们弄丢且无法找回", true)
-        case "refund_incident_regen":return ("已退还 —— 我们承担了重做的费用", true)
-        case "generate":             return ("出片", false)
-        case "vision_plan":          return ("助手读了你的时间轴", false)
-        case "image_edit", "mcp:image_edit": return ("改图", false)
-        case "voice_clone":          return ("声音复刻", false)
-        case "voice_tts", "mcp:voice_tts":  return ("语音合成", false)
+        case "signup":               return (L("Signup credits"), false)
+        case "purchase":             return (L("Top-up"), false)
+        case "refund":               return (L("Subscription refund"), true)
+        case "refund_failed":        return (L("Refunded — this generation failed"), true)
+        case "refund_lost_artifact": return (L("Refunded — we lost this film and cannot recover it"), true)
+        case "refund_incident_regen":return (L("Refunded — we covered the cost of remaking it"), true)
+        case "generate":             return (L("Film"), false)
+        case "vision_plan":          return (L("The assistant read your timeline"), false)
+        case "image_edit", "mcp:image_edit": return (L("Image edit"), false)
+        case "voice_clone":          return (L("Voice clone"), false)
+        case "voice_tts", "mcp:voice_tts":  return (L("Speech"), false)
         default:
-            if e.reason.hasPrefix("refund:") { return ("已退还 —— 那一步没有完成", true) }
+            if e.reason.hasPrefix("refund:") { return (L("Refunded — that step did not complete"), true) }
+            // 认不出的理由原样显示。**不要翻译它，也不要写"其他"** ——
+            // 原始理由至少能被搜索和对账，"其他"什么都不是。
             return (e.reason, e.delta > 0)
         }
     }

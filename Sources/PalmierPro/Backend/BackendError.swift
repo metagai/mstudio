@@ -13,12 +13,15 @@ enum BackendError: LocalizedError {
 
     var errorDescription: String? {
         switch self {
-        case .notConfigured: "METAG 账号未配置或未登录。"
-        case .unsupported: "该生成类型暂未开放（当前支持文生视频与图生视频）。"
+        case .notConfigured: L10n.threadSafe("Not signed in to METAG.")
+        case .unsupported: L10n.threadSafe("That generation type is not available yet — text-to-video and image-to-video are.")
         case .transport(let message): message
         case .api(_, _, let message): message
         case .imageNotSupported(let engine):
-            "\(engine) 不支持自带图片，它只按文字生成。要用这张图，请选「标准（自研）」或 Grok。"
+            // **不要在这里点名哪几档收图。** 上一版写的是「标准（自研）」或 Grok ——
+            // 后来 grok 停售、wan-flash 上架，这句话就开始把用户指向买不到的档。
+            // 收不收图是报价单的 `accepts_image`，选择器已经据此禁用了不收图的档。
+            L10n.threadSafe("%@ generates from text only and ignores an attached image — pick a tier that takes a reference image.", [engine])
         }
     }
 }

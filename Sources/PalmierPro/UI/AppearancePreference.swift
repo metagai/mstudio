@@ -25,9 +25,9 @@ enum AppearanceMode: String, CaseIterable, Sendable {
 
     var label: String {
         switch self {
-        case .auto: return "跟随系统"
-        case .light: return "亮色"
-        case .dark: return "暗色"
+        case .auto: return L10n.threadSafe("Match System")
+        case .light: return L10n.threadSafe("Light")
+        case .dark: return L10n.threadSafe("Dark")
         }
     }
 
