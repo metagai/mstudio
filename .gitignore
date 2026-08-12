@@ -37,3 +37,5 @@ models/*/checkpoint*
 models/*/convert*.log
 
 AUDIO_SUITE_*
+# Python 守卫脚本跑出来的缓存
+__pycache__/

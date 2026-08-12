@@ -57,14 +57,20 @@ if [ -f "$ROOT/$ENV_FILE" ]; then
 fi
 
 APPLE_TEAM_ID="${APPLE_TEAM_ID:-V969594VAF}"
-BUNDLE_ID="ai.metag"
+# **Mac App 的 Bundle ID 是 `ai.metag.mac`，不是 `ai.metag`。**
+# `ai.metag` 早已注册成 **Services ID**（网页版 Sign in with Apple 用），
+# 而 Services ID 与 App ID **共用同一个标识符命名空间** —— 同一个字符串
+# 不能既当网页登录身份、又当 App 身份。表现是建 App ID 时报
+# "not available"，且 Developer ID profile 的下拉里根本看不到它。
+# 这不是配置错了，是两种实体的命名冲突。
+BUNDLE_ID="ai.metag.mac"
 # No default identity: a wrong one silently produces an app nobody else can launch.
 SIGNING_IDENTITY="${SIGNING_IDENTITY:-}"
 NOTARY_PROFILE="${NOTARY_PROFILE:-metag-notary}"
 SENTRY_DSN="${SENTRY_DSN:-}"
 POSTHOG_PROJECT_TOKEN="${POSTHOG_PROJECT_TOKEN:-}"
 POSTHOG_HOST="${POSTHOG_HOST:-https://us.i.posthog.com}"
-PROVISION_PROFILE="${PROVISION_PROFILE:-$ROOT/scripts/METAG_Developer_ID.provisionprofile}"
+PROVISION_PROFILE="${PROVISION_PROFILE:-$ROOT/scripts/METAGAI.provisionprofile}"
 ENTITLEMENTS="$ROOT/scripts/METAG.entitlements"
 KEYCHAIN_ACCESS_GROUP="${KEYCHAIN_ACCESS_GROUP:-$APPLE_TEAM_ID.$BUNDLE_ID}"
 RESOURCES="$ROOT/Sources/PalmierPro/Resources"
