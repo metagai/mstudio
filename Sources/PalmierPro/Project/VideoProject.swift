@@ -510,7 +510,7 @@ class VideoProject: NSDocument {
         let controller = EditorWindowController(editorViewModel: editorViewModel, window: window)
         controller.onBecameKey = { [weak self] in
             guard let self else { return }
-            AppState.shared.activateProject(self)
+            AppState.shared.projectWindowDidBecomeKey(self)
         }
         window.delegate = controller
         controller.installKeyMonitor()
@@ -518,14 +518,13 @@ class VideoProject: NSDocument {
 
         window.standardWindowButton(.documentIconButton)?.isHidden = true
 
-        AppState.shared.showEditor(for: self)
-
         if let log = loadedGenerationLog {
             editorViewModel.generationLog = log
             loadedGenerationLog = nil
         } else {
             editorViewModel.seedGenerationLogFromAssets()
         }
+
         editorViewModel.searchIndex.projectOpened()
         editorViewModel.updateTelemetryContext()
         Telemetry.breadcrumb(
