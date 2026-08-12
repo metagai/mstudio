@@ -14,5 +14,24 @@
         <link>https://metag.ai/mac/appcast.xml</link>
         <description>Updates for METAG for Mac</description>
         <language>en</language>
+        <item>
+            <title>0.1.7</title>
+            <pubDate>Wed, 12 Aug 2026 05:24:30 +0000</pubDate>
+            <sparkle:version>84</sparkle:version>
+            <sparkle:shortVersionString>0.1.7</sparkle:shortVersionString>
+            <sparkle:minimumSystemVersion>14.0</sparkle:minimumSystemVersion>
+            <description><![CDATA[
+              <ul>
+                <li>首个经 Apple 公证的版本 —— 双击即可打开，不再需要「仍要打开」。</li>
+                <li>自动更新真正接上了：此前出厂的版本里没有 feed 地址，从来没检查过更新。</li>
+              </ul>
+            ]]></description>
+            <enclosure url="https://metag.ai/mac/METAG-0.1.7.dmg"
+                       sparkle:version="84"
+                       sparkle:shortVersionString="0.1.7"
+                       length="76970204"
+                       type="application/octet-stream"
+                       sparkle:edSignature="HSib6UPXS3MxepMyNAuDQ1LJcKJrgGzTnNgJxzLVt0ErBw8Pth9DSXKXt7weEOffUm5NjKCMceERxdt1MZNVDg==" />
+        </item>
     </channel>
 </rss>
