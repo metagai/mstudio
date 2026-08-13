@@ -353,7 +353,24 @@ struct AgentPanelView: View {
                 SettingsWindowController.shared.show(tab: .account)
             }
         case .insufficientCredits:
-            return ErrorCTA(title: L10n.string("View plans")) {
+            // **在撞墙的那一刻就能买。**
+            //
+            // 原来这颗写着「View plans」，点开的是设置窗口的账户页 ——
+            // 而买东西的按钮本来就在那一页上。也就是说我们把用户
+            // **多推了一道门**，而这道门出现在他唯一一次主动想付钱的时刻。
+            // Web 端三个撞墙点（生成对话框缺额、额度墙、个人模块）
+            // 早就是直接开收银台的，Mac 这一侧落在了后面。
+            //
+            // 报价单还没回来时（`creditPack == nil`）才退回设置页 ——
+            // 那时我们连价钱都说不出，给一颗不标价的付费按钮更糟。
+            if let pack = AccountService.shared.creditPack {
+                return ErrorCTA(
+                    title: L10n.string("Buy \(pack.credits.formatted()) credits · $\(String(format: "%.2f", pack.price_usd))")
+                ) {
+                    AccountService.shared.buyCreditPack()
+                }
+            }
+            return ErrorCTA(title: L10n.key("View plans")) {
                 SettingsWindowController.shared.show(tab: .account)
             }
         case .unavailable(let model) where model.requiresPaidHostedPlan && !AccountService.shared.isPaid:
