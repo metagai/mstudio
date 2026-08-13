@@ -282,7 +282,14 @@ struct AssetThumbnailView: View {
                 .font(.system(size: AppTheme.FontSize.xs, weight: .semibold))
                 .foregroundStyle(AppTheme.MediaOverlay.secondaryColor)
         }
-        .help(L10n.string("Palmier couldn't load this source file. It may be missing, on an ejected drive, or unreadable."))
+        .help(L10n.string("\(AppIdentity.name) couldn't load this source file. It may be missing, on an ejected drive, or unreadable."))
+    }
+
+    private func formatDuration(_ seconds: Double) -> String {
+        let total = Int(seconds)
+        let m = total / 60
+        let s = total % 60
+        return String(format: "%02d:%02d", m, s)
     }
 
     private var isSelected: Bool {

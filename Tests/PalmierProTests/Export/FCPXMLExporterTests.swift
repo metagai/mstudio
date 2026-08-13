@@ -73,7 +73,8 @@ struct FCPXMLExporterTests {
         #expect(xml.contains("name=\"FFVideoFormat1080p30\""))
         #expect(xml.contains("colorSpace=\"1-1-1 (Rec. 709)\""))
         #expect(xml.contains("<library>"))
-        #expect(xml.contains("<event name=\"Palmier Export\">"))
+        // 事件名会显示在**别人的 Final Cut 里** —— 那是我们露脸的地方之一。
+        #expect(xml.contains("<event name=\"METAG Export\">"))
         #expect(xml.contains("<project name=\"\(timeline.name)\">"))
         #expect(xml.contains("<sequence format=\"r1\" duration=\"0s\""))
         #expect(xml.contains("<spine/>"))

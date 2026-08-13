@@ -657,8 +657,8 @@ struct PreviewContainerView: View {
                     .font(.system(size: AppTheme.FontSize.lg, weight: .semibold))
                     .foregroundStyle(AppTheme.MediaOverlay.primaryColor)
                 Text(isUnprocessable
-                    ? L10n.string("Palmier loaded this clip's source file but couldn't prepare it for playback. The file may be corrupt or in an unsupported format.")
-                    : L10n.string("Palmier couldn't load this clip's source file. It may be missing, on an ejected drive, or unreadable."))
+                    ? L10n.string("\(AppIdentity.name) loaded this clip's source file but couldn't prepare it for playback. The file may be corrupt or in an unsupported format.")
+                    : L10n.string("\(AppIdentity.name) couldn't load this clip's source file. It may be missing, on an ejected drive, or unreadable."))
                     .font(.system(size: AppTheme.FontSize.sm))
                     .foregroundStyle(AppTheme.MediaOverlay.secondaryColor)
                     .multilineTextAlignment(.center)
