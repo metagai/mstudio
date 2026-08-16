@@ -15,6 +15,26 @@
         <description>Updates for METAG for Mac</description>
         <language>en</language>
         <item>
+            <title>0.1.8</title>
+            <pubDate>Sun, 16 Aug 2026 15:28:39 +0000</pubDate>
+            <sparkle:version>85</sparkle:version>
+            <sparkle:shortVersionString>0.1.8</sparkle:shortVersionString>
+            <sparkle:minimumSystemVersion>14.0</sparkle:minimumSystemVersion>
+            <description><![CDATA[
+              <ul>
+                <li>额度不够时，当场就能买 —— 不再先把你推去一道设置窗口。</li>
+                <li>METAG 那几屏补齐了中文、英文、西班牙语（此前只有中文）。</li>
+                <li>界面上不再出现上游的 Palmier 字样。</li>
+              </ul>
+            ]]></description>
+            <enclosure url="https://metag.ai/mac/METAG-0.1.8.dmg"
+                       sparkle:version="85"
+                       sparkle:shortVersionString="0.1.8"
+                       length="77357791"
+                       type="application/octet-stream"
+                       sparkle:edSignature="E4LblKH6IyLF9hwonvRdCRtxGbZugnA+5gkBs93lAB3FGXWgcrxwmSAGngfjcSbiiRQ04GRuxXHxXuFghIerDQ==" />
+        </item>
+        <item>
             <title>0.1.7</title>
             <pubDate>Wed, 12 Aug 2026 05:24:30 +0000</pubDate>
             <sparkle:version>84</sparkle:version>

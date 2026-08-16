@@ -44,7 +44,7 @@
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>
-	<string>0.1.7</string>
+	<string>0.1.8</string>
 	<key>CFBundleURLTypes</key>
 	<array>
 		<dict>
@@ -57,11 +57,17 @@
 		</dict>
 	</array>
 	<key>CFBundleVersion</key>
-	<string>84</string>
+	<string>85</string>
 	<key>LSMinimumSystemVersion</key>
 	<string>26.0</string>
 	<key>NSHighResolutionCapable</key>
 	<true/>
+	<key>SUEnableAutomaticChecks</key>
+	<true/>
+	<key>SUFeedURL</key>
+	<string>https://metag.ai/mac/appcast.xml</string>
+	<key>SUPublicEDKey</key>
+	<string>IDFXRRtUvZoWuQmOgnRHMw0IHNWM6Q74xcSqtaCnC6k=</string>
 	<key>UTExportedTypeDeclarations</key>
 	<array>
 		<dict>
@@ -82,19 +88,5 @@
 			</dict>
 		</dict>
 	</array>
-	<!-- Sparkle 自动更新。**这两个键此前一个都没有** —— 而 Updater.swift 只在
-	     SUFeedURL 存在时才构造 Sparkle 控制器，所以至今没有任何一份出厂的 App
-	     拉取过 appcast，「检查更新」只是打开 metag.ai。
-	     后果：已经装了、且构建里没有这两个键的副本**永远收不到更新**，
-	     那批用户需要手动下载一次，仅此一次。趁装机量还小补上。
-	     feed 放我们自己的域，不放 GitHub Releases：更新通道不该依赖一个
-	     我们还没建的远端，也不该在国内被墙掉。 -->
-	<key>SUFeedURL</key>
-	<string>https://metag.ai/mac/appcast.xml</string>
-	<!-- 这是**公钥**，本来就要随 App 分发。私钥在钥匙串里，永不落盘。 -->
-	<key>SUPublicEDKey</key>
-	<string>IDFXRRtUvZoWuQmOgnRHMw0IHNWM6Q74xcSqtaCnC6k=</string>
-	<key>SUEnableAutomaticChecks</key>
-	<true/>
 </dict>
 </plist>
