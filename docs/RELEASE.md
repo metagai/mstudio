@@ -142,6 +142,56 @@ tags and creates GitHub releases on `origin`, and the download URL it writes int
   billing, and accounts run through the METAG gateway and do not need them. Leaving them
   unset ships an app whose Agent chat panel does not work; see "Known gaps".
 
+## 本机需要的那份配置：`mac/.env`（2026-08-16 补）
+
+A–F 都办妥之后，构建仍然需要**这台机器上**的一个 gitignored 文件：
+
+```
+mac/.env
+  SIGNING_IDENTITY="Developer ID Application: <Org> (V969594VAF)"
+```
+
+不写它，`bundle.sh release --dist` 会停在
+`!! SIGNING_IDENTITY is not set.` —— 证书明明在钥匙串里，脚本却读不到。
+
+**为什么专门记这一条：** 2026-08-16 要发 0.1.8 时，这台机器上的 `mac/.env`
+已经不见了（它是 gitignored 的，谁也没备份）。而 `d6d6adac` 那次提交的标题
+恰恰是「把 0.1.7 真正发版时用的签名配置提交上」—— 当时补的是能提交的那几个
+文件，**不能提交的那一份没有留下任何指引**，于是同一个坑又踩了一次。
+
+怎么取（不含任何密钥）：
+
+```bash
+security find-identity -v -p codesigning | grep "Developer ID Application"
+# 把引号里那串完整名字填进 mac/.env
+```
+
+`NOTARY_PROFILE` 默认 `metag-notary`，验证它还通：
+
+```bash
+xcrun notarytool history --keychain-profile metag-notary | head -3
+```
+
+**私钥不在这份文件里**，也不该在任何文件里：Developer ID 私钥和 Sparkle 的
+EdDSA 私钥都在钥匙串，`.env` 里只有那串**公开的证书名**。
+
+### `--dist` 还要 ~700MB 二进制依赖
+
+`release` 一律走 `--enable-all-traits`（含 ProductionTelemetry），
+于是要拉 7 个 Sentry xcframework + SpeechCore，约 700MB。
+慢链路上 SwiftPM 并行下载会集体超时，报
+`downloadError("The request timed out.")`。
+
+**已下好的会留在 `.build/artifacts/`，所以重试是累积的** —— 重试就行，
+但必须带上同一组特性：
+
+```bash
+swift package resolve --enable-all-traits    # 反复跑直到成功
+```
+
+⚠ 不带 `--enable-all-traits` 的 `swift package resolve` **会把已经下好的
+那部分清掉**（它认为用不上）。我 2026-08-16 就这么把 199MB 白扔了一次。
+
 ## Release flow, once B–F are in place
 
 ```bash
