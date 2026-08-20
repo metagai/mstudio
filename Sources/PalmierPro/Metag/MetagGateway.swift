@@ -255,7 +255,12 @@ enum MetagGateway {
                 case 401:
                     token = nil
                     throw Failure.signedOut
-                case 402: throw Failure.insufficientCredits
+                case 402:
+                    // **撞墙这一下要记下来。** 埋在这里而不是错误文案的 getter 里：
+                    // getter 可能被调好几次、也可能一次都不调，而这一处是
+                    // "服务端说了额度不够"唯一的判定点。
+                    MetagFunnel.track(.wall, once: false)
+                    throw Failure.insufficientCredits
                 case 429, 503:
                     // 原因码在响应体里。解不出来就退回通用文案 ——
                     // 但**绝不退回裸状态码**，那对用户毫无意义。
@@ -331,6 +336,13 @@ enum MetagGateway {
     static func myFilms() async throws -> [FilmRow] {
         struct Response: Decodable { let jobs: [FilmRow] }
         return try await send(request("api/v1/jobs"), as: Response.self).jobs
+    }
+
+    /// 分享一条片子，换回一个公开链接。服务端幂等：同一条永远是同一个链接。
+    static func shareFilm(_ jobId: String) async throws -> String {
+        struct Response: Decodable { let url: String }
+        return try await send(request("api/v1/jobs/\(jobId)/share", method: "POST"),
+                              as: Response.self).url
     }
 
     /// 删掉一条作品。**用户对失败作品最基本的诉求就是让它消失** ——

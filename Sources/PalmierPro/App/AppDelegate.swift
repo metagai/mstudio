@@ -25,6 +25,10 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         // Start Sparkle updater
         _ = Updater.shared
 
+        // 漏斗第一步。**桌面端此前一步都没埋** —— 报表上它的流失会显示成零，
+        // 而零和「没量到」长得一模一样（见 MetagFunnel）。
+        MetagFunnel.track(.landed)
+
         HomeWindowController.shared.showWindow(nil)
         SkillStore.shared.startSkillSync()
         Task.detached(priority: .utility) {
