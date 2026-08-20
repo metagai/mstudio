@@ -72,6 +72,10 @@ final class MetagDraftModel: ObservableObject {
 
     func draft() async {
         guard !prompt.trimmingCharacters(in: .whitespaces).isEmpty, !busy else { return }
+        // 这两步分开记。**「打了字」和「敢按下去」是两件事** ——
+        // 合成一步就看不出"写完了却没按"这一段流失，而那一段最值钱。
+        MetagFunnel.track(.lineReady)
+        MetagFunnel.track(.draftStarted)
         busy = true; note = nil
         defer { busy = false }
         do {
@@ -128,7 +132,12 @@ final class MetagDraftModel: ObservableObject {
             if let j = try? await MetagGateway.job(id) {
                 job = j
                 await fetchFrames(id, j)
-                if j.status == "done" || j.status == "failed" { return }
+                if j.status == "done" || j.status == "failed" {
+                    // **草案真的到他屏幕上了** —— 判据落在"渲完并且这一页还在"，
+                    // 不落在"我们提交成功了"。那两件事之间就是流失。
+                    if j.status == "done" { MetagFunnel.track(.draftSeen) }
+                    return
+                }
             }
             try? await Task.sleep(for: .seconds(4))
         }

@@ -18,10 +18,27 @@ final class MetagMyFilmsModel: ObservableObject {
     /// 正在删的那一条（或 "__all__" 表示批量清理）。**删除期间要禁用按钮** ——
     /// 连点两次会对同一条发两次 DELETE，第二次拿 404，看起来像出错了。
     @Published private(set) var busy: String?
+    /// 刚复制到剪贴板的那条链接 —— 让他看得见"确实拿到了"。
+    @Published private(set) var shared: String?
 
     var failedCount: Int { films.filter { $0.status == "failed" }.count }
 
     /// 删一条。**乐观移除**：服务端已经删掉了，再拉一次列表只是让用户多等一轮。
+    /// 换一条公开链接并放进剪贴板。分享的下一步一定是粘进某个聊天框。
+    func share(_ id: String) async {
+        busy = id
+        defer { busy = nil }
+        do {
+            let url = try await MetagGateway.shareFilm(id)
+            NSPasteboard.general.clearContents()
+            NSPasteboard.general.setString(url, forType: .string)
+            MetagFunnel.track(.shared, once: false)
+            shared = url
+        } catch {
+            self.error = error.localizedDescription
+        }
+    }
+
     func remove(_ id: String) async {
         busy = id
         defer { busy = nil }
@@ -80,6 +97,11 @@ struct MetagMyFilmsView: View {
                     .disabled(model.busy != nil)
                 }
             }
+            // 复制完了要看得见 —— 剪贴板是没有反馈的，静悄悄等于"没反应"。
+            if let u = model.shared {
+                Text(L("Link copied") + " · " + u)
+                    .foregroundStyle(.secondary).font(.caption).textSelection(.enabled)
+            }
             if model.loading && model.films.isEmpty {
                 Text(L("Loading…")).foregroundStyle(.secondary).font(.caption)
             } else if let e = model.error {
@@ -94,6 +116,18 @@ struct MetagMyFilmsView: View {
                             .buttonStyle(.plain)
                             .disabled(!f.retrievable || model.busy != nil)
                             .opacity(f.retrievable ? 1 : 0.55)
+                        // 他自己想炫耀是这门生意最便宜的一条获客路，而此前
+                        // 一条做好的片子在全站没有任何办法递给第二个人。
+                        Button {
+                            Task { await model.share(f.job_id) }
+                        } label: {
+                            Image(systemName: "square.and.arrow.up")
+                                .font(.system(size: AppTheme.FontSize.xs))
+                        }
+                        .buttonStyle(.plain)
+                        .foregroundStyle(.secondary)
+                        .disabled(!f.retrievable || f.status != "done" || model.busy != nil)
+                        .help(L("Send it to someone"))
                         Button {
                             Task { await model.remove(f.job_id) }
                         } label: {
