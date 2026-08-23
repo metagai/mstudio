@@ -136,8 +136,7 @@ struct CompositionBuilderSourcePoolTests {
         try await FixtureVideo.write(
             scenes: [FixtureVideo.Scene(rgb: (UInt8(truncatingIfNeeded: index * 20), 40, 80), seconds: 1)],
             fps: 30,
-            size: 64,
-            fileType: .mov
+            size: 64
         )
     }
 
