@@ -82,23 +82,30 @@ asserts it matches `APPLE_TEAM_ID` + `CFBundleIdentifier` before signing.
    ```
    The password lives in the keychain from then on. **Never put it in `.env` or a script.**
 
-### E. Sparkle EdDSA key pair — **BLOCKER for auto-update**
+### E. Sparkle auto-update — **wired and live** (re-verified 2026-08-29)
 
-This section used to say `Info.plist` already points `SUFeedURL` at the metag-mac appcast.
-**It does not.** `Sources/PalmierPro/Resources/Info.plist` contains neither `SUFeedURL` nor
-`SUPublicEDKey` — verify with `grep SU Sources/PalmierPro/Resources/Info.plist`, which
-prints nothing.
+This section used to say auto-update was blocked: that `Info.plist` carried neither
+`SUFeedURL` nor `SUPublicEDKey`, that no shipped build ever fetched an appcast, and that
+`appcast.xml` was still upstream's Palmier Pro feed and **needed replacing, not appending**.
 
-That makes the gap wider than a missing key. `Updater.swift` only constructs
-`SPUStandardUpdaterController` when `SUFeedURL` is present, so today no shipped build ever
-fetches an appcast; "Check for Updates" opens the download page instead. Publishing an
-appcast entry therefore reaches nobody until **both** keys exist — and every copy already
-installed without `SUFeedURL` can never be auto-updated at all, no matter what is added
-later. Those users have to download a new build by hand once.
+**None of that is true any more.** Every claim was re-run on 2026-08-29:
 
-`appcast.xml` in this repo is still **upstream's Palmier Pro feed**: `<title>Palmier Pro</title>`,
-enclosures pointing at `palmier-io/palmier-pro` releases, newest entry 0.6.15. No METAG
-release has ever been added to it. It needs to be replaced, not appended to.
+```
+grep SU Sources/PalmierPro/Resources/Info.plist
+  SUEnableAutomaticChecks · SUFeedURL · SUPublicEDKey     ← the doc said this prints nothing
+SUFeedURL   https://metag.ai/mac/appcast.xml              ← 200
+appcast.xml <title>METAG</title>, newest 0.1.8            ← the doc said Palmier Pro, 0.6.15
+enclosures  metag.ai/mac/METAG-0.1.8.dmg 206, 0.1.7 206
+```
+
+Following the old text would have **deleted a correct appcast and rewritten it**, which
+kills auto-update for every installed copy — and nothing would have reported it. A page
+that ships its own verification command, whose output contradicts the page, is worse than
+no page: it looks rigorous.
+
+**So for a normal release: append an `<item>` to `appcast.xml`. Do not replace the file,
+and do not change `SUFeedURL`.** The steps below apply only if the signing key is ever lost
+and the pair has to be regenerated.
 
 1. Generate the pair (the private key goes into the login keychain automatically):
    ```bash
@@ -107,10 +114,16 @@ release has ever been added to it. It needs to be replaced, not appended to.
 2. Add **both** keys to `Sources/PalmierPro/Resources/Info.plist`:
    ```xml
    <key>SUFeedURL</key>
-   <string>https://raw.githubusercontent.com/metag-ai/metag-mac/main/appcast.xml</string>
+   <string>https://metag.ai/mac/appcast.xml</string>
    <key>SUPublicEDKey</key>
    <string><the printed public key></string>
    ```
+   The feed URL above is the one every shipped build already carries. It used to read
+   `raw.githubusercontent.com/metag-ai/metag-mac/main/appcast.xml`, which **404s** —
+   anyone following this page would have shipped a build whose auto-update silently
+   never finds a release again, and nothing would report it. Verified 2026-08-29:
+   `metag.ai/mac/appcast.xml` 200, the GitHub path 404.
+
 3. Export and back up the private key — losing it means no existing install can ever be
    updated again:
    ```bash
