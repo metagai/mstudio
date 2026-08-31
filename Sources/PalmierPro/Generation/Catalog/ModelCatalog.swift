@@ -68,11 +68,40 @@ final class ModelCatalog {
             // 网关按语言给引擎显示名；跟随应用内选择，未指定时回落到系统语言
             let code = AppLocalization.shared.selection.identifier
                 ?? Locale.current.language.languageCode?.identifier ?? "en"
-            apply(pricing.engines.map { Self.videoEntry(from: $0, language: code) })
+            apply(pricing.engines.map { Self.videoEntry(from: $0, language: code) }
+                  + (await Self.localEntries()))
         } catch {
             lastError = error.localizedDescription
             Log.generation.error("ModelCatalog load failed: \(error.localizedDescription)")
         }
+    }
+
+    /// Not from `/api/v1/pricing`: on-device generation neither bills nor reaches the gateway.
+    /// Absent when the models are missing — an option that errors on click is worse than none.
+    nonisolated static func localEntries() async -> [CatalogEntry] {
+        guard await LocalImageBackend.isAvailable() else { return [] }
+        return [
+            CatalogEntry(
+                id: LocalImageBackend.modelId,
+                kind: .image,
+                displayName: L10n.key("On-device · Z-Image Turbo"),
+                providerName: L10n.key("This Mac"),
+                description: L10n.key("No network, no credits. About 3 minutes per image."),
+                responseShape: .images,
+                uiCapabilities: .image(
+                    ImageCaps(
+                        // Matches the free-tier i2v render size; generating larger only burns time.
+                        resolutions: ["\(LocalImageBackend.defaultWidth)x\(LocalImageBackend.defaultHeight)"],
+                        aspectRatios: [],
+                        qualities: nil,
+                        supportsImageReference: false,
+                        maxImages: 1
+                    )
+                ),
+                creditsPerImage: ["": 0],
+                paidOnly: false
+            )
+        ]
     }
 
     /// Billing is flat per shot, and each engine has exactly one duration, so the per-second rate

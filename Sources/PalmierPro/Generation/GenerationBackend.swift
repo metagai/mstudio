@@ -10,6 +10,7 @@ enum GenerationBackend {
     static func subscribe(
         jobId: String
     ) -> AnyPublisher<BackendGenerationJob?, Never>? {
+        if let local = LocalJobs.subscribe(jobId) { return local }
         let subject = PassthroughSubject<BackendGenerationJob?, Never>()
         let task = Task {
             while !Task.isCancelled {
@@ -87,6 +88,10 @@ enum GenerationBackend {
         params: BackendGenerationParams,
         projectId: String? = nil,
     ) async throws -> String {
+        // 本地出图：权重和算力都在这台机器上，不经过网关、不计费。
+        if model == LocalImageBackend.modelId, case .image(let p) = params {
+            return LocalJobs.start(prompt: p.prompt)
+        }
         // METAG 网关目前只做视频。音频/图片/放大若静默走视频通道，用户会拿到不对的东西还被扣费 ——
         // 明确拒绝，比"看起来能用"诚实。
         guard case .video = params else { throw BackendError.unsupported }
