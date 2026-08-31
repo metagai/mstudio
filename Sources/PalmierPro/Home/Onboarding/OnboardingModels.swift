@@ -12,8 +12,11 @@ enum OnboardingSampleState: Equatable {
 
 struct OnboardingOption: Identifiable {
     let id: String
+    /// **裸 key，不是已本地化的字符串。** 这些选项存在 static let 里，
+    /// 在类型初始化时本地化只会算一次 —— 用户切语言，选项不会跟着变。
+    /// 渲染处用 `L10n.string(key:)` 解析。
     let labelKey: String
-    static let other = OnboardingOption(id: "other", labelKey: L10n.key("Other"))
+    static let other = OnboardingOption(id: "other", labelKey: "Other")
 }
 
 enum OnboardingQuestion: String, CaseIterable, Identifiable {
@@ -45,52 +48,52 @@ enum OnboardingQuestion: String, CaseIterable, Identifiable {
     var options: [OnboardingOption] {
         switch self {
         case .videoTypes: [
-            .init(id: "short_form", labelKey: L10n.key("Short-form and social")),
-            .init(id: "youtube", labelKey: L10n.key("YouTube")),
-            .init(id: "podcast", labelKey: L10n.key("Podcast")),
-            .init(id: "ai_videos", labelKey: L10n.key("AI videos")),
-            .init(id: "advertising", labelKey: L10n.key("Ads and branded content")),
-            .init(id: "product_demos", labelKey: L10n.key("Product demos")),
-            .init(id: "education", labelKey: L10n.key("Education and tutorials")),
+            .init(id: "short_form", labelKey: "Short-form and social"),
+            .init(id: "youtube", labelKey: "YouTube"),
+            .init(id: "podcast", labelKey: "Podcast"),
+            .init(id: "ai_videos", labelKey: "AI videos"),
+            .init(id: "advertising", labelKey: "Ads and branded content"),
+            .init(id: "product_demos", labelKey: "Product demos"),
+            .init(id: "education", labelKey: "Education and tutorials"),
             .other,
         ]
         case .roles: [
-            .init(id: "editor", labelKey: L10n.key("Video editor")),
-            .init(id: "filmmaker", labelKey: L10n.key("Filmmaker")),
-            .init(id: "hobbyist", labelKey: L10n.key("Hobbyist")),
-            .init(id: "founder", labelKey: L10n.key("Founder")),
-            .init(id: "designer", labelKey: L10n.key("Designer")),
-            .init(id: "content_creator", labelKey: L10n.key("Content creator")),
-            .init(id: "student", labelKey: L10n.key("Student")),
-            .init(id: "marketer", labelKey: L10n.key("Marketer")),
+            .init(id: "editor", labelKey: "Video editor"),
+            .init(id: "filmmaker", labelKey: "Filmmaker"),
+            .init(id: "hobbyist", labelKey: "Hobbyist"),
+            .init(id: "founder", labelKey: "Founder"),
+            .init(id: "designer", labelKey: "Designer"),
+            .init(id: "content_creator", labelKey: "Content creator"),
+            .init(id: "student", labelKey: "Student"),
+            .init(id: "marketer", labelKey: "Marketer"),
             .other,
         ]
         case .interests: [
-            .init(id: "ai_generation", labelKey: L10n.key("AI videos")),
-            .init(id: "ai_transcription", labelKey: L10n.key("AI transcription")),
-            .init(id: "agent_editing", labelKey: L10n.key("Agentic editing")),
-            .init(id: "external_agents", labelKey: L10n.key("Integration with your own agent")),
-            .init(id: "video_automation", labelKey: L10n.key("Video automation")),
+            .init(id: "ai_generation", labelKey: "AI videos"),
+            .init(id: "ai_transcription", labelKey: "AI transcription"),
+            .init(id: "agent_editing", labelKey: "Agentic editing"),
+            .init(id: "external_agents", labelKey: "Integration with your own agent"),
+            .init(id: "video_automation", labelKey: "Video automation"),
         ]
         case .acquisitionSource: [
-            .init(id: "google", labelKey: L10n.key("Google")),
-            .init(id: "github", labelKey: L10n.key("GitHub")),
-            .init(id: "x", labelKey: L10n.key("X")),
-            .init(id: "instagram", labelKey: L10n.key("Instagram")),
-            .init(id: "youtube", labelKey: L10n.key("YouTube")),
-            .init(id: "hacker_news", labelKey: L10n.key("Hacker News")),
-            .init(id: "word_of_mouth", labelKey: L10n.key("Friend or colleague")),
+            .init(id: "google", labelKey: "Google"),
+            .init(id: "github", labelKey: "GitHub"),
+            .init(id: "x", labelKey: "X"),
+            .init(id: "instagram", labelKey: "Instagram"),
+            .init(id: "youtube", labelKey: "YouTube"),
+            .init(id: "hacker_news", labelKey: "Hacker News"),
+            .init(id: "word_of_mouth", labelKey: "Friend or colleague"),
             .other,
         ]
         case .previousEditors: [
-            .init(id: "premiere_pro", labelKey: L10n.key("Adobe Premiere Pro")),
-            .init(id: "davinci_resolve", labelKey: L10n.key("DaVinci Resolve")),
-            .init(id: "final_cut_pro", labelKey: L10n.key("Final Cut Pro")),
-            .init(id: "capcut", labelKey: L10n.key("CapCut")),
-            .init(id: "instagram_edits", labelKey: L10n.key("Instagram Edits")),
-            .init(id: "imovie", labelKey: L10n.key("iMovie")),
-            .init(id: "descript", labelKey: L10n.key("Descript")),
-            .init(id: "none", labelKey: L10n.key("None")),
+            .init(id: "premiere_pro", labelKey: "Adobe Premiere Pro"),
+            .init(id: "davinci_resolve", labelKey: "DaVinci Resolve"),
+            .init(id: "final_cut_pro", labelKey: "Final Cut Pro"),
+            .init(id: "capcut", labelKey: "CapCut"),
+            .init(id: "instagram_edits", labelKey: "Instagram Edits"),
+            .init(id: "imovie", labelKey: "iMovie"),
+            .init(id: "descript", labelKey: "Descript"),
+            .init(id: "none", labelKey: "None"),
             .other,
         ]
         }

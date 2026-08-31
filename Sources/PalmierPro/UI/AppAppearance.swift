@@ -28,7 +28,9 @@ enum AppAppearance: String, CaseIterable, Identifiable, Sendable {
     }
 
     static func stored(in defaults: UserDefaults) -> AppAppearance {
-        defaults.string(forKey: defaultsKey).flatMap(AppAppearance.init(rawValue:)) ?? .dark
+        // 默认跟随系统。上游默认 .dark —— 那是它暗色时代的取舍，而纸感浅色
+        // 正是我们从暗色锁里走出来的那一步，锁回去等于把它撤销。
+        defaults.string(forKey: defaultsKey).flatMap(AppAppearance.init(rawValue:)) ?? .system
     }
 }
 

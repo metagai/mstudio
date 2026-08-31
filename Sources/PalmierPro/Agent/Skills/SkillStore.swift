@@ -240,7 +240,7 @@ final class SkillStore {
         do {
             let data = try await SkillCatalog.fetch(url)
             try Task.checkCancellation()
-            guard Self.sha12(data) == entry.sha else {
+            guard Self.bodyMatchesCatalogSha(data, entry.sha) else {
                 Log.agent.error("install skill \(entry.id) rejected: catalog hash mismatch")
                 return false
             }
@@ -306,6 +306,17 @@ final class SkillStore {
     }
 
     /// Resolves `~/.palmier/skills/<id>/` only when `id` is a single safe path component.
+    /// `catalog.json` 发布的是正文 SHA-256 的**截断前缀**，所以按前缀比 ——
+    /// 写死比较 12 位的话，目录换一个截断长度就会把所有技能判成损坏。
+    nonisolated static func bodyMatchesCatalogSha(_ data: Data, _ expected: String) -> Bool {
+        let normalized = expected.lowercased()
+        guard !normalized.isEmpty, normalized.count <= 64,
+              normalized.allSatisfy({ $0.isHexDigit })
+        else { return false }
+        let digest = SHA256.hash(data: data).map { String(format: "%02x", $0) }.joined()
+        return digest.hasPrefix(normalized)
+    }
+
     nonisolated static func skillDirectory(
         for id: String,
         directory: URL = SkillStore.directory

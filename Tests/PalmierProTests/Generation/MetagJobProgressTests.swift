@@ -34,7 +34,7 @@ struct MetagJobProgressTests {
     func readyCountDefaultsToZero() {
         let j = BackendGenerationJob(
             _id: "j1", status: .running, resultUrls: ["a", "b"],
-            errorMessage: nil, costCredits: nil, completedAt: nil
+            errorMessage: nil, costCredits: nil, refundedCredits: nil, completedAt: nil
         )
         #expect(j.readyCount == 0)
     }

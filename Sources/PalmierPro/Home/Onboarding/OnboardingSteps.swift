@@ -152,7 +152,11 @@ struct OnboardingAccountStep: View {
     private var detail: String {
         account.isSignedIn
             ? L10n.string("Watch the tutorial or start creating.")
-            : L10n.string("Sign in to receive 250 free credits for AI chat and generation.")
+            // 赠额的真源是网关的 signup_free_credits。取不到时不提数字 ——
+            // 宁可少说一句，也不要说错一个数（我们改过赠额，写死的那句就开始骗人）。
+            : account.signupFreeCredits.map {
+                L10n.string("Sign in to receive \($0.formatted()) free credits for AI chat and generation.")
+            } ?? L10n.key("Sign in to start generating.")
     }
 
     private var failure: String? {

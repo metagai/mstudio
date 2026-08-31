@@ -3,6 +3,9 @@ import Foundation
 /// 托管 Agent 对话：METAG 网关 JWT（Keychain）+ 供应商线格式 SSE。
 /// 生成类工具不走这里，仍走 GenerationBackend → create_job，计费入口只有一条。
 struct MetagAgentClient: AgentClient {
+    /// 托管对话的端点。常量化是为了让守卫盯得住它 —— 网关改路径时测试会红。
+    static let path = "api/v1/agent/stream"
+
     let settings: AgentRunSettings
 
     func stream(
@@ -29,7 +32,7 @@ struct MetagAgentClient: AgentClient {
         context: AgentRequestContext,
         continuation: AsyncThrowingStream<AgentStreamEvent, Error>.Continuation
     ) async throws {
-        let endpoint = MetagGateway.baseURL.appendingPathComponent("api/v1/agent/stream")
+        let endpoint = MetagGateway.baseURL.appendingPathComponent(Self.path)
         guard let jwt = MetagGateway.token, !jwt.isEmpty else {
             throw AgentServiceError.unauthenticated
         }

@@ -24,7 +24,7 @@ struct AppearanceTests {
     @Test("没有任何窗口把外观钉死")
     func noPinnedAppearance() {
         let offenders = Self.sources().filter {
-            !$0.path.hasSuffix("AppearancePreference.swift")
+            !$0.path.hasSuffix("AppAppearance.swift")
                 && $0.text.contains("NSAppearance(named:")
         }.map(\.path)
         #expect(offenders.isEmpty,
@@ -34,26 +34,27 @@ struct AppearanceTests {
     @Test("外观只有一个决定者")
     func singleOwner() {
         let setters = Self.sources().filter {
-            !$0.path.hasSuffix("AppearancePreference.swift")
+            !$0.path.hasSuffix("AppAppearance.swift")
                 && ($0.text.contains("NSApp.appearance =") || $0.text.contains("window.appearance ="))
         }.map(\.path)
         #expect(setters.isEmpty,
-                "外观应当只由 AppearancePreference 决定；逐处设置意味着每新增一个窗口都要记得设：\(setters)")
+                "外观应当只由 AppAppearance 决定；逐处设置意味着每新增一个窗口都要记得设：\(setters)")
     }
 
     @Test("默认跟随系统，而不是锁亮色")
     func defaultsToAuto() {
-        UserDefaults.standard.removeObject(forKey: AppearancePreference.defaultsKey)
-        #expect(AppearancePreference.mode == .auto)
-        #expect(AppearanceMode.auto.nsAppearance == nil, "auto 必须是「不覆盖」，不是某个具体外观")
+        let defaults = UserDefaults(suiteName: "appearance-default-test")!
+        defaults.removeObject(forKey: AppAppearance.defaultsKey)
+        #expect(AppAppearance.stored(in: defaults) == .system)
+        #expect(AppAppearance.system.nsAppearance == nil, "system 必须是「不覆盖」，不是某个具体外观")
     }
 
     @Test("三种模式各自映射到正确的系统外观")
     func modeMapping() {
-        #expect(AppearanceMode.light.nsAppearance?.name == .aqua)
-        #expect(AppearanceMode.dark.nsAppearance?.name == .darkAqua)
-        #expect(AppearanceMode.allCases.count == 3)
-        for m in AppearanceMode.allCases {
+        #expect(AppAppearance.light.nsAppearance?.name == .aqua)
+        #expect(AppAppearance.dark.nsAppearance?.name == .darkAqua)
+        #expect(AppAppearance.allCases.count == 3)
+        for m in AppAppearance.allCases {
             #expect(!m.label.isEmpty)
         }
     }

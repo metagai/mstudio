@@ -82,10 +82,7 @@ enum AppTheme {
         /// 琥珀时间码。这是 NLE 惯例（Premiere / Resolve 同样偏暖），
         /// 与品牌绿是【两个语义角色】，不是同一意图的两个值 —— 所以不收敛成绿色。
         /// 播放头红。NLE 惯例（Premiere / Resolve 同样偏红），浅色下压暗一档才压得住纸。
-        static let playheadNSColor = AppTheme.adaptive(
-            light: NSColor(srgbRed: 0.85, green: 0.15, blue: 0.13, alpha: 1),
-            dark: NSColor(srgbRed: 1.0, green: 0.32, blue: 0.30, alpha: 1)
-        )
+        static let playheadNSColor = DesignTokens.playheadFg
         static var playheadColor: Color { Color(playheadNSColor) }
 
         static let timecodeNSColor = DesignTokens.timecodeFg

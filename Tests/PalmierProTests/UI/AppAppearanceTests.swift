@@ -6,15 +6,16 @@ import Testing
 @Suite("App appearance")
 @MainActor
 struct AppAppearanceTests {
-    @Test func missingOrInvalidPreferenceUsesDarkAppearance() throws {
+    /// 上游默认锁暗色；我们默认跟随系统 —— 纸感浅色正是从暗色锁里走出来的那一步。
+    @Test func missingOrInvalidPreferenceFollowsTheSystem() throws {
         let suiteName = "AppAppearanceTests-\(UUID().uuidString)"
         let defaults = try #require(UserDefaults(suiteName: suiteName))
         defer { defaults.removePersistentDomain(forName: suiteName) }
 
-        #expect(AppAppearance.stored(in: defaults) == .dark)
+        #expect(AppAppearance.stored(in: defaults) == .system)
 
         defaults.set("sepia", forKey: AppAppearance.defaultsKey)
-        #expect(AppAppearance.stored(in: defaults) == .dark)
+        #expect(AppAppearance.stored(in: defaults) == .system)
     }
 
     @Test(arguments: AppAppearance.allCases)
@@ -33,7 +34,7 @@ struct AppAppearanceTests {
 
         #expect(brightness(AppTheme.Background.surface, in: light) > brightness(AppTheme.Background.surface, in: dark))
         #expect(brightness(AppTheme.Text.primary, in: light) < brightness(AppTheme.Text.primary, in: dark))
-        #expect(brightness(AppTheme.Accent.primaryNSColor, in: light) < brightness(AppTheme.Accent.primaryNSColor, in: dark))
+        #expect(brightness(NSColor(AppTheme.Accent.primary), in: light) < brightness(NSColor(AppTheme.Accent.primary), in: dark))
     }
 
     @Test func mediaOverlayPaletteIsAppearanceInvariant() throws {
@@ -57,18 +58,24 @@ struct AppAppearanceTests {
         let light = try #require(NSAppearance(named: .aqua))
         let dark = try #require(NSAppearance(named: .darkAqua))
 
-        expectSameColor(resolved(AppTheme.Border.timelineClip, in: light), resolved(.white, in: light))
-        expectSameColor(resolved(AppTheme.Border.timelineClipSelected, in: light), resolved(.black, in: light))
-        expectSameColor(resolved(AppTheme.Border.timelineClip, in: dark), resolved(.black, in: dark))
-        expectSameColor(resolved(AppTheme.Border.timelineClipSelected, in: dark), resolved(.white, in: dark))
+        // 上游这几处是纯黑纯白；我们走令牌（纸色/墨色），所以不比具体值，
+        // 比它真正要守的那件事：**选中与未选中在两种外观下都要反过来。**
+        let clipLight = brightness(AppTheme.Border.timelineClip, in: light)
+        let selectedLight = brightness(AppTheme.Border.timelineClipSelected, in: light)
+        let clipDark = brightness(AppTheme.Border.timelineClip, in: dark)
+        let selectedDark = brightness(AppTheme.Border.timelineClipSelected, in: dark)
+        #expect(clipLight > selectedLight, "浅色下未选中的缝该比选中的亮")
+        #expect(clipDark < selectedDark, "暗色下正好反过来")
     }
 
     @Test func lightPaletteMaintainsReadableContrast() throws {
         let light = try #require(NSAppearance(named: .aqua))
 
         #expect(brightness(AppTheme.Background.surface, in: light) < brightness(AppTheme.Background.raised, in: light))
-        #expect(brightness(AppTheme.Background.raised, in: light) < brightness(AppTheme.Background.prominent, in: light))
-        #expect(brightness(AppTheme.Background.prominent, in: light) < 1)
+        // 我们的纸感层级和上游相反：raised 是浮起来的东西（卡片、菜单），纯白 + 阴影靠抬亮前进；
+        // prominent 是面板里的凹槽，比它暗一档。上游假设的是反过来的顺序。
+        #expect(brightness(AppTheme.Background.prominent, in: light) < brightness(AppTheme.Background.raised, in: light))
+        #expect(brightness(AppTheme.Background.raised, in: light) <= 1)
         #expect(contrastRatio(AppTheme.Text.tertiary, over: AppTheme.Background.surface, in: light) >= 4.5)
         #expect(contrastRatio(AppTheme.Text.muted, over: AppTheme.Background.surface, in: light) >= 3)
         #expect(contrastRatio(AppTheme.Border.divider, over: AppTheme.Background.surface, in: light) >= 3)

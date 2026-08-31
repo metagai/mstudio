@@ -16,7 +16,6 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         // 明暗要在**任何窗口出现之前**定下来：晚一步就会看到一次闪白。
         // 一处决定、级联到所有窗口 —— 逐窗口设置意味着每新增一个窗口都要记得设，
         // 漏掉的那个就是暗色下一块刺眼的白。
-        AppearancePreference.apply()
 
         // Activate the app (required when launched from CLI, not a .app bundle)
         NSApp.setActivationPolicy(.regular)

@@ -7,7 +7,8 @@ import Testing
 struct AppLocalizationTests {
     @Test func bundledEnglishLocalizationIsAvailable() throws {
         try withDefaults { defaults in
-            let localization = AppLocalization(defaults: defaults)
+            // 必须钉死语言：不传就跟随系统，在非英文机器上这条测的是别的词条表。
+            let localization = AppLocalization(defaults: defaults, preferredLanguages: ["en"])
 
             #expect(localization.availableLanguages.contains(.language("en")))
             #expect(localization.string("System Language") == "System Language")

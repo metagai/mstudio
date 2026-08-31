@@ -253,31 +253,5 @@ enum CaptionSpecBuilder {
         return resized
     }
 
-    /// 按 `durationFrames` 重建一条字幕。
-    ///
-    /// **重建而不是就地改。** TextClipSpec 的时间字段是 let，上游为这项改动把它们
-    /// 改成了 var —— 那是放宽一个被很多处依赖的公共类型的不可变性。
-    private static func resized(
-        _ spec: EditorViewModel.TextClipSpec,
-        durationFrames: Int
-    ) -> EditorViewModel.TextClipSpec {
-        var words = spec.words
-        // wordCycle 的最后一个词要跟着延长，否则字幕在延长段里是空的。
-        if spec.animation?.preset == .wordCycle, let last = words?.indices.last {
-            words?[last].endFrame = durationFrames
-        }
-        return EditorViewModel.TextClipSpec(
-            trackIndex: spec.trackIndex,
-            startFrame: spec.startFrame,
-            durationFrames: durationFrames,
-            content: spec.content,
-            style: spec.style,
-            transform: spec.transform,
-            captionGroupId: spec.captionGroupId,
-            words: words,
-            animation: spec.animation,
-            fillMode: spec.fillMode
-        )
-    }
 
 }

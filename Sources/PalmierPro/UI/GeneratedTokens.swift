@@ -220,6 +220,13 @@ enum DesignTokens {
     )
     static var timecodeFgColor: Color { Color(nsColor: timecodeFg) }
 
+    /// `playhead-fg` — 亮 #D92722 ／ 暗 #FF5250
+    static let playheadFg = dynamic(
+        light: NSColor(srgbRed: 0.85098, green: 0.152941, blue: 0.133333, alpha: 1),
+        dark: NSColor(srgbRed: 1, green: 0.321569, blue: 0.313725, alpha: 1)
+    )
+    static var playheadFgColor: Color { Color(nsColor: playheadFg) }
+
 
     // MARK: - stage
 

@@ -9,6 +9,8 @@ struct AgentProviderTests {
             ["claude-sonnet-5", "Sonnet 5"],
             ["claude-opus-5", "Opus 5"],
             ["claude-fable-5", "Fable 5"],
+            // 我们保住的那一档：自带 key 的用户最便宜的选项（上游 #459 删了它）
+            ["claude-haiku-4-5-20251001", "Haiku 4.5"],
             ["gpt-5.6-luna", "GPT-5.6 Luna"],
             ["gpt-5.6-terra", "GPT-5.6 Terra"],
             ["gpt-5.6-sol", "GPT-5.6 Sol"],
@@ -17,7 +19,7 @@ struct AgentProviderTests {
         #expect(AgentModel.defaultModel == .terra)
         #expect(AgentModel.persisted("claude-opus-4-8") == .opus5)
         #expect(AgentModel.allCases.map(\.provider) == [
-            .anthropic, .anthropic, .anthropic, .openAI, .openAI, .openAI,
+            .anthropic, .anthropic, .anthropic, .anthropic, .openAI, .openAI, .openAI,
         ])
         #expect(AgentModel.allCases.filter(\.requiresPaidHostedPlan) == [.fable5, .sol])
         let anthropicEfforts: [AgentReasoningEffort] = [.low, .medium, .high, .xHigh, .max]

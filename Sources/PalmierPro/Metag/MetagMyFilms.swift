@@ -99,7 +99,7 @@ struct MetagMyFilmsView: View {
             }
             // 复制完了要看得见 —— 剪贴板是没有反馈的，静悄悄等于"没反应"。
             if let u = model.shared {
-                Text(L("Link copied") + " · " + u)
+                Text(L10n.key("Link copied") + " · " + u)
                     .foregroundStyle(.secondary).font(.caption).textSelection(.enabled)
             }
             if model.loading && model.films.isEmpty {
@@ -127,7 +127,7 @@ struct MetagMyFilmsView: View {
                         .buttonStyle(.plain)
                         .foregroundStyle(.secondary)
                         .disabled(!f.retrievable || f.status != "done" || model.busy != nil)
-                        .help(L("Send it to someone"))
+                        .help(L10n.key("Send it to someone"))
                         Button {
                             Task { await model.remove(f.job_id) }
                         } label: {

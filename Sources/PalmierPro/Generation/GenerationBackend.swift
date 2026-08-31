@@ -170,7 +170,31 @@ struct BackendGenerationJob: Decodable, Sendable {
     let refundedCredits: Int?
     let completedAt: Double?
     /// Shots available for download so far.
+    /// 已经可下载的镜头数。网关不回这个字段时按 0 解 —— 旧任务不该整条解不出来。
     var readyCount: Int = 0
+
+    enum CodingKeys: String, CodingKey {
+        case _id, status, resultUrls, errorMessage, costCredits, refundedCredits, completedAt, readyCount
+    }
+
+    init(from decoder: Decoder) throws {
+        let c = try decoder.container(keyedBy: CodingKeys.self)
+        _id = try c.decode(String.self, forKey: ._id)
+        status = try c.decode(BackendGenerationStatus.self, forKey: .status)
+        resultUrls = try c.decodeIfPresent([String].self, forKey: .resultUrls)
+        errorMessage = try c.decodeIfPresent(String.self, forKey: .errorMessage)
+        costCredits = try c.decodeIfPresent(Int.self, forKey: .costCredits)
+        refundedCredits = try c.decodeIfPresent(Int.self, forKey: .refundedCredits)
+        completedAt = try c.decodeIfPresent(Double.self, forKey: .completedAt)
+        readyCount = try c.decodeIfPresent(Int.self, forKey: .readyCount) ?? 0
+    }
+
+    init(_id: String, status: BackendGenerationStatus, resultUrls: [String]?, errorMessage: String?,
+         costCredits: Int?, refundedCredits: Int?, completedAt: Double?, readyCount: Int = 0) {
+        self._id = _id; self.status = status; self.resultUrls = resultUrls
+        self.errorMessage = errorMessage; self.costCredits = costCredits
+        self.refundedCredits = refundedCredits; self.completedAt = completedAt; self.readyCount = readyCount
+    }
 }
 
 struct BackendProjectActivityEntry: Decodable, Sendable, Identifiable {

@@ -104,7 +104,8 @@ private func mediaAsset(_ id: String, hasAudio: Bool = true) -> MediaAsset {
         targets: [CaptionSpecBuilder.Target],
         maximumGapSeconds: Double = CaptionGapSettings.default.maximumGapSeconds,
         animation: TextAnimation? = nil,
-        timelineEndFrame: Int = 0
+        maxCharacters: Int? = nil,
+        timelineEndFrame: Int? = nil
     ) -> CaptionSpecBuilder.Input {
         CaptionSpecBuilder.Input(
             targets: targets,
@@ -116,9 +117,9 @@ private func mediaAsset(_ id: String, hasAudio: Bool = true) -> MediaAsset {
             center: CGPoint(x: 0.5, y: 0.8),
             textCase: .auto,
             maxWords: nil,
-            animation: animation,
-            timelineEndFrame: timelineEndFrame,
-            gapSettings: CaptionGapSettings(maximumGapSeconds: maximumGapSeconds) ?? .default
+            maxCharacters: maxCharacters,
+            gapSettings: CaptionGapSettings(maximumGapSeconds: maximumGapSeconds) ?? .default,
+            animation: animation
         )
     }
 
@@ -149,9 +150,9 @@ private func mediaAsset(_ id: String, hasAudio: Bool = true) -> MediaAsset {
             center: CGPoint(x: 0.5, y: 0.8),
             textCase: .upper,
             maxWords: nil,
-            animation: nil,
-            timelineEndFrame: 60,
-            gapSettings: .default
+            maxCharacters: nil,
+            gapSettings: .default,
+            animation: nil
         )
 
         let specs = try await CaptionSpecBuilder.build(input)
@@ -399,17 +400,6 @@ private func mediaAsset(_ id: String, hasAudio: Bool = true) -> MediaAsset {
         ))
 
         #expect(specs.map(\.durationFrames) == [27, expectedLastDuration])
-    }
-
-    @Test func heldFinalCaptionCarriesItsLastWordCycleWord() async throws {
-        let specs = try await CaptionSpecBuilder.build(input(
-            targets: [gapTarget(id: "one", startFrame: 0, durationFrames: 21)],
-            animation: TextAnimation(preset: .wordCycle),
-            timelineEndFrame: 100
-        ))
-
-        #expect(specs.map(\.durationFrames) == [36])
-        #expect(specs[0].words?.last?.endFrame == 36)
     }
 
     @Test func captionGapSettingsValidateAndRoundDownToFrames() {
