@@ -81,6 +81,13 @@ final class MetagDraftModel: ObservableObject {
         MetagFunnel.track(.draftStarted)
         busy = true; note = nil
         defer { busy = false }
+        // 陌生人也能先看一眼。**他刚下完一个安装包，比网页访客更有耐心，
+        // 但这不构成让他先交身份的理由。** 领不到票就退回原来的行为（让他登录），
+        // 不把网络故障说成"请先登录"。
+        guard await MetagGateway.ensureTicket() else {
+            note = L10n.key("Couldn't reach METAG — check your connection and try again.")
+            return
+        }
         // 同时去问价。**报价免费也不需要登录**，而等草案的那 90 秒本来就是空的 ——
         // 让他在决定之前就知道代价，而不是按下去之后看余额少了多少。
         // 失败一律吞掉：问不到价不该挡住免费草案。

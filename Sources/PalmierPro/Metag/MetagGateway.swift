@@ -15,7 +15,25 @@ enum MetagGateway {
         }
     }
 
-    static var isSignedIn: Bool { token != nil }
+    /// **匿名票不算登录。** 陌生人也持票（`sub` 是 `anon:<uuid>`，0 credits），
+    /// 只判断 token 在不在的话，界面会以为他能出片 —— 而他按下去会拿一个
+    /// `sign_in_required`，那是最糟的一种撞墙：先让他相信可以，再告诉他不行。
+    static var isSignedIn: Bool { MetagTicket.isSignedIn(token) }
+
+
+    /// 这张票什么时候过期。匿名票 7 天，**过期之后不能续** ——
+    /// 滑动续期挂在 `/api/v1/me` 上，而那条路不对陌生人开放。
+    static var ticketExpiry: Date? { MetagTicket.expiry(of: token) }
+
+    /// 票过期了没有。过期的票留着比没有票更糟：每一次请求都 401，
+    /// 而界面会把它说成"请登录"，用户不知道自己其实已经登录过。
+    static var ticketExpired: Bool { MetagTicket.isExpired(token) }
+
+    /// 手上这张票是不是匿名票。JWT 的 `sub` 以 `anon:` 开头。
+    ///
+    /// 只解 payload，不验签 —— **这里不是安全边界**，真正的判定在网关
+    /// （`anon::gate`）。客户端解它只是为了知道该给用户看什么。
+    static var isAnonymous: Bool { MetagTicket.isAnonymous(token) }
 
     /// 托管 Agent 对话（MetagAgentClient）需要网关侧的 /api/v1/agent/chat。
     /// 该端点尚未上线：还缺模型供应商与按 token 的计价口径，两者都要创始人拍板。
@@ -154,6 +172,18 @@ enum MetagGateway {
             // 而**紧挨着的注释就写着**"用户看到的必须是能据此行动的话"。
             // 它们不是罕见情况，是最常见的那几种：打开昨天的链接、连点两次出片、
             // 传了一张大图、上游抖动。
+            case .http(401) where MetagTicket.isAnonymous(MetagGateway.token):
+                // **他手里刚有了一条草案，这时候说的话决定他登不登录。**
+                // 陌生人能看草案、不能出片（网关白名单挡的就是这一步）。
+                // 说"请先登录"像一道门；说"这一条留给你"是同一件事的另一种说法，
+                // 而后者是真的：登录之后那条草案还在他名下。
+                return L10n.key("Signing in keeps this draft and lets you produce it.")
+            case .http(403) where MetagTicket.isAnonymous(MetagGateway.token),
+                 .http(404) where MetagTicket.isAnonymous(MetagGateway.token):
+                // **临时身份只活 7 天，而且过期之后换的是新身份。**
+                // 他八天后回来，之前那条片子不是"要登录"，是查无此物 ——
+                // 说"东西不见了"对他是假话，他会以为我们弄丢了。
+                return L10n.key("That one was made with a temporary identity that has since expired. Sign in and your films stay with you.")
             case .http(404):
                 // 404 同时表示"过期"和"不是你的"，措辞要两边都成立 ——
                 // 说"已过期"对拿到别人链接的人是假话。
@@ -203,6 +233,41 @@ enum MetagGateway {
                     return L10n.key("Temporarily unavailable — try again shortly")
                 }
             }
+        }
+    }
+
+    /// 陌生人也能先看一眼自己那条片子。
+    ///
+    /// **他刚下完一个安装包，比网页访客更有耐心，但这不构成让他先交身份的理由。**
+    /// web 端 2026-08-21 就拆了这堵墙，Mac 一直还撞着 —— 打开 app 第一件事是登录。
+    ///
+    /// 拿到的是一张真 JWT，`sub` 是 `anon:<uuid>`、0 credits。它能建草案、
+    /// 轮询、取件、问价，**但批准出片不在允许名单里**（网关 `anon::gate`）——
+    /// 墙从"打开就撞"挪到了"想出片才撞"，那才是它该在的位置。
+    ///
+    /// **懒拿，不在启动时拿**：启动就拿等于给每一个只是打开看看的人建一行用户，
+    /// 而且把一次网络往返放进了冷启动路径。要用的时候再拿。
+    @discardableResult
+    static func ensureTicket() async -> Bool {
+        // 过期的票要先扔掉。留着它每一次请求都 401，而界面会说成"请登录" ——
+        // 用户不知道自己其实登录过，也不知道为什么昨天还好好的。
+        if ticketExpired { token = nil }
+        if token != nil { return true }
+        var req = URLRequest(url: baseURL.appendingPathComponent("api/v1/anon"))
+        req.httpMethod = "POST"
+        do {
+            let (data, resp) = try await URLSession.shared.data(for: req)
+            guard (200..<300).contains((resp as? HTTPURLResponse)?.statusCode ?? 0),
+                  let json = try JSONSerialization.jsonObject(with: data) as? [String: Any],
+                  let t = json["token"] as? String, !t.isEmpty
+            else { return false }
+            token = t
+            return true
+        } catch {
+            // 拿不到票就退回原来的行为（让他登录）。**不把网络故障说成"请先登录"** ——
+            // 那会让一个断网的人以为是我们不让他用。
+            Log.account.warning("匿名票拿不到：\(error.localizedDescription)")
+            return false
         }
     }
 
