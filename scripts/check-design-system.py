@@ -62,6 +62,18 @@ RAW_COLOR = re.compile(r"\.foregroundStyle\(\.(?:orange|green|red|blue|yellow|gr
 # 真正的"手搓卡片"签名：`.background(RoundedRectangle…fill)` 紧跟
 # `.overlay(RoundedRectangle…strokeBorder)` —— 那正是 `cardSurface` 做的事。
 # `clipShape` / 选中环 / 悬停填充都不算：它们本来就不是卡片。
+# **用户写的东西长度不可控，是常态不是异常。**
+#
+# 2026-09-01：创始人在 web 端粘了两千字 prompt 点生成，片子被挤成顶上一条，
+# 整屏是他自己刚粘进去的那段字 —— **prompt 变成了页面本身**。
+# Mac 上同一个形状在检视器里（`Text(verbatim: prompt)`，没有行数上限，
+# 在一条窄侧栏里就是一根一里长的柱子）。
+#
+# 凡是把**用户提供的文字**显示回去的地方，都要有上限：`lineLimit`、
+# `CollapsingProse`、或者截断。app 自己的标题不在此列 —— 它们的长度我们说了算。
+USER_TEXT = re.compile(r"Text\(\s*verbatim:\s*[^)\n]*\b(prompt|narration|userText|caption)\b", re.I)
+BOUNDED = re.compile(r"lineLimit|CollapsingProse|truncationMode|prefix\(")
+
 HANDROLLED_CARD = re.compile(
     r"\.background\(\s*\n\s*RoundedRectangle\(cornerRadius[^\n]*\n\s*\.fill\([^\n]*\n\s*\)"
     r"\s*\n\s*\.overlay\(\s*\n\s*RoundedRectangle\(cornerRadius[^\n]*\n\s*\.strokeBorder\(",
@@ -70,6 +82,23 @@ HANDROLLED_CARD = re.compile(
 
 # 棘轮的当前刻度。**只能往下调。** 判据会告诉你该调成多少。
 HIGH_WATER = 0
+
+
+def unbounded_user_text():
+    """把用户文字原样铺出来、又不给上限的地方。"""
+    out = []
+    for path in sorted(SOURCES.rglob("*.swift")):
+        lines = path.read_text().splitlines()
+        for i, line in enumerate(lines):
+            if line.strip().startswith(("//", "///")):
+                continue
+            if not USER_TEXT.search(line):
+                continue
+            # 上限可能写在后面几个修饰符上
+            window = "\n".join(lines[i : i + 8])
+            if not BOUNDED.search(window):
+                out.append((str(path.relative_to(SOURCES)), i + 1, line.strip()[:70]))
+    return out
 
 
 def handrolled_cards():
@@ -117,6 +146,15 @@ def main():
                 print(f"       {rel}:{n}  {line}")
         else:
             print(f"OK   没有{label}")
+
+    walls = unbounded_user_text()
+    if walls:
+        failed = True
+        print(f"FAIL 用户文字没有上限 {len(walls)} 处（长 prompt 会把这一屏挤爆）：")
+        for rel, n, line in walls:
+            print(f"       {rel}:{n}  {line}")
+    else:
+        print("OK   用户文字都有上限")
 
     cards = handrolled_cards()
     if len(cards) > HIGH_WATER:

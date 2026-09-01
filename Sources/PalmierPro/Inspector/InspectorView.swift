@@ -1043,12 +1043,10 @@ struct InspectorView: View {
                 Spacer()
                 PromptCopyButton(text: prompt)
             }
-            Text(verbatim: prompt)
-                .font(.system(size: AppTheme.FontSize.sm))
-                .lineSpacing(AppTheme.Spacing.xxs)
-                .foregroundStyle(AppTheme.Text.secondaryColor)
-                .textSelection(.enabled)
-                .fixedSize(horizontal: false, vertical: true)
+            // **收起来。** 原来这里没有行数上限，而在一条窄侧栏里，
+            // 一段两千字的 prompt 就是一根一里长的柱子，把下面所有东西
+            // 推出屏幕。用户写的东西长度不可控，是常态不是异常。
+            CollapsingProse(text: prompt)
         }
     }
 

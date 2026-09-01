@@ -26,6 +26,15 @@ enum MetagJobOpener {
                 ])
             }
             guard !wanted.isEmpty else {
+                // **这一次尝试原来一个字都不记。** 用户看到"没有可用镜头"，
+                // 而漏斗里它根本不存在 —— 分母缺了失败，成功率就不是成功率，
+                // 是"成功的人里有多少成功了"。
+                MetagFunnel.track(.filmFailed, meta: [
+                    "why": (job.status == "failed"
+                            ? MetagFunnel.FailureReason.renderFailed
+                            : .noShots).rawValue,
+                    "shots": job.shots.count,
+                ])
                 editor.mediaPanelToast = MediaPanelToast(
                     message: L10n.key("This film has no usable shots."))
                 return
@@ -54,11 +63,24 @@ enum MetagJobOpener {
                     narrations += 1
                 }
             }
+            // 有镜可取、却一条都没取下来 —— 取件过期。他等完了，手上还是空的。
+            if added == 0 {
+                MetagFunnel.track(.filmFailed, meta: [
+                    "why": MetagFunnel.FailureReason.expired.rawValue,
+                    "shots": job.shots.count,
+                ])
+            }
             editor.mediaPanelToast = MediaPanelToast(
                 message: message(added: added, narrations: narrations, salvaged: job.status == "failed"),
                 kind: added > 0 ? .success : .warning
             )
         } catch {
+            // **这里我不记。**
+            //
+            // 连任务都问不到（网络断了？网关 5xx？任务被清了？）—— 我们不知道
+            // 为什么，而 `why` 只有 `no_shots` / `render_failed` / `expired` 三种，
+            // 硬塞一个进去就是给报表编一个原因。**宁可这一格少记，
+            // 也不要记错。** 缺口已经报给网关那侧，等第四个取值。
             editor.mediaPanelToast = MediaPanelToast(message: error.localizedDescription)
         }
     }

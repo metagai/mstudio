@@ -234,20 +234,33 @@ final class AccountService {
 
     private func openCheckout(plan: String) async {
         lastError = nil
-        do { openInBrowser(try await MetagGateway.checkoutURL(plan: plan)) }
-        catch { lastError = error.localizedDescription }
+        do {
+            let url = try await MetagGateway.checkoutURL(plan: plan)
+            guard openInBrowser(url) else { return }
+            // **只在真的交出去之后才记。** 记在"我发起了跳转"上，
+            // 转化率会凭空变好而钱一分没进来 —— 和把 `paid` 记在按钮上是同一个坑。
+            //
+            // `handoff` 说清这一格在 Mac 上比 web 松一档：web 记的是
+            // "那一页真的打开了"，我们只知道自己把它交给了系统浏览器。
+            MetagFunnel.track(.checkoutOpen, meta: ["plan": plan, "handoff": true])
+        } catch {
+            lastError = error.localizedDescription
+        }
     }
 
-    private func openInBrowser(_ urlString: String) {
+    /// 交出去了返回 true。**拒绝打开也是一种结果**，不能被当成成功。
+    @discardableResult
+    private func openInBrowser(_ urlString: String) -> Bool {
         guard let url = URL(string: urlString),
               url.scheme == "https",
               let host = url.host,
               Self.allowedBillingHosts.contains(host)
         else {
             lastError = "Refused to open untrusted URL."
-            return
+            return false
         }
         NSWorkspace.shared.open(url, configuration: .init(), completionHandler: nil)
+        return true
     }
 }
 

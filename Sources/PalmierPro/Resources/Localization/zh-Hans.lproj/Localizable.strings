@@ -1517,3 +1517,5 @@
 "Your subscription has ended." = "订阅已到期。";
 "Renews %@" = "%@ 续费";
 "Cancelled — yours until %@" = "已取消 —— 你还能用到 %@";
+"Show more" = "展开";
+"Show less" = "收起";

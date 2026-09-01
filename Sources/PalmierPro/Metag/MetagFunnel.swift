@@ -3,7 +3,12 @@ import Foundation
 /// 匿名漏斗埋点。步骤名以网关白名单为准（gateway/src/funnel.rs）——
 /// 两套命名的漏斗合不到一张图上。只发一个随机 id，绝不 await、绝不抛。
 enum MetagFunnel {
-    /// 桌面端没有 checkout_open：Mac 的内购路径还没开，埋一条恒为零的线只会误导。
+    /// **注释不会自己过期，但它会自己变成谎。**
+    ///
+    /// 这里原来写着「桌面端没有 checkout_open：Mac 的内购路径还没开，
+    /// 埋一条恒为零的线只会误导」。写下来那天它是对的；后来账号页和额度卡
+    /// 都接上了 Stripe，而这句话留在原地，**替一个真实存在的缺口作了证** ——
+    /// 和「登录可发起」为一条死路作证两个月是同一个形状。
     enum Step: String, CaseIterable {
         case landed
         case lineReady = "line_ready"
@@ -18,6 +23,43 @@ enum MetagFunnel {
         /// 那两半该改的东西完全相反。
         case filmReady = "film_ready"
         case signedIn = "signed_in"
+        /// 收银台交给系统浏览器了。
+        ///
+        /// **web 记的是"那一页真的打开了"，Mac 只能记"我把它交出去了"** ——
+        /// 我们不知道 Stripe 那一页有没有加载出来。两种含义不能压进同一个数字
+        /// 而不留痕迹，所以 Mac 这一格一律带 `handoff: true`，
+        /// 读数的人一眼知道它比 web 松一档。
+        case checkoutOpen = "checkout_open"
+        /// **他等完了，但没拿到能用的东西。**
+        ///
+        /// 之前这件事一个字都不记：零可用镜的片子直接弹一句提示就结束了，
+        /// 而漏斗里这次尝试根本不存在 —— **失败是隐形的，于是完成率算出来
+        /// 比真实的好看**。分母缺了失败，成功率就不是成功率，
+        /// 是"成功的人里有多少成功了"。
+        ///
+        /// `meta.why`：`no_shots` / `render_failed` / `expired`，三种的下一步完全不同。
+        case filmFailed = "film_failed"
+        /// 他把片子导出来了。**这一格是唯一一个问"他愿不愿意留着它"的** ——
+        /// 其余每一格问的都是"他有没有走完流程"。
+        ///
+        /// `meta.where` 哪一屏、`meta.fmt` 什么格式。不记文件名、不记内容。
+        /// 读数**按人去重不按次数**：一个人可能导好几次。
+        case exported
+    }
+
+    /// `film_failed` 的 `why`。**只有网关认的这三种。**
+    ///
+    /// 做成类型而不是字符串字面量，是因为字面量散在调用点上时，
+    /// 想检查"有没有人编了一个原因"就只能去解析源码 —— 而我第一版判据
+    /// 正是那么写的，它把三元里的 `job.status == "failed"` 当成了一个 why。
+    /// **判据要去解析源码，通常说明源码该长得更清楚一点。**
+    enum FailureReason: String, CaseIterable, Sendable {
+        /// 模型没画出可用的镜。
+        case noShots = "no_shots"
+        /// 流水线断了。
+        case renderFailed = "render_failed"
+        /// 取件过期 —— 他等完了，手上还是空的。
+        case expired
     }
 
     /// 这条事件来自哪个客户端。和落地页的 `page: "landing"` 对齐。

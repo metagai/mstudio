@@ -322,6 +322,14 @@ final class ExportQueue {
         // 完全看不到它（Web 端已经在报）。放在 finish 里而不是那段
         // `guard source == .agent` 之后 —— 那段只覆盖 agent 发起的导出，
         // 而人手动导出的才是大多数。
+        if status == .completed {
+            // **唯一一个问"他愿不愿意留着它"的那一格。** 其余每一格问的都是
+            // "他有没有走完流程"。不记文件名、不记内容。
+            MetagFunnel.track(.exported, meta: [
+                "where": jobs[index].source.rawValue,
+                "fmt": jobs[index].outputURL.pathExtension.lowercased(),
+            ])
+        }
         if status == .completed, let stats = jobs[index].stats {
             MetagGateway.filmEvent(kind: "export", shots: stats.shots,
                                    seconds: stats.seconds, metag: stats.metag)
