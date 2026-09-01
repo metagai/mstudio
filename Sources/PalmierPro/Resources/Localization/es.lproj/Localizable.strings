@@ -1509,3 +1509,8 @@
 "%@ characters" = "%@ caracteres";
 "That's %@ characters over the limit. Trim it, or remove one." = "Son %@ caracteres de más. Recorta un poco o quita uno.";
 "Framing the first shot" = "Encuadrando el primer plano";
+"Manage" = "Gestionar";
+"This month's payment didn't go through. Nothing's cut off yet." = "El pago de este mes no se procesó. Aún no se ha cortado nada.";
+"Your subscription has ended." = "Tu suscripción ha terminado.";
+"Renews %@" = "Se renueva el %@";
+"Cancelled — yours until %@" = "Cancelada: es tuya hasta el %@";

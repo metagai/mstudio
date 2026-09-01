@@ -47,6 +47,18 @@ enum MetagGateway {
         let credits: Int
         /// 付费与否的唯一判据（网关 users.sub_until > now），客户端不要自己推断
         let subscribed: Bool
+        /// 用到哪天为止（epoch 秒，0 = 从来没订过）。
+        ///
+        /// **日子取 Stripe 给的 `current_period_end`，不自己按 35 天推算** ——
+        /// 升降档、试用、优惠券都会让那个日子和我们算的不一样，
+        /// 而这个数字是要印在他屏幕上的。
+        let sub_until: Int?
+        /// 为什么是这个状态：active / canceling / past_due / ended / nil（没订过）。
+        ///
+        /// **`subscribed` 是个布尔，而「他自己取消了」和「他的卡扣不动了」
+        /// 在那个布尔里长得一模一样** —— 而这两件事要他做的事完全相反：
+        /// 前者什么都不用做，后者要他去换卡。这一格存在的全部理由就是这个。
+        let sub_status: String?
         /// 网关只回已验证的邮箱；未验证时为 nil，不能当身份凭据用。
         let email: String?
         let email_verified: Bool?
@@ -680,6 +692,19 @@ enum MetagGateway {
     static func checkoutURL(plan: String) async throws -> String {
         struct Response: Decodable { let url: String }
         let req = try request("api/v1/billing/checkout", method: "POST", body: ["plan": plan])
+        return try await send(req, as: Response.self).url
+    }
+
+    /// Stripe 自助门户（改卡、取消、看账单）。
+    ///
+    /// **这台机器早就在，只是一直没接线** —— 网关里写好了、路由也接上了，
+    /// 而在 2026-09-01 之前没有任何一处界面调用它。于是"怎么取消"
+    /// 用户只能靠再点一次订阅按钮撞进去。
+    ///
+    /// 没付过费的人网关回 404 —— **别给他一个点进去报错的链接。**
+    static func billingPortalURL() async throws -> String {
+        struct Response: Decodable { let url: String }
+        let req = try request("api/v1/billing/portal", method: "POST")
         return try await send(req, as: Response.self).url
     }
 

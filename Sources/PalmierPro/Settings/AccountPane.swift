@@ -70,6 +70,10 @@ struct AccountPane: View {
                 Spacer(minLength: 0)
             }
 
+            // 「续到哪天」「已取消但还能用到哪天」「这个月没扣成功」——
+            // 三种情况要他做的事完全不同，而在只有布尔的时候它们长得一样。
+            SubscriptionLine()
+
             if account.subscriptionPlans.isEmpty {
                 Text(L10n.key("Plans are unavailable right now."))
                     .font(.system(size: AppTheme.FontSize.sm))

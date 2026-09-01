@@ -72,6 +72,8 @@ struct AccountPopoverCard: View {
                 }
             }
 
+            SubscriptionLine()
+
             if !account.isPaid {
                 upgradeBlock
             }

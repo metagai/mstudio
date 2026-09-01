@@ -1512,3 +1512,8 @@
 "%@ characters" = "%@ 字";
 "That's %@ characters over the limit. Trim it, or remove one." = "超出上限 %@ 字。删掉一点，或者移走一份。";
 "Framing the first shot" = "定第一个画面的构图";
+"Manage" = "管理";
+"This month's payment didn't go through. Nothing's cut off yet." = "这个月没扣成功，暂时还没有中断。";
+"Your subscription has ended." = "订阅已到期。";
+"Renews %@" = "%@ 续费";
+"Cancelled — yours until %@" = "已取消 —— 你还能用到 %@";

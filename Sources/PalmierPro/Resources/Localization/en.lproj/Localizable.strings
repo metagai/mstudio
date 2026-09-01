@@ -1508,3 +1508,8 @@
 "%@ characters" = "%@ characters";
 "That's %@ characters over the limit. Trim it, or remove one." = "That's %@ characters over the limit. Trim it, or remove one.";
 "Framing the first shot" = "Framing the first shot";
+"Manage" = "Manage";
+"This month's payment didn't go through. Nothing's cut off yet." = "This month's payment didn't go through. Nothing's cut off yet.";
+"Your subscription has ended." = "Your subscription has ended.";
+"Renews %@" = "Renews %@";
+"Cancelled — yours until %@" = "Cancelled — yours until %@";

@@ -43,6 +43,26 @@ final class AccountService {
 
     private(set) var metagCredits: Int = 0
     private(set) var isPaid: Bool = false
+
+    /// 订阅到哪天为止，以及**为什么是这个状态**。
+    ///
+    /// 只有布尔的时候，「他自己取消了」和「他的卡扣不动了」在界面上长得一样 ——
+    /// 而这两件事要他做的事完全相反：前者什么都不用做（别让他以为已经断了），
+    /// 后者要他去换卡（且必须说清现在还没断）。
+    enum SubscriptionState: Equatable {
+        /// 从来没订过 —— 这一行整个不出现。
+        case none
+        /// 正常续费。只报日期，不催不劝。
+        case active(until: Date)
+        /// 已取消，但还能用到期末。
+        case canceling(until: Date)
+        /// 这个月没扣成功。Stripe 还会重试两三周，**这段时间他该照常用**。
+        case pastDue
+        /// 已经到期。
+        case ended
+    }
+
+    private(set) var subscription: SubscriptionState = .none
     private(set) var plans: [MetagGateway.Pricing.Plan] = []
     /// Signup grant from the gateway. Nil when unknown — callers must fall back to copy
     /// that states no number at all.
@@ -93,11 +113,43 @@ final class AccountService {
             return
         }
         do {
-            let account = try await MetagGateway.account()
-            metagCredits = account.credits
-            isPaid = account.subscribed
-            email = account.email
+            apply(try await MetagGateway.account())
             lastError = nil
+        } catch {
+            lastError = error.localizedDescription
+        }
+    }
+
+    /// 一份账号落到界面状态上。**只有这一处** —— 登录那条路和刷新那条路
+    /// 各解析一遍的话，两边迟早会不一样。
+    private func apply(_ account: MetagGateway.Account) {
+        metagCredits = account.credits
+        isPaid = account.subscribed
+        email = account.email
+        subscription = Self.state(until: account.sub_until, status: account.sub_status)
+    }
+
+    /// 网关那两格 → 界面那一句。
+    ///
+    /// **状态由 `sub_status` 说了算，日期只是它的补充。** 反过来推
+    /// （"有日期就是订着"）会把"卡扣不动了"讲成"一切正常"。
+    static func state(until: Int?, status: String?) -> SubscriptionState {
+        let date = (until ?? 0) > 0 ? Date(timeIntervalSince1970: TimeInterval(until ?? 0)) : nil
+        switch status {
+        case "canceling": return date.map(SubscriptionState.canceling) ?? .ended
+        case "past_due": return .pastDue
+        case "active": return date.map(SubscriptionState.active) ?? .none
+        case "ended": return .ended
+        default: return .none
+        }
+    }
+
+    /// Stripe 自助门户。没付过费的人网关回 404 —— 那时不给链接，
+    /// 而不是给一个点进去报错的链接。
+    func openBillingPortal() async {
+        do {
+            guard let url = URL(string: try await MetagGateway.billingPortalURL()) else { return }
+            NSWorkspace.shared.open(url)
         } catch {
             lastError = error.localizedDescription
         }
@@ -120,9 +172,7 @@ final class AccountService {
             let account = try await MetagAuth.shared.signIn(with: provider) {
                 self.signInPhase = .finishing
             }
-            metagCredits = account.credits
-            isPaid = account.subscribed
-            email = account.email
+            apply(account)
             land(credits: account.credits)
         } catch {
             signInPhase = .idle
@@ -160,6 +210,7 @@ final class AccountService {
         MetagAuth.shared.signOut()
         metagCredits = 0
         isPaid = false
+        subscription = .none
     }
 
     // MARK: - Billing
