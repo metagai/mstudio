@@ -90,13 +90,8 @@ struct PromptAttachmentBar: View {
         }
         .padding(.horizontal, AppTheme.Spacing.smMd)
         .padding(.vertical, AppTheme.Spacing.sm)
-        .background(
-            RoundedRectangle(cornerRadius: AppTheme.Radius.md, style: .continuous)
-                .fill(AppTheme.Text.primaryColor.opacity(AppTheme.Opacity.subtle))
-        )
-        .overlay(
-            RoundedRectangle(cornerRadius: AppTheme.Radius.md, style: .continuous)
-                .strokeBorder(AppTheme.Border.subtleColor, lineWidth: AppTheme.BorderWidth.hairline)
+        .cardSurface(
+            AppTheme.Text.primaryColor.opacity(AppTheme.Opacity.subtle), cornerRadius: AppTheme.Radius.md, border: AppTheme.Border.subtleColor, borderWidth: AppTheme.BorderWidth.hairline
         )
     }
 }

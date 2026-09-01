@@ -338,13 +338,10 @@ extension MediaTab {
             }
         }
         .padding(AppTheme.Spacing.xs)
-        .background(
-            RoundedRectangle(cornerRadius: AppTheme.Radius.sm)
-                .fill(isTargeted.wrappedValue ? AppTheme.Accent.primary.opacity(AppTheme.Opacity.faint) : .clear)
-        )
-        .overlay(
-            RoundedRectangle(cornerRadius: AppTheme.Radius.sm)
-                .strokeBorder(isTargeted.wrappedValue ? AppTheme.Accent.primary.opacity(AppTheme.Opacity.strong) : .clear, lineWidth: AppTheme.BorderWidth.thin)
+        .cardSurface(
+            isTargeted.wrappedValue ? AppTheme.Accent.primary.opacity(AppTheme.Opacity.faint) : .clear,
+            cornerRadius: AppTheme.Radius.sm,
+            border: isTargeted.wrappedValue ? AppTheme.Accent.primary.opacity(AppTheme.Opacity.strong) : .clear
         )
         .contentShape(Rectangle())
         .onDrop(of: [.fileURL, .text], isTargeted: isTargeted) { providers in

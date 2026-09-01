@@ -10,14 +10,7 @@ private struct EditorValueFieldModifier: ViewModifier {
     func body(content: Content) -> some View {
         content
             .frame(minHeight: minHeight)
-            .background(
-                RoundedRectangle(cornerRadius: AppTheme.Radius.xsSm, style: .continuous)
-                    .fill(fill)
-            )
-            .overlay(
-                RoundedRectangle(cornerRadius: AppTheme.Radius.xsSm, style: .continuous)
-                    .strokeBorder(border, lineWidth: AppTheme.BorderWidth.thin)
-            )
+            .cardSurface(fill, cornerRadius: AppTheme.Radius.xsSm, border: border)
             .opacity(isEnabled ? AppTheme.Opacity.opaque : AppTheme.Opacity.medium)
             .onHover { isHovered = $0 }
             .animation(.easeOut(duration: AppTheme.Anim.hover), value: isHovered)

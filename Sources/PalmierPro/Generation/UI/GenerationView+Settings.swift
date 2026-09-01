@@ -51,13 +51,8 @@ extension GenerationView {
             }
         }
         .padding(AppTheme.Spacing.xxs)
-        .background(
-            RoundedRectangle(cornerRadius: AppTheme.Radius.sm)
-                .fill(AppTheme.Text.primaryColor.opacity(AppTheme.Opacity.subtle))
-        )
-        .overlay(
-            RoundedRectangle(cornerRadius: AppTheme.Radius.sm)
-                .strokeBorder(AppTheme.Border.primaryColor, lineWidth: AppTheme.BorderWidth.thin)
+        .cardSurface(
+            AppTheme.Text.primaryColor.opacity(AppTheme.Opacity.subtle), cornerRadius: AppTheme.Radius.sm, border: AppTheme.Border.primaryColor, borderWidth: AppTheme.BorderWidth.thin
         )
     }
 

@@ -238,16 +238,8 @@ struct CaptionTab: View {
             }
             .padding(AppTheme.Spacing.xs)
             .frame(maxWidth: .infinity, alignment: .leading)
-            .background(
-                RoundedRectangle(cornerRadius: AppTheme.Radius.sm)
-                    .fill(AppTheme.Background.raisedColor)
-            )
-            .overlay(
-                RoundedRectangle(cornerRadius: AppTheme.Radius.sm)
-                    .strokeBorder(
-                        selected ? AppTheme.Accent.timecodeColor : AppTheme.Border.subtleColor,
-                        lineWidth: selected ? AppTheme.BorderWidth.medium : AppTheme.BorderWidth.hairline
-                    )
+            .cardSurface(
+                AppTheme.Background.raisedColor, cornerRadius: AppTheme.Radius.sm, border: selected ? AppTheme.Accent.timecodeColor : AppTheme.Border.subtleColor, borderWidth: selected ? AppTheme.BorderWidth.medium : AppTheme.BorderWidth.hairline
             )
             .contentShape(RoundedRectangle(cornerRadius: AppTheme.Radius.sm))
         }

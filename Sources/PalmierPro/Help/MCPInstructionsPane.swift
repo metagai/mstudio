@@ -148,7 +148,7 @@ struct MCPInstructionsPane: View {
         }
         .padding(.horizontal, AppTheme.Spacing.mdLg)
         .padding(.vertical, AppTheme.Spacing.md)
-        .themedSurface(AppTheme.Background.raisedColor, cornerRadius: AppTheme.Radius.sm)
+        .cardSurface(AppTheme.Background.raisedColor, cornerRadius: AppTheme.Radius.sm)
     }
 
     private func noticeText(_ refusal: MCPAccessRefusal) -> String {
@@ -351,7 +351,7 @@ private struct CodeBlockView: View {
         }
         .padding(.horizontal, AppTheme.Spacing.mdLg)
         .padding(.vertical, verticalPadding)
-        .themedSurface(AppTheme.Background.raisedColor, cornerRadius: AppTheme.Radius.sm)
+        .cardSurface(AppTheme.Background.raisedColor, cornerRadius: AppTheme.Radius.sm)
     }
 }
 

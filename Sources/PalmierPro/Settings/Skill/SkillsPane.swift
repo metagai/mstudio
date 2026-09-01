@@ -154,7 +154,7 @@ struct SkillsPane: View {
         }
         .padding(.horizontal, AppTheme.Spacing.md)
         .padding(.vertical, AppTheme.Spacing.smMd)
-        .themedSurface(AppTheme.Background.raisedColor, cornerRadius: AppTheme.Radius.sm)
+        .cardSurface(AppTheme.Background.raisedColor, cornerRadius: AppTheme.Radius.sm)
     }
 
     private var skillList: some View {

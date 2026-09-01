@@ -124,7 +124,7 @@ struct SkillDetailSheet: View {
                         .padding(AppTheme.Spacing.xlXxl)
                 }
                 .scrollEdgeEffectStyle(.soft, for: .top)
-                .themedSurface(AppTheme.Background.raisedColor, cornerRadius: AppTheme.Radius.md)
+                .cardSurface(AppTheme.Background.raisedColor, cornerRadius: AppTheme.Radius.md)
                 .clipShape(RoundedRectangle(cornerRadius: AppTheme.Radius.md, style: .continuous))
                 .padding(.horizontal, AppTheme.Spacing.xlXxl)
                 .padding(.top, AppTheme.Spacing.mdLg)
@@ -271,7 +271,7 @@ struct SkillDetailSheet: View {
                 .focused($titleFocused)
                 .padding(.horizontal, AppTheme.Spacing.sm)
                 .padding(.vertical, AppTheme.Spacing.xs)
-                .themedSurface(
+                .cardSurface(
                     AppTheme.Background.raisedColor,
                     cornerRadius: AppTheme.Radius.xs,
                     border: AppTheme.Accent.link.opacity(AppTheme.Opacity.medium)
@@ -513,7 +513,7 @@ struct SkillDetailSheet: View {
         .padding(.horizontal, AppTheme.Spacing.mdLg)
         .padding(.vertical, AppTheme.Spacing.smMd)
         .frame(maxWidth: AppTheme.Settings.skillToastWidth)
-        .themedSurface(
+        .cardSurface(
             AppTheme.Background.prominentColor,
             cornerRadius: AppTheme.Radius.md,
             border: AppTheme.Border.primaryColor,

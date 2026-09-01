@@ -116,16 +116,11 @@ struct MetagDirectorSheet: View {
             }
             .frame(maxWidth: .infinity, alignment: .leading)
             .padding(AppTheme.Spacing.sm)
-            .background(
-                RoundedRectangle(cornerRadius: AppTheme.Radius.sm)
-                    .fill(selected ? AppTheme.Accent.primary.opacity(AppTheme.Opacity.faint) : AppTheme.Background.raisedColor)
-            )
-            .overlay(
-                RoundedRectangle(cornerRadius: AppTheme.Radius.sm)
-                    .strokeBorder(
-                        selected ? AppTheme.Accent.primary : AppTheme.Border.subtleColor,
-                        lineWidth: selected ? AppTheme.BorderWidth.medium : AppTheme.BorderWidth.hairline
-                    )
+            .cardSurface(
+                selected ? AppTheme.Accent.primary.opacity(AppTheme.Opacity.faint) : AppTheme.Background.raisedColor,
+                cornerRadius: AppTheme.Radius.sm,
+                border: selected ? AppTheme.Accent.primary : AppTheme.Border.subtleColor,
+                borderWidth: selected ? AppTheme.BorderWidth.medium : AppTheme.BorderWidth.hairline
             )
             .contentShape(RoundedRectangle(cornerRadius: AppTheme.Radius.sm))
         }
@@ -252,13 +247,10 @@ struct MetagDirectorSheet: View {
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding(AppTheme.Spacing.sm)
-        .background(
-            RoundedRectangle(cornerRadius: AppTheme.Radius.sm)
-                .fill(AppTheme.Accent.primary.opacity(AppTheme.Opacity.faint))
-        )
-        .overlay(
-            RoundedRectangle(cornerRadius: AppTheme.Radius.sm)
-                .strokeBorder(AppTheme.Accent.primary.opacity(AppTheme.Opacity.medium), lineWidth: AppTheme.BorderWidth.thin)
+        .cardSurface(
+            AppTheme.Accent.primary.opacity(AppTheme.Opacity.faint),
+            cornerRadius: AppTheme.Radius.sm,
+            border: AppTheme.Accent.primary.opacity(AppTheme.Opacity.medium)
         )
     }
 

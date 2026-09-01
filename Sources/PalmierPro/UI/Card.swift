@@ -1,45 +1,69 @@
 import SwiftUI
 
-/// 一块**卡片**。全 app 只有这一种画法。
+// MARK: - 一块卡片，全 app 只有这一种画法
+//
+// ## 这块砖一直都在，只是没人找得到
+//
+// 2026-09-01 我数出「`RoundedRectangle(cornerRadius:` 出现 133 次 / 57 个文件」，
+// 就断定"全 app 没有卡片这个东西"，然后动手新造了一块。**造完才发现它早就有** ——
+// `themedSurface(_:cornerRadius:)`，fill + 同圆角描边，一模一样的东西，
+// 藏在一个叫 `HoverHighlight.swift` 的文件里，全仓只有 11 处在用。
+//
+// **一块找不到的砖不算砖。** 57 个文件手搓卡片，不是因为大家不想复用，
+// 是因为想复用的人搜 "Card" 搜不到任何东西。而我差一点就把它变成第二块砖 ——
+// 那样问题不是被解决，是被翻倍。
+//
+// 所以这个文件做两件事：把那块砖搬到它名字该在的地方，然后只留一块。
+//
+// ## 那 133 个数字也是错的
+//
+// 我数的是 `RoundedRectangle(cornerRadius` 的出现次数，然后管它叫"手搓卡片"。
+// 逐个分类之后：37 处是 `clipShape`（裁图，本来就不是卡片）、39 处是选中环/焦点圈、
+// 26 处是悬停填充和代码块底色，**真正 fill+描边的容器只有 3 处**。
+//
+// 数一个东西然后管它叫另一个名字 —— 这和"判据看了 0 个 key 还报绿"是同一族。
+
+extension View {
+    /// 一块卡片的**表面**：同一个圆角的填充 + 描边。
+    ///
+    /// 需要内边距和阴影的场合用 `Card`；只要这层皮就用它
+    /// （行、磁贴、分组，它们各自的内边距不一样）。
+    func cardSurface(
+        _ fill: Color = AppTheme.Background.prominentColor,
+        cornerRadius: CGFloat = AppTheme.Radius.mdLg,
+        border: Color = AppTheme.Border.subtleColor,
+        borderWidth: CGFloat = AppTheme.BorderWidth.thin
+    ) -> some View {
+        background(RoundedRectangle(cornerRadius: cornerRadius, style: .continuous).fill(fill))
+            .overlay(
+                RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
+                    .strokeBorder(border, lineWidth: borderWidth)
+            )
+    }
+}
+
+/// 常见的那一种：一块有内边距的卡片。
 ///
-/// ## 为什么需要它
-///
-/// 2026-09-01 数了一遍：`RoundedRectangle(cornerRadius:` 在 57 个文件里出现
-/// **133 次** —— 每一屏都在手搓自己的卡片，圆角、描边、底色、阴影各挑各的。
-/// 单独看每一处都合理，合起来就是"这些屏不像同一个产品"。
-///
-/// **这就是"乐高感"的反面。** 乐高之所以像乐高，不是因为积木好看，
-/// 是因为**每一块的接口都一样**：随便两块都能拼，拼出来还是一套东西。
-/// 一个到处手搓卡片的界面，是 133 种互不兼容的积木。
-///
-/// 所以先立这一块砖，再把手搓的一处处换过来 —— 换完之后，
-/// 改一次圆角，全 app 一起变。
+/// 乐高像乐高不是因为积木好看，是因为**每一块的接口都一样**。
+/// 这就是那个接口 —— 它只包 `cardSurface`，所以改一次圆角，全 app 一起变。
 struct Card<Content: View>: View {
     enum Elevation {
-        /// 贴在面板上的一块，不浮起。用于列表里的行、设置里的分组。
+        /// 贴在面板上，不浮起。列表里的行、设置里的分组。
         case flat
-        /// 浮起来的一块，带阴影。用于弹层、草案卡、需要"拿在手上"的东西。
+        /// 浮起来，带阴影。弹层、草案卡、需要"拿在手上"的东西。
         case raised
     }
 
     var elevation: Elevation = .flat
-    /// 内边距。默认那一档适合大多数场合；密集列表里可以收紧。
     var padding: CGFloat = AppTheme.Spacing.mdLg
     @ViewBuilder var content: () -> Content
-
-    private var shape: RoundedRectangle {
-        RoundedRectangle(cornerRadius: AppTheme.Radius.mdLg, style: .continuous)
-    }
 
     var body: some View {
         content()
             .padding(padding)
-            .background(
-                shape.fill(elevation == .raised
-                           ? AppTheme.Background.raisedColor
-                           : AppTheme.Background.prominentColor)
-            )
-            .overlay(shape.strokeBorder(AppTheme.Border.subtleColor, lineWidth: AppTheme.BorderWidth.hairline))
+            .cardSurface(elevation == .raised
+                         ? AppTheme.Background.raisedColor
+                         : AppTheme.Background.prominentColor)
             .modifier(CardShadow(on: elevation == .raised))
     }
 }
@@ -51,13 +75,5 @@ private struct CardShadow: ViewModifier {
 
     func body(content: Content) -> some View {
         if on { content.shadow(AppTheme.Shadow.md) } else { content }
-    }
-}
-
-extension View {
-    /// 把这一段包成一块卡片。
-    func card(_ elevation: Card<Self>.Elevation = .flat,
-              padding: CGFloat = AppTheme.Spacing.mdLg) -> some View {
-        Card(elevation: elevation, padding: padding) { self }
     }
 }

@@ -130,7 +130,7 @@ struct AccountPane: View {
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
         .padding(.horizontal, AppTheme.Spacing.lgXl)
         .padding(.vertical, AppTheme.Spacing.mdLg)
-        .themedSurface(AppTheme.Background.prominentColor, cornerRadius: AppTheme.Radius.mdLg)
+        .cardSurface(AppTheme.Background.prominentColor, cornerRadius: AppTheme.Radius.mdLg)
     }
 
     @ViewBuilder

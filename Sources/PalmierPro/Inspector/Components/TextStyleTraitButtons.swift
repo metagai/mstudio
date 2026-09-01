@@ -57,16 +57,8 @@ struct TextStyleTraitButtons: View {
                 .font(.system(size: AppTheme.FontSize.sm, weight: AppTheme.FontWeight.semibold))
                 .foregroundStyle(isActive ? AppTheme.Background.baseColor : AppTheme.Text.tertiaryColor)
                 .frame(width: AppTheme.IconSize.mdLg, height: AppTheme.IconSize.md)
-                .background(
-                    RoundedRectangle(cornerRadius: AppTheme.Radius.xsSm)
-                        .fill(isActive ? AppTheme.Accent.primary : AppTheme.Text.primaryColor.opacity(AppTheme.Opacity.hint))
-                )
-                .overlay(
-                    RoundedRectangle(cornerRadius: AppTheme.Radius.xsSm)
-                        .strokeBorder(
-                            isActive ? AppTheme.Accent.primary : AppTheme.Border.subtleColor,
-                            lineWidth: isActive ? AppTheme.BorderWidth.thin : AppTheme.BorderWidth.hairline
-                        )
+                .cardSurface(
+                    isActive ? AppTheme.Accent.primary : AppTheme.Text.primaryColor.opacity(AppTheme.Opacity.hint), cornerRadius: AppTheme.Radius.xsSm, border: isActive ? AppTheme.Accent.primary : AppTheme.Border.subtleColor, borderWidth: isActive ? AppTheme.BorderWidth.thin : AppTheme.BorderWidth.hairline
                 )
         }
         .buttonStyle(.plain)

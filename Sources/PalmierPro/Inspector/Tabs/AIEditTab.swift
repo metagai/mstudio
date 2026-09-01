@@ -346,7 +346,7 @@ struct AIEditTab: View {
     ) -> some View {
         content()
             .hoverHighlight(cornerRadius: AppTheme.Radius.sm)
-            .themedSurface(
+            .cardSurface(
                 AppTheme.Background.raisedColor,
                 cornerRadius: AppTheme.Radius.sm,
                 borderWidth: AppTheme.BorderWidth.hairline

@@ -159,16 +159,8 @@ private struct APIKeySettingRow: View {
             .onSubmit(save)
             .padding(.horizontal, AppTheme.Spacing.md)
             .padding(.vertical, AppTheme.Spacing.smMd)
-            .background(
-                RoundedRectangle(cornerRadius: AppTheme.Radius.sm)
-                    .fill(AppTheme.Background.baseColor.opacity(AppTheme.Opacity.medium))
-            )
-            .overlay(
-                RoundedRectangle(cornerRadius: AppTheme.Radius.sm)
-                    .strokeBorder(
-                        isFocused ? AppTheme.Border.primaryColor : AppTheme.Border.subtleColor,
-                        lineWidth: AppTheme.BorderWidth.thin
-                    )
+            .cardSurface(
+                AppTheme.Background.baseColor.opacity(AppTheme.Opacity.medium), cornerRadius: AppTheme.Radius.sm, border: isFocused ? AppTheme.Border.primaryColor : AppTheme.Border.subtleColor, borderWidth: AppTheme.BorderWidth.thin
             )
             .animation(.easeOut(duration: AppTheme.Anim.hover), value: isFocused)
     }

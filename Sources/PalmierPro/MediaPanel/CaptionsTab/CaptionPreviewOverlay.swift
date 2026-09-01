@@ -141,13 +141,8 @@ struct CaptionPreviewOverlay: View {
         .foregroundStyle(AppTheme.Text.primaryColor)
         .padding(.horizontal, AppTheme.Spacing.sm)
         .frame(height: AppTheme.IconSize.mdLg)
-        .background(
-            RoundedRectangle(cornerRadius: AppTheme.Radius.sm)
-                .fill(AppTheme.Background.surfaceColor.opacity(AppTheme.Opacity.prominent))
-        )
-        .overlay(
-            RoundedRectangle(cornerRadius: AppTheme.Radius.sm)
-                .strokeBorder(AppTheme.Border.primaryColor, lineWidth: AppTheme.BorderWidth.hairline)
+        .cardSurface(
+            AppTheme.Background.surfaceColor.opacity(AppTheme.Opacity.prominent), cornerRadius: AppTheme.Radius.sm, border: AppTheme.Border.primaryColor, borderWidth: AppTheme.BorderWidth.hairline
         )
         .padding(AppTheme.Spacing.sm)
         .allowsHitTesting(false)

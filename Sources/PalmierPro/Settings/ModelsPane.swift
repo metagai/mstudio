@@ -79,13 +79,8 @@ struct ModelsPane: View {
         }
         .padding(.horizontal, AppTheme.Spacing.md)
         .padding(.vertical, AppTheme.Spacing.smMd)
-        .background(
-            RoundedRectangle(cornerRadius: AppTheme.Radius.md)
-                .fill(AppTheme.Text.primaryColor.opacity(AppTheme.Opacity.subtle))
-        )
-        .overlay(
-            RoundedRectangle(cornerRadius: AppTheme.Radius.md)
-                .strokeBorder(AppTheme.Border.primaryColor, lineWidth: AppTheme.BorderWidth.thin)
+        .cardSurface(
+            AppTheme.Text.primaryColor.opacity(AppTheme.Opacity.subtle), cornerRadius: AppTheme.Radius.md, border: AppTheme.Border.primaryColor, borderWidth: AppTheme.BorderWidth.thin
         )
     }
 

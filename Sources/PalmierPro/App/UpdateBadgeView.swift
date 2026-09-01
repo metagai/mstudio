@@ -28,13 +28,11 @@ struct UpdateSidebarCard: View {
                 .padding(.vertical, AppTheme.Spacing.md)
             }
             .buttonStyle(.plain)
-            .background(
-                RoundedRectangle(cornerRadius: AppTheme.Radius.md, style: .continuous)
-                    .fill(isHovering ? AppTheme.Background.prominentColor : AppTheme.Background.raisedColor)
-            )
-            .overlay(
-                RoundedRectangle(cornerRadius: AppTheme.Radius.md, style: .continuous)
-                    .strokeBorder(AppTheme.Border.primaryColor, lineWidth: AppTheme.BorderWidth.hairline)
+            .cardSurface(
+                isHovering ? AppTheme.Background.prominentColor : AppTheme.Background.raisedColor,
+                cornerRadius: AppTheme.Radius.md,
+                border: AppTheme.Border.primaryColor,
+                borderWidth: AppTheme.BorderWidth.hairline
             )
             .onHover { isHovering = $0 }
             .animation(.easeOut(duration: AppTheme.Anim.hover), value: isHovering)

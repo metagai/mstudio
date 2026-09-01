@@ -22,8 +22,26 @@
 2. **不许用裸的系统色**（`.foregroundStyle(.orange)`）—— `systemOrange`
    在我们的纸底上只有 2.11:1，过不了 AA。AppTheme 里为此专门收敛过一版。
 
-手搓卡片的那 133 处**只报数不判红**：一次全改完的风险比它本身大。
-数字会随着一处处换成 `Card` 往下走 —— 它是进度条，不是闸。
+## 手搓卡片：棘轮，不是到期日
+
+我原来打算"只报数不判红，三周后降不到 100 就判红"。合伙人指出那不成立：
+**一个需要人再决定一次的触发条件，等于没有触发条件** —— 三周后数字是 118，
+判不判？大概率有人说"这周太忙"，把日期往后挪一次，而挪过一次的期限
+就再也不是期限了。
+
+改成棘轮：把当前值写死在 `HIGH_WATER` 里。**多一处就红**（新债当天被抓住），
+少一处就提醒把这行改小（存量自己往下走）。降到 0 那天它自动变成一道闸，
+不需要谁记得、不需要再改一次代码形态。
+
+## 顺带更正一个我数错的数
+
+我原来数 `RoundedRectangle(cornerRadius` 的出现次数（133），然后管它叫
+"手搓卡片"。逐个分类之后：37 处是 `clipShape`（裁图，本来就不是卡片）、
+39 处是选中环/焦点圈、26 处是悬停填充和代码块底色 —— **真正 fill+描边的
+容器只有 3 处**，而且已经换完了。
+
+**数一个东西然后管它叫另一个名字**，和"判据看了 0 个 key 还报绿"是同一族。
+所以这里数的是那个真签名，不是那个大数。
 """
 import re
 import sys
@@ -41,7 +59,29 @@ ALLOW = {
 SEMANTIC_FONT = re.compile(r"\.font\(\.(?:headline|subheadline|caption2?|title\d?|body|footnote)\)")
 SYSTEM_BUTTON = re.compile(r"\.buttonStyle\(\.bordered(?:Prominent)?\)")
 RAW_COLOR = re.compile(r"\.foregroundStyle\(\.(?:orange|green|red|blue|yellow|gray|secondary|tertiary|quaternary)\)")
-HANDROLLED_CARD = re.compile(r"RoundedRectangle\(cornerRadius")
+# 真正的"手搓卡片"签名：`.background(RoundedRectangle…fill)` 紧跟
+# `.overlay(RoundedRectangle…strokeBorder)` —— 那正是 `cardSurface` 做的事。
+# `clipShape` / 选中环 / 悬停填充都不算：它们本来就不是卡片。
+HANDROLLED_CARD = re.compile(
+    r"\.background\(\s*\n\s*RoundedRectangle\(cornerRadius[^\n]*\n\s*\.fill\([^\n]*\n\s*\)"
+    r"\s*\n\s*\.overlay\(\s*\n\s*RoundedRectangle\(cornerRadius[^\n]*\n\s*\.strokeBorder\(",
+    re.M,
+)
+
+# 棘轮的当前刻度。**只能往下调。** 判据会告诉你该调成多少。
+HIGH_WATER = 0
+
+
+def handrolled_cards():
+    """整文件扫（这个签名跨行），返回 [(文件, 行号)]。"""
+    out = []
+    for path in sorted(SOURCES.rglob("*.swift")):
+        if path.name == "Card.swift":
+            continue
+        text = path.read_text()
+        for m in HANDROLLED_CARD.finditer(text):
+            out.append((str(path.relative_to(SOURCES)), text[: m.start()].count("\n") + 1))
+    return out
 
 
 def code_lines():
@@ -57,10 +97,8 @@ def code_lines():
 def main():
     failed = False
     findings = {"系统语义字号": [], "系统按钮样式": [], "裸系统色": []}
-    cards = 0
 
     for rel, n, line in code_lines():
-        cards += len(HANDROLLED_CARD.findall(line))
         if rel in ALLOW:
             continue
         for label, rx in (
@@ -80,9 +118,17 @@ def main():
         else:
             print(f"OK   没有{label}")
 
-    # **进度条，不是闸。** 一次把 133 处全换掉的风险比它本身大；
-    # 这个数字随着一处处换成 `Card` 往下走，走到 0 就把它改成判红。
-    print(f"NOTE 手搓卡片还有 {cards} 处 —— 换成 `Card` 的进度条（不判红）")
+    cards = handrolled_cards()
+    if len(cards) > HIGH_WATER:
+        failed = True
+        print(f"FAIL 手搓卡片 {len(cards)} 处 > 棘轮 {HIGH_WATER} —— 新写的这几处要用 `cardSurface`：")
+        for rel, n in cards[:10]:
+            print(f"       {rel}:{n}")
+    elif len(cards) < HIGH_WATER:
+        print(f"OK   手搓卡片降到 {len(cards)} 处 —— **把 HIGH_WATER 改成 {len(cards)}**（棘轮只能往下）")
+    else:
+        print(f"OK   手搓卡片 {len(cards)} 处，和棘轮持平")
+
     return 1 if failed else 0
 
 

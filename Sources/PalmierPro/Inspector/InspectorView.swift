@@ -1011,7 +1011,7 @@ struct InspectorView: View {
                 .padding(.horizontal, AppTheme.Spacing.smMd)
                 .padding(.vertical, AppTheme.Spacing.sm)
                 .frame(maxWidth: .infinity, alignment: .leading)
-                .themedSurface(
+                .cardSurface(
                     AppTheme.Background.raisedColor,
                     cornerRadius: AppTheme.Radius.sm,
                     borderWidth: AppTheme.BorderWidth.hairline

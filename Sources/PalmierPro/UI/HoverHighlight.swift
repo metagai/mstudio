@@ -41,17 +41,4 @@ extension View {
     ) -> some View {
         modifier(HoverHighlight(cornerRadius: cornerRadius, isActive: isActive, activeFill: activeFill))
     }
-
-    func themedSurface(
-        _ fill: Color,
-        cornerRadius: CGFloat,
-        border: Color = AppTheme.Border.subtleColor,
-        borderWidth: CGFloat = AppTheme.BorderWidth.thin
-    ) -> some View {
-        background(RoundedRectangle(cornerRadius: cornerRadius, style: .continuous).fill(fill))
-            .overlay(
-                RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
-                    .strokeBorder(border, lineWidth: borderWidth)
-            )
-    }
 }
