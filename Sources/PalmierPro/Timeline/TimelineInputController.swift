@@ -1417,7 +1417,7 @@ final class TimelineInputController {
                 timer.invalidate()
                 return
             }
-            MainActor.assumeIsolated {
+            MainThread.run {
                 self.tickPlayheadAutoScroll()
             }
         }

@@ -433,22 +433,21 @@ struct AgentPanelView: View {
         // 托管对话未上线时不提供登录 CTA —— 登录也开不了口，只会把用户引到死路
         let offersHostedAgent = MetagGateway.hostedAgentEnabled && !account.isSignedIn
         VStack(spacing: AppTheme.Spacing.mdLg) {
-            Button {
-                if offersHostedAgent {
-                    Task { await account.signInWithGoogle() }
-                } else {
+            // 登录是菜单（四家都在），其余是按钮 —— 两条路的脸是同一张。
+            if offersHostedAgent {
+                SignInMenu { missingKeyPrimaryLabelView(account: account) }
+                    .menuStyle(.button)
+                    .buttonStyle(.capsule(.prominent, size: .regular))
+                    .menuIndicator(.hidden)
+                    .fixedSize()
+            } else {
+                Button {
                     SettingsWindowController.shared.show(tab: .agent)
+                } label: {
+                    missingKeyPrimaryLabelView(account: account)
                 }
-            } label: {
-                HStack(spacing: AppTheme.Spacing.sm) {
-                    if let icon = missingKeyPrimaryIcon(account: account) {
-                        Image(systemName: icon)
-                    }
-                    Text(missingKeyPrimaryLabel(account: account))
-                }
-                    .font(.system(size: AppTheme.FontSize.mdLg, weight: .semibold))
+                .buttonStyle(.capsule(.prominent, size: .regular))
             }
-            .buttonStyle(.capsule(.prominent, size: .regular))
 
             if !account.isSignedIn {
                 Text(L10n.string("First-time sign-ups only"))
@@ -473,6 +472,16 @@ struct AgentPanelView: View {
         service.model.provider.chatPresentation.missingKeyLinkTitle
     }
 
+    private func missingKeyPrimaryLabelView(account: AccountService) -> some View {
+        HStack(spacing: AppTheme.Spacing.sm) {
+            if let icon = missingKeyPrimaryIcon(account: account) {
+                Image(systemName: icon)
+            }
+            Text(missingKeyPrimaryLabel(account: account))
+        }
+        .font(.system(size: AppTheme.FontSize.mdLg, weight: .semibold))
+    }
+
     private func missingKeyPrimaryLabel(account: AccountService) -> String {
         if !account.isSignedIn { return L10n.string("Log in for 250 free credits") }
         if !account.isPaid { return L10n.string("Subscribe") }
@@ -483,14 +492,6 @@ struct AgentPanelView: View {
         if !account.isSignedIn { return "gift.fill" }
         if !account.isPaid { return nil }
         return "gearshape"
-    }
-
-    private func missingKeyPrimaryAction(account: AccountService) {
-        if !account.isSignedIn {
-            Task { await account.signInWithGoogle() }
-        } else {
-            SettingsWindowController.shared.show(tab: .account)
-        }
     }
 
     private func scrollToBottom(_ proxy: ScrollViewProxy) {

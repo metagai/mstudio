@@ -87,8 +87,6 @@ final class AccountService {
 
     // MARK: - Sign in
 
-    func signInWithGoogle() async { await signIn(with: .google) }
-
     func signIn(with provider: MetagAuth.Provider) async {
         guard !isSigningIn else {
             lastError = "Sign-in is already in progress."

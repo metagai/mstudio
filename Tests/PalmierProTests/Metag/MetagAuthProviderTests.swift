@@ -32,6 +32,34 @@ struct MetagAuthProviderTests {
         #expect(provider.authBase == MetagGateway.baseURL)
     }
 
+    /// **授权回调不许继承主线程隔离。**
+    ///
+    /// `MetagAuth` 是 `@MainActor`，所以写在它里面的闭包默认是主线程隔离的；
+    /// 而 AuthenticationServices 在一条 XPC 回复队列上调它 —— Swift 6 运行时
+    /// 当场核对隔离，对不上就 `__builtin_trap()`。2026-08-31 创始人五次
+    /// 「扫完码就崩」，栈顶是：
+    ///
+    ///     _dispatch_assert_queue_fail
+    ///     swift_task_checkIsolatedSwift
+    ///     closure #1 in closure #2 in MetagAuth.signIn(with:)
+    ///     -[ASWebAuthenticationSession _endSessionWithCallbackURL:error:]
+    ///     _xpc_connection_reply_callout
+    ///
+    /// **这一条只能看源码。** 崩的是回调那一刻，而回调只有真机扫码才发生 ——
+    /// 单测碰不到 `ASWebAuthenticationSession`，一次都没红过。
+    /// 判据弱，但比没有强：`@Sendable` 一没，它就红。
+    @Test func theAuthCallbackDoesNotInheritMainActorIsolation() throws {
+        let src = try String(
+            contentsOf: URL(fileURLWithPath: #filePath)
+                .deletingLastPathComponent().deletingLastPathComponent()
+                .deletingLastPathComponent().deletingLastPathComponent()
+                .appendingPathComponent("Sources/PalmierPro/Metag/MetagAuth.swift"),
+            encoding: .utf8
+        )
+        #expect(src.contains("callbackURLScheme: \"metag\") { @Sendable url, error in"),
+                "授权回调又继承主线程隔离了 —— 扫完码那一刻整个 app 会消失")
+    }
+
     @Test func everyProviderHasANameAndAnIcon() {
         for p in MetagAuth.Provider.allCases {
             #expect(!p.title.isEmpty)

@@ -124,29 +124,41 @@ extension GenerationView {
         .help(costHelpText)
     }
 
+    @ViewBuilder
     var submitButton: some View {
-        Button {
-            if aiAllowed { submitGeneration() }
-            else if !account.isMisconfigured { Task { await account.signInWithGoogle() } }
-        } label: {
-            Image(systemName: aiAllowed ? "arrow.up" : "person.crop.circle")
-                .font(.system(size: AppTheme.FontSize.sm, weight: .bold))
-                .frame(width: AppTheme.IconSize.sm, height: AppTheme.IconSize.sm)
+        if aiAllowed {
+            Button(action: submitGeneration) { submitIcon("arrow.up") }
+                .buttonStyle(.glassProminent)
+                .buttonBorderShape(.circle)
+                .controlSize(.regular)
+                .tint(AppTheme.Accent.primary)
+                .accessibilityLabel(selectedType == .upscale ? L10n.string("Upscale") : L10n.string("Generate"))
+                .disabled(!canSubmit)
+                .opacity(canSubmit ? AppTheme.Opacity.opaque : AppTheme.Opacity.strong)
+                .help(selectedType == .upscale ? L10n.string("Upscale source media") : String())
+        } else {
+            // 没登录时这颗按钮**打开菜单**。它以前直接跳 Google ——
+            // 在"我正要出片"这一步被推给一家陌生的登录，是最贵的一次打断。
+            SignInMenu { submitIcon("person.crop.circle") }
+                .menuStyle(.button)
+                .buttonStyle(.glassProminent)
+                .buttonBorderShape(.circle)
+                .controlSize(.regular)
+                .menuIndicator(.hidden)
+                .tint(AppTheme.Accent.primary)
+                .accessibilityLabel(L10n.string("Sign in"))
+                .disabled(account.isMisconfigured)
+                .opacity(!account.isMisconfigured && !account.isSigningIn ? AppTheme.Opacity.opaque : AppTheme.Opacity.strong)
+                .help(account.isMisconfigured
+                    ? L10n.string("AI is unavailable")
+                    : L10n.string("Sign in to generate"))
         }
-        .buttonStyle(.glassProminent)
-        .buttonBorderShape(.circle)
-        .controlSize(.regular)
-        .tint(AppTheme.Accent.primary)
-        .accessibilityLabel(aiAllowed
-            ? (selectedType == .upscale ? L10n.string("Upscale") : L10n.string("Generate"))
-            : L10n.string("Sign in"))
-        .disabled(aiAllowed ? !canSubmit : account.isMisconfigured || account.isSigningIn)
-        .opacity((aiAllowed ? canSubmit : !account.isMisconfigured && !account.isSigningIn) ? AppTheme.Opacity.opaque : AppTheme.Opacity.strong)
-        .help(aiAllowed
-            ? (selectedType == .upscale ? L10n.string("Upscale source media") : String())
-            : (account.isMisconfigured
-                ? L10n.string("AI is unavailable")
-                : account.isSigningIn ? L10n.string("Opening Google") : L10n.string("Sign in to generate")))
+    }
+
+    private func submitIcon(_ name: String) -> some View {
+        Image(systemName: name)
+            .font(.system(size: AppTheme.FontSize.sm, weight: .bold))
+            .frame(width: AppTheme.IconSize.sm, height: AppTheme.IconSize.sm)
     }
 
     // MARK: - Actions

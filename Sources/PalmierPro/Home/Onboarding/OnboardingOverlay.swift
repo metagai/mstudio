@@ -131,7 +131,7 @@ struct OnboardingOverlay: View {
                 ForEach(MetagAuth.Provider.allCases, id: \.self) { provider in
                     secondaryButton(
                         provider.title,
-                        action: { Task { await account.signIn(with: provider) } },
+                        action: { signIn(with: provider) },
                         disabled: account.isSigningIn
                     )
                 }
@@ -148,11 +148,6 @@ struct OnboardingOverlay: View {
             primaryButton(
                 onboarding.sampleState == .loading ? L10n.string("Loading…") : L10n.string("Tutorial"),
                 action: onboarding.openSampleProject
-            )
-        } else {
-            primaryButton(
-                account.isSigningIn ? L10n.string("Opening Google…") : L10n.string("Sign in with Google"),
-                action: signIn
             )
         }
     }
@@ -188,10 +183,10 @@ struct OnboardingOverlay: View {
         account.isSigningIn || onboarding.sampleState == .loading
     }
 
-    private func signIn() {
+    private func signIn(with provider: MetagAuth.Provider) {
         Task {
             signInFailed = false
-            await account.signInWithGoogle()
+            await account.signIn(with: provider)
             signInFailed = !account.isSignedIn && account.lastError != nil
         }
     }

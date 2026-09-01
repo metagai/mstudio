@@ -136,33 +136,39 @@ struct AccountPopoverCard: View {
                     dismiss()
                 }
             } else {
-                footerButton(
-                    label: account.isSigningIn ? L10n.string("Opening Google…") : L10n.string("Sign in"),
-                    systemImage: "person.crop.circle"
-                ) {
-                    Task { await account.signInWithGoogle() }
-                    dismiss()
+                // 这一行**只是打开菜单**，不直接授权。它以前一点就跳 Google。
+                SignInMenu {
+                    footerLabel(
+                        label: account.isSigningIn ? L10n.string("Opening…") : L10n.string("Sign in"),
+                        systemImage: "person.crop.circle"
+                    )
                 }
-                .disabled(account.isSigningIn)
+                .menuStyle(.borderlessButton)
+                .menuIndicator(.hidden)
             }
         }
     }
 
     private func footerButton(label: String, systemImage: String, action: @escaping () -> Void) -> some View {
         Button(action: action) {
-            HStack(spacing: AppTheme.Spacing.xs) {
-                Image(systemName: systemImage)
-                    .font(.system(size: AppTheme.FontSize.smMd))
-                Text(label)
-                    .font(.system(size: AppTheme.FontSize.sm))
-                Spacer(minLength: 0)
-            }
-            .foregroundStyle(AppTheme.Text.secondaryColor)
-            .padding(.horizontal, AppTheme.Spacing.sm)
-            .padding(.vertical, AppTheme.Spacing.xs)
-            .contentShape(Rectangle())
+            footerLabel(label: label, systemImage: systemImage)
         }
         .buttonStyle(.plain)
         .hoverHighlight(cornerRadius: AppTheme.Radius.sm)
+    }
+
+    /// 按钮和菜单共用同一张脸 —— 登录那一行是菜单，其余是按钮，看上去必须一样。
+    private func footerLabel(label: String, systemImage: String) -> some View {
+        HStack(spacing: AppTheme.Spacing.xs) {
+            Image(systemName: systemImage)
+                .font(.system(size: AppTheme.FontSize.smMd))
+            Text(label)
+                .font(.system(size: AppTheme.FontSize.sm))
+            Spacer(minLength: 0)
+        }
+        .foregroundStyle(AppTheme.Text.secondaryColor)
+        .padding(.horizontal, AppTheme.Spacing.sm)
+        .padding(.vertical, AppTheme.Spacing.xs)
+        .contentShape(Rectangle())
     }
 }

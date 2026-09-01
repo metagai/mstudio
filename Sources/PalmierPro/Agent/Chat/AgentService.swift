@@ -24,7 +24,7 @@ final class AgentService {
             object: nil,
             queue: .main
         ) { [weak self] _ in
-            MainActor.assumeIsolated {
+            MainThread.run {
                 self?.reloadAPIKeys()
             }
         }

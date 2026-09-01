@@ -50,13 +50,45 @@ final class MetagAuth: NSObject {
 
     private var session: ASWebAuthenticationSession?
 
+    /// 授权面板挂在哪扇窗上。**在主线程上先取好，存在这里。**
+    ///
+    /// AuthenticationServices 会在**任意线程**上回来问锚点 —— 这就是
+    /// `presentationAnchor(for:)` 被声明成 `nonisolated` 的原因。
+    /// 那里原来写的是 `MainActor.assumeIsolated { NSApp.keyWindow … }`，
+    /// 而 `assumeIsolated` 猜错时不是抛错，是 `__builtin_trap()`：
+    /// 进程当场消失，stderr 上一行 Swift 报错都没有（系统日志里只留下一句
+    /// `BUG IN CLIENT OF LIBDISPATCH: Block was expected to execute on
+    /// queue [com.apple.main-thread]`）。
+    ///
+    /// 在用户那一侧，它长得**和"登录成功之后被静默退出"一模一样** ——
+    /// 2026-08-31 创始人扫完码后撞的四次崩溃，就是这个。
+    private nonisolated(unsafe) var anchor: ASPresentationAnchor?
+
     func signIn(with provider: Provider) async throws {
         let url = provider.authBase
             .appendingPathComponent("api/v1/auth/\(provider.rawValue)")
             .appending(queryItems: [URLQueryItem(name: "client", value: "mac")])
 
+        // 锚点在这里取（主线程），不在回调里取。
+        anchor = NSApp.keyWindow ?? NSApp.windows.first { $0.isVisible } ?? NSApp.windows.first
+
         let callback: URL = try await withCheckedThrowingContinuation { continuation in
-            let session = ASWebAuthenticationSession(url: url, callbackURLScheme: "metag") { url, error in
+            // **`@Sendable` 不是装饰。**
+            //
+            // `MetagAuth` 是 `@MainActor`，所以这个闭包在这里写下来时**默认继承主线程隔离**。
+            // 而 AuthenticationServices 是在一条 XPC 回复队列上调它的（扫完码那一刻），
+            // Swift 6 的运行时于是当场核对隔离 —— `swift_task_checkIsolatedSwift`
+            // → `dispatch_assert_queue` → `__builtin_trap()`：
+            //
+            //     closure #1 in closure #2 in MetagAuth.signIn(with:)
+            //     -[ASWebAuthenticationSession _endSessionWithCallbackURL:error:]
+            //     _xpc_connection_reply_callout
+            //
+            // 进程当场消失，一行 Swift 报错都没有。用户看到的是"扫完码就被退出了"。
+            // 2026-08-31 创始人连撞五次的就是这一行。
+            //
+            // 单测一次都没红过 —— 崩的是回调那一刻，而回调只有真机扫码时才发生。
+            let session = ASWebAuthenticationSession(url: url, callbackURLScheme: "metag") { @Sendable url, error in
                 if let url {
                     continuation.resume(returning: url)
                 } else {
@@ -110,7 +142,9 @@ final class MetagAuth: NSObject {
 }
 
 extension MetagAuth: ASWebAuthenticationPresentationContextProviding {
+    /// **这里一个主线程假设都不许有** —— 见 `anchor` 上面那段。
+    /// 只读一个开始授权前就写好的引用。
     nonisolated func presentationAnchor(for session: ASWebAuthenticationSession) -> ASPresentationAnchor {
-        MainActor.assumeIsolated { NSApp.keyWindow ?? NSApp.windows.first ?? ASPresentationAnchor() }
+        anchor ?? ASPresentationAnchor()
     }
 }

@@ -84,7 +84,7 @@ final class SpeechMaskStore {
         for mediaRef: String,
         samples: [Float]?
     ) -> [Bool]? {
-        MainActor.assumeIsolated {
+        MainThread.value {
             quietNonSpeechMaskIsolated(for: mediaRef, samples: samples)
         }
     }
@@ -95,7 +95,7 @@ final class SpeechMaskStore {
         samples: [Float]?,
         settings: SilenceRemovalSettings
     ) -> [Bool]? {
-        MainActor.assumeIsolated {
+        MainThread.value {
             if let cached = deadAirMasks[mediaRef], cached.settings == settings { return cached.mask }
             guard let quietNonSpeech = quietNonSpeechMaskIsolated(
                 for: mediaRef,

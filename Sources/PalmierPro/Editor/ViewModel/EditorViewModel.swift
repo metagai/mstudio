@@ -371,7 +371,7 @@ final class EditorViewModel {
         didBecomeActiveObserver = NotificationCenter.default.addObserver(
             forName: NSApplication.didBecomeActiveNotification, object: nil, queue: .main
         ) { [weak self] _ in
-            MainActor.assumeIsolated { self?.refreshMissingMediaCache() }
+            MainThread.run { self?.refreshMissingMediaCache() }
         }
     }
 

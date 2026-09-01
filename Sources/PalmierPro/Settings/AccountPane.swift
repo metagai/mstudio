@@ -140,11 +140,11 @@ struct AccountPane: View {
             .foregroundStyle(AppTheme.Text.tertiaryColor)
             .fixedSize(horizontal: false, vertical: true)
 
-        Button(account.isSigningIn ? L10n.string("Opening Google…") : L10n.string("Sign in with Google")) {
-            Task { await account.signInWithGoogle() }
-        }
-        .buttonStyle(.capsule(.secondary, size: .regular))
-        .disabled(account.isSigningIn)
-        .padding(.top, AppTheme.Spacing.xs)
+        SignInMenu()
+            .menuStyle(.button)
+            .buttonStyle(.capsule(.secondary, size: .regular))
+            .menuIndicator(.hidden)
+            .fixedSize()
+            .padding(.top, AppTheme.Spacing.xs)
     }
 }

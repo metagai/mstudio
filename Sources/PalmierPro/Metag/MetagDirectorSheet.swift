@@ -316,8 +316,10 @@ struct MetagDirectorSheet: View {
     }
 
     private func start() {
+        // 这里没有菜单可弹（是个动作，不是一颗按钮），所以**说一句，不擅自跳**。
+        // 它以前直接打开 Google 授权页。
         guard account.isSignedIn else {
-            Task { await account.signIn(with: .google) }
+            note = L10n.string("Sign in to METAG to generate.")
             return
         }
         guard let preset else { return }

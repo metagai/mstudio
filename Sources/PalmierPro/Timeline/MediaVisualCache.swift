@@ -21,7 +21,7 @@ final class MediaVisualCache {
     var speakerMasks: [String: [Int]] = [:]
 
     nonisolated func speakerMask(for mediaRef: String) -> [Int]? {
-        MainActor.assumeIsolated { speakerMasks[mediaRef] }
+        MainThread.value { speakerMasks[mediaRef] }
     }
 
     let beats = BeatStore()
@@ -55,7 +55,7 @@ final class MediaVisualCache {
     // MARK: - Sync lookups (safe for draw calls)
 
     nonisolated func samples(for mediaRef: String) -> [Float]? {
-        MainActor.assumeIsolated { waveformSamples[mediaRef] }
+        MainThread.value { waveformSamples[mediaRef] }
     }
 
     nonisolated func deadAirMask(
@@ -70,11 +70,11 @@ final class MediaVisualCache {
     }
 
     nonisolated func thumbnails(for mediaRef: String) -> [(time: Double, image: CGImage)]? {
-        MainActor.assumeIsolated { videoThumbnails[mediaRef] }
+        MainThread.value { videoThumbnails[mediaRef] }
     }
 
     nonisolated func imageThumbnail(for mediaRef: String) -> CGImage? {
-        MainActor.assumeIsolated { imageThumbnails[mediaRef] }
+        MainThread.value { imageThumbnails[mediaRef] }
     }
 
     // MARK: - Async generation

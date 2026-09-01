@@ -121,17 +121,17 @@ private final class FontMenuHandler: NSObject, NSMenuDelegate {
 
     nonisolated func menu(_ menu: NSMenu, willHighlight item: NSMenuItem?) {
         nonisolated(unsafe) let unsafeItem = item
-        MainActor.assumeIsolated {
+        MainThread.run {
             guard let name = unsafeItem?.representedObject as? String,
-                  name != lastPreviewed else { return }
-            lastPreviewed = name
-            onPreview(name)
+                  name != self.lastPreviewed else { return }
+            self.lastPreviewed = name
+            self.onPreview(name)
         }
     }
 
     nonisolated func menuDidClose(_ menu: NSMenu) {
-        MainActor.assumeIsolated {
-            if !didPick { onCancel() }
+        MainThread.run {
+            if !self.didPick { self.onCancel() }
         }
     }
 }

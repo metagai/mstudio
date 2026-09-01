@@ -231,9 +231,9 @@ class VideoProject: NSDocument {
                 Log.project.error("save: snapshot not prepared for off-main write()")
                 throw CocoaError(.fileWriteUnknown)
             }
-            MainActor.assumeIsolated {
-                captureSaveSnapshot()
-                snapshotSourceProjectURL = fileURL
+            MainThread.run {
+                self.captureSaveSnapshot()
+                self.snapshotSourceProjectURL = self.fileURL
             }
         }
 
@@ -405,14 +405,14 @@ class VideoProject: NSDocument {
             super.fileURL = newValue
             if let oldURL, let newURL = newValue,
                oldURL.standardizedFileURL != newURL.standardizedFileURL {
-                MainActor.assumeIsolated {
+                MainThread.run {
                     Telemetry.beginOperation("project_url_rebase", data: [
-                        "media_count": editorViewModel.mediaAssets.count,
+                        "media_count": self.editorViewModel.mediaAssets.count,
                         "registry_count": ProjectRegistry.shared.entries.count,
                     ])
                     defer { Telemetry.endOperation("project_url_rebase") }
                     ProjectRegistry.shared.updateURL(from: oldURL, to: newURL)
-                    editorViewModel.rebaseProjectURL(from: oldURL, to: newURL)
+                    self.editorViewModel.rebaseProjectURL(from: oldURL, to: newURL)
                 }
             }
         }

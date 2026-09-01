@@ -431,7 +431,7 @@ final class ScrubAudioEngine {
             object: nil,
             queue: .main
         ) { [weak self] _ in
-            MainActor.assumeIsolated {
+            MainThread.run {
                 self?.suspendOutput()
             }
         }
@@ -443,7 +443,7 @@ final class ScrubAudioEngine {
             object: nil,
             queue: .main
         ) { [weak self] _ in
-            MainActor.assumeIsolated {
+            MainThread.run {
                 self?.suspendOutput()
             }
         }

@@ -184,7 +184,7 @@ final class TimelineView: NSView, NSPopoverDelegate {
             let isFirstLayout = editor.timelineVisibleWidth == 0
             let editor = self.editor
             RunLoop.main.perform(inModes: [.default]) {
-                MainActor.assumeIsolated {
+                MainThread.run {
                     editor.timelineVisibleWidth = newVisibleWidth
                     let minZoom = editor.minZoomScale
                     if isFirstLayout {

@@ -47,7 +47,7 @@ private final class ColorPanelBridge {
             object: nil,
             queue: .main
         ) { [weak self] _ in
-            MainActor.assumeIsolated {
+            MainThread.run {
                 guard let ns = NSColorPanel.shared.color.usingColorSpace(.sRGB) else { return }
                 self?.relay(
                     r: Double(ns.redComponent), g: Double(ns.greenComponent),

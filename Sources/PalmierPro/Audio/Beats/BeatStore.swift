@@ -28,7 +28,7 @@ final class BeatStore {
     }
 
     nonisolated func analysis(for mediaRef: String) -> BeatAnalysis? {
-        MainActor.assumeIsolated { analyses[mediaRef] }
+        MainThread.value { analyses[mediaRef] }
     }
 
     /// Restores a prior session's analysis from the disk cache; never runs detection.
