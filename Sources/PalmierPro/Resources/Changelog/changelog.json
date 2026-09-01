@@ -2,6 +2,57 @@
   "changelogURL": "https://metag.ai/docs",
   "entries": [
     {
+      "version": "0.1.8",
+      "date": "2026-08-16",
+      "sections": [
+        {
+          "heading": "New",
+          "items": [
+            "Fixed shots, re-shoots and takes now report what actually happened, in your language — those screens used to be Chinese only",
+            "Out of credits? You can buy them right where you ran out, instead of being sent to Settings first",
+            "The draft panel says which step it is on — writing the shot list, choosing a voice, recording the narration — rather than a spinner"
+          ]
+        },
+        {
+          "heading": "Fixes",
+          "items": [
+            "Exports no longer stall on muted audio",
+            "Clicking the home screen works again after dismissing What's New",
+            "Switching project windows no longer hangs",
+            "Compositions reuse source assets instead of rebuilding them",
+            "The storyboard no longer sends per-shot seconds the gateway does not accept"
+          ]
+        },
+        {
+          "heading": "Known limits",
+          "items": [
+            "Generation covers video only — image, audio and upscale models are not offered yet",
+            "Reference images and reference video are not accepted, which keeps your footage on your machine"
+          ]
+        }
+      ]
+    },
+    {
+      "version": "0.1.7",
+      "date": "2026-08-12",
+      "sections": [
+        {
+          "heading": "New",
+          "items": [
+            "Every user-visible screen now says METAG — the upstream name is gone",
+            "Your film library shows what each one cost and how many shots it has"
+          ]
+        },
+        {
+          "heading": "Fixes",
+          "items": [
+            "Rate limits now say whose quota ran out — your own hourly limit reads differently from us being busy",
+            "Failures say what to do about them: an expired job, a draft still rendering, a file over the size limit"
+          ]
+        }
+      ]
+    },
+    {
       "version": "0.1.6",
       "date": "2026-07-31",
       "sections": [

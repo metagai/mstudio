@@ -222,16 +222,14 @@ struct MetagDraftSheet: View {
                 draftStage
             } else {
                 VStack(alignment: .leading, spacing: AppTheme.Spacing.sm) {
-                    HStack(spacing: AppTheme.Spacing.xs) {
-                        ProgressView().controlSize(.small)
-                        // 说正在做哪一步，而不是一个不动的"正在起草"。
-                        // **原来那句写着"约 40 秒"，而实测是 53–97 秒** ——
-                        // 被告知 40 秒却等了 90 秒的人会觉得产品坏了；同样 90 秒，
-                        // 说的是"约一分半"就只是正常等待。数字宁可不给，
-                        // 也不要给一个我们兑现不了的。
-                        Text(model.stageText)
-                            .font(.caption).foregroundStyle(.secondary)
-                    }
+                    // 说的是**谁在干什么**，而不是干到百分之几。
+                    // 原来这里是一个转圈加一句"正在起草"；那句话曾经写着"约 40 秒"，
+                    // 而实测 53–97 秒 —— 被告知 40 秒却等了 90 秒的人会觉得产品坏了。
+                    // 现在不给数字，给的是这一刻真的有人在做的那件事。
+                    MetagCrewView(
+                        stage: model.job?.stage,
+                        shotCount: model.job?.shots.count.nonZero ?? model.shots
+                    )
                     // 首帧一到就摆出来。等待不该是空白 —— 用户此刻最想看的
                     // 恰恰是"我的片子长什么样"，而这个答案已经有一半了。
                     if !model.frames.isEmpty {
