@@ -206,6 +206,50 @@ enum MetagGateway {
         }
     }
 
+    /// 这一条片子要花多少钱 —— **在他动手之前**。
+    ///
+    /// 报价是免费的（`charged: 0`）也不需要登录，所以它能在用户还没决定、
+    /// 甚至还没注册的时候就说话。原来这个数是 Mac 本地按 `perShot × shots`
+    /// 算的，那是**第二份真源**：网关改档位价格，Mac 会照旧报旧价。
+    ///
+    /// 8/29 起的漏斗：10 个人走到能动手的那一屏，**0 个人动手**。
+    /// 「按下去之后才知道花了多少」正好挡在那一格上。
+    static func quote(prompt: String, shots: Int, lang: String) async throws -> Quote {
+        var req = URLRequest(url: baseURL.appendingPathComponent("api/v1/quote"))
+        req.httpMethod = "POST"
+        req.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        // 登录了就带上票，没登录也照发 —— 这条端点本来就是为陌生人写的。
+        if let token { req.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization") }
+        req.httpBody = try JSONSerialization.data(withJSONObject: [
+            "prompt": prompt, "shots": shots, "lang": lang,
+        ])
+        let (data, resp) = try await URLSession.shared.data(for: req)
+        let code = (resp as? HTTPURLResponse)?.statusCode ?? 0
+        guard (200..<300).contains(code) else { throw Failure.http(code) }
+        return try JSONDecoder().decode(Quote.self, from: data)
+    }
+
+    struct Quote: Decodable, Sendable {
+        struct Option: Decodable, Sendable, Identifiable {
+            let engine: String
+            let spec: String?
+            let credits_per_shot: Int
+            let total_credits: Int
+            var id: String { engine }
+        }
+        let shots: Int
+        let options: [Option]
+        /// 网关按分镜内容推荐的那一档（有人对着镜头说话就推能做口型同步的）。
+        /// 可能为空 —— 那时不推荐，也不编一个。
+        let recommended: Option?
+        let recommended_why_i18n: [String: String]?
+
+        /// 推荐理由，跟随界面语言；没有对应语言就回落英文。
+        func why(_ lang: String) -> String? {
+            recommended_why_i18n?[lang] ?? recommended_why_i18n?["en"]
+        }
+    }
+
     static func request(_ path: String, method: String = "GET", body: [String: Any]? = nil) throws -> URLRequest {
         guard let token else { throw Failure.signedOut }
         var req = URLRequest(url: baseURL.appendingPathComponent(path))

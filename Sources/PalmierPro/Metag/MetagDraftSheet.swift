@@ -11,6 +11,9 @@ import SwiftUI
 final class MetagDraftModel: ObservableObject {
     @Published var prompt = ""
     @Published var shots = 4
+    /// 网关给的这一条片子的报价。为空就退回本地按档位单价算 ——
+    /// 那是第二份真源，只在问不到价时用。
+    @Published var quote: MetagGateway.Quote?
     @Published private(set) var jobId: String?
     @Published private(set) var job: MetagGateway.Job?
     @Published private(set) var busy = false
@@ -78,6 +81,13 @@ final class MetagDraftModel: ObservableObject {
         MetagFunnel.track(.draftStarted)
         busy = true; note = nil
         defer { busy = false }
+        // 同时去问价。**报价免费也不需要登录**，而等草案的那 90 秒本来就是空的 ——
+        // 让他在决定之前就知道代价，而不是按下去之后看余额少了多少。
+        // 失败一律吞掉：问不到价不该挡住免费草案。
+        Task { [prompt, shots] in
+            let lang = AppLocalization.shared.selection.identifier.map { String($0.prefix(2)) } ?? "en"
+            quote = try? await MetagGateway.quote(prompt: prompt, shots: shots, lang: lang)
+        }
         do {
             let id = try await MetagGateway.preview(prompt: prompt, shots: shots)
             jobId = id
@@ -199,13 +209,43 @@ struct MetagDraftSheet: View {
     }
     /// 报价必须等于实扣：默认路由下只有口播镜走贵引擎，这里没有逐镜口播标记，
     /// 所以只在"全片使用"时按贵引擎报价，否则按 local 报 —— 宁可少报也不能多报。
-    private var quote: Int { allShots ? perShot * model.shots : model.shots }
+    private var quote: Int {
+        guard allShots else { return model.shots }
+        // 网关的登记表是唯一真源。本地那份 `perShot × shots` 只在问不到价时兜底 ——
+        // 网关改了档位价格，本地那份会照旧报旧价，而用户按下去扣的是新价。
+        return model.quote?.options.first { $0.engine == engine }?.total_credits
+            ?? perShot * model.shots
+    }
 
     /// 有没有档位坏到不能出片。
     ///
     /// 两种都要拦：选中的上限档停售了，**或者 local 停售了** ——
     /// 没有口播的镜头一律回落到 local，所以 local 一坏任何组合都出不了片。
     /// 不拦的话用户点下去拿一个 503，而他刚看完草案、正准备付钱。
+    /// 出片要花多少 —— 在他决定之前。
+    ///
+    /// 只说推荐档那一个数。**给六档价目表等于把选择的负担丢回给他**，
+    /// 而他此刻连片子长什么样都还没看到。想比价的人到批准那一步有完整列表。
+    @ViewBuilder
+    private func quotePreview(_ rec: MetagGateway.Quote.Option, why: String?) -> some View {
+        VStack(alignment: .leading, spacing: AppTheme.Spacing.xxs) {
+            HStack(spacing: AppTheme.Spacing.xxs) {
+                Image(systemName: "sparkles")
+                    .font(.system(size: AppTheme.FontSize.xs))
+                    .foregroundStyle(AppTheme.Accent.brand)
+                Text(L10n.string("Producing this will cost about \(rec.total_credits.formatted()) credits"))
+                    .font(.system(size: AppTheme.FontSize.sm, weight: AppTheme.FontWeight.medium))
+            }
+            if let why {
+                Text(verbatim: why)
+                    .font(.system(size: AppTheme.FontSize.xs))
+                    .foregroundStyle(AppTheme.Text.mutedColor)
+                    .fixedSize(horizontal: false, vertical: true)
+            }
+        }
+        .padding(.top, AppTheme.Spacing.xxs)
+    }
+
     private var blocked: String? {
         func down(_ id: String) -> Bool { engines.first { $0.id == id }?.isAvailable == false }
         if down(Self.fallbackEngineID) { return L10n.key("Generation is unavailable right now — try again later, nothing will be charged") }
@@ -230,6 +270,12 @@ struct MetagDraftSheet: View {
                         stage: model.job?.stage,
                         shotCount: model.job?.shots.count.nonZero ?? model.shots
                     )
+                    // 等待期间就把代价说了。**这 90 秒本来是空的**，而他等完
+                    // 之后要做的第一个决定就是"要不要花这笔钱" —— 让他在等的时候
+                    // 就已经知道，而不是等完才第一次听到数字。
+                    if let q = model.quote, let rec = q.recommended {
+                        quotePreview(rec, why: q.why(uiLang))
+                    }
                     // 首帧一到就摆出来。等待不该是空白 —— 用户此刻最想看的
                     // 恰恰是"我的片子长什么样"，而这个答案已经有一半了。
                     if !model.frames.isEmpty {
