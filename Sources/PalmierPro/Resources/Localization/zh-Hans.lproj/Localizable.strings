@@ -1471,3 +1471,34 @@
 "That one was made with a temporary identity that has since expired. Sign in and your films stay with you." = "那一条是用上一次的临时身份建的，那个身份已经过期了。登录之后作品就一直留在你名下。";
 "Couldn't reach METAG — check your connection and try again." = "连不上 METAG —— 检查一下网络再试。";
 "%@ free credits when you sign in" = "登录送 %@ 积分";
+
+/* 补齐（2026-09-01）*/
+"Access token" = "访问令牌";
+"All %@ shots are in. Cutting them together." = "%@ 个镜头都到齐了，正在接成一条。";
+"Extract Audio" = "提取音频";
+"Kai picked the voice. Reading Nova's %@ lines now." = "Kai 定好了音色，正在读 Nova 写的那 %@ 句。";
+"Kept in ~/Library/Application Support/PalmierPro/mcp-token, readable only by you. The bundled Claude Desktop connector reads it automatically." = "存在 ~/Library/Application Support/PalmierPro/mcp-token，只有你能读。随附的 Claude Desktop 连接器会自动读取。";
+"Local generation failed:" = "本地出图失败：";
+"Local generation is not set up yet, missing:" = "本地出图还没准备好，缺：";
+"METAG Project" = "METAG 工程";
+"METAG request failed." = "METAG 请求失败。";
+"No network, no credits. About 3 minutes per image." = "不联网、不计费。一张约 3 分钟。";
+"Nova handed me %@ shots. Finding who should read them." = "Nova 交给我 %@ 个镜头，正在找谁来念。";
+"On-device · Z-Image Turbo" = "本地 · Z-Image Turbo";
+"Region Removal" = "区域移除";
+"Ripple Timeline Markers" = "标记随编辑移动";
+"Save as Audio" = "另存为音频";
+"Sign in to use the AI agent." = "登录后可以使用 AI 助手。";
+"The cut is locked. Writing something to carry it." = "剪辑定了，正在写一段能托住它的曲子。";
+"This Mac" = "这台 Mac";
+"Working from Nova's shot list — %@ frames to light." = "照着 Nova 的分镜来 —— 有 %@ 帧要打光。";
+"declined this request." = "拒绝了这次请求。";
+"exit code" = "退出码";
+"generates from text only and ignores an attached image — pick a tier that takes a reference image." = "只从文字生成，会忽略你附的图 —— 换一个能收参考图的档位。";
+"unavailable right now." = "暂时不可用。";
+"A woman folds laundry in an empty laundromat, warm afternoon light" = "空无一人的自助洗衣房，一个女人在叠衣服，午后暖光";
+"A courier bikes through Tokyo rain at night" = "夜里的东京雨中，一个快递员骑车穿过街道";
+"Two friends open a bakery in a small town" = "两个朋友在小镇上开了家面包店";
+"Write one line. METAG boards the shots, casts a voice, scores it, and cuts it together." = "写一句话。METAG 分镜、配音、配乐，再把它剪成片子。";
+"Describe a scene…" = "描述一个画面…";
+"signed you in, but this app can't use that session yet. Try another sign-in method." = "登录成功了，但这个 app 还用不了那张凭证。换一种登录方式试试。";

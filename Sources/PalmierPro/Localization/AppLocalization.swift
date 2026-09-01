@@ -24,6 +24,10 @@ final class AppLocalization {
     private let defaults: UserDefaults
     private let localizedBundle: Bundle
     private let systemIdentifier: String
+    /// 两种粒度各一个，init 里定好。**不能懒建缓存** —— 这是个 @Observable，
+    /// 写一次字典就会让所有读过它的卡片重绘。
+    @ObservationIgnored private let fullRelative = RelativeDateTimeFormatter()
+    @ObservationIgnored private let shortRelative = RelativeDateTimeFormatter()
 
     init(
         defaults: UserDefaults = .standard,
@@ -62,6 +66,32 @@ final class AppLocalization {
             for: resourceIdentifier,
             resourceBundle: resourceBundle
         )
+        for (formatter, style) in [(fullRelative, RelativeDateTimeFormatter.UnitsStyle.full), (shortRelative, .short)] {
+            formatter.unitsStyle = style
+            formatter.locale = activeLocale
+        }
+    }
+
+    /// "1 month ago"。用 `activeLocale`，不是 `Locale.current` —— 后者是**区域**，
+    /// 于是一整屏英文的项目卡上写着「1个月前」（2026-08-30 实测）。
+    func relativeString(
+        for date: Date,
+        style: RelativeDateTimeFormatter.UnitsStyle = .full,
+        relativeTo now: Date = Date()
+    ) -> String {
+        (style == .short ? shortRelative : fullRelative).localizedString(for: date, relativeTo: now)
+    }
+
+    /// 网关按 `zh` / `en` / `es` 给引擎名和档位说明。它必须跟着**界面真正渲染的那门语言**走。
+    ///
+    /// 之前跟的是 `Locale.current` —— 那是**区域**，不是界面语言。系统区域中国、
+    /// 界面英文的机器上它给 `zh`：一整屏英文里只有模型名是中文（2026-08-30 实测）。
+    var gatewayLanguage: String {
+        switch activeIdentifier.prefix(2) {
+        case "zh": "zh"
+        case "es": "es"
+        default: "en"
+        }
     }
 
     func string(_ keyAndValue: String.LocalizationValue) -> String {

@@ -66,7 +66,7 @@ struct ProjectCard: View {
                     .foregroundStyle(entry.isAccessible ? AppTheme.Text.primaryColor : AppTheme.Text.mutedColor)
                     .lineLimit(1)
 
-                Text(Self.relativeString(for: entry.createdDate))
+                Text(AppLocalization.shared.relativeString(for: entry.createdDate))
                     .font(.system(size: AppTheme.FontSize.xs))
                     .foregroundStyle(AppTheme.Text.secondaryColor)
             }
@@ -131,16 +131,6 @@ struct ProjectCard: View {
             Button(L10n.string("Delete Project"), role: .destructive, action: onDelete)
         }
         .task(id: entry.lastOpenedDate) { await loadThumbnail(for: entry.url) }
-    }
-
-    private static let relativeDateFormatter: RelativeDateTimeFormatter = {
-        let f = RelativeDateTimeFormatter()
-        f.unitsStyle = .full
-        return f
-    }()
-
-    private static func relativeString(for date: Date) -> String {
-        relativeDateFormatter.localizedString(for: date, relativeTo: Date())
     }
 
     private func loadThumbnail(for projectURL: URL) async {

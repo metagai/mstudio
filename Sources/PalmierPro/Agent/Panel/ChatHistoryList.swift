@@ -6,12 +6,6 @@ struct ChatHistoryList: View {
     let onSelect: (UUID) -> Void
     let onDelete: (UUID) -> Void
 
-    private static let formatter: RelativeDateTimeFormatter = {
-        let f = RelativeDateTimeFormatter()
-        f.unitsStyle = .short
-        return f
-    }()
-
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
             if sessions.isEmpty {
@@ -45,7 +39,7 @@ struct ChatHistoryList: View {
                         .foregroundStyle(AppTheme.Text.primaryColor)
                         .lineLimit(1)
                 }
-                Text(Self.formatter.localizedString(for: session.updatedAt, relativeTo: Date()))
+                Text(AppLocalization.shared.relativeString(for: session.updatedAt, style: .short))
                     .font(.system(size: AppTheme.FontSize.xxs))
                     .foregroundStyle(AppTheme.Text.tertiaryColor)
             }

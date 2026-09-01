@@ -68,6 +68,7 @@ struct SettingsView: View {
         )
         .background(AppTheme.Background.surfaceColor)
         .focusEffectDisabled()
+        .onExitCommand { SettingsWindowController.shared.dismiss() }
         .onAppear {
             if !visibleTabs.contains(selectedTab) {
                 selectedTab = visibleTabs.first ?? .general
@@ -83,6 +84,17 @@ private struct SettingsSidebar: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
+            // 设置是**独立窗口**，标题栏是隐藏的：屏幕上除了三个红绿灯，
+            // 没有任何东西说得清怎么回去。创始人 2026-08-30 的原话是
+            // 「整个页面没有任何返回首页按钮」。
+            SidebarRowButton(
+                label: AppIdentity.name,
+                systemImage: "chevron.left",
+                action: { SettingsWindowController.shared.dismiss() }
+            )
+            .padding(.horizontal, AppTheme.Spacing.smMd)
+            .padding(.top, AppTheme.Spacing.md)
+
             if !account.isMisconfigured {
                 IdentityStrip()
             }
@@ -254,6 +266,11 @@ final class SettingsWindowController: NSWindowController {
 
     @available(*, unavailable)
     required init?(coder: NSCoder) { fatalError() }
+
+    /// 关掉设置窗口，把焦点还给它背后的那扇窗。
+    func dismiss() {
+        window?.performClose(nil)
+    }
 
     func show(tab: SettingsTab? = nil) {
         if let tab {

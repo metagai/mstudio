@@ -65,9 +65,7 @@ final class ModelCatalog {
     func load() async {
         do {
             let pricing = try await MetagGateway.pricing()
-            // 网关按语言给引擎显示名；跟随应用内选择，未指定时回落到系统语言
-            let code = AppLocalization.shared.selection.identifier
-                ?? Locale.current.language.languageCode?.identifier ?? "en"
+            let code = AppLocalization.shared.gatewayLanguage
             apply(pricing.engines.map { Self.videoEntry(from: $0, language: code) }
                   + (await Self.localEntries()))
         } catch {

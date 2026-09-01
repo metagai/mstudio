@@ -191,15 +191,9 @@ struct MetagDraftSheet: View {
     @State private var sampling = false
     @State private var sampled = false
     @State private var sampleError: String?
-    /// 界面语言，映射到网关的 zh/en/es。引擎名要跟着它走 —— 此前写死 "zh"，
-    /// 英文和西语用户在**决定花多少钱的那一步**看到的是中文档位名。
-    private var uiLang: String {
-        switch AppLocalization.shared.selection.identifier?.prefix(2) {
-        case "zh": "zh"
-        case "es": "es"
-        default: "en"
-        }
-    }
+    /// 引擎名跟界面语言走 —— 此前写死 "zh"，英文和西语用户在**决定花多少钱的那一步**
+    /// 看到的是中文档位名。
+    private var uiLang: String { AppLocalization.shared.gatewayLanguage }
     /// 全片使用所选引擎。**默认关** —— 默认只有口播镜用贵引擎，其余降到 local。
     @State private var allShots = false
 

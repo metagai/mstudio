@@ -31,7 +31,11 @@ struct CapsuleButtonStyle: ButtonStyle {
                 : AnyShapeStyle(AppTheme.Text.secondaryColor)
         }
         private var background: AnyShapeStyle {
-            guard isEnabled else { return AnyShapeStyle(AppTheme.Background.raisedColor) }
+            // 停用态用**半透明的提亮**，不用 `raisedColor` —— 后者压在同样是
+            // raised 的容器上就是隐形的：首屏那颗 "See it" 在输入框里整个消失了。
+            guard isEnabled else {
+                return AnyShapeStyle(AppTheme.Text.primaryColor.opacity(AppTheme.Opacity.faint))
+            }
             if let fill { return fill }
             return variant == .prominent
                 ? AnyShapeStyle(AppTheme.Accent.primary)

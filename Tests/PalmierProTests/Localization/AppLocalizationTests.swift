@@ -88,10 +88,57 @@ struct AppLocalizationTests {
         }
     }
 
-    private func withDefaults(_ body: (UserDefaults) throws -> Void) throws {
-        let suiteName = "AppLocalizationTests-\(UUID().uuidString)"
-        let defaults = try #require(UserDefaults(suiteName: suiteName))
-        defer { defaults.removePersistentDomain(forName: suiteName) }
-        try body(defaults)
+}
+
+private func withDefaults(_ body: (UserDefaults) throws -> Void) throws {
+    let suiteName = "AppLocalizationTests-\(UUID().uuidString)"
+    let defaults = try #require(UserDefaults(suiteName: suiteName))
+    defer { defaults.removePersistentDomain(forName: suiteName) }
+    try body(defaults)
+}
+
+/// 界面渲染的那门语言必须**同时**决定：网关要哪一版显示名、日期怎么写。
+///
+/// 2026-08-30 实测：系统区域中国、界面英文的机器上，整屏英文里模型页全是中文档位名，
+/// 项目卡写着「1个月前」。原因是这两处跟的是 `Locale.current`（区域），
+/// 不是 `activeIdentifier`（界面语言）。
+@Suite("界面语言是唯一的那一门")
+@MainActor
+struct UILanguageIsSingleSourceTests {
+    @Test(arguments: [("en", "en"), ("zh-Hans", "zh"), ("es", "es")])
+    func gatewayFollowsTheRenderedLanguage(stored: String, expected: String) throws {
+        try withDefaults { defaults in
+            defaults.set(stored, forKey: AppLanguage.defaultsKey)
+            #expect(AppLocalization(defaults: defaults).gatewayLanguage == expected)
+        }
+    }
+
+    /// 系统偏好是中文、但用户在 app 里选了英文 —— 网关必须要英文那一版。
+    @Test func inAppChoiceBeatsTheSystemRegion() throws {
+        try withDefaults { defaults in
+            defaults.set("en", forKey: AppLanguage.defaultsKey)
+            let localization = AppLocalization(
+                defaults: defaults,
+                preferredLanguages: ["zh-Hans-CN", "en-US"]
+            )
+            #expect(localization.gatewayLanguage == "en")
+        }
+    }
+
+    /// 英文界面里不许出现「1个月前」。
+    @Test func relativeDatesUseTheRenderedLanguage() throws {
+        try withDefaults { defaults in
+            let localization = AppLocalization(defaults: defaults, preferredLanguages: ["en"])
+            let now = Date()
+            for style in [RelativeDateTimeFormatter.UnitsStyle.full, .short] {
+                let text = localization.relativeString(
+                    for: now.addingTimeInterval(-60 * 60 * 24 * 40),
+                    style: style,
+                    relativeTo: now
+                )
+                #expect(!text.contains(where: { $0.unicodeScalars.contains { (0x4E00...0x9FFF).contains($0.value) } }),
+                        "英文界面里出现了中文日期：\(text)")
+            }
+        }
     }
 }

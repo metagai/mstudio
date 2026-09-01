@@ -35,6 +35,23 @@ struct HomeHeroTests {
         #expect(!src.contains("NSSavePanel"))
     }
 
+    /// 空输入框最难的一步是第一个字。三句**能点的**开头就是这一屏的 Aha：
+    /// 一次点击换一条片子。它们必须各不相同、都能当项目名、且点了真的开拍
+    /// （不是往输入框里填字让他再按一次）。
+    @Test @MainActor func startersAreThreeDistinctUsableLines() {
+        let starters = HomeHero.starters
+        #expect(starters.count == 3)
+        #expect(Set(starters).count == 3)
+        for line in starters {
+            #expect(!line.trimmingCharacters(in: .whitespaces).isEmpty)
+            #expect(AppState.projectName(from: line) != Project.defaultProjectName,
+                    "这句开头当不了项目名，列表里又会出现 tl-074321：\(line)")
+        }
+        let src = Self.source("Home/HomeHero.swift")
+        #expect(src.contains("StarterLine(text: starter) { start(starter) }"),
+                "开头句不再直接开拍了 —— 点一下只填字的话，Aha 就没了")
+    }
+
     /// 项目名用他写的那句话 —— 列表里那些 `tl-074321` 就是没有这一步的后果。
     @Test(arguments: [
         ("a woman in a laundromat", "a woman in a laundromat"),

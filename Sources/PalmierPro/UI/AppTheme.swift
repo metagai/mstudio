@@ -362,6 +362,8 @@ enum AppTheme {
         static let xl: CGFloat = 20
         static let xlXxl: CGFloat = 24
         static let xxl: CGFloat = 28
+        /// 首屏留白。比 xxl 大一档，专给"这一屏只有一句问话"的场合。
+        static let xxxl: CGFloat = 44
     }
 
     // MARK: - Font sizes

@@ -42,44 +42,28 @@ struct HomeView: View {
         !onboarding.isComplete || changelog.pending != nil
     }
 
+    /// 首屏的主角是那一句问话，不是项目列表 —— 所以它拿走上面那一整块留白，
+    /// 项目列表退到分隔线以下。窗口再矮也能滚到，不靠"应该放得下"。
     private var content: some View {
-        VStack(alignment: .leading, spacing: 0) {
-            // 首屏的主角是那一句问话，不是项目列表。
-            HomeHero()
-                .padding(.horizontal, AppTheme.Spacing.xlXxl)
-                .padding(.top, AppTheme.Spacing.xxl)
-                .padding(.bottom, AppTheme.Spacing.xxl)
-            SampleProjectsStrip()
-            MyProjectsSection()
+        ScrollView {
+            VStack(alignment: .leading, spacing: 0) {
+                HomeHero()
+                    .padding(.horizontal, AppTheme.Spacing.xlXxl)
+                    .padding(.top, AppTheme.Spacing.xxxl)
+                    .padding(.bottom, AppTheme.Spacing.xxxl)
+
+                Divider()
+                    .overlay(AppTheme.Border.subtleColor)
+                    .padding(.horizontal, AppTheme.Spacing.xlXxl)
+                    .padding(.bottom, AppTheme.Spacing.xxl)
+
+                SampleProjectsStrip()
+                MyProjectsSection()
+            }
+            .frame(maxWidth: .infinity, alignment: .topLeading)
         }
-        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
+        .scrollEdgeEffectStyle(.soft, for: .top)
     }
-
-    private var header: some View {
-        HStack(spacing: AppTheme.Spacing.md) {
-            WelcomeTitle()
-
-            Spacer()
-        }
-        .padding(.horizontal, AppTheme.Spacing.xlXxl)
-        .padding(.top, AppTheme.Spacing.lg)
-        .padding(.bottom, AppTheme.Spacing.xxl)
-    }
-
-}
-
-private struct WelcomeTitle: View {
-    @Bindable private var account = AccountService.shared
-
-    var body: some View {
-        Text(title)
-            .font(.system(size: AppTheme.FontSize.title2, weight: .light))
-            .tracking(AppTheme.Tracking.tight)
-            .foregroundStyle(AppTheme.Text.primaryColor)
-    }
-
-    // The gateway stores only the OAuth `sub` — no name to greet them by.
-    private var title: String { L10n.key("Welcome to METAG") }
 }
 
 private struct HomeSidebar: View {
