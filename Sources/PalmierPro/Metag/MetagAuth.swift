@@ -68,11 +68,31 @@ final class MetagAuth: NSObject {
             self.session = session
             session.start()
         }
-        MetagGateway.token = Self.token(in: callback)
+        guard let issued = Self.token(in: callback), MetagTicket.isSignedIn(issued) else {
+            throw MetagGateway.Failure.signedOut
+        }
+
+        // **存之前先验它在我们真正要用的那个网关上认不认。**
+        //
+        // 微信只能在 metag-ai.com 上完成（国内备案域名），而其余请求都打
+        // MetagGateway.baseURL。两个区如果不共用签名密钥，那张票在这边一律 401 ——
+        // 而我们撞 401 就清票，于是用户"登录成功"之后大约 50 秒被静默退出。
+        // 2026-09-01 创始人真机撞到的就是这个。
+        //
+        // 验一下就能把"静默退出"换成一句当场说得清的话。
+        let previous = MetagGateway.token
+        MetagGateway.token = issued
+        do {
+            _ = try await MetagGateway.account()
+        } catch {
+            MetagGateway.token = previous
+            Log.account.warning("sign-in token rejected by \(MetagGateway.baseURL.host() ?? "gateway"): \(error.localizedDescription)")
+            throw MetagGateway.Failure.tokenNotAcceptedHere(provider: provider.title)
+        }
+
         // 匿名那一段和账号在这里接起来：漏斗的 anon 一直没变，
         // 从这一刻起网关能把两段认成同一个人。
         MetagFunnel.track(.signedIn, once: true)  // 一次会话登录一次
-        guard MetagGateway.isSignedIn else { throw MetagGateway.Failure.signedOut }
     }
 
     func signOut() {

@@ -63,7 +63,11 @@ def l_keys():
     只认字面量。变量拼出来的 key 本来就查不出来，硬猜只会给出假的结论 ——
     这条限制写在这里，不藏着。
     """
-    call = re.compile(r'(?:\bL|L10n\.threadSafe)\(\s*"([^"\\]*(?:\\.[^"\\]*)*)"')
+    # **上游那套是 `L10n.key(…)` / `L10n.string(…)`。**
+    # 这里原来只认 `L(…)` 和 `L10n.threadSafe(…)` —— 那是我们自己那套，
+    # 2026-09-01 全仓迁走之后它一个 key 都扫不到，而它照旧报「覆盖了全部 0 个 key」。
+    # 一条报告自己看了 0 个东西的守卫，比没有守卫更糟。
+    call = re.compile(r'(?:\bL|L10n\.(?:threadSafe|key|string))\(\s*"([^"\\]*(?:\\.[^"\\]*)*)"')
     keys = {}
     for rel, n, line in source_lines():
         # 注释里的 `L("…")` 是在讲用法，不是调用。不跳过它，这份清单第一条就是假的。
@@ -92,7 +96,18 @@ def main():
     else:
         print("OK   源码里没有裸中文字符串")
 
-    keys = l_keys()
+    keys = {k: v for k, v in l_keys().items() if "\\(" not in k}
+    # 插值串（`L10n.string("… \(x) …")`）在词条表里是 `%@` 形式，
+    # 对不上字面量。它们由上游的 `scripts/localization/sync.sh` 生成和管理，
+    # 这里只管**能按字面量对上的那些**。报一堆对不上的假缺失，
+    # 只会让人学会忽略这条判据。
+    #
+    # **扫不到 key 就是这条判据失效了，不是"全都覆盖了"。**
+    # 2026-09-01 全仓从 `L(…)` 迁到 `L10n.key(…)`，这里的模式没跟着改，
+    # 于是它对着 0 个 key 报了三行 OK。绿得越干净越危险。
+    if not keys:
+        print("FAIL 一个 key 都没扫到 —— 判据失效（本地化调用的写法可能改过了）")
+        return 1
     for lang in MAINTAINED:
         have = table(lang)
         missing = sorted(k for k in keys if k not in have)

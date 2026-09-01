@@ -255,7 +255,7 @@ final class AppState {
                 }
             }
         } catch {
-            Log.project.error("从一句话建项目失败：\(error.localizedDescription)")
+            Log.project.error("start film from line failed: \(error.localizedDescription)")
             return
         }
         // 项目开好了再把草案面板端上来：面板活在编辑器的媒体面板里，

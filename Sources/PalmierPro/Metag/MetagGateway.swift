@@ -163,10 +163,18 @@ enum MetagGateway {
         /// 两种 429 原来显示同一句：inflight_limit 是用户自己的正常状态，
         /// 却看起来像我们坏了。
         case rejected(Int, String)
+        /// 这一家签出来的票，我们要用的那个网关不认。
+        ///
+        /// 微信只能在国内备案域名（metag-ai.com）上完成，而其余请求打的是
+        /// `baseURL` —— 两个区不共用签名密钥的话，那张票在这边一律 401。
+        /// **不带这一条的话，用户会"登录成功"然后大约 50 秒被静默退出。**
+        case tokenNotAcceptedHere(provider: String)
 
         var errorDescription: String? {
             switch self {
             case .signedOut: return L10n.key("Sign in to METAG to generate.")
+            case .tokenNotAcceptedHere(let provider):
+                return "\(provider): " + L10n.key("signed you in, but this app can't use that session yet. Try another sign-in method.")
             case .insufficientCredits: return L10n.key("Not enough credits.")
             // 这几条以前全都落到下面那句 "METAG request failed (404)"，
             // 而**紧挨着的注释就写着**"用户看到的必须是能据此行动的话"。
@@ -273,7 +281,7 @@ enum MetagGateway {
         } catch {
             // 拿不到票就退回原来的行为（让他登录）。**不把网络故障说成"请先登录"** ——
             // 那会让一个断网的人以为是我们不让他用。
-            Log.account.warning("匿名票拿不到：\(error.localizedDescription)")
+            Log.account.warning("anon ticket unavailable: \(error.localizedDescription)")
             return false
         }
     }
