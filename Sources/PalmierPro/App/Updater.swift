@@ -30,7 +30,20 @@ final class Updater: NSObject {
     /// Sparkle needs a feed *and* an EdDSA public key to install anything. Until METAG has a
     /// signing identity there is neither, so the menu item sends people to the download page
     /// instead of opening a dialog that can only ever fail.
-    static let downloadPage = URL(string: "https://metag.ai/#pillars")!
+    ///
+    /// **中文界面送到备案域。** 这里原来写死 `metag.ai` —— 一个国内用户点"检查更新"，
+    /// 被送去一个多半打不开的站，而那一刻他是在主动找我们要新版本。
+    /// 两个域都在发同一份落地页（实测各 19 KB / 200），所以这不是二选一，
+    /// 是选近的那一个。
+    ///
+    /// 跟**界面语言**走，不跟服务端 region 走 —— 后者在国内网关重启时会被
+    /// nginx 静默兜到海外（合伙人 2026-09-01 实测），而客户端不该继承那个抖动。
+    @MainActor
+    static var downloadPage: URL {
+        AppLocalization.shared.gatewayLanguage == "zh"
+            ? URL(string: "https://metag-ai.com/#pillars")!
+            : URL(string: "https://metag.ai/#pillars")!
+    }
 
     @objc func checkForUpdates(_ sender: Any?) {
         guard let controller else {

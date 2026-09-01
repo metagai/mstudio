@@ -84,3 +84,31 @@ struct MetagAuthProviderTests {
         #expect(MetagAuth.Provider.wechat.title == "WeChat")
     }
 }
+
+/// **凡是把用户送出 app 的链接，都要送到他打得开的那个域。**
+///
+/// 微信授权、检查更新 —— 这两处都会把国内用户丢到一个多半打不开的站上，
+/// 而那正是他主动来找我们的时刻。
+@Suite("送出去的那些链接")
+@MainActor
+struct OutboundLinkTests {
+    /// 检查更新原来写死 `metag.ai`。两个域都在发同一份落地页，
+    /// 所以这不是二选一，是选近的那一个。
+    @Test func theDownloadPageFollowsTheInterfaceLanguage() {
+        // 界面语言此刻是什么由环境决定，这里只守"它必须是两者之一，且跟着语言走"。
+        let expected = AppLocalization.shared.gatewayLanguage == "zh" ? "metag-ai.com" : "metag.ai"
+        #expect(Updater.downloadPage.host() == expected)
+    }
+
+    /// 送出去的链接不许写死一个域 —— 写死的那个必然对一半用户是错的。
+    @Test func noOutboundLinkHardcodesASingleDomain() throws {
+        let src = try String(
+            contentsOf: URL(fileURLWithPath: #filePath)
+                .deletingLastPathComponent().deletingLastPathComponent()
+                .deletingLastPathComponent().deletingLastPathComponent()
+                .appendingPathComponent("Sources/PalmierPro/App/Updater.swift"),
+            encoding: .utf8
+        )
+        #expect(src.contains("gatewayLanguage"), "检查更新又写死一个域了")
+    }
+}
