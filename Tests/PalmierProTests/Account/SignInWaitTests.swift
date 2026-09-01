@@ -36,7 +36,11 @@ struct SignInWaitTests {
         let body = String(src[signIn.lowerBound..<signOut.lowerBound])
         #expect(!body.contains("refreshMetagAccount()"),
                 "登录成功后又去拉了一次账号 —— 同一个接口打两遍，白等一个来回")
-        #expect(body.contains("metagCredits = account.credits"),
+        // 断言的是**意图**（用已经验过的那份账号），不是某一行长什么样。
+        // 这一行原来写死 `metagCredits = account.credits`，而把解析收敛成
+        // 一处 `apply(_:)` 之后它就红了 —— 判据咬住实现细节，
+        // 会在代码变好的时候报警。
+        #expect(body.contains("apply(account)"),
                 "没有用 MetagAuth 已经验过的那份账号")
     }
 

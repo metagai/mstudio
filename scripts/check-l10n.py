@@ -139,6 +139,9 @@ def main():
     #
     # 所以这里不报 OK，报的是"我没看这一块，有多大”。
     print(f"NOTE 另有 {skipped} 个插值 key 不在本判据范围内（详见本文件注释）")
+    # **说出自己量了多少。** 一把量了 0 个东西的尺子会报绿 ——
+    # 2026-09-01 这条判据自己就是这么绿了一阵子的。
+    print(f"SCOPE {len(keys)} 个字面量 key × 3 张词条表")
 
     return 1 if failed else 0
 
