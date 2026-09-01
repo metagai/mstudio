@@ -181,13 +181,26 @@ enum MetagGateway {
         /// `baseURL` —— 两个区不共用签名密钥的话，那张票在这边一律 401。
         /// **不带这一条的话，用户会"登录成功"然后大约 50 秒被静默退出。**
         case tokenNotAcceptedHere(provider: String)
+        /// 根本没走到服务端：超时、断网、DNS 解不出、连接被掐。
+        ///
+        /// **这一条以前不存在，于是网络错误原样端给了用户** ——
+        /// 屏幕上是「操作无法完成。(NSURLErrorDomain错误-1001。)」。
+        /// 这台机器在国内打 `api.metag.ai`，跨洲那一跳超时是最常见的失败，
+        /// 也就是说**最常见的那一条错误，说的是最不像人话的一句**。
+        ///
+        /// 39 处界面直接显示 `error.localizedDescription`。在边界上包一次，
+        /// 那 39 处一起变好；每一处各写一遍，迟早有一处忘记。
+        case offline(URLError.Code)
 
         var errorDescription: String? {
             switch self {
             case .signedOut: return L10n.key("Sign in to METAG to generate.")
             case .tokenNotAcceptedHere(let provider):
                 return "\(provider): " + L10n.key("signed you in, but this app can't use that session yet. Try another sign-in method.")
-            case .insufficientCredits: return L10n.key("Not enough credits.")
+            // **这是转化那一刻，而它原来是个句号。** 「额度不够」说完就没了，
+            // 他得自己去找哪里能买 —— 而这一句正好落在他最想继续的时候。
+            case .insufficientCredits:
+                return L10n.key("Not enough credits — top up or subscribe in Settings › Account.")
             // 这几条以前全都落到下面那句 "METAG request failed (404)"，
             // 而**紧挨着的注释就写着**"用户看到的必须是能据此行动的话"。
             // 它们不是罕见情况，是最常见的那几种：打开昨天的链接、连点两次出片、
@@ -204,6 +217,17 @@ enum MetagGateway {
                 // 他八天后回来，之前那条片子不是"要登录"，是查无此物 ——
                 // 说"东西不见了"对他是假话，他会以为我们弄丢了。
                 return L10n.key("That one was made with a temporary identity that has since expired. Sign in and your films stay with you.")
+            case .offline(let code):
+                switch code {
+                case .notConnectedToInternet, .networkConnectionLost:
+                    return L10n.key("No connection. Check your network and try again.")
+                case .timedOut:
+                    return L10n.key("The network took too long to answer. Try again.")
+                case .cannotFindHost, .cannotConnectToHost, .dnsLookupFailed:
+                    return L10n.key("Can't reach METAG right now. Try again in a moment.")
+                default:
+                    return L10n.key("The network dropped that one. Try again.")
+                }
             case .http(404):
                 // 404 同时表示"过期"和"不是你的"，措辞要两边都成立 ——
                 // 说"已过期"对拿到别人链接的人是假话。
@@ -218,7 +242,11 @@ enum MetagGateway {
                 return L10n.key("That is not yours to open.")
             case .http(502), .http(504):
                 return L10n.key("The provider did not answer — try again in a moment.")
-            case .http(let code): return L10n.key("METAG request failed.") + " (\(code))"
+            // 兜底那句原来是「METAG request failed. (500)」—— 那是机器的话，
+            // 他既不知道发生了什么，也不知道该做什么。**状态码留着**（他要报错时用得上），
+            // 但前面得有一句人话。
+            case .http(let code):
+                return L10n.key("That didn't go through. Try again — if it keeps happening, tell us.") + " (\(code))"
             case .rejected(_, let reason):
                 switch reason {
                 case "inflight_limit":
@@ -226,7 +254,7 @@ enum MetagGateway {
                 case "queue_full":
                     return L10n.key("Everyone is generating right now — try again in a few minutes")
                 case "insufficient_credits":
-                    return L10n.key("Not enough credits.")
+                    return L10n.key("Not enough credits — top up or subscribe in Settings › Account.")
                 case "engine_degraded":
                     return L10n.key("That engine is temporarily unavailable — pick another")
                 // 频控此前一律回裸 429，于是这几种都落到下面那句"稍后再试" ——
@@ -416,9 +444,15 @@ enum MetagGateway {
                     throw e
                 }
             } catch {
-                // 网络层错误（超时、连接中断、丢包导致的失败）
-                lastError = error
-                if attempt == attempts - 1 { throw error }
+                // 网络层错误（超时、连接中断、丢包导致的失败）。
+                // **包成我们自己的一句话**，但把原始错误记进日志 ——
+                // 用户要的是能据此行动的话，我们要的是能据此排查的码。
+                let wrapped = (error as? URLError).map { Failure.offline($0.code) } ?? error
+                if let urlError = error as? URLError {
+                    Log.account.warning("gateway transport error \(urlError.code.rawValue): \(urlError.localizedDescription)")
+                }
+                lastError = wrapped
+                if attempt == attempts - 1 { throw wrapped }
             }
             // 退避：200ms、600ms。**丢包往往成串**，立刻重试大概率再丢一次。
             try? await Task.sleep(for: .milliseconds(200 * Int(pow(3.0, Double(attempt)))))

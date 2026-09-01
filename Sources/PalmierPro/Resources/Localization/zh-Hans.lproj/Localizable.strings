@@ -1519,3 +1519,13 @@
 "Cancelled — yours until %@" = "已取消 —— 你还能用到 %@";
 "Show more" = "展开";
 "Show less" = "收起";
+"Redo %@ shots" = "重做这 %@ 镜";
+"No connection. Check your network and try again." = "连不上网络。检查一下连接再试。";
+"The network took too long to answer. Try again." = "网络太慢，这一次没等到回复。再试一次。";
+"Can't reach METAG right now. Try again in a moment." = "现在连不上 METAG。过一会儿再试。";
+"The network dropped that one. Try again." = "这一次被网络丢掉了。再试一次。";
+"Not enough credits — top up or subscribe in Settings › Account." = "额度不够了 —— 在「设置 › 账户」里加油或订阅。";
+"That didn't go through. Try again — if it keeps happening, tell us." = "这一步没成。再试一次；一直不行就告诉我们。";
+"None of the shots came back usable. Change a line or pick another tier, then try again." = "这一条一镜都没渲出来。改一句话，或者换一档，再试一次。";
+"These files have expired — this one needs generating again." = "取件已经过期 —— 这一条要重新生成。";
+"Share" = "分享";

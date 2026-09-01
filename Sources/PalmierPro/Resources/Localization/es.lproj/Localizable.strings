@@ -1516,3 +1516,13 @@
 "Cancelled — yours until %@" = "Cancelada: es tuya hasta el %@";
 "Show more" = "Ver más";
 "Show less" = "Ver menos";
+"Redo %@ shots" = "Rehacer %@ tomas";
+"No connection. Check your network and try again." = "Sin conexión. Revisa tu red e inténtalo de nuevo.";
+"The network took too long to answer. Try again." = "La red tardó demasiado en responder. Inténtalo de nuevo.";
+"Can't reach METAG right now. Try again in a moment." = "No se puede conectar con METAG ahora. Inténtalo en un momento.";
+"The network dropped that one. Try again." = "La red descartó esa. Inténtalo de nuevo.";
+"Not enough credits — top up or subscribe in Settings › Account." = "Créditos insuficientes: recarga o suscríbete en Ajustes › Cuenta.";
+"That didn't go through. Try again — if it keeps happening, tell us." = "Eso no salió. Inténtalo de nuevo; si sigue pasando, avísanos.";
+"None of the shots came back usable. Change a line or pick another tier, then try again." = "Ninguna toma resultó utilizable. Cambia una línea o elige otro nivel e inténtalo de nuevo.";
+"These files have expired — this one needs generating again." = "Estos archivos caducaron: hay que generar esta otra vez.";
+"Share" = "Compartir";

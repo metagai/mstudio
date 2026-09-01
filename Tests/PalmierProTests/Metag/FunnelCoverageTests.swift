@@ -60,9 +60,14 @@ struct FunnelCoverageTests {
     /// **① 完成率的分母**：零可用镜的失败必须被记下来。
     @Test func aFilmWithNoUsableShotsIsCountedAsAFailure() throws {
         let src = Self.source("Metag/MetagJobOpener.swift")
+        // 锚在**动作**上，不锚在那句文案上：文案改了这条就红，而文案是会改的
+        // （2026-09-01 改成"改一句话或换一档再试"时它当场红了）。
+        // 判据咬住实现细节，会在代码变好的时候报警。
+        let guardLine = try #require(src.range(of: "guard !wanted.isEmpty else {"))
         let track = try #require(src.range(of: "MetagFunnel.track(.filmFailed"))
-        let toast = try #require(src.range(of: "This film has no usable shots."))
-        #expect(track.lowerBound < toast.lowerBound,
+        let toast = try #require(src.range(of: "editor.mediaPanelToast = MediaPanelToast(",
+                                           range: guardLine.upperBound..<src.endIndex))
+        #expect(guardLine.upperBound < track.lowerBound && track.lowerBound < toast.lowerBound,
                 "又变成只弹一句提示就结束了 —— 那次尝试在漏斗里根本不存在")
     }
 

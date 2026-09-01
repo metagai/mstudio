@@ -296,15 +296,22 @@ extension AccountService {
 /// **`NSApp` 会是 nil**（单测里就没有 NSApplication，隐式解包当场崩）。
 /// 没有 app 就没有"前台"可等，直接返回。
 @MainActor
-func waitUntilAppIsFrontmost() async {
-    guard let app: NSApplication = NSApp, !app.isActive else { return }
-    var observer: (any NSObjectProtocol)?
-    await withCheckedContinuation { continuation in
-        observer = NotificationCenter.default.addObserver(
-            forName: NSApplication.didBecomeActiveNotification,
-            object: nil,
-            queue: .main
-        ) { _ in continuation.resume() }
+func waitUntilAppIsFrontmost(timeout: Duration = .seconds(120)) async {
+    guard let app: NSApplication = NSApp else { return }   // 没有 app 就没有"前台"可等
+
+    // **等要有个头。**
+    //
+    // 第一版挂在 `didBecomeActiveNotification` 上，没有上限 —— 而那条通知
+    // 可能永远不来：单测进程里 `NSApp` 存在但永远不会 active，于是 await
+    // 挂死，整套测试从 15 秒变成 20 分钟不结束（2026-09-01 实测）。
+    // 生产里是同一个形状：他把 app 丢在后台不管，那句庆祝就永远挂着。
+    //
+    // 用轮询而不是通知 + 超时竞速：那个写法要么双重 resume（崩），
+    // 要么编译器查不动隔离。250 毫秒的粒度对"开始数 6 秒"完全够用，
+    // 而这段代码简单到不会再出错。
+    let deadline = ContinuousClock.now.advanced(by: timeout)
+    while !app.isActive, ContinuousClock.now < deadline, !Task.isCancelled {
+        try? await Task.sleep(for: .milliseconds(250))
     }
-    if let observer { NotificationCenter.default.removeObserver(observer) }
 }
+

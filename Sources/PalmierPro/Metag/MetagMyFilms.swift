@@ -115,17 +115,23 @@ struct MetagMyFilmsView: View {
                         Button { onOpen(f) } label: { row(f) }
                             .buttonStyle(.plain)
                             .disabled(!f.retrievable || model.busy != nil)
-                            .opacity(f.retrievable ? 1 : 0.55)
+                            .opacity(f.retrievable ? AppTheme.Opacity.opaque : AppTheme.Opacity.medium)
                         // 他自己想炫耀是这门生意最便宜的一条获客路，而此前
                         // 一条做好的片子在全站没有任何办法递给第二个人。
                         Button {
                             Task { await model.share(f.job_id) }
                         } label: {
-                            Image(systemName: "square.and.arrow.up")
-                                .font(.system(size: AppTheme.FontSize.xs))
+                            // **给它一个名字。** 这一屏存在的理由之一就是
+                            // "他愿不愿意给别人看" —— 而那件事原来是一个
+                            // 10 点的图标，要悬停才知道是什么。
+                            HStack(spacing: AppTheme.Spacing.xxs) {
+                                Image(systemName: "square.and.arrow.up")
+                                Text(L10n.key("Share"))
+                            }
+                            .font(.system(size: AppTheme.FontSize.xs))
                         }
                         .buttonStyle(.plain)
-                        .foregroundStyle(AppTheme.Text.secondaryColor)
+                        .foregroundStyle(AppTheme.Accent.brand)
                         .disabled(!f.retrievable || f.status != "done" || model.busy != nil)
                         .help(L10n.key("Send it to someone"))
                         Button {
@@ -157,16 +163,29 @@ struct MetagMyFilmsView: View {
             Text(f.status == "failed" ? L10n.key("Failed")
                  : (f.retrievable ? L10n.key("Open") : L10n.key("Expired")))
                 .font(.system(size: AppTheme.FontSize.sm))
-                .foregroundStyle(f.status == "failed" ? .orange
-                                 : (f.retrievable ? Color.accentColor : .orange))
+                // `systemOrange` 在纸底上 2.11:1，过不了 AA —— AppTheme 为此
+                // 专门收敛过一版，而这里又把它写回来了（藏在三元里，
+                // 判据的正则只认直写的那一种）。
+                .foregroundStyle(f.status == "failed" || !f.retrievable
+                                 ? AppTheme.Status.warningColor
+                                 : AppTheme.Accent.brand)
         }
         .contentShape(Rectangle())
     }
 
+    /// **跟界面语言走，而且每行不新建一个 formatter。**
+    ///
+    /// 原来写死 `"M/d HH:mm"` —— `9/1 04:55` 对欧洲用户是"1 月 9 日"，
+    /// 这和第一天修掉的「英文界面里写着"1个月前"」是同一个毛病：
+    /// 日期没跟着用户走。而 `DateFormatter()` 建在函数里，
+    /// 一屏十行就建十次。
+    ///
+    /// 用 `AppLocalization.relativeString` —— 首页项目卡用的就是它
+    /// （"7小时前"），同一个产品里同一种时间不该有两种写法。
+    @MainActor
     private static func when(_ epoch: Double) -> String {
-        let d = Date(timeIntervalSince1970: epoch)
-        let f = DateFormatter()
-        f.dateFormat = "M/d HH:mm"
-        return f.string(from: d)
+        AppLocalization.shared.relativeString(
+            for: Date(timeIntervalSince1970: epoch), style: .short
+        )
     }
 }

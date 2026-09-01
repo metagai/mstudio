@@ -98,24 +98,44 @@ private struct HomeSidebar: View {
                 .padding(.bottom, AppTheme.Spacing.sm)
                 .animation(.easeInOut(duration: AppTheme.Anim.transition), value: updater.updateAvailable)
 
-            // 登录挪到了底部。**它仍然在，只是不再是他见到的第一件事** ——
-            // 之前它是侧栏第一行，对一个刚装完的人那就是"先交身份"。
-            // 而它必须在：引导页只出现一次，之后他得有路可走。
+            footer
+        }
+        .frame(maxHeight: .infinity, alignment: .top)
+    }
+
+    /// 侧栏底部那一块。**一条分隔线，两行同样的字。**
+    ///
+    /// 原来这里是两种控件并排：登录是个 `Menu`（系统小箭头、自己的高亮、
+    /// `mdLg` 左边距），设置是 `SidebarRowButton`（`smMd` 左边距、我们的高亮）。
+    /// **两行字对不齐、两种高亮、一个有箭头一个没有** —— 单独看每行都正常，
+    /// 并排看就是"这两行不是一套东西"。而它是首页上除了那句问话之外
+    /// 唯一常驻的东西，他每次打开都看见。
+    ///
+    /// 现在两行共用 `SidebarRowLabel`：同一条左轴、同一个行高、同一种悬停。
+    /// 上面加一条分隔线 —— 它们是**出口**，不是内容的延续。
+    ///
+    /// 登录走 `SignInMenu`：这里原来自己抄了一遍那个 provider 循环，
+    /// 于是"登录入口只有一处"这件事又有了第二处。
+    @ViewBuilder
+    private var footer: some View {
+        Divider()
+            .overlay(AppTheme.Border.subtleColor)
+            .padding(.horizontal, AppTheme.Spacing.md)
+            .padding(.bottom, AppTheme.Spacing.xs)
+
+        VStack(alignment: .leading, spacing: 0) {
             if !account.isSignedIn && !account.isMisconfigured {
-                Menu {
-                    ForEach(MetagAuth.Provider.ordered(), id: \.self) { provider in
-                        Button(provider.title) { Task { await account.signIn(with: provider) } }
-                    }
-                } label: {
-                    Label(
-                        account.isSigningIn ? L10n.string("Opening…") : L10n.string("Sign in"),
+                SignInMenu {
+                    SidebarRowLabel(
+                        label: account.isSigningIn ? L10n.string("Opening…") : L10n.string("Sign in"),
                         systemImage: "person.crop.circle"
                     )
+                    .hoverHighlight(cornerRadius: AppTheme.Radius.xl)
+                    .contentShape(Capsule(style: .continuous))
                 }
+                // 系统那个小箭头去掉：它让这一行比旁边那行多一个零件。
                 .menuStyle(.borderlessButton)
-                .disabled(account.isSigningIn)
-                .padding(.horizontal, AppTheme.Spacing.mdLg)
-                .padding(.bottom, AppTheme.Spacing.xxs)
+                .menuIndicator(.hidden)
             }
 
             SidebarRowButton(
@@ -123,10 +143,9 @@ private struct HomeSidebar: View {
                 systemImage: "gearshape",
                 action: { SettingsWindowController.shared.show() }
             )
-            .padding(.horizontal, AppTheme.Spacing.smMd)
-            .padding(.bottom, AppTheme.Spacing.md)
         }
-        .frame(maxHeight: .infinity, alignment: .top)
+        .padding(.horizontal, AppTheme.Spacing.smMd)
+        .padding(.bottom, AppTheme.Spacing.md)
     }
 }
 

@@ -66,3 +66,43 @@ struct SignInEntryPointTests {
         #expect(MetagAuth.Provider.allCases.count == 4)
     }
 }
+
+/// 侧栏底部那一块：**一条分隔线，两行同样的字。**
+///
+/// 原来是两种控件并排 —— 登录是个 `Menu`（系统小箭头、自己的高亮、`mdLg` 左边距），
+/// 设置是 `SidebarRowButton`（`smMd` 左边距、我们的高亮）。两行字对不齐、
+/// 两种高亮、一个有箭头一个没有。单独看每行都正常，并排看就是
+/// "这两行不是一套东西" —— 而它是首页上除了那句问话之外唯一常驻的东西。
+@Suite("侧栏底部")
+struct SidebarFooterTests {
+    private static func source(_ name: String) -> String {
+        let url = URL(fileURLWithPath: #filePath)
+            .deletingLastPathComponent().deletingLastPathComponent()
+            .deletingLastPathComponent().deletingLastPathComponent()
+            .appendingPathComponent("Sources/PalmierPro/\(name)")
+        return (try? String(contentsOf: url, encoding: .utf8)) ?? ""
+    }
+
+    /// 两行共用同一个样子。**各写各的，迟早会漂** —— 上一版就漂了两个像素的左边距。
+    @Test func bothRowsShareOneLook() {
+        let src = Self.source("Home/HomeView.swift")
+        #expect(src.contains("SidebarRowLabel("), "登录那一行又自己画了")
+        #expect(src.contains("SidebarRowButton("))
+        // 同一处 padding，不是每行各写一遍。
+        #expect(!src.contains("AppTheme.Spacing.mdLg)\n                .padding(.bottom, AppTheme.Spacing.xxs)"),
+                "登录那一行又有了自己的边距")
+    }
+
+    /// 登录入口只有一处。这里原来自己抄了一遍 provider 循环。
+    @Test func theSidebarUsesTheOneSignInEntry() {
+        let src = Self.source("Home/HomeView.swift")
+        #expect(src.contains("SignInMenu {"), "侧栏又自己搭了一个登录菜单")
+        #expect(!src.contains("ForEach(MetagAuth.Provider.ordered()"),
+                "provider 循环被抄到了第二处 —— 登录入口就不止一个了")
+    }
+
+    /// 它们是**出口**，不是内容的延续 —— 上面要有一条线。
+    @Test func theFooterIsSeparatedFromTheContent() {
+        #expect(Self.source("Home/HomeView.swift").contains("private var footer: some View"))
+    }
+}

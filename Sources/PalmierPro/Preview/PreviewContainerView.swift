@@ -703,7 +703,7 @@ struct PreviewContainerView: View {
             VStack(spacing: AppTheme.Spacing.md) {
                 Image(systemName: "exclamationmark.triangle.fill")
                     .font(.system(size: AppTheme.FontSize.display))
-                    .foregroundStyle(.red.opacity(AppTheme.Opacity.prominent))
+                    .foregroundStyle(AppTheme.Status.errorColor.opacity(AppTheme.Opacity.prominent))
                 Text(L10n.string("Generation Failed"))
                     .font(.system(size: AppTheme.FontSize.lg, weight: .semibold))
                     .foregroundStyle(AppTheme.MediaOverlay.primaryColor)

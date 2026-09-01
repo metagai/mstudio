@@ -258,7 +258,7 @@ struct AssetThumbnailView: View {
         VStack(spacing: AppTheme.Spacing.xxs) {
             Image(systemName: "exclamationmark.triangle.fill")
                 .font(.system(size: AppTheme.FontSize.mdLg))
-                .foregroundStyle(.red.opacity(AppTheme.Opacity.prominent))
+                .foregroundStyle(AppTheme.Status.errorColor.opacity(AppTheme.Opacity.prominent))
             Text(L10n.string("Failed"))
                 .font(.system(size: AppTheme.FontSize.xs, weight: .semibold))
                 .foregroundStyle(AppTheme.MediaOverlay.secondaryColor)

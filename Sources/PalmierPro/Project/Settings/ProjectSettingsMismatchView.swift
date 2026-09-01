@@ -34,7 +34,7 @@ struct ProjectSettingsMismatchView: View {
                         .foregroundStyle(AppTheme.Text.primaryColor)
                     Text(verbatim: "\(mismatch.clipFPS)")
                         .font(.system(size: AppTheme.FontSize.sm, design: .monospaced))
-                        .foregroundStyle(mismatch.clipFPS != editor.timeline.fps ? .orange : AppTheme.Text.primaryColor)
+                        .foregroundStyle(mismatch.clipFPS != editor.timeline.fps ? AppTheme.Status.warningColor : AppTheme.Text.primaryColor)
                 }
                 GridRow {
                     Text(L10n.string("Resolution"))
@@ -45,7 +45,7 @@ struct ProjectSettingsMismatchView: View {
                         .foregroundStyle(AppTheme.Text.primaryColor)
                     Text(verbatim: "\(mismatch.clipWidth) x \(mismatch.clipHeight)")
                         .font(.system(size: AppTheme.FontSize.sm, design: .monospaced))
-                        .foregroundStyle(resolutionMismatch ? .orange : AppTheme.Text.primaryColor)
+                        .foregroundStyle(resolutionMismatch ? AppTheme.Status.warningColor : AppTheme.Text.primaryColor)
                 }
             }
 

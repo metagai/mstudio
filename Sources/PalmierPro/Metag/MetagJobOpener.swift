@@ -36,7 +36,10 @@ enum MetagJobOpener {
                     "shots": job.shots.count,
                 ])
                 editor.mediaPanelToast = MediaPanelToast(
-                    message: L10n.key("This film has no usable shots."))
+                    // **他等完了，拿到一个句号。** 原来只说"没有可用镜头"——
+                    // 不说为什么、不说下一步、也不说钱。钱这件事我不替网关承诺
+                    // （退不退是它说了算），但**下一步必须给**。
+                    message: L10n.key("None of the shots came back usable. Change a line or pick another tier, then try again."))
                 return
             }
             let native = MetagNarrationPlan.nativeAudioEngineIds(try? await MetagGateway.pricing())
@@ -90,7 +93,9 @@ enum MetagJobOpener {
     private static func message(added: Int, narrations: Int, salvaged: Bool) -> String {
         // 取不到就直说。含糊其辞比说不出口更伤信任。
         guard added > 0 else {
-            return L10n.key("Those files have expired and cannot be opened.")
+            // 取件是内存盘，过期就真的没有了 —— 说清楚它要重做，
+            // 而不是让他以为我们弄丢了。
+            return L10n.key("These files have expired — this one needs generating again.")
         }
         // 抢救回来的要说清楚它是残的，否则用户以为整单都在手上。
         if salvaged {

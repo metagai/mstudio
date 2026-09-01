@@ -10,6 +10,10 @@ struct ModelsPane: View {
     private struct Row: Identifiable {
         let id: String
         let displayName: String
+        /// 这一档是什么（`1080p · 5s` 这类）。**目录里一直有，而这一屏一直没用** ——
+        /// 于是它是一张只有名字和开关的库存清单：他看不出"前沿"和"专业"差在哪，
+        /// 只能靠猜。同一份数据草案表那边早就在显示了。
+        let spec: String?
         let paidOnly: Bool
         let providerIconKey: String?
     }
@@ -43,6 +47,8 @@ struct ModelsPane: View {
         Row(
             id: entry.id,
             displayName: entry.displayName,
+            spec: entry.description?.trimmingCharacters(in: .whitespaces).isEmpty == false
+                ? entry.description?.trimmingCharacters(in: .whitespaces) : nil,
             paidOnly: entry.paidOnly,
             providerIconKey: entry.providerIconKey
         )
@@ -106,9 +112,18 @@ struct ModelsPane: View {
                 ProviderLogo(iconKey: iconKey, size: AppTheme.IconSize.md)
                     .opacity(locked ? AppTheme.Opacity.medium : AppTheme.Opacity.opaque)
             }
-            Text(row.displayName)
-                .font(.system(size: AppTheme.FontSize.md))
-                .foregroundStyle(locked ? AppTheme.Text.tertiaryColor : AppTheme.Text.primaryColor)
+            VStack(alignment: .leading, spacing: AppTheme.Spacing.xxs) {
+                Text(row.displayName)
+                    .font(.system(size: AppTheme.FontSize.md))
+                    .foregroundStyle(locked ? AppTheme.Text.tertiaryColor : AppTheme.Text.primaryColor)
+                // 有就说，没有就不说 —— **不给一句凑出来的介绍**。
+                if let spec = row.spec {
+                    Text(verbatim: spec)
+                        .font(.system(size: AppTheme.FontSize.xs))
+                        .foregroundStyle(AppTheme.Text.mutedColor)
+                        .lineLimit(1)
+                }
+            }
             Spacer(minLength: AppTheme.Spacing.lg)
             if locked {
                 Button(L10n.string("Subscribe")) {

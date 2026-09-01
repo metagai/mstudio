@@ -520,7 +520,10 @@ struct MetagDraftSheet: View {
                             sampling = false
                         }
                     }
-                    .disabled(sampling || model.busy || model.jobId == nil || sampleTier == nil)
+                    // 外层 `if` 已经保证了 `sampleTier != nil`，而这一段只在
+                    // 草案就绪后渲染、`jobId` 不可能为 nil —— 那两个条件从没起过作用。
+                    // **留着一个不做事的门，下一个人会以为门在那儿。**
+                    .disabled(sampling || model.busy)
                     // 流光只给这一个按钮：它是用户唯一一次免费看见付费档的入口。
                     // 到处都转就成了噪音，谁都不再被看见。
                     .borderBeam(active: !sampling, radius: AppTheme.Radius.xsSm)
@@ -546,8 +549,20 @@ struct MetagDraftSheet: View {
                 }
             }
             HStack {
-                Button(L10n.key("Redo the edited shots")) { Task { await model.revise() } }
-                    .disabled(model.busy || model.effectiveEdits.isEmpty)
+                // **改过才出现。** 原来它永远摆在那儿、永远是灰的（没改东西时
+                // `effectiveEdits` 是空的），而它就在"出片"旁边 ——
+                // 用户第一眼看到的是一颗死按钮，没有任何一处说它为什么死。
+                // 一颗常年灰着的按钮教给用户的是"这个 app 有坏按钮"。
+                //
+                // 而它本来就是上下文动作：改了旁白、或者勾了"换个构图"，
+                // 它才有意义。改了它就出现 —— 那一刻他正好需要它。
+                if !model.effectiveEdits.isEmpty {
+                    Button(L10n.string("Redo \(model.effectiveEdits.count.formatted()) shots")) {
+                        Task { await model.revise() }
+                    }
+                    .buttonStyle(.capsule(.secondary, size: .regular))
+                    .disabled(model.busy)
+                }
                 Spacer()
                 // 价钱写在按钮上，不写在按钮旁边。**这是全站一致的规矩** ——
                 // 旁边那行会被换行、被挤走、被读屏跳过，而按钮不会。

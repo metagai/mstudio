@@ -103,7 +103,9 @@ struct SignInWaitTests {
     /// 崩在测试里是运气好；同一段代码跑在没有 UI 的地方（命令行导出、
     /// 未来的无头模式）就是崩在用户那里。
     @Test func waitingIsFreeWhenThereIsNoAppToWaitFor() async {
-        await waitUntilAppIsFrontmost()   // 必须立刻返回，不许挂住、不许崩
+        // **不许挂住。** 第一版没有上限：单测进程里 `NSApp` 存在但永远不会
+        // active，于是这个 await 挂死，整套测试从 15 秒变成 20 分钟不结束。
+        await waitUntilAppIsFrontmost(timeout: .milliseconds(50))
     }
 
     /// 退出登录要把它清干净，别让上一次的庆祝留在下一次的屏幕上。

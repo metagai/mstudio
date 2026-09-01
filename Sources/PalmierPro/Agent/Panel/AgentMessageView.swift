@@ -257,7 +257,7 @@ private struct ToolRunRow: View {
         VStack(alignment: .leading, spacing: AppTheme.Spacing.xs) {
             Text(r.isError ? L10n.string("error") : L10n.string("result"))
                 .font(.system(size: AppTheme.FontSize.xxs))
-                .foregroundStyle(r.isError ? .red.opacity(AppTheme.Opacity.prominent) : AppTheme.Text.mutedColor)
+                .foregroundStyle(r.isError ? AppTheme.Status.errorColor.opacity(AppTheme.Opacity.prominent) : AppTheme.Text.mutedColor)
             ForEach(Array(r.content.enumerated()), id: \.offset) { _, block in
                 switch block {
                 case .text(let s):

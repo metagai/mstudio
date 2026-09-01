@@ -120,7 +120,7 @@ extension GenerationView {
                 .monospacedDigit()
                 .lineLimit(1)
         }
-        .foregroundStyle(hasInsufficientCredits ? .red : AppTheme.Text.secondaryColor)
+        .foregroundStyle(hasInsufficientCredits ? AppTheme.Status.errorColor : AppTheme.Text.secondaryColor)
         .help(costHelpText)
     }
 

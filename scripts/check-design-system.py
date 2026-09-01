@@ -58,7 +58,10 @@ ALLOW = {
 
 SEMANTIC_FONT = re.compile(r"\.font\(\.(?:headline|subheadline|caption2?|title\d?|body|footnote)\)")
 SYSTEM_BUTTON = re.compile(r"\.buttonStyle\(\.bordered(?:Prominent)?\)")
-RAW_COLOR = re.compile(r"\.foregroundStyle\(\.(?:orange|green|red|blue|yellow|gray|secondary|tertiary|quaternary)\)")
+# **三元里的裸色号原来抓不到**：`.foregroundStyle(x ? .orange : .blue)`
+# 整个躲过了上一版的正则，而它正是 MetagMyFilms 里那处 systemOrange 的写法。
+# 判据只认它见过的那一种写法，就等于只防它已经修过的那一次。
+RAW_COLOR = re.compile(r"foregroundStyle\([^)\n]*(?<![A-Za-z0-9_.])\.(?:orange|green|red|blue|yellow|gray|secondary|tertiary|quaternary)\b")
 # 真正的"手搓卡片"签名：`.background(RoundedRectangle…fill)` 紧跟
 # `.overlay(RoundedRectangle…strokeBorder)` —— 那正是 `cardSurface` 做的事。
 # `clipShape` / 选中环 / 悬停填充都不算：它们本来就不是卡片。
