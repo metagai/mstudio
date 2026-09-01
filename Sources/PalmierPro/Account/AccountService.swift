@@ -136,12 +136,21 @@ final class AccountService {
     }
 
     /// 落地那句话停几秒就走 —— 它是一次庆祝，不是一块常驻的横幅。
+    ///
+    /// **但那几秒从他看见开始数，不是从票到账开始数。** 授权是在另一扇窗里
+    /// 完成的，他扫完码人还在那一侧；等他切回来，六秒早过完了
+    /// （2026-08-31 创始人：「注意力始终在网页端，回到 Mac 端才看到最后那行字」——
+    /// 他这次赶上了，下次慢十秒就赶不上）。
+    ///
+    /// 所以 app 不在前台就先不开始计时，等他回来再数。
     private func land(credits: Int) {
         signInPhase = .landed(credits: credits)
-        landingTask = Task {
+        landingTask = Task { [weak self] in
+            await waitUntilAppIsFrontmost()
+            guard !Task.isCancelled else { return }
             try? await Task.sleep(for: .seconds(6))
             guard !Task.isCancelled else { return }
-            signInPhase = .idle
+            self?.signInPhase = .idle
         }
     }
 
@@ -213,4 +222,25 @@ extension AccountService {
     }
 
     var planLabel: String { isPaid ? "Subscribed" : "Free" }
+}
+
+/// 等到 app 回到前台；已经在前台就立刻返回。
+///
+/// 用在"这句话要等他看见"的地方 —— 计时从他的注意力回来那一刻开始，
+/// 不是从事情办完那一刻开始。
+///
+/// **`NSApp` 会是 nil**（单测里就没有 NSApplication，隐式解包当场崩）。
+/// 没有 app 就没有"前台"可等，直接返回。
+@MainActor
+func waitUntilAppIsFrontmost() async {
+    guard let app: NSApplication = NSApp, !app.isActive else { return }
+    var observer: (any NSObjectProtocol)?
+    await withCheckedContinuation { continuation in
+        observer = NotificationCenter.default.addObserver(
+            forName: NSApplication.didBecomeActiveNotification,
+            object: nil,
+            queue: .main
+        ) { _ in continuation.resume() }
+    }
+    if let observer { NotificationCenter.default.removeObserver(observer) }
 }

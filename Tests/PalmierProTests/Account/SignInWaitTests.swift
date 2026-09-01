@@ -1,3 +1,4 @@
+import AppKit
 import Foundation
 import Testing
 @testable import PalmierPro
@@ -72,10 +73,33 @@ struct SignInWaitTests {
     }
 
     /// 落地那句话是一次庆祝，不是常驻横幅 —— 停几秒就走。
-    @Test func theLandingLineGoesAway() {
+    ///
+    /// **但那几秒从他看见开始数。** 授权在另一扇窗里完成，他扫完码人还在那一侧；
+    /// 等他切回 Mac，六秒早过完了（2026-08-31 创始人：「注意力始终在网页端，
+    /// 回到 Mac 端才看到最后那行字」—— 他这次赶上了，慢十秒就赶不上）。
+    @Test func theLandingLineWaitsForHimToLook() {
         let src = Self.source("Account/AccountService.swift")
-        #expect(src.contains("signInPhase = .idle") && src.contains("Task.sleep(for: .seconds(6))"),
-                "落地那句话赖着不走了")
+        guard let land = src.range(of: "private func land(credits: Int)") else {
+            Issue.record("落地那一段找不着了")
+            return
+        }
+        let body = String(src[land.lowerBound...].prefix(500))
+        guard let wait = body.range(of: "waitUntilAppIsFrontmost()"),
+              let sleep = body.range(of: "Task.sleep(for: .seconds(6))") else {
+            Issue.record("落地那句话要么不走了，要么不等他看见就开始倒计时")
+            return
+        }
+        #expect(wait.lowerBound < sleep.lowerBound,
+                "先倒计时再等他回来 —— 那等于没等：他切回来时那句话已经没了")
+    }
+
+    /// **没有 app 就没有"前台"可等。**
+    ///
+    /// `NSApp` 是隐式解包的，单测里它是 nil —— 第一版直接崩在这一行。
+    /// 崩在测试里是运气好；同一段代码跑在没有 UI 的地方（命令行导出、
+    /// 未来的无头模式）就是崩在用户那里。
+    @Test func waitingIsFreeWhenThereIsNoAppToWaitFor() async {
+        await waitUntilAppIsFrontmost()   // 必须立刻返回，不许挂住、不许崩
     }
 
     /// 退出登录要把它清干净，别让上一次的庆祝留在下一次的屏幕上。
