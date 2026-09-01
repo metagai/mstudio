@@ -125,11 +125,17 @@ struct OnboardingOverlay: View {
             // 没登录：让他直接去写那一句。登录降为次要 ——
             // 它仍然在，只是不再是他见到的第一件事。
             primaryButton(L10n.string("See your film first"), action: startDraft)
-            secondaryButton(
-                account.isSigningIn ? L10n.string("Opening Google…") : L10n.string("Sign in with Google"),
-                action: signIn,
-                disabled: account.isSigningIn
-            )
+            // 四种都给。**Apple 排第一** —— 在 Mac 上它是"这个 app 属于这台电脑"
+            // 的信号；微信对国内用户是唯一顺手的那个。
+            HStack(spacing: AppTheme.Spacing.xs) {
+                ForEach(MetagAuth.Provider.allCases, id: \.self) { provider in
+                    secondaryButton(
+                        provider.title,
+                        action: { Task { await account.signIn(with: provider) } },
+                        disabled: account.isSigningIn
+                    )
+                }
+            }
             // 赠额挂在登录按钮旁边 —— **它是登录的理由，不是打开 app 的理由。**
             // 数字取自网关的 signup_free_credits；取不到就不提数字，
             // 宁可少说一句也不要说错一个数。

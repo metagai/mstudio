@@ -26,7 +26,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
 
         // 漏斗第一步。**桌面端此前一步都没埋** —— 报表上它的流失会显示成零，
         // 而零和「没量到」长得一模一样（见 MetagFunnel）。
-        MetagFunnel.track(.landed)
+        MetagFunnel.track(.landed, once: true)  // 一次启动一条
 
         HomeWindowController.shared.showWindow(nil)
         SkillStore.shared.startSkillSync()

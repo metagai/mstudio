@@ -38,6 +38,8 @@ struct MediaTab: View {
     @State private var showDirectorSheet = false
     @State private var showVoiceSheet = false
     @State private var showDraftSheet = false
+    /// 首屏那句话，带进草案面板 —— 他已经写过一次了，不该再写一遍。
+    @State private var pendingPrompt: String?
 
     enum ViewMode: String, CaseIterable {
         case folder, flat, grouped
@@ -193,11 +195,12 @@ struct MediaTab: View {
         }
         // 免费草案：先看片，再决定付不付钱。
         // web 端一直有这条路，macOS 端此前没有 —— 而"先看后买"是首页对外的承诺。
-        .onReceive(NotificationCenter.default.publisher(for: .metagStartDraft)) { _ in
+        .onReceive(NotificationCenter.default.publisher(for: .metagStartDraft)) { note in
+            pendingPrompt = note.userInfo?["prompt"] as? String
             showDraftSheet = true
         }
         .sheet(isPresented: $showDraftSheet) {
-            MetagDraftSheet()
+            MetagDraftSheet(initialPrompt: pendingPrompt)
         }
     }
 

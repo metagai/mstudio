@@ -1441,3 +1441,33 @@
 
 "Send it to someone" = "发给别人看";
 "Link copied" = "链接已复制";
+
+/* 首屏 · 班底 · 报价 · 匿名先看一眼（2026-09-01） */
+"What do you want to film?" = "你想拍什么？";
+"A woman in a laundromat, warm afternoon light" = "洗衣店里的女人，午后斜射的光";
+"Opening…" = "正在打开…";
+"See it" = "看一眼";
+"Free, and no account needed for the first look." = "免费，第一次不用注册。";
+"How did you find METAG?" = "你是怎么找到 METAG 的？";
+"See your film first" = "先看一眼你的片子";
+"Write one line and see your film. No account needed for the first look." = "写一句话就能看见你的片子。第一次不用注册。";
+"Producing this will cost about %@ credits" = "出片大约需要 %@ 积分";
+"Putting a crew together for this one…" = "正在为这一条组建班底…";
+"Director" = "导演";
+"Casting" = "选角";
+"Voice actor" = "配音";
+"Cinematographer" = "摄影";
+"Editor" = "剪辑";
+"Composer" = "作曲";
+"Breaking your line into shots" = "正在把你那句话拆成分镜";
+"Finding the right voice" = "正在挑合适的声音";
+"Recording the narration" = "正在录旁白";
+"Lining up the first frame" = "正在调第一帧的构图";
+"Cutting it together" = "正在接成一条";
+"Scoring it" = "正在配乐";
+"That's the free one for today — your draft is still here. Sign in to keep it and make more." = "今天这条免费的用完了 —— 你那条草案还在。登录就能留住它，再拍一条。";
+"Today's free drafts are all taken. Sign in to make your own, or come back tomorrow." = "今天的免费草案已经用完了。登录可以做自己的，或者明天再来。";
+"Signing in keeps this draft and lets you produce it." = "登录之后这条草案留给你，而且可以出片。";
+"That one was made with a temporary identity that has since expired. Sign in and your films stay with you." = "那一条是用上一次的临时身份建的，那个身份已经过期了。登录之后作品就一直留在你名下。";
+"Couldn't reach METAG — check your connection and try again." = "连不上 METAG —— 检查一下网络再试。";
+"%@ free credits when you sign in" = "登录送 %@ 积分";

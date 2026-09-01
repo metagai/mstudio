@@ -232,6 +232,55 @@ final class AppState {
         return doc
     }
 
+    /// 从他写的那一句开始一部片子。**不弹存储面板。**
+    ///
+    /// 他要的是片子，不是先给文件起个名 —— 所以项目名就用那句话
+    /// （顺带治掉列表里那些 `tl-074321` 的机器名）。名字撞了就往后加序号，
+    /// 而不是弹一个错误让他重来。
+    @MainActor
+    func startFilm(from line: String) async {
+        let name = Self.projectName(from: line)
+        do {
+            var attempt = name
+            var n = 2
+            while true {
+                do {
+                    let project = try await createProject(named: attempt)
+                    showEditor(for: project)
+                    break
+                } catch ProjectError.nameTaken {
+                    attempt = "\(name) \(n)"
+                    n += 1
+                    if n > 50 { throw ProjectError.nameTaken(Project.storageDirectory) }
+                }
+            }
+        } catch {
+            Log.project.error("从一句话建项目失败：\(error.localizedDescription)")
+            return
+        }
+        // 项目开好了再把草案面板端上来：面板活在编辑器的媒体面板里，
+        // 而首页那一刻还没有项目。
+        NotificationCenter.default.post(
+            name: .metagStartDraft, object: nil, userInfo: ["prompt": line]
+        )
+    }
+
+    /// 把一句话变成一个能当文件名的项目名。
+    ///
+    /// 只做三件事：去掉路径分隔符和首尾点、压掉连续空白、按**字符**截断。
+    /// 按字符不按字节 —— 中文一句话很短，按字节截会砍在半个字上。
+    nonisolated static func projectName(from line: String) -> String {
+        let cleaned = line
+            .components(separatedBy: CharacterSet(charactersIn: "/\\:"))
+            .joined(separator: " ")
+            .components(separatedBy: .whitespacesAndNewlines)
+            .filter { !$0.isEmpty }
+            .joined(separator: " ")
+            .trimmingCharacters(in: CharacterSet(charactersIn: ". "))
+        let capped = String(cleaned.prefix(48)).trimmingCharacters(in: .whitespaces)
+        return capped.isEmpty ? Project.defaultProjectName : capped
+    }
+
     func createProjectInteractively() {
         Telemetry.beginOperation("save_panel", data: ["flow": "project_create"])
         let panel = NSSavePanel()

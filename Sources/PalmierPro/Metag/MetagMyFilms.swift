@@ -32,7 +32,7 @@ final class MetagMyFilmsModel: ObservableObject {
             let url = try await MetagGateway.shareFilm(id)
             NSPasteboard.general.clearContents()
             NSPasteboard.general.setString(url, forType: .string)
-            MetagFunnel.track(.shared, once: false)
+            MetagFunnel.track(.shared)
             shared = url
         } catch {
             self.error = error.localizedDescription

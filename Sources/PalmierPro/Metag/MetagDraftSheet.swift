@@ -147,7 +147,7 @@ final class MetagDraftModel: ObservableObject {
             // **网关收下了才算。** 记在按钮上的话，一次失败的批准会让转化率
             // 凭空变好而钱一分没进来 —— 而我们会照着那个数去排下一步的工。
             // 带上这一单的档位和报价：报价有没有改变他的选择，只能在这里看出来。
-            MetagFunnel.track(.paid, once: false, meta: [
+            MetagFunnel.track(.paid, meta: [
                 "engine": engine,
                 "credits": quote?.options.first { $0.engine == engine }?.total_credits ?? 0,
                 "quoted": quote != nil,
@@ -178,6 +178,10 @@ final class MetagDraftModel: ObservableObject {
 }
 
 struct MetagDraftSheet: View {
+    /// 首屏那句话。他已经写过一次了，**不该再写一遍** ——
+    /// 而且写完立刻就开跑：面板一打开草案就在起，他等的是片子不是表单。
+    var initialPrompt: String?
+
     @Environment(\.dismiss) private var dismiss
     @Environment(EditorViewModel.self) private var editor
     @StateObject private var model = MetagDraftModel()
@@ -323,6 +327,14 @@ struct MetagDraftSheet: View {
         .task {
             engines = (try? await MetagGateway.pricing().engines) ?? []
         }
+        .onAppear(perform: seedIfNeeded)
+    }
+
+    /// 带着首屏那句话进来的话，填好并立刻开跑。
+    private func seedIfNeeded() {
+        guard let initialPrompt, model.prompt.isEmpty, model.jobId == nil else { return }
+        model.prompt = initialPrompt
+        Task { await model.draft() }
     }
 
     private var promptStage: some View {

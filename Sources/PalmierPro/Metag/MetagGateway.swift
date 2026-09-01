@@ -221,6 +221,13 @@ enum MetagGateway {
                     return L10n.key("The draft is still rendering — wait a moment.")
                 case "draft_inflight":
                     return L10n.key("You already have a few drafts running — one will free up in a moment.")
+                // **撞这一格的时候，他手上已经有一条草案了。**
+                // 所以别只说"要登录"——那听起来像我们要收门票。
+                // 说他自己那条还在、登录就能接着往下走：同一件事，而后者是真的。
+                case "anon_draft_used":
+                    return L10n.key("That's the free one for today — your draft is still here. Sign in to keep it and make more.")
+                case "anon_daily_cap":
+                    return L10n.key("Today's free drafts are all taken. Sign in to make your own, or come back tomorrow.")
                 case "draft_quota":
                     return L10n.key("You've made a lot of drafts this hour — take a break and come back shortly.")
                 case "generate_quota":
@@ -368,7 +375,7 @@ enum MetagGateway {
                     // **撞墙这一下要记下来。** 埋在这里而不是错误文案的 getter 里：
                     // getter 可能被调好几次、也可能一次都不调，而这一处是
                     // "服务端说了额度不够"唯一的判定点。
-                    MetagFunnel.track(.wall, once: false)
+                    MetagFunnel.track(.wall)
                     throw Failure.insufficientCredits
                 case 429, 503:
                     // 原因码在响应体里。解不出来就退回通用文案 ——

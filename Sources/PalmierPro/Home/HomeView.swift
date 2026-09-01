@@ -44,7 +44,11 @@ struct HomeView: View {
 
     private var content: some View {
         VStack(alignment: .leading, spacing: 0) {
-            header
+            // 首屏的主角是那一句问话，不是项目列表。
+            HomeHero()
+                .padding(.horizontal, AppTheme.Spacing.xlXxl)
+                .padding(.top, AppTheme.Spacing.xxl)
+                .padding(.bottom, AppTheme.Spacing.xxl)
             SampleProjectsStrip()
             MyProjectsSection()
         }
@@ -89,16 +93,6 @@ private struct HomeSidebar: View {
             }
 
             VStack(alignment: .leading, spacing: 2) {
-                if !account.isSignedIn && !account.isMisconfigured {
-                    SidebarRowButton(
-                        label: account.isSigningIn
-                            ? L10n.string("Opening Google…")
-                            : L10n.string("Sign in with Google"),
-                        systemImage: "person.crop.circle",
-                        action: { Task { await account.signInWithGoogle() } }
-                    )
-                    .disabled(account.isSigningIn)
-                }
                 SidebarRowButton(
                     label: L10n.string("New Project"),
                     systemImage: "plus",
@@ -119,6 +113,26 @@ private struct HomeSidebar: View {
                 .padding(.horizontal, AppTheme.Spacing.smMd)
                 .padding(.bottom, AppTheme.Spacing.sm)
                 .animation(.easeInOut(duration: AppTheme.Anim.transition), value: updater.updateAvailable)
+
+            // 登录挪到了底部。**它仍然在，只是不再是他见到的第一件事** ——
+            // 之前它是侧栏第一行，对一个刚装完的人那就是"先交身份"。
+            // 而它必须在：引导页只出现一次，之后他得有路可走。
+            if !account.isSignedIn && !account.isMisconfigured {
+                Menu {
+                    ForEach(MetagAuth.Provider.allCases, id: \.self) { provider in
+                        Button(provider.title) { Task { await account.signIn(with: provider) } }
+                    }
+                } label: {
+                    Label(
+                        account.isSigningIn ? L10n.string("Opening…") : L10n.string("Sign in"),
+                        systemImage: "person.crop.circle"
+                    )
+                }
+                .menuStyle(.borderlessButton)
+                .disabled(account.isSigningIn)
+                .padding(.horizontal, AppTheme.Spacing.mdLg)
+                .padding(.bottom, AppTheme.Spacing.xxs)
+            }
 
             SidebarRowButton(
                 label: L10n.string("Settings"),

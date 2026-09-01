@@ -57,6 +57,35 @@ struct MetagFunnelTests {
                 "还留着「有 meta 才发」的旧写法 —— 那会让没有 meta 的事件发出 NULL")
     }
 
+    /// **漏斗的默认是"全记"，不是"去重"。**
+    ///
+    /// 原来默认 `once: true`，于是 line_ready / draft_started / draft_seen
+    /// 一次会话只记第一条草案 —— 用户做三条我们只看到一条，
+    /// 而"他试了几次"恰恰是这几格存在的全部理由。
+    /// 多记看得出来（同一秒两条），少记看不出来。
+    @Test func countingEveryAttemptIsTheDefault() throws {
+        let src = try String(
+            contentsOf: URL(fileURLWithPath: #filePath)
+                .deletingLastPathComponent().deletingLastPathComponent()
+                .deletingLastPathComponent().deletingLastPathComponent()
+                .appendingPathComponent("Sources/PalmierPro/Metag/MetagFunnel.swift"),
+            encoding: .utf8
+        )
+        #expect(src.contains("once: Bool = false"), "默认又变回去重了 —— 那会静默少记")
+
+        // 一次性的那两格必须显式标出来，否则重复的 landed 会把分母冲大。
+        for (file, step) in [("App/AppDelegate.swift", "landed"), ("Metag/MetagAuth.swift", "signedIn")] {
+            let s = try String(
+                contentsOf: URL(fileURLWithPath: #filePath)
+                    .deletingLastPathComponent().deletingLastPathComponent()
+                    .deletingLastPathComponent().deletingLastPathComponent()
+                    .appendingPathComponent("Sources/PalmierPro/\(file)"),
+                encoding: .utf8
+            )
+            #expect(s.contains(".\(step), once: true"), "\(step) 没有显式去重")
+        }
+    }
+
     /// `checkout_open` **不该有**：Mac 的内购路径还没开，
     /// 埋一条恒为零的线只会让人以为那一步没人走。
     @Test func noStepForAPathWeDoNotHave() {

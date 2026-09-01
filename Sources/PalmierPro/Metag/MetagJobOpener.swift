@@ -21,7 +21,7 @@ enum MetagJobOpener {
             // web 端就是靠这一格把「没到手」和「到了没看」切开的，
             // 那两半该改的东西完全相反。
             if !job.shots.isEmpty {
-                MetagFunnel.track(.filmReady, once: false, meta: [
+                MetagFunnel.track(.filmReady, meta: [
                     "shots": job.shots.count, "salvaged": job.salvaged,
                 ])
             }

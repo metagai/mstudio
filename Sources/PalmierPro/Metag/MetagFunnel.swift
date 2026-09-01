@@ -44,7 +44,13 @@ enum MetagFunnel {
         return a
     }
 
-    static func track(_ step: Step, once: Bool = true, meta: [String: Any]? = nil) {
+    /// **默认全记。** 去重只给真正一次会话只发生一次的事（打开 app、登录）。
+    ///
+    /// 原来默认是 `once: true`，于是 `line_ready` / `draft_started` / `draft_seen`
+    /// **一次会话里只记第一条草案** —— 用户做三条，我们只看到一条，
+    /// 而"他试了几次"恰恰是这几格存在的全部理由。
+    /// 漏斗的安全默认是"多记"，不是"少记"：多记看得出来，少记看不出来。
+    static func track(_ step: Step, once: Bool = false, meta: [String: Any]? = nil) {
         if once, !Self.once.fresh(step.rawValue) { return }
         // **每一条都带 page。** 不带的话 `meta` 整个是 NULL，而在报表里
         // 一个 NULL meta 的事件和一个裸脚本长得一模一样 —— 真实用户会被当噪音
