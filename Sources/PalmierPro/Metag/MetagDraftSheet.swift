@@ -308,27 +308,19 @@ struct MetagDraftSheet: View {
                         stage: model.job?.stage,
                         shotCount: model.job?.shots.count.nonZero ?? model.shots
                     )
+                    // 幕布紧跟在班底后面：**上一句说谁在干活，这一块就给出他干的活。**
+                    // 报价排最后 —— 他此刻想看的是画面，不是账。
+                    //
+                    // 先按真实镜数摆好空格，每一格填进来都是一次真的到货。
+                    // 原来是"有几张摆几张"，于是这 90 秒里他看不出片子有多长、
+                    // 还差多少 —— 一排会变多的邮票，讲不出"我的片子正在成形"。
+                    filmStrip
+
                     // 等待期间就把代价说了。**这 90 秒本来是空的**，而他等完
                     // 之后要做的第一个决定就是"要不要花这笔钱" —— 让他在等的时候
                     // 就已经知道，而不是等完才第一次听到数字。
                     if let q = model.quote, let rec = q.recommended {
                         quotePreview(rec, why: q.why(uiLang))
-                    }
-                    // 首帧一到就摆出来。等待不该是空白 —— 用户此刻最想看的
-                    // 恰恰是"我的片子长什么样"，而这个答案已经有一半了。
-                    if !model.frames.isEmpty {
-                        HStack(spacing: AppTheme.Spacing.xs) {
-                            ForEach(model.frames.keys.sorted(), id: \.self) { i in
-                                if let img = model.frames[i] {
-                                    Image(nsImage: img)
-                                        .resizable().aspectRatio(contentMode: .fill)
-                                        .frame(width: AppTheme.MetagDraft.frameThumbWidth,
-                                               height: AppTheme.MetagDraft.frameThumbHeight)
-                                        .clipShape(RoundedRectangle(cornerRadius: AppTheme.Radius.xs,
-                                                                    style: .continuous))
-                                }
-                            }
-                        }
                     }
                 }
             }
@@ -420,8 +412,25 @@ struct MetagDraftSheet: View {
         }
     }
 
+    /// 那块幕布。**等待时和落定后是同一块** —— 他刚看着它一格格填满，
+    /// 落定的那一刻它不该消失。
+    ///
+    /// 原来草案一好，这块画面整个被一堆输入框换掉了 ——
+    /// **幕布在最该拉开的那一刻合上了**，他刚看完的东西不见了，
+    /// 眼前是一张表。
+    private var filmStrip: some View {
+        MetagFilmStrip(
+            shots: model.job?.shots.count.nonZero ?? model.shots,
+            frames: model.frames
+        )
+    }
+
     private var draftStage: some View {
         VStack(alignment: .leading, spacing: AppTheme.Spacing.sm) {
+            // 幕布留在原地。他刚看着它一格格填满，这一刻它才真正拉开 ——
+            // 底下那些输入框是"接下来做什么"，不该抢走"这就是你的片子"。
+            filmStrip
+
             ForEach(Array(model.narrations.enumerated()), id: \.offset) { i, text in
                 VStack(alignment: .leading, spacing: AppTheme.Spacing.xxs) {
                     TextField(L10n.string("Shot \((i + 1).formatted()) narration"), text: Binding(

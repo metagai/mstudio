@@ -193,6 +193,11 @@ enum AppTheme {
         /// 首帧缩略图。16:9 的一小格，一排能摆下四五个。
         static let frameThumbWidth: CGFloat = 84
         static let frameThumbHeight: CGFloat = 48
+        /// 幕布上一格的大小。460 宽的表里一排摆四格（4×96 + 3×6 = 402），
+        /// 8 镜自动折成两排。比原来那排邮票大一档 —— **这一刻他想看的是画面，
+        /// 不是画面的证明。**
+        static let stripCellWidth: CGFloat = 96
+        static let stripCellHeight: CGFloat = 54
     }
 
     enum Status {
