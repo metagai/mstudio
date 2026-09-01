@@ -96,7 +96,9 @@ def main():
     else:
         print("OK   源码里没有裸中文字符串")
 
-    keys = {k: v for k, v in l_keys().items() if "\\(" not in k}
+    all_keys = l_keys()
+    keys = {k: v for k, v in all_keys.items() if "\\(" not in k}
+    skipped = len(all_keys) - len(keys)
     # 插值串（`L10n.string("… \(x) …")`）在词条表里是 `%@` 形式，
     # 对不上字面量。它们由上游的 `scripts/localization/sync.sh` 生成和管理，
     # 这里只管**能按字面量对上的那些**。报一堆对不上的假缺失，
@@ -118,7 +120,22 @@ def main():
                 rel, n = keys[k]
                 print(f'       "{k[:60]}"  ← {rel}:{n}')
         else:
-            print(f"OK   {lang} 覆盖了全部 {len(keys)} 个 key")
+            print(f"OK   {lang} 覆盖了全部 {len(keys)} 个字面量 key")
+
+    # **这条判据管不着的那一块，要自己说出来。**
+    #
+    # 插值串（`L10n.string("… \(x) …")`）在词条表里是 `%@` / `%lld`，
+    # 而常量插值（`\(AppIdentity.name)`）在表里是**已经替换好的字面量**
+    # （"About METAG"）—— 两边对不上，硬比会报出一堆假缺失，
+    # 而一条会说谎的判据比没有判据更糟。
+    #
+    # 但"管不着"不等于"没问题"：2026-08-31 实测，这 144 个里有约 30 个
+    # 在三张表里都找不到对应词条（通知那一族的 `%lld … in Palmier Pro.`
+    # 留的还是上游的名字，运行时拼出来的是 METAG，对不上）——
+    # **中文用户在那几条通知上看到的是英文。**
+    #
+    # 所以这里不报 OK，报的是"我没看这一块，有多大”。
+    print(f"NOTE 另有 {skipped} 个插值 key 不在本判据范围内（详见本文件注释）")
 
     return 1 if failed else 0
 
