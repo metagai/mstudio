@@ -86,10 +86,31 @@ struct MetagFunnelTests {
         }
     }
 
-    /// `checkout_open` **不该有**：Mac 的内购路径还没开，
-    /// 埋一条恒为零的线只会让人以为那一步没人走。
-    @Test func noStepForAPathWeDoNotHave() {
-        #expect(!MetagFunnel.Step.allCases.map(\.rawValue).contains("checkout_open"))
+    /// **每一格都必须真的有人在记。** 埋一条恒为零的线，
+    /// 会让人以为那一步没人走 —— 而真相是没人记。
+    ///
+    /// 这条原来写的是「`checkout_open` 不该有：Mac 的内购路径还没开」。
+    /// 那句话写下来时是对的；后来账号页和额度卡都接上了 Stripe，
+    /// 而这条判据留在原地，**从"防止埋空线"变成了"拦住补上缺口"** ——
+    /// 2026-09-01 我接 `checkout_open` 时它当场红，红的理由已经不成立了。
+    ///
+    /// **一条判据也会过期成谎。** 所以现在守的是那句话背后的规矩本身，
+    /// 而不是它当时的一个特例：不管有几格，每一格都得有人在记。
+    @Test func everyStepIsActuallyEmittedSomewhere() throws {
+        let root = URL(fileURLWithPath: #filePath)
+            .deletingLastPathComponent().deletingLastPathComponent()
+            .deletingLastPathComponent().deletingLastPathComponent()
+            .appendingPathComponent("Sources/PalmierPro")
+        let swift = try #require(FileManager.default.enumerator(at: root, includingPropertiesForKeys: nil))
+            .compactMap { $0 as? URL }
+            .filter { $0.pathExtension == "swift" }
+        let sources = swift.compactMap { try? String(contentsOf: $0, encoding: .utf8) }.joined()
+
+        for step in MetagFunnel.Step.allCases {
+            // 谁都没在记的那一格，在报表上是一条恒为零的线 ——
+            // 而读数的人会以为那一步没人走。
+            #expect(sources.contains("track(.\(step)"), "\(step.rawValue) 这一格谁都没在记")
+        }
     }
 
     /// paid 必须记在**网关收下之后**，不是按钮被点的时候。
