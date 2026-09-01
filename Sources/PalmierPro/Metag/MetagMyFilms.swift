@@ -83,7 +83,7 @@ struct MetagMyFilmsView: View {
     var body: some View {
         VStack(alignment: .leading, spacing: AppTheme.Spacing.sm) {
             HStack {
-                Text(L10n.key("My films")).font(.headline)
+                Text(L10n.key("My films")).font(.system(size: AppTheme.FontSize.mdLg, weight: AppTheme.FontWeight.semibold))
                 Spacer()
                 if model.failedCount > 0 {
                     Button(model.busy == "__all__"
@@ -92,23 +92,23 @@ struct MetagMyFilmsView: View {
                         Task { await model.clearFailed() }
                     }
                     .buttonStyle(.plain)
-                    .font(.caption)
-                    .foregroundStyle(.orange)
+                    .font(.system(size: AppTheme.FontSize.sm))
+                    .foregroundStyle(AppTheme.Status.warningColor)
                     .disabled(model.busy != nil)
                 }
             }
             // 复制完了要看得见 —— 剪贴板是没有反馈的，静悄悄等于"没反应"。
             if let u = model.shared {
                 Text(L10n.key("Link copied") + " · " + u)
-                    .foregroundStyle(.secondary).font(.caption).textSelection(.enabled)
+                    .foregroundStyle(AppTheme.Text.secondaryColor).font(.system(size: AppTheme.FontSize.sm)).textSelection(.enabled)
             }
             if model.loading && model.films.isEmpty {
-                Text(L10n.key("Loading…")).foregroundStyle(.secondary).font(.caption)
+                Text(L10n.key("Loading…")).foregroundStyle(AppTheme.Text.secondaryColor).font(.system(size: AppTheme.FontSize.sm))
             } else if let e = model.error {
-                Text(e).foregroundStyle(.secondary).font(.caption)
+                Text(e).foregroundStyle(AppTheme.Text.secondaryColor).font(.system(size: AppTheme.FontSize.sm))
             } else if model.films.isEmpty {
                 Text(L10n.key("No films yet — generate one and it shows up here"))
-                    .foregroundStyle(.secondary).font(.caption)
+                    .foregroundStyle(AppTheme.Text.secondaryColor).font(.system(size: AppTheme.FontSize.sm))
             } else {
                 ForEach(model.films) { f in
                     HStack(spacing: AppTheme.Spacing.xs) {
@@ -125,7 +125,7 @@ struct MetagMyFilmsView: View {
                                 .font(.system(size: AppTheme.FontSize.xs))
                         }
                         .buttonStyle(.plain)
-                        .foregroundStyle(.secondary)
+                        .foregroundStyle(AppTheme.Text.secondaryColor)
                         .disabled(!f.retrievable || f.status != "done" || model.busy != nil)
                         .help(L10n.key("Send it to someone"))
                         Button {
@@ -135,7 +135,7 @@ struct MetagMyFilmsView: View {
                                 .font(.system(size: AppTheme.FontSize.xs))
                         }
                         .buttonStyle(.plain)
-                        .foregroundStyle(.secondary)
+                        .foregroundStyle(AppTheme.Text.secondaryColor)
                         .disabled(model.busy != nil)
                         .help(L10n.key("Delete"))
                     }
@@ -150,13 +150,13 @@ struct MetagMyFilmsView: View {
             VStack(alignment: .leading, spacing: 2) {
                 Text(f.prompt ?? L10n.key("Untitled")).lineLimit(1)
                 Text(L10n.string("\(f.shots.formatted()) shots · \(f.credits.formatted()) credits") + " · " + Self.when(f.created_at))
-                    .font(.caption).foregroundStyle(.secondary)
+                    .font(.system(size: AppTheme.FontSize.sm)).foregroundStyle(AppTheme.Text.secondaryColor)
             }
             Spacer()
             // 如实说：这一单的产物已经不在了。含糊其辞比说不出口更伤信任。
             Text(f.status == "failed" ? L10n.key("Failed")
                  : (f.retrievable ? L10n.key("Open") : L10n.key("Expired")))
-                .font(.caption)
+                .font(.system(size: AppTheme.FontSize.sm))
                 .foregroundStyle(f.status == "failed" ? .orange
                                  : (f.retrievable ? Color.accentColor : .orange))
         }

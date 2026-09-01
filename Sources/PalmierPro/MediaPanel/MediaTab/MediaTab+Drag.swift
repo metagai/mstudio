@@ -74,7 +74,7 @@ extension MediaTab {
                     ZStack {
                         Rectangle().fill(.quaternary)
                         Image(systemName: asset.type.sfSymbolName)
-                            .font(.title2)
+                            .font(.system(size: AppTheme.FontSize.xl))
                             .foregroundStyle(AppTheme.Text.tertiaryColor)
                     }
                 }

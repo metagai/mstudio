@@ -103,7 +103,7 @@ private struct CreditActionsPopover: View {
             if let error = account.lastError {
                 Text(error)
                     .font(.system(size: AppTheme.FontSize.xs))
-                    .foregroundStyle(.red)
+                    .foregroundStyle(AppTheme.Status.errorColor)
                     .fixedSize(horizontal: false, vertical: true)
             }
         }

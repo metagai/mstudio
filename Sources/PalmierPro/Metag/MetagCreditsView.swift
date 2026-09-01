@@ -30,13 +30,13 @@ struct MetagCreditsView: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: AppTheme.Spacing.sm) {
-            Text(L10n.key("Credit activity")).font(.headline)
+            Text(L10n.key("Credit activity")).font(.system(size: AppTheme.FontSize.mdLg, weight: AppTheme.FontWeight.semibold))
             if model.loading && model.items.isEmpty {
-                Text(L10n.key("Loading…")).font(.caption).foregroundStyle(.secondary)
+                Text(L10n.key("Loading…")).font(.system(size: AppTheme.FontSize.sm)).foregroundStyle(AppTheme.Text.secondaryColor)
             } else if let e = model.error {
-                Text(e).font(.caption).foregroundStyle(.secondary)
+                Text(e).font(.system(size: AppTheme.FontSize.sm)).foregroundStyle(AppTheme.Text.secondaryColor)
             } else if model.items.isEmpty {
-                Text(L10n.key("No credit activity yet")).font(.caption).foregroundStyle(.secondary)
+                Text(L10n.key("No credit activity yet")).font(.system(size: AppTheme.FontSize.sm)).foregroundStyle(AppTheme.Text.secondaryColor)
             } else {
                 ScrollView {
                     VStack(alignment: .leading, spacing: 6) {
@@ -56,16 +56,16 @@ struct MetagCreditsView: View {
         return HStack(alignment: .top, spacing: AppTheme.Spacing.sm) {
             VStack(alignment: .leading, spacing: 1) {
                 Text(d.label)
-                    .font(.caption)
+                    .font(.system(size: AppTheme.FontSize.sm))
                     .foregroundStyle(d.isRefund ? Color.green : Color.primary)
                 if let title = e.title, !title.isEmpty {
-                    Text(title).font(.caption2).foregroundStyle(.secondary).lineLimit(1)
+                    Text(title).font(.system(size: AppTheme.FontSize.xs)).foregroundStyle(AppTheme.Text.secondaryColor).lineLimit(1)
                 }
-                Text(Self.when(e.at)).font(.caption2).foregroundStyle(.tertiary)
+                Text(Self.when(e.at)).font(.system(size: AppTheme.FontSize.xs)).foregroundStyle(AppTheme.Text.tertiaryColor)
             }
             Spacer()
             Text(e.delta > 0 ? "+\(e.delta)" : "\(e.delta)")
-                .font(.caption).monospacedDigit()
+                .font(.system(size: AppTheme.FontSize.sm)).monospacedDigit()
                 .foregroundStyle(e.delta > 0 ? Color.green : Color.secondary)
         }
     }

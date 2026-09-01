@@ -48,7 +48,7 @@ struct AgentMessageView: View {
             HStack {
                 Spacer(minLength: 48)
                 Text(verbatim: texts.joined(separator: "\n"))
-                    .font(.body)
+                    .font(.system(size: AppTheme.FontSize.md))
                     .foregroundStyle(AppTheme.Text.primaryColor)
                     .lineSpacing(3)
                     .padding(.horizontal, AppTheme.Spacing.lg)

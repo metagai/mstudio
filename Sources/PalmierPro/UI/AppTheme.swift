@@ -184,6 +184,17 @@ enum AppTheme {
 
     // MARK: - Status
 
+    /// 一键成片那张草案表的尺寸。**它们此前是视图里的裸数字**
+    /// （`frame(width: 460)`、`frame(width: 84, height: 48)`）——
+    /// 裸数字没法被一起调，也没法被别的屏复用，那正是"每屏各画各的"的起点。
+    enum MetagDraft {
+        /// 表的宽度。一行字横跨太宽读不动，这一档是"一段话 + 一排缩略图"的宽度。
+        static let sheetWidth: CGFloat = 460
+        /// 首帧缩略图。16:9 的一小格，一排能摆下四五个。
+        static let frameThumbWidth: CGFloat = 84
+        static let frameThumbHeight: CGFloat = 48
+    }
+
     enum Status {
         static let error = DesignTokens.statusDanger
 

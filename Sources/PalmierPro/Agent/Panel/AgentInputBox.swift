@@ -88,7 +88,7 @@ struct AgentInputBox<LeadingTools: View>: View {
         ZStack(alignment: .topLeading) {
             TextEditor(text: $draft)
                 .id(textEditorID)
-                .font(.body)
+                .font(.system(size: AppTheme.FontSize.md))
                 .scrollContentBackground(.hidden)
                 .scrollIndicators(.never)
                 .padding(.horizontal, AppTheme.Spacing.mdLg)
@@ -117,7 +117,7 @@ struct AgentInputBox<LeadingTools: View>: View {
 
             if draft.isEmpty {
                 Text(L10n.string("Ask, or type @ to reference media"))
-                    .font(.body)
+                    .font(.system(size: AppTheme.FontSize.md))
                     .foregroundStyle(AppTheme.Text.mutedColor)
                     .padding(.horizontal, AppTheme.Spacing.lgXl)
                     .padding(.top, AppTheme.Spacing.mdLg)

@@ -291,7 +291,9 @@ struct MetagDraftSheet: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: AppTheme.Spacing.md) {
-            Text(L10n.key("See the draft first, then decide")).font(.headline)
+            Text(L10n.key("See the draft first, then decide"))
+                .font(.system(size: AppTheme.FontSize.xl, weight: AppTheme.FontWeight.medium))
+                .foregroundStyle(AppTheme.Text.primaryColor)
             if model.jobId == nil {
                 promptStage
             } else if model.ready {
@@ -320,8 +322,10 @@ struct MetagDraftSheet: View {
                                 if let img = model.frames[i] {
                                     Image(nsImage: img)
                                         .resizable().aspectRatio(contentMode: .fill)
-                                        .frame(width: 84, height: 48)
-                                        .clipShape(RoundedRectangle(cornerRadius: 4))
+                                        .frame(width: AppTheme.MetagDraft.frameThumbWidth,
+                                               height: AppTheme.MetagDraft.frameThumbHeight)
+                                        .clipShape(RoundedRectangle(cornerRadius: AppTheme.Radius.xs,
+                                                                    style: .continuous))
                                 }
                             }
                         }
@@ -329,11 +333,13 @@ struct MetagDraftSheet: View {
                 }
             }
             if let n = model.note {
-                Text(n).font(.caption).foregroundStyle(.orange)
+                Text(n)
+                    .font(.system(size: AppTheme.FontSize.sm))
+                    .foregroundStyle(AppTheme.Status.warningColor)
             }
         }
         .padding(AppTheme.Spacing.lg)
-        .frame(width: 460)
+        .frame(width: AppTheme.MetagDraft.sheetWidth)
         .task {
             engines = (try? await MetagGateway.pricing().engines) ?? []
         }
@@ -386,12 +392,20 @@ struct MetagDraftSheet: View {
                 notices: notices
             )
             Stepper(L10n.string("\(model.shots.formatted()) shots"), value: $model.shots, in: 1...8)
-                .font(.caption)
+                .font(.system(size: AppTheme.FontSize.sm))
+                .foregroundStyle(AppTheme.Text.secondaryColor)
             // 把代价说在前面：草案免费。不说清楚的话，用户不敢点。
-            Text(L10n.key("Drafts are free — no credits charged")).font(.caption).foregroundStyle(.green)
+            HStack(spacing: AppTheme.Spacing.xxs) {
+                Image(systemName: "checkmark.seal")
+                    .font(.system(size: AppTheme.FontSize.xs))
+                Text(L10n.key("Drafts are free — no credits charged"))
+                    .font(.system(size: AppTheme.FontSize.sm))
+            }
+            .foregroundStyle(AppTheme.Status.successColor)
             HStack {
                 Spacer()
                 Button(L10n.key("Cancel")) { dismiss() }
+                    .buttonStyle(.capsule(.secondary, size: .regular))
                 Button(L10n.key("Draft it")) {
                     // 卡片在这一刻兑现：稿子并回 prompt（接口那一侧始终只有一个
                     // prompt），图片交给 `assets`。
@@ -400,7 +414,7 @@ struct MetagDraftSheet: View {
                     attachments = []
                     Task { await model.draft() }
                 }
-                    .buttonStyle(.borderedProminent)
+                    .buttonStyle(.capsule(.prominent, size: .regular))
                     .disabled(model.busy || !canDraft)
             }
         }
@@ -409,17 +423,20 @@ struct MetagDraftSheet: View {
     private var draftStage: some View {
         VStack(alignment: .leading, spacing: AppTheme.Spacing.sm) {
             ForEach(Array(model.narrations.enumerated()), id: \.offset) { i, text in
-                VStack(alignment: .leading, spacing: 2) {
+                VStack(alignment: .leading, spacing: AppTheme.Spacing.xxs) {
                     TextField(L10n.string("Shot \((i + 1).formatted()) narration"), text: Binding(
                         get: { model.edits[i] ?? text },
                         set: { model.edits[i] = $0 }
                     ))
-                    .font(.caption)
+                    .font(.system(size: AppTheme.FontSize.sm))
+                    .foregroundStyle(AppTheme.Text.primaryColor)
                     Toggle(L10n.key("Different composition"), isOn: Binding(
                         get: { model.rerolls.contains(i) },
                         set: { on in if on { model.rerolls.insert(i) } else { model.rerolls.remove(i) } }
                     ))
-                    .toggleStyle(.checkbox).font(.caption2)
+                    .toggleStyle(.checkbox)
+                    .font(.system(size: AppTheme.FontSize.xs))
+                    .foregroundStyle(AppTheme.Text.secondaryColor)
                 }
             }
             Divider()
@@ -434,16 +451,16 @@ struct MetagDraftSheet: View {
                         Text(n.displayName(for: "zh")).tag(n)
                     }
                 }
-                .font(.caption)
+                .font(.system(size: AppTheme.FontSize.sm))
                 .disabled(model.busy)
                 Text(L10n.key("Changing the voice is free — only the narration is re-recorded"))
-                    .font(.caption2).foregroundStyle(.secondary)
+                    .font(.system(size: AppTheme.FontSize.xs)).foregroundStyle(AppTheme.Text.mutedColor)
                 // 选中的档位自带音轨时，这个音色只作用于草案。**说出来** ——
                 // 否则用户挑了半天旁白，成片里说话的是模型自己，他会以为我们弄丢了。
                 // 判据取自报价单的 native_audio，不硬编引擎名单。
                 if selectedEngineHasNativeAudio {
                     Text(L10n.key("This tier records its own dialogue — the voice above applies to the draft only"))
-                        .font(.caption2).foregroundStyle(.orange)
+                        .font(.system(size: AppTheme.FontSize.xs)).foregroundStyle(AppTheme.Status.warningColor)
                 }
             }
             Picker(L10n.key("Engine"), selection: $engine) {
@@ -459,13 +476,13 @@ struct MetagDraftSheet: View {
                         .tag(e.id)
                 }
             }
-            .font(.caption)
+            .font(.system(size: AppTheme.FontSize.sm))
 
             // 这一档适合拍什么，一句话。**Web 端选档时有这句，macOS 端此前没有** ——
             // 同一个用户在两端看到的信息量不该不一样，何况这是他决定花多少钱的地方。
             // 只给选中的那一档：菜单里每档都挂一句会把选择器变成一堵墙。
             if let blurb = engines.first(where: { $0.id == engine })?.blurb(for: uiLang) {
-                Text(blurb).font(.caption2).foregroundStyle(.secondary)
+                Text(blurb).font(.system(size: AppTheme.FontSize.xs)).foregroundStyle(AppTheme.Text.mutedColor)
             }
 
             // 免费试渲一镜。**这是用户唯一一次看见付费档长什么样的机会** ——
@@ -500,21 +517,23 @@ struct MetagDraftSheet: View {
                     .borderBeam(active: !sampling, radius: AppTheme.Radius.xsSm)
                     if sampling { ProgressView().controlSize(.small) }
                 }
-                .font(.caption2)
+                .font(.system(size: AppTheme.FontSize.xs))
             }
             if sampled {
                 Text(L10n.key("Sample shot is rendering — it appears in the draft when ready."))
-                    .font(.caption2).foregroundStyle(.secondary)
+                    .font(.system(size: AppTheme.FontSize.xs)).foregroundStyle(AppTheme.Text.mutedColor)
             }
             if let e = sampleError {
-                Text(e).font(.caption2).foregroundStyle(AppTheme.Status.errorColor)
+                Text(e).font(.system(size: AppTheme.FontSize.xs)).foregroundStyle(AppTheme.Status.errorColor)
             }
             if engine != "local" {
-                Toggle(L10n.key("Use this tier for every shot"), isOn: $allShots).font(.caption2)
+                Toggle(L10n.key("Use this tier for every shot"), isOn: $allShots)
+                    .font(.system(size: AppTheme.FontSize.xs))
+                    .foregroundStyle(AppTheme.Text.secondaryColor)
                 if !allShots {
                     // 说清楚默认会发生什么，而不是让他看完成片再问"为什么画质没变"
                     Text(L10n.key("By default only lip-sync shots use it; the rest stay on the standard tier"))
-                        .font(.caption2).foregroundStyle(.secondary)
+                        .font(.system(size: AppTheme.FontSize.xs)).foregroundStyle(AppTheme.Text.mutedColor)
                 }
             }
             HStack {
@@ -535,12 +554,12 @@ struct MetagDraftSheet: View {
                         }
                     }
                 }
-                .buttonStyle(.borderedProminent)
+                .buttonStyle(.capsule(.prominent, size: .regular))
                 .disabled(model.busy || blocked != nil)
             }
             if let blocked {
                 // 说出原因，而不是给一个禁用的按钮让用户猜
-                Text(blocked).font(.caption2).foregroundStyle(.orange)
+                Text(blocked).font(.system(size: AppTheme.FontSize.xs)).foregroundStyle(AppTheme.Status.warningColor)
             }
         }
     }
