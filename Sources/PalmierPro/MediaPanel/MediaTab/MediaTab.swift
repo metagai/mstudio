@@ -193,6 +193,9 @@ struct MediaTab: View {
         }
         // 免费草案：先看片，再决定付不付钱。
         // web 端一直有这条路，macOS 端此前没有 —— 而"先看后买"是首页对外的承诺。
+        .onReceive(NotificationCenter.default.publisher(for: .metagStartDraft)) { _ in
+            showDraftSheet = true
+        }
         .sheet(isPresented: $showDraftSheet) {
             MetagDraftSheet()
         }

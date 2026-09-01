@@ -143,7 +143,9 @@ struct OnboardingAdaptationTests {
         // **只查字符串字面量，不查注释。** 第一版直接 contains("250")，
         // 结果被我自己写的"不要照抄上游的 250"那句注释判红 ——
         // 断言太粗会训练人忽略它。
-        let src = Self.source("OnboardingSteps.swift")
+        // 赠额那句从 Steps 挪到了 Overlay —— 它挂在登录按钮旁边，
+        // 因为它是登录的理由，不是打开 app 的理由。
+        let src = Self.source("OnboardingOverlay.swift")
         let literals = src.split(separator: "\n")
             .filter { !$0.trimmingCharacters(in: .whitespaces).hasPrefix("//") }
             .joined(separator: "\n")
@@ -151,7 +153,8 @@ struct OnboardingAdaptationTests {
         #expect(src.contains("signup_free_credits"),
                 "赠额没有取自定价端点 —— 网关是单一真源")
         // 取不到时不提数字，宁可少说一句也不要说错一个数
-        #expect(src.contains("Sign in to start generating."))
+        // 第一屏先说他能立刻得到什么：不登录也能先看一眼。
+        #expect(Self.source("OnboardingSteps.swift").contains("No account needed for the first look."))
     }
 
     @Test("品牌名已换成 METAG")
@@ -183,6 +186,23 @@ struct OnboardingAdaptationTests {
                         "Sign in to start generating."] {
                 #expect(table.contains("\"\(key)\""), "\(lang) 缺文案：\(key)")
             }
+        }
+    }
+
+    /// **第一屏的主按钮不是登录。**
+    ///
+    /// 8/29 起 1112 个人落地、0 个人打过一行字 —— 而他们在这一屏看到的最响的
+    /// 一句话是"用 Google 登录"。陌生人本来就能建草案（网关放行），
+    /// 墙在"想出片"那一步。这条盯着它不许被换回去。
+    @Test("第一屏先给他看片子，不是先要身份")
+    func firstScreenLeadsWithTheProduct() {
+        let src = Self.source("OnboardingOverlay.swift")
+        let primary = src.range(of: "primaryButton(L10n.string(\"See your film first\")")
+        let signIn = src.range(of: "Sign in with Google")
+        #expect(primary != nil, "第一屏的主按钮不再是「先看一眼」")
+        if let primary, let signIn {
+            #expect(primary.lowerBound < signIn.lowerBound,
+                    "登录排在了「先看一眼」前面 —— 那就又变回一堵墙了")
         }
     }
 }

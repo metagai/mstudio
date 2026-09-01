@@ -143,7 +143,8 @@ struct OnboardingAccountStep: View {
 
     private var title: String {
         guard account.isSignedIn else {
-            return L10n.string("Sign In")
+            // 标题问的是他来干什么，不是我们要什么。
+            return L10n.string("What do you want to film?")
         }
         // 网关只存 OAuth sub，没有可用来称呼的名字
         return L10n.string("Welcome")
@@ -154,9 +155,9 @@ struct OnboardingAccountStep: View {
             ? L10n.string("Watch the tutorial or start creating.")
             // 赠额的真源是网关的 signup_free_credits。取不到时不提数字 ——
             // 宁可少说一句，也不要说错一个数（我们改过赠额，写死的那句就开始骗人）。
-            : account.signupFreeCredits.map {
-                L10n.string("Sign in to receive \($0.formatted()) free credits for AI chat and generation.")
-            } ?? L10n.key("Sign in to start generating.")
+            // **先说他能立刻得到什么，再说需要什么。**
+            // 赠额那句留给"登录"那颗按钮旁边 —— 它是登录的理由，不是打开 app 的理由。
+            : L10n.key("Write one line and see your film. No account needed for the first look.")
     }
 
     private var failure: String? {

@@ -1,5 +1,11 @@
 import SwiftUI
 
+extension Notification.Name {
+    /// 引导页那颗主按钮：**先看一眼你的片子**，不是先登录。
+    /// 用通知而不是共享状态：发起的是首屏，接住的是媒体面板，两者互不认识。
+    static let metagStartDraft = Notification.Name("metagStartDraft")
+}
+
 /// 免费草案：先看片，再决定付不付钱。
 ///
 /// web 端一直有这条路，macOS 端此前没有 —— 用户从生成对话框直接走付费出片。
