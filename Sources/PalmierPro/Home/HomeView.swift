@@ -103,7 +103,7 @@ private struct HomeSidebar: View {
             // 而它必须在：引导页只出现一次，之后他得有路可走。
             if !account.isSignedIn && !account.isMisconfigured {
                 Menu {
-                    ForEach(MetagAuth.Provider.allCases, id: \.self) { provider in
+                    ForEach(MetagAuth.Provider.ordered(), id: \.self) { provider in
                         Button(provider.title) { Task { await account.signIn(with: provider) } }
                     }
                 } label: {

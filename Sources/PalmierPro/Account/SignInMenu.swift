@@ -13,16 +13,28 @@ import SwiftUI
 struct SignInMenu<Label: View>: View {
     private let label: () -> Label
 
+    /// 登录成功之后**接着把他本来要做的那件事做完**。
+    ///
+    /// 他点"生成"，被弹去登录，登完回来 —— 屏幕上什么都没发生，还得再点一次。
+    /// 那一次重复是我们让他做的，不是他想做的。
+    private let onSignedIn: () -> Void
+
     @Bindable private var account = AccountService.shared
 
-    init(@ViewBuilder label: @escaping () -> Label) {
+    init(onSignedIn: @escaping () -> Void = {}, @ViewBuilder label: @escaping () -> Label) {
+        self.onSignedIn = onSignedIn
         self.label = label
     }
 
     var body: some View {
         Menu {
-            ForEach(MetagAuth.Provider.allCases, id: \.self) { provider in
-                Button(provider.title) { Task { await account.signIn(with: provider) } }
+            ForEach(MetagAuth.Provider.ordered(), id: \.self) { provider in
+                Button(provider.title) {
+                    Task {
+                        await account.signIn(with: provider)
+                        if account.isSignedIn { onSignedIn() }
+                    }
+                }
             }
         } label: {
             label()

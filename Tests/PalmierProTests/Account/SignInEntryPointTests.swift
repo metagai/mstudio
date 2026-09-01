@@ -62,7 +62,7 @@ struct SignInEntryPointTests {
     @Test @MainActor func theMenuOffersEveryProvider() {
         let menu = Self.sources.first { $0.path == "SignInMenu.swift" }
         #expect(menu != nil, "SignInMenu 不见了 —— 登录入口没有唯一的所有者了")
-        #expect(menu?.text.contains("MetagAuth.Provider.allCases") == true)
+        #expect(menu?.text.contains("MetagAuth.Provider.ordered()") == true)
         #expect(MetagAuth.Provider.allCases.count == 4)
     }
 }

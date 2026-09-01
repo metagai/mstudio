@@ -128,7 +128,7 @@ struct OnboardingOverlay: View {
             // 四种都给。**Apple 排第一** —— 在 Mac 上它是"这个 app 属于这台电脑"
             // 的信号；微信对国内用户是唯一顺手的那个。
             HStack(spacing: AppTheme.Spacing.xs) {
-                ForEach(MetagAuth.Provider.allCases, id: \.self) { provider in
+                ForEach(MetagAuth.Provider.ordered(), id: \.self) { provider in
                     secondaryButton(
                         provider.title,
                         action: { signIn(with: provider) },

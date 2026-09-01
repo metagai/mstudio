@@ -139,7 +139,9 @@ extension GenerationView {
         } else {
             // 没登录时这颗按钮**打开菜单**。它以前直接跳 Google ——
             // 在"我正要出片"这一步被推给一家陌生的登录，是最贵的一次打断。
-            SignInMenu { submitIcon("person.crop.circle") }
+            // 登完**直接开始生成** —— 他按这颗按钮的意思一直都是"生成"，
+            // 登录只是路上的一道门。让他回来再按一次，是我们加的一步。
+            SignInMenu(onSignedIn: submitGeneration) { submitIcon("person.crop.circle") }
                 .menuStyle(.button)
                 .buttonStyle(.glassProminent)
                 .buttonBorderShape(.circle)

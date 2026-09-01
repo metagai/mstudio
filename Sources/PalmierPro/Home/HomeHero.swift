@@ -14,6 +14,8 @@ struct HomeHero: View {
     @State private var busy = false
     @FocusState private var focused: Bool
 
+    @Bindable private var account = AccountService.shared
+
     /// 这一屏最宽到哪。**不铺满**：一行字横跨 1400 点没法读，
     /// 而且铺满会让它看起来像个搜索框而不是一句问话。
     private let maxWidth: CGFloat = 620
@@ -53,12 +55,42 @@ struct HomeHero: View {
                 }
             }
 
-            Text(L10n.string("Free, and no account needed for the first look."))
-                .font(.system(size: AppTheme.FontSize.smMd))
-                .foregroundStyle(AppTheme.Text.mutedColor)
+            footnote
         }
         .frame(maxWidth: maxWidth, alignment: .leading)
         .onAppear { focused = true }
+    }
+
+    /// 这一行平时说"不用登录也能看一眼"，登录的时候说登录走到哪了。
+    ///
+    /// **空着的等待是最贵的等待。** 他扫完码从浏览器回到这一屏，如果什么都不动，
+    /// 他不知道是成了、卡了、还是白扫了（2026-08-31 创始人：「过了很久才有响应」）。
+    /// 换在这一行说，是因为**他的眼睛本来就在这里** —— 不必为一句状态新开一块地方。
+    @ViewBuilder
+    private var footnote: some View {
+        HStack(spacing: AppTheme.Spacing.sm) {
+            switch account.signInPhase {
+            case .idle:
+                Text(L10n.string("Free, and no account needed for the first look."))
+                    .foregroundStyle(AppTheme.Text.mutedColor)
+            case .waiting:
+                ProgressView().controlSize(.small)
+                Text(L10n.string("Waiting for you to finish in your browser."))
+                    .foregroundStyle(AppTheme.Text.secondaryColor)
+            case .finishing:
+                ProgressView().controlSize(.small)
+                Text(L10n.string("Signing you in…"))
+                    .foregroundStyle(AppTheme.Text.secondaryColor)
+            case .landed(let credits):
+                // **最后一句说的是他拿到了什么**，不是"操作成功"。
+                Image(systemName: "sparkles")
+                    .foregroundStyle(AppTheme.Accent.brand)
+                Text(L10n.string("You're in. \(credits.formatted()) credits are yours — enough for your first film."))
+                    .foregroundStyle(AppTheme.Text.primaryColor)
+            }
+        }
+        .font(.system(size: AppTheme.FontSize.smMd))
+        .animation(.easeOut(duration: AppTheme.Anim.transition), value: account.signInPhase)
     }
 
     /// 输入框和按钮是**一个**控件。分成"方框 + 灰色药丸"看起来像张表单，

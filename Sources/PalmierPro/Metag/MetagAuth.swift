@@ -29,6 +29,20 @@ final class MetagAuth: NSObject {
             }
         }
 
+        /// 摆出来的顺序。**第一个位置是替他省的那一下。**
+        ///
+        /// Apple 在 Mac 上排第一是对的 —— 它是"这个 app 属于这台电脑"的信号。
+        /// 但中文界面里排第一的必须是微信：另外三家对国内用户基本上都是**打不开的门**
+        /// （Google / GitHub 要翻墙，Apple ID 很多人根本没绑）。让他在四个里找那个
+        /// 唯一能用的，是我们本来可以替他省下的一步。
+        ///
+        /// 跟界面语言走，不跟系统区域走 —— 区域是中国、界面英文的机器上，
+        /// 排第一的还该是 Apple。
+        @MainActor
+        static func ordered(language: String = AppLocalization.shared.gatewayLanguage) -> [Provider] {
+            language == "zh" ? [.wechat, .apple, .google, .github] : allCases
+        }
+
         /// 这一家的授权入口打哪个域。
         ///
         /// **微信只在 `metag-ai.com` 上存在。** 微信开放平台按 redirect_uri 白名单
@@ -64,7 +78,15 @@ final class MetagAuth: NSObject {
     /// 2026-08-31 创始人扫完码后撞的四次崩溃，就是这个。
     private nonisolated(unsafe) var anchor: ASPresentationAnchor?
 
-    func signIn(with provider: Provider) async throws {
+    /// 返回**已经验过的那份账号** —— 调用方不要再去问一次。
+    ///
+    /// 从国内到 `api.metag.ai` 一个来回实测 1.1–1.3 秒。原来这里验一次、
+    /// `AccountService` 回头再拉一次，同一个接口打两遍，白等一个来回。
+    ///
+    /// `onCallback` 在浏览器把票交回来那一刻调 —— 从那一刻起界面才有话可说
+    /// （在此之前用户还在微信那一侧，我们什么都不知道）。
+    @discardableResult
+    func signIn(with provider: Provider, onCallback: @MainActor () -> Void = {}) async throws -> MetagGateway.Account {
         let url = provider.authBase
             .appendingPathComponent("api/v1/auth/\(provider.rawValue)")
             .appending(queryItems: [URLQueryItem(name: "client", value: "mac")])
@@ -100,6 +122,8 @@ final class MetagAuth: NSObject {
             self.session = session
             session.start()
         }
+        onCallback()
+
         guard let issued = Self.token(in: callback), MetagTicket.isSignedIn(issued) else {
             throw MetagGateway.Failure.signedOut
         }
@@ -114,8 +138,9 @@ final class MetagAuth: NSObject {
         // 验一下就能把"静默退出"换成一句当场说得清的话。
         let previous = MetagGateway.token
         MetagGateway.token = issued
+        let account: MetagGateway.Account
         do {
-            _ = try await MetagGateway.account()
+            account = try await MetagGateway.account()
         } catch {
             MetagGateway.token = previous
             Log.account.warning("sign-in token rejected by \(MetagGateway.baseURL.host() ?? "gateway"): \(error.localizedDescription)")
@@ -125,6 +150,7 @@ final class MetagAuth: NSObject {
         // 匿名那一段和账号在这里接起来：漏斗的 anon 一直没变，
         // 从这一刻起网关能把两段认成同一个人。
         MetagFunnel.track(.signedIn, once: true)  // 一次会话登录一次
+        return account
     }
 
     func signOut() {

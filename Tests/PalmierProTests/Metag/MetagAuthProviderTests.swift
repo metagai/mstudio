@@ -10,8 +10,23 @@ struct MetagAuthProviderTests {
     }
 
     /// **Apple 排第一。** 在 Mac 上它是"这个 app 属于这台电脑"的信号。
-    @Test func appleComesFirst() {
-        #expect(MetagAuth.Provider.allCases.first == .apple)
+    @Test @MainActor func appleComesFirstInEnglish() {
+        #expect(MetagAuth.Provider.ordered(language: "en").first == .apple)
+    }
+
+    /// **中文界面里微信排第一。**
+    ///
+    /// 另外三家对国内用户基本上都是打不开的门 —— Google / GitHub 要翻墙，
+    /// Apple ID 很多人没绑。让他在四个里找那个唯一能用的，
+    /// 是我们本来可以替他省下的一步。
+    @Test @MainActor func wechatComesFirstInChinese() {
+        #expect(MetagAuth.Provider.ordered(language: "zh").first == .wechat)
+    }
+
+    /// 换顺序不许换掉谁 —— 四家一个都不能少。
+    @Test(arguments: ["en", "zh", "es"]) @MainActor
+    func reorderingNeverDropsAProvider(language: String) {
+        #expect(Set(MetagAuth.Provider.ordered(language: language)) == Set(MetagAuth.Provider.allCases))
     }
 
     /// **微信只在 `metag-ai.com` 上存在。**

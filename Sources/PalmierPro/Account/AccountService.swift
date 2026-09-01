@@ -21,6 +21,24 @@ final class AccountService {
     private(set) var isMisconfigured: Bool = false
     private(set) var lastError: String?
     private(set) var isSigningIn: Bool = false
+
+    /// 登录这件事走到哪一步了。**空着的等待是最贵的等待** —— 用户从浏览器
+    /// 回到 app，屏幕上什么都不动，他不知道是成了、卡了、还是白扫了
+    /// （2026-08-31 创始人：「过了很久才有响应」）。
+    ///
+    /// 三步各有话说，最后一步是**他拿到了什么**，不是"操作成功"。
+    enum SignInPhase: Equatable {
+        case idle
+        /// 浏览器开着，人在微信那一侧 —— 我们这里什么都不知道。
+        case waiting
+        /// 票回来了，正在跟网关核对。这一段是我们自己的，约一个来回。
+        case finishing
+        /// 落地。带上余额 —— 这是他这一趟真正换到的东西。
+        case landed(credits: Int)
+    }
+
+    private(set) var signInPhase: SignInPhase = .idle
+    @ObservationIgnored private var landingTask: Task<Void, Never>?
     private(set) var isBuyingCredits: Bool = false
 
     private(set) var metagCredits: Int = 0
@@ -94,11 +112,20 @@ final class AccountService {
         }
         isSigningIn = true
         lastError = nil
+        landingTask?.cancel()
+        signInPhase = .waiting
         defer { isSigningIn = false }
         do {
-            try await MetagAuth.shared.signIn(with: provider)
-            await refreshMetagAccount()
+            // 账号是 `MetagAuth` 验票时**已经拿到的那一份**，不再多打一个来回。
+            let account = try await MetagAuth.shared.signIn(with: provider) {
+                self.signInPhase = .finishing
+            }
+            metagCredits = account.credits
+            isPaid = account.subscribed
+            email = account.email
+            land(credits: account.credits)
         } catch {
+            signInPhase = .idle
             lastError = error.localizedDescription
             Log.account.warning(
                 "sign in failed provider=\(provider.rawValue)",
@@ -108,7 +135,19 @@ final class AccountService {
         }
     }
 
+    /// 落地那句话停几秒就走 —— 它是一次庆祝，不是一块常驻的横幅。
+    private func land(credits: Int) {
+        signInPhase = .landed(credits: credits)
+        landingTask = Task {
+            try? await Task.sleep(for: .seconds(6))
+            guard !Task.isCancelled else { return }
+            signInPhase = .idle
+        }
+    }
+
     func signOut() async {
+        landingTask?.cancel()
+        signInPhase = .idle
         MetagAuth.shared.signOut()
         metagCredits = 0
         isPaid = false
