@@ -16,6 +16,15 @@ enum MetagJobOpener {
             let wanted = MetagNarrationPlan.shotsToOpen(
                 shots: job.shots.count, status: job.status, salvaged: job.salvaged
             )
+            // **片子到他手上了。** 记在"渲染完成"上是不对的：
+            // 渲完但打不开、或者取件过期，用户手上什么都没有。
+            // web 端就是靠这一格把「没到手」和「到了没看」切开的，
+            // 那两半该改的东西完全相反。
+            if !job.shots.isEmpty {
+                MetagFunnel.track(.filmReady, once: false, meta: [
+                    "shots": job.shots.count, "salvaged": job.salvaged,
+                ])
+            }
             guard !wanted.isEmpty else {
                 editor.mediaPanelToast = MediaPanelToast(
                     message: L10n.key("This film has no usable shots."))

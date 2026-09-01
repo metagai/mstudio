@@ -40,6 +40,9 @@ final class MetagAuth: NSObject {
             session.start()
         }
         MetagGateway.token = Self.token(in: callback)
+        // 匿名那一段和账号在这里接起来：漏斗的 anon 一直没变，
+        // 从这一刻起网关能把两段认成同一个人。
+        MetagFunnel.track(.signedIn, meta: nil)
         guard MetagGateway.isSignedIn else { throw MetagGateway.Failure.signedOut }
     }
 
