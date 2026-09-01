@@ -1501,3 +1501,10 @@
 "Waiting for you to finish in your browser." = "Waiting for you to finish in your browser.";
 "Signing you in…" = "Signing you in…";
 "You're in. %@ credits are yours — enough for your first film." = "You're in. %@ credits are yours — enough for your first film.";
+"Couldn't add that image" = "Couldn't add that image";
+"Couldn't read that file" = "Couldn't read that file";
+"Images and text files only" = "Images and text files only";
+"Only %@ images fit — the rest weren't added" = "Only %@ images fit — the rest weren't added";
+"%@ characters" = "%@ characters";
+"That's %@ characters over the limit. Trim it, or remove one." = "That's %@ characters over the limit. Trim it, or remove one.";
+"Framing the first shot" = "Framing the first shot";

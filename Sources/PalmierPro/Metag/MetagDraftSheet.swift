@@ -79,6 +79,9 @@ final class MetagDraftModel: ObservableObject {
         return out
     }
 
+    /// 他粘/拖进来的图。上传换 frame_id 之后作为 `assets` 交给导演。
+    @Published var imageURLs: [URL] = []
+
     func draft() async {
         guard !prompt.trimmingCharacters(in: .whitespaces).isEmpty, !busy else { return }
         // 这两步分开记。**「打了字」和「敢按下去」是两件事** ——
@@ -102,7 +105,15 @@ final class MetagDraftModel: ObservableObject {
             quote = try? await MetagGateway.quote(prompt: prompt, shots: shots, lang: lang)
         }
         do {
-            let id = try await MetagGateway.preview(prompt: prompt, shots: shots)
+            // 图先上传换 frame_id。**哪张没传上去要说出来** ——
+            // 悄悄少一张，他会以为导演没看懂他的参考图。
+            var assets: [String] = []
+            var failed = 0
+            for url in imageURLs {
+                if let id = try? await MetagGateway.uploadFrame(url) { assets.append(id) } else { failed += 1 }
+            }
+            if failed > 0 { note = PromptPaste.Notice.imageFailed.text }
+            let id = try await MetagGateway.preview(prompt: prompt, shots: shots, assets: assets)
             jobId = id
             await poll(id)
         } catch {
@@ -181,6 +192,7 @@ struct MetagDraftSheet: View {
     /// 首屏那句话。他已经写过一次了，**不该再写一遍** ——
     /// 而且写完立刻就开跑：面板一打开草案就在起，他等的是片子不是表单。
     var initialPrompt: String?
+    var initialAssets: [URL] = []
 
     @Environment(\.dismiss) private var dismiss
     @Environment(EditorViewModel.self) private var editor
@@ -196,6 +208,10 @@ struct MetagDraftSheet: View {
     private var uiLang: String { AppLocalization.shared.gatewayLanguage }
     /// 全片使用所选引擎。**默认关** —— 默认只有口播镜用贵引擎，其余降到 local。
     @State private var allShots = false
+    /// 粘进来的稿子。**卡片是纯界面** —— `draft()` 之前会并回 `model.prompt`。
+    @State private var attachments: [PromptAttachment] = []
+    @State private var notices: [PromptPaste.Notice] = []
+    @FocusState private var promptFocused: Bool
 
     /// 没有口播的镜头一律回落到这一档 —— **这是服务端的路由规则，不是客户端能算出来的**，
     /// 所以它是一个写明出处的常量，而不是一段假装在推导的代码。
@@ -328,13 +344,47 @@ struct MetagDraftSheet: View {
     private func seedIfNeeded() {
         guard let initialPrompt, model.prompt.isEmpty, model.jobId == nil else { return }
         model.prompt = initialPrompt
+        attachments = initialAssets.map {
+            PromptAttachment(title: $0.lastPathComponent, kind: .image($0))
+        }
         Task { await model.draft() }
+    }
+
+    /// 一句话或者一份稿子，有一样就能起草。
+    private var canDraft: Bool {
+        !PromptPaste.composed(line: model.prompt, attachments: attachments).isEmpty
+            && PromptPaste.overflow(line: model.prompt, attachments: attachments) == nil
+    }
+
+    private func paste() -> Bool {
+        let outcome = PromptPaste.read(existing: attachments)
+        guard !outcome.attachments.isEmpty || !outcome.notices.isEmpty else { return false }
+        apply(outcome)
+        return true
+    }
+
+    /// 拖进来和粘进来落**同一张卡** —— 两个入口给出不同的结果，
+    /// 而用户并不知道自己刚才用的是哪一个。
+    private func apply(_ outcome: PromptPaste.Outcome) {
+        attachments.append(contentsOf: outcome.attachments)
+        if let text = outcome.insert { model.prompt += text }
+        notices = outcome.notices
     }
 
     private var promptStage: some View {
         VStack(alignment: .leading, spacing: AppTheme.Spacing.sm) {
             TextField(L10n.key("Say what you want to film, in one line"), text: $model.prompt, axis: .vertical)
                 .lineLimit(2...4)
+                // 一键成片这一屏最可能被粘进来的就是一份大纲。收成卡片，
+                // 别把输入框撑成一堵墙。
+                .focused($promptFocused)
+                .promptPaste(isFocused: promptFocused) { paste() }
+
+            PromptAttachmentBar(
+                attachments: $attachments,
+                overflow: PromptPaste.overflow(line: model.prompt, attachments: attachments),
+                notices: notices
+            )
             Stepper(L10n.string("\(model.shots.formatted()) shots"), value: $model.shots, in: 1...8)
                 .font(.caption)
             // 把代价说在前面：草案免费。不说清楚的话，用户不敢点。
@@ -342,9 +392,16 @@ struct MetagDraftSheet: View {
             HStack {
                 Spacer()
                 Button(L10n.key("Cancel")) { dismiss() }
-                Button(L10n.key("Draft it")) { Task { await model.draft() } }
+                Button(L10n.key("Draft it")) {
+                    // 卡片在这一刻兑现：稿子并回 prompt（接口那一侧始终只有一个
+                    // prompt），图片交给 `assets`。
+                    model.prompt = PromptPaste.composed(line: model.prompt, attachments: attachments)
+                    model.imageURLs = PromptPaste.images(in: attachments)
+                    attachments = []
+                    Task { await model.draft() }
+                }
                     .buttonStyle(.borderedProminent)
-                    .disabled(model.busy || model.prompt.trimmingCharacters(in: .whitespaces).isEmpty)
+                    .disabled(model.busy || !canDraft)
             }
         }
     }

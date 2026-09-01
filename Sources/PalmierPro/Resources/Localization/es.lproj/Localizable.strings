@@ -1502,3 +1502,10 @@
 "Waiting for you to finish in your browser." = "Termina de iniciar sesión en el navegador.";
 "Signing you in…" = "Iniciando sesión…";
 "You're in. %@ credits are yours — enough for your first film." = "Ya estás dentro. %@ créditos son tuyos: suficientes para tu primera película.";
+"Couldn't add that image" = "No se pudo añadir esa imagen";
+"Couldn't read that file" = "No se pudo leer ese archivo";
+"Images and text files only" = "Solo imágenes y archivos de texto";
+"Only %@ images fit — the rest weren't added" = "Solo caben %@ imágenes: las demás no se añadieron";
+"%@ characters" = "%@ caracteres";
+"That's %@ characters over the limit. Trim it, or remove one." = "Son %@ caracteres de más. Recorta un poco o quita uno.";
+"Framing the first shot" = "Encuadrando el primer plano";

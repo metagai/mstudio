@@ -238,7 +238,7 @@ final class AppState {
     /// （顺带治掉列表里那些 `tl-074321` 的机器名）。名字撞了就往后加序号，
     /// 而不是弹一个错误让他重来。
     @MainActor
-    func startFilm(from line: String) async {
+    func startFilm(from line: String, assets: [URL] = []) async {
         let name = Self.projectName(from: line)
         do {
             var attempt = name
@@ -261,7 +261,8 @@ final class AppState {
         // 项目开好了再把草案面板端上来：面板活在编辑器的媒体面板里，
         // 而首页那一刻还没有项目。
         NotificationCenter.default.post(
-            name: .metagStartDraft, object: nil, userInfo: ["prompt": line]
+            name: .metagStartDraft, object: nil,
+            userInfo: ["prompt": line, "assets": assets]
         )
     }
 

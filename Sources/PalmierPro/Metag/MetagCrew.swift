@@ -53,8 +53,11 @@ enum MetagCrew {
                doing: L10n.key("Recording the narration"),
                tookOver: L10n.key("Kai picked the voice. Reading Nova's %@ lines now."),
                tint: Color(red: 0.847, green: 0.333, blue: 0.435)),
+        // **和 studio 用同一句。** "Lining up the first frame" 在 web 那边
+        // 已经是 Ren 的到场白（他们每人有 hello + doing 两句），Mac 只有
+        // doing 一句 —— 用那一句的话，同一个人会先说一遍再显示一遍。
         Member(stage: "frames", name: "Ren", title: L10n.key("Cinematographer"),
-               doing: L10n.key("Lining up the first frame"),
+               doing: L10n.key("Framing the first shot"),
                tookOver: L10n.key("Working from Nova's shot list — %@ frames to light."),
                tint: Color(red: 0.227, green: 0.635, blue: 0.627)),
         Member(stage: "compose", name: "Bo", title: L10n.key("Editor"),

@@ -11,6 +11,8 @@ import SwiftUI
 /// 端到他面前。**他要的是片子，不是先给文件起个名。**
 struct HomeHero: View {
     @State private var line = ""
+    @State private var attachments: [PromptAttachment] = []
+    @State private var notices: [PromptPaste.Notice] = []
     @State private var busy = false
     @FocusState private var focused: Bool
 
@@ -47,6 +49,12 @@ struct HomeHero: View {
             }
 
             field
+
+            PromptAttachmentBar(
+                attachments: $attachments,
+                overflow: PromptPaste.overflow(line: line, attachments: attachments),
+                notices: notices
+            )
 
             VStack(alignment: .leading, spacing: AppTheme.Spacing.smMd) {
                 ForEach(Self.starters, id: \.self) { starter in
@@ -95,6 +103,12 @@ struct HomeHero: View {
 
     /// 输入框和按钮是**一个**控件。分成"方框 + 灰色药丸"看起来像张表单，
     /// 而这一屏问的是一句话。
+    /// 有话可送就能开拍 —— **一句话，或者一份稿子，都算。**
+    private var canStart: Bool {
+        !PromptPaste.composed(line: line, attachments: attachments).isEmpty
+            && PromptPaste.overflow(line: line, attachments: attachments) == nil
+    }
+
     private var field: some View {
         HStack(spacing: AppTheme.Spacing.md) {
             TextField(L10n.string("Describe a scene…"), text: $line)
@@ -103,12 +117,15 @@ struct HomeHero: View {
                 .foregroundStyle(AppTheme.Text.primaryColor)
                 .focused($focused)
                 .onSubmit { start(line) }
+                // 复制一个文本文件（或一大段字）粘进来 —— 收成卡片，
+                // 别把这一行撑成两千字。
+                .promptPaste(isFocused: focused) { paste() }
 
             Button { start(line) } label: {
                 Text(busy ? L10n.string("Opening…") : L10n.string("See it"))
             }
             .buttonStyle(.capsule(.prominent, size: .regular))
-            .disabled(busy || line.trimmingCharacters(in: .whitespaces).isEmpty)
+            .disabled(busy || !canStart)
         }
         .padding(.leading, AppTheme.Spacing.xl)
         .padding(.trailing, AppTheme.Spacing.smMd)
@@ -132,13 +149,33 @@ struct HomeHero: View {
         .animation(.easeOut(duration: AppTheme.Anim.hover), value: focused)
     }
 
+    /// 收下了返回 true —— 那样这次 ⌘V 就不再往输入框里粘一遍。
+    private func paste() -> Bool {
+        let outcome = PromptPaste.read(existing: attachments)
+        guard !outcome.attachments.isEmpty || !outcome.notices.isEmpty else { return false }
+        apply(outcome)
+        return true
+    }
+
+    /// 拖进来和粘进来落**同一张卡** —— 两个入口给出不同的结果，
+    /// 而用户并不知道自己刚才用的是哪一个。
+    private func apply(_ outcome: PromptPaste.Outcome) {
+        attachments.append(contentsOf: outcome.attachments)
+        if let text = outcome.insert { line += text }
+        notices = outcome.notices
+    }
+
     private func start(_ text: String) {
-        let text = text.trimmingCharacters(in: .whitespacesAndNewlines)
-        guard !text.isEmpty, !busy else { return }
-        line = text
+        let typed = text.trimmingCharacters(in: .whitespacesAndNewlines)
+        // 卡片里的稿子和他打的那一句一起送出去 —— 卡片是纯界面，
+        // 接口那一侧还是一个 prompt。
+        let prompt = PromptPaste.composed(line: typed, attachments: attachments)
+        guard !prompt.isEmpty, !busy,
+              PromptPaste.overflow(line: typed, attachments: attachments) == nil else { return }
+        line = typed
         busy = true
         Task {
-            await AppState.shared.startFilm(from: text)
+            await AppState.shared.startFilm(from: prompt, assets: PromptPaste.images(in: attachments))
             busy = false
         }
     }

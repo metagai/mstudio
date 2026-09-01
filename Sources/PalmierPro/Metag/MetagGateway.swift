@@ -486,10 +486,16 @@ enum MetagGateway {
 
     /// 起草。0 credits。`firstFrame` 给了就用它当第 0 镜的首帧，
     /// 后续镜头靠 continuity 把同一主体带下去。
+    /// `assets` 是"这几张给导演，他逐镜决定哪张用在哪一镜"；
+    /// `firstFrame` 是"第 0 镜从这张图开始"，锁死。两件不同的事。
+    ///
+    /// **只有这条路收 `assets`。** `/api/v1/generate` 不收 —— 挂上去会被
+    /// 静默丢掉，而素材真正被用到的地方是导演写分镜，分镜就在这一步。
     static func preview(
         prompt: String,
         shots: Int = 4,
-        firstFrame: String? = nil
+        firstFrame: String? = nil,
+        assets: [String] = []
     ) async throws -> String {
         struct Response: Decodable { let job_id: String }
         var body: [String: Any] = [
@@ -497,6 +503,7 @@ enum MetagGateway {
             "lang": await currentLanguageCode(),
         ]
         if let firstFrame { body["first_frame"] = firstFrame }
+        if !assets.isEmpty { body["assets"] = Array(assets.prefix(8)) }
         return try await send(request("api/v1/preview", method: "POST", body: body), as: Response.self).job_id
     }
 

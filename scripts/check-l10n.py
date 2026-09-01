@@ -30,6 +30,9 @@ ALLOW = {
     "Sources/PalmierPro/Utilities/Localization.swift",
     # 音色名按语言分支返回，`case (..., "zh")` 那一支本来就该是中文。
     "Sources/PalmierPro/Metag/MetagNarrator.swift",
+    # 认分镜标记的正则：`第 3 镜` / `镜头 4` 是**中文剧本里真写着的字**，
+    # 不是给用户看的文案。它翻译了就认不出中文剧本了。
+    "Sources/PalmierPro/UI/PromptAttachment.swift",
 }
 
 STRING = re.compile(r'"([^"\\]*(?:\\.[^"\\]*)*)"')

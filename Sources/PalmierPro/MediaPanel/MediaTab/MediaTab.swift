@@ -40,6 +40,7 @@ struct MediaTab: View {
     @State private var showDraftSheet = false
     /// 首屏那句话，带进草案面板 —— 他已经写过一次了，不该再写一遍。
     @State private var pendingPrompt: String?
+    @State private var pendingAssets: [URL] = []
 
     enum ViewMode: String, CaseIterable {
         case folder, flat, grouped
@@ -197,10 +198,13 @@ struct MediaTab: View {
         // web 端一直有这条路，macOS 端此前没有 —— 而"先看后买"是首页对外的承诺。
         .onReceive(NotificationCenter.default.publisher(for: .metagStartDraft)) { note in
             pendingPrompt = note.userInfo?["prompt"] as? String
+            // 首页粘进来的图跟着一起过来 —— 中间丢掉的话，
+            // 他会以为我们没看见他贴的那张参考图。
+            pendingAssets = note.userInfo?["assets"] as? [URL] ?? []
             showDraftSheet = true
         }
         .sheet(isPresented: $showDraftSheet) {
-            MetagDraftSheet(initialPrompt: pendingPrompt)
+            MetagDraftSheet(initialPrompt: pendingPrompt, initialAssets: pendingAssets)
         }
     }
 

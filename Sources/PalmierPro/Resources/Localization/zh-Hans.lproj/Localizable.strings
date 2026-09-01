@@ -1505,3 +1505,10 @@
 "Waiting for you to finish in your browser." = "在浏览器里完成登录。";
 "Signing you in…" = "正在登录…";
 "You're in. %@ credits are yours — enough for your first film." = "登录好了。%@ credits 已到账 —— 够拍出你的第一条片子。";
+"Couldn't add that image" = "这张图没能加进来";
+"Couldn't read that file" = "这个文件读不了";
+"Images and text files only" = "只收图片和文本文件";
+"Only %@ images fit — the rest weren't added" = "最多放 %@ 张图，多的没加进来";
+"%@ characters" = "%@ 字";
+"That's %@ characters over the limit. Trim it, or remove one." = "超出上限 %@ 字。删掉一点，或者移走一份。";
+"Framing the first shot" = "定第一个画面的构图";
