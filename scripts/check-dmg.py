@@ -63,19 +63,54 @@ def main() -> int:
     png = ROOT / "Resources/dmg/background.png"
     if not png.exists():
         fails.append("background.png 不在（跑 scripts/dmg/make-background.py）")
-    else:
-        import struct
-        head = png.read_bytes()[16:24]
-        pw, ph = struct.unpack(">II", head)
-        if (pw, ph) != (w, h):
-            fails.append(f"background.png 是 {pw}×{ph}，排版按 {w}×{h} —— 图没重新生成")
+        return report(checks, fails, win_w, win_h, h)
 
+    import struct
+    pw, ph = struct.unpack(">II", png.read_bytes()[16:24])
+    if (pw, ph) != (w, h):
+        fails.append(f"background.png 是 {pw}×{ph}，排版按 {w}×{h} —— 图没重新生成")
+
+    # **那段胶片不许压到图标上。**
+    #
+    # 这张图唯一会出的错就是它：Finder 把两个 128pt 的图标画在背景**上面**，
+    # 胶片一旦伸进它们的地盘，就变成图标底下露出来的一截脏东西 ——
+    # 而那正是"布局错位"看起来的样子。
+    #
+    # 量的是图上真实的墨迹范围，不是源码里那几个常量。
+    checks += 2
+    ink = ink_extent(png)
+    if ink is None:
+        fails.append("背景图上一点东西都没画 —— 那一屏只剩两个图标和一片空白")
+    else:
+        ink_x0, ink_x1 = ink
+        left_edge, right_edge = left + 64, right - 64      # 图标各占 128pt
+        if ink_x0 <= left_edge:
+            fails.append(f"胶片左端到了 {ink_x0}，压进了 METAG 图标（它右边缘在 {left_edge}）")
+        if ink_x1 >= right_edge:
+            fails.append(f"胶片右端到了 {ink_x1}，压进了 Applications（它左边缘在 {right_edge}）")
+
+    return report(checks, fails, win_w, win_h, h)
+
+
+def ink_extent(png: Path):
+    """图上"画了东西"的那一段横向范围。纸底之外的一切都算墨迹。"""
+    from PIL import Image
+    im = Image.open(png).convert("RGB")
+    w, h = im.size
+    px = im.load()
+    paper = px[2, 2]
+    xs = [x for x in range(w)
+          if any(sum(abs(a - b) for a, b in zip(px[x, y], paper)) > 24 for y in range(h))]
+    return (xs[0], xs[-1]) if xs else None
+
+
+def report(checks, fails, win_w, win_h, h) -> int:
     print(f"SCOPE {checks} 处 DMG 坐标耦合")
     if fails:
         for f in fails:
             print(f"FAIL {f}")
         return 1
-    print(f"OK   DMG 窗口 {win_w}×{win_h}（内容区 {h}）和背景图、图标坐标全对得上")
+    print(f"OK   DMG 窗口 {win_w}×{win_h}（内容区 {h}）、背景图、图标坐标全对得上，胶片没压到图标")
     return 0
 
 
