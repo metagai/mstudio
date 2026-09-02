@@ -41,7 +41,22 @@ MOUNT="$(hdiutil attach -readwrite -noverify -noautoopen "$RW" | \
 mkdir -p "$MOUNT/.background"
 cp "$BG" "$MOUNT/.background/background.tiff"
 
-# 660×400 内容区。位置和 make-background.py 里的常量**必须一致** ——
+# **卷图标要打标记才生效。** 光把 `.VolumeIcon.icns` 拷进去不够 ——
+# 没有这一句，标题栏上是系统通用的磁盘映像图标，不是 METAG。
+# （2026-09-02 真机截图照出来的：标题栏那个小灰图标。）
+if [ -f "$MOUNT/.VolumeIcon.icns" ]; then
+  SetFile -a C "$MOUNT"
+fi
+
+# **替身角标留着。** `/Applications` 是符号链接，Finder 会在左下角盖一个
+# 黑箭头角标 —— 那一屏上唯一一处系统杂音。
+#
+# 试过给它一个自定义图标把角标顶掉（`Rez` + `SetFile -a C`）：
+# **不成立** —— Rez 跟着符号链接走，拒绝写资源分支（`fnfErr -43`），
+# 而真跟过去就是往系统的 `/Applications` 里写东西。
+# 大多数发行版的 DMG 也带这个角标；为它冒那个险不值。
+#
+# 660×370 内容区。位置和 make-background.py 里的常量**必须一致** ——
 # 对不上就是图标压在箭头上，而那正是这一屏唯一要说的那句话。
 osascript <<EOF
 tell application "Finder"
@@ -50,14 +65,15 @@ tell application "Finder"
     set current view of container window to icon view
     set toolbar visible of container window to false
     set statusbar visible of container window to false
-    set the bounds of container window to {200, 160, 860, 560}
+    -- **含标题栏。** 内容区 = 高度 - 29pt，背景图按 660×370 排的。
+    set the bounds of container window to {200, 160, 860, 559}
     set opts to the icon view options of container window
     set arrangement of opts to not arranged
     set icon size of opts to 128
     set text size of opts to 13
     set background picture of opts to file ".background:background.tiff"
-    set position of item "METAG.app" of container window to {180, 186}
-    set position of item "Applications" of container window to {480, 186}
+    set position of item "METAG.app" of container window to {180, 171}
+    set position of item "Applications" of container window to {480, 171}
     update without registering applications
     close
   end tell
@@ -81,6 +97,8 @@ CHECK="$(hdiutil attach -readonly -noverify -noautoopen "$OUT" | grep -o '/Volum
 [ -n "$CHECK" ] || { echo "error: 成品 DMG 挂不上" >&2; exit 1; }
 fail=""
 [ -f "$CHECK/.background/background.tiff" ] || fail="$fail 背景图没进去"
+# 卷图标的自定义标记 —— 没打的话标题栏是通用磁盘图标。
+[ "$(GetFileInfo -a "$CHECK" 2>/dev/null | cut -c6)" = "C" ] || fail="$fail 卷图标没生效"
 # 空 .DS_Store 约 6KB；带了视图设置和两个图标位置的会明显更大。
 size=$(stat -f%z "$CHECK/.DS_Store" 2>/dev/null || echo 0)
 [ "$size" -gt 8000 ] || fail="$fail .DS_Store 只有 ${size}B（样子没摆上）"
