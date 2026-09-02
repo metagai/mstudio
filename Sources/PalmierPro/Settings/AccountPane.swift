@@ -51,7 +51,7 @@ struct AccountPane: View {
                         fill: AnyShapeStyle(AppTheme.Background.raisedColor),
                         showsExternalLinkIcon: true
                     )
-                    Text(L10n.key("One-off purchase. Credits do not expire."))
+                    Text(L10n.string("One-off purchase. Credits do not expire."))
                         .font(.system(size: AppTheme.FontSize.xs))
                         .foregroundStyle(AppTheme.Text.tertiaryColor)
                         .fixedSize(horizontal: false, vertical: true)
@@ -75,7 +75,7 @@ struct AccountPane: View {
             SubscriptionLine()
 
             if account.subscriptionPlans.isEmpty {
-                Text(L10n.key("Plans are unavailable right now."))
+                Text(L10n.string("Plans are unavailable right now."))
                     .font(.system(size: AppTheme.FontSize.sm))
                     .foregroundStyle(AppTheme.Text.tertiaryColor)
             } else {
@@ -94,7 +94,7 @@ struct AccountPane: View {
                 Text("$\(plan.price_usd, specifier: "%.2f")")
                     .font(.system(size: AppTheme.FontSize.xl, weight: AppTheme.FontWeight.semibold))
                     .foregroundStyle(AppTheme.Text.primaryColor)
-                Text(L10n.key("/ month"))
+                Text(L10n.string("/ month"))
                     .font(.system(size: AppTheme.FontSize.sm))
                     .foregroundStyle(AppTheme.Text.tertiaryColor)
             }

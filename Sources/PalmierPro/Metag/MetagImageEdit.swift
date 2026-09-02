@@ -50,7 +50,7 @@ struct MetagImageEditSheet: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: AppTheme.Spacing.lg) {
-            Text(L10n.key("Edit with a sentence"))
+            Text(L10n.string("Edit with a sentence"))
                 .font(.system(size: AppTheme.FontSize.lg, weight: AppTheme.FontWeight.medium))
                 .foregroundStyle(AppTheme.Text.primaryColor)
 
@@ -75,9 +75,9 @@ struct MetagImageEditSheet: View {
             HStack(spacing: AppTheme.Spacing.smMd) {
                 if model.busy { ProgressView().controlSize(.small) }
                 Spacer()
-                Button(L10n.key("Cancel")) { dismiss() }.keyboardShortcut(.cancelAction)
+                Button(L10n.string("Cancel")) { dismiss() }.keyboardShortcut(.cancelAction)
                 if let p = model.preview {
-                    Button(L10n.key("Add to media")) {
+                    Button(L10n.string("Add to media")) {
                         editor.addMediaAsset(from: p.url, type: .image)
                         dismiss()
                     }

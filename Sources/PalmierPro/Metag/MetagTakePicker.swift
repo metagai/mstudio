@@ -58,14 +58,14 @@ struct MetagTakePicker: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: AppTheme.Spacing.lg) {
-            Text(L10n.key("Pick a take"))
+            Text(L10n.string("Pick a take"))
                 .font(.system(size: AppTheme.FontSize.lg, weight: AppTheme.FontWeight.medium))
                 .foregroundStyle(AppTheme.Text.primaryColor)
 
             if model.loading {
                 HStack(spacing: AppTheme.Spacing.sm) {
                     ProgressView().controlSize(.small)
-                    Text(L10n.key("Fetching takes…"))
+                    Text(L10n.string("Fetching takes…"))
                         .font(.system(size: AppTheme.FontSize.xs))
                         .foregroundStyle(AppTheme.Text.tertiaryColor)
                 }
@@ -75,7 +75,7 @@ struct MetagTakePicker: View {
                     .foregroundStyle(AppTheme.Status.errorColor)
             } else if model.candidates.count < 2 {
                 // 只有一条时说清楚为什么没得挑，不要给一个空面板。
-                Text(L10n.key("This shot has only one take. Re-shoot with more takes to compare."))
+                Text(L10n.string("This shot has only one take. Re-shoot with more takes to compare."))
                     .font(.system(size: AppTheme.FontSize.xs))
                     .foregroundStyle(AppTheme.Text.tertiaryColor)
             } else {
@@ -86,7 +86,7 @@ struct MetagTakePicker: View {
 
             HStack {
                 Spacer()
-                Button(L10n.key("Cancel")) { dismiss() }.keyboardShortcut(.cancelAction)
+                Button(L10n.string("Cancel")) { dismiss() }.keyboardShortcut(.cancelAction)
             }
         }
         .padding(AppTheme.Spacing.lg)

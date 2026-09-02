@@ -65,12 +65,12 @@ struct MetagHighlightsSheet: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: AppTheme.Spacing.lg) {
-            Text(L10n.key("Find the good parts"))
+            Text(L10n.string("Find the good parts"))
                 .font(.system(size: AppTheme.FontSize.lg, weight: AppTheme.FontWeight.medium))
                 .foregroundStyle(AppTheme.Text.primaryColor)
 
             // 说清楚什么出设备什么不出。这不是免责声明，是我们的卖点。
-            Text(L10n.key("Transcription and audio analysis run on this Mac. Only the text leaves."))
+            Text(L10n.string("Transcription and audio analysis run on this Mac. Only the text leaves."))
                 .font(.system(size: AppTheme.FontSize.xxs))
                 .foregroundStyle(AppTheme.Text.tertiaryColor)
 
@@ -91,7 +91,7 @@ struct MetagHighlightsSheet: View {
                     .foregroundStyle(AppTheme.Status.errorColor)
             } else if model.stage == .done && model.highlights.isEmpty {
                 // 没找到也要说出来。空面板会被当成"还在转"。
-                Text(L10n.key("Nothing stood out in this one."))
+                Text(L10n.string("Nothing stood out in this one."))
                     .font(.system(size: AppTheme.FontSize.xs))
                     .foregroundStyle(AppTheme.Text.tertiaryColor)
             }
@@ -107,7 +107,7 @@ struct MetagHighlightsSheet: View {
 
             HStack {
                 Spacer()
-                Button(L10n.key("Close")) { dismiss() }.keyboardShortcut(.cancelAction)
+                Button(L10n.string("Close")) { dismiss() }.keyboardShortcut(.cancelAction)
                 Button(model.stage == .done ? L10n.key("Search again") : L10n.key("Find highlights")) {
                     Task { await model.find(url: asset.url) }
                 }
@@ -131,7 +131,7 @@ struct MetagHighlightsSheet: View {
                     .fixedSize(horizontal: false, vertical: true)
             }
             Spacer(minLength: AppTheme.Spacing.xs)
-            Button(L10n.key("Add")) { add(h) }
+            Button(L10n.string("Add")) { add(h) }
         }
     }
 

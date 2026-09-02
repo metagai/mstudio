@@ -93,6 +93,19 @@ struct ViewSnapshots {
                 "分镜只写了一半时，剩下的格子要么全空了，要么整块没在跟着走")
     }
 
+    /// 他决定花不花这笔钱的那一屏。**转化全在这里，而我没看过它。**
+    @Test func draftSheet() throws {
+        try snapshot("draft-sheet", width: 560) {
+            MetagDraftSheet(initialPrompt: "一个女孩在天台上看城市的灯一格一格亮起来")
+                .environment(EditorViewModel())
+        }
+    }
+
+    /// 模型列表 —— 今天加了一句话简介和每镜价，还有四个空状态，都没看过。
+    @Test func modelsPane() throws {
+        try snapshot("models-pane", width: 560) { ModelsPane() }
+    }
+
     /// 粘进来的稿子摆成卡片。**长短两种、图片一张**，一起看才知道它们像不像一套。
     @Test func promptAttachments() throws {
         try snapshot("prompt-attachments") {

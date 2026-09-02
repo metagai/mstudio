@@ -104,7 +104,7 @@ struct AccountPopoverCard: View {
 
             Spacer(minLength: 0)
 
-            Button(L10n.key("Subscribe")) {
+            Button(L10n.string("Subscribe")) {
                 Task { await account.subscribe(planId: plan.id) }
                 dismiss()
             }

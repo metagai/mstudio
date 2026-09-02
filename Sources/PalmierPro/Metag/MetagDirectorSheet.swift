@@ -58,7 +58,7 @@ struct MetagDirectorSheet: View {
             Image(systemName: "film.stack")
                 .font(.system(size: AppTheme.FontSize.md, weight: AppTheme.FontWeight.semibold))
                 .foregroundStyle(AppTheme.Accent.primary)
-            Text(L10n.key("Auto Director"))
+            Text(L10n.string("Auto Director"))
                 .font(.system(size: AppTheme.FontSize.lg, weight: AppTheme.FontWeight.semibold))
                 .foregroundStyle(AppTheme.Text.primaryColor)
             Spacer(minLength: 0)
@@ -90,7 +90,7 @@ struct MetagDirectorSheet: View {
                 .textFieldStyle(.roundedBorder)
                 .lineLimit(3...3)
                 .font(.system(size: AppTheme.FontSize.sm))
-            Text(L10n.key("Every paid step quotes first. Nothing is billed until you approve."))
+            Text(L10n.string("Every paid step quotes first. Nothing is billed until you approve."))
                 .font(.system(size: AppTheme.FontSize.xs))
                 .foregroundStyle(AppTheme.Text.tertiaryColor)
         }
@@ -173,7 +173,7 @@ struct MetagDirectorSheet: View {
                     .fixedSize(horizontal: false, vertical: true)
             }
             if run.status == "done" {
-                Text(L10n.key("Done. Shots are landing in the media library."))
+                Text(L10n.string("Done. Shots are landing in the media library."))
                     .font(.system(size: AppTheme.FontSize.xs))
                     .foregroundStyle(AppTheme.Status.successColor)
             }
@@ -209,7 +209,7 @@ struct MetagDirectorSheet: View {
     private func budgetBar(_ run: MetagDirector.Run) -> some View {
         VStack(alignment: .leading, spacing: AppTheme.Spacing.xxs) {
             HStack {
-                Text(L10n.key("Budget"))
+                Text(L10n.string("Budget"))
                 Spacer(minLength: 0)
                 Text(L10n.string("\(run.spent_credits.formatted()) / \(run.budget_credits.formatted()) credits")).monospacedDigit()
             }
@@ -259,13 +259,13 @@ struct MetagDirectorSheet: View {
     private var footer: some View {
         HStack(spacing: AppTheme.Spacing.sm) {
             if let run, !run.isTerminal {
-                Button(L10n.key("Stop")) { act { try await MetagGateway.cancelDirectorRun(run.id) } }
+                Button(L10n.string("Stop")) { act { try await MetagGateway.cancelDirectorRun(run.id) } }
                     .buttonStyle(.plain)
                     .focusable(false)
                     .disabled(busy)
             }
             Spacer(minLength: 0)
-            Button(L10n.key("Close")) { isPresented = false }
+            Button(L10n.string("Close")) { isPresented = false }
                 .buttonStyle(.plain)
                 .focusable(false)
             if run == nil {
@@ -283,7 +283,7 @@ struct MetagDirectorSheet: View {
                 .disabled(busy)
             }
             if let run, run.status == "failed" || run.status == "cancelled" {
-                Button(L10n.key("Start Over")) { reset() }
+                Button(L10n.string("Start Over")) { reset() }
                     .buttonStyle(.editorPrimary)
                     .focusable(false)
             }

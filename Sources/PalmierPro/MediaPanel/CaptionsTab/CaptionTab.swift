@@ -199,7 +199,7 @@ struct CaptionTab: View {
             }
             if !editor.captionTextClipIds.isEmpty {
                 Button(action: applyTemplateToExistingCaptions) {
-                    Text(L10n.key("Apply to Existing Captions"))
+                    Text(L10n.string("Apply to Existing Captions"))
                         .frame(maxWidth: .infinity)
                 }
                 .buttonStyle(.capsule(.secondary))

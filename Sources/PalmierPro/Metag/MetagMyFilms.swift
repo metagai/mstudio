@@ -85,7 +85,7 @@ struct MetagMyFilmsView: View {
     var body: some View {
         VStack(alignment: .leading, spacing: AppTheme.Spacing.sm) {
             HStack {
-                Text(L10n.key("My films")).font(.system(size: AppTheme.FontSize.mdLg, weight: AppTheme.FontWeight.semibold))
+                Text(L10n.string("My films")).font(.system(size: AppTheme.FontSize.mdLg, weight: AppTheme.FontWeight.semibold))
                 Spacer()
                 if model.failedCount > 0 {
                     Button(model.busy == "__all__"
@@ -101,15 +101,15 @@ struct MetagMyFilmsView: View {
             }
             // 复制完了要看得见 —— 剪贴板是没有反馈的，静悄悄等于"没反应"。
             if let u = model.shared {
-                Text(L10n.key("Link copied") + " · " + u)
+                Text(L10n.string("Link copied") + " · " + u)
                     .foregroundStyle(AppTheme.Text.secondaryColor).font(.system(size: AppTheme.FontSize.sm)).textSelection(.enabled)
             }
             if model.loading && model.films.isEmpty {
-                Text(L10n.key("Loading…")).foregroundStyle(AppTheme.Text.secondaryColor).font(.system(size: AppTheme.FontSize.sm))
+                Text(L10n.string("Loading…")).foregroundStyle(AppTheme.Text.secondaryColor).font(.system(size: AppTheme.FontSize.sm))
             } else if let e = model.error {
                 Text(e).foregroundStyle(AppTheme.Text.secondaryColor).font(.system(size: AppTheme.FontSize.sm))
             } else if model.films.isEmpty {
-                Text(L10n.key("No films yet — generate one and it shows up here"))
+                Text(L10n.string("No films yet — generate one and it shows up here"))
                     .foregroundStyle(AppTheme.Text.secondaryColor).font(.system(size: AppTheme.FontSize.sm))
             } else {
                 ForEach(model.films) { f in
@@ -128,7 +128,7 @@ struct MetagMyFilmsView: View {
                             // 10 点的图标，要悬停才知道是什么。
                             HStack(spacing: AppTheme.Spacing.xxs) {
                                 Image(systemName: "square.and.arrow.up")
-                                Text(L10n.key("Share"))
+                                Text(L10n.string("Share"))
                             }
                             .font(.system(size: AppTheme.FontSize.xs))
                         }

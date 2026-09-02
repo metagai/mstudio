@@ -110,7 +110,7 @@ struct MetagVoiceSheet: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: AppTheme.Spacing.lg) {
-            Text(L10n.key("Your voices"))
+            Text(L10n.string("Your voices"))
                 .font(.system(size: AppTheme.FontSize.lg, weight: AppTheme.FontWeight.medium))
                 .foregroundStyle(AppTheme.Text.primaryColor)
 
@@ -132,7 +132,7 @@ struct MetagVoiceSheet: View {
 
             HStack {
                 Spacer()
-                Button(L10n.key("Done")) { dismiss() }.keyboardShortcut(.defaultAction)
+                Button(L10n.string("Done")) { dismiss() }.keyboardShortcut(.defaultAction)
             }
         }
         .padding(AppTheme.Spacing.lg)
@@ -143,7 +143,7 @@ struct MetagVoiceSheet: View {
     private var voiceList: some View {
         Group {
             if model.voices.isEmpty {
-                Text(L10n.key("No cloned voices yet."))
+                Text(L10n.string("No cloned voices yet."))
                     .font(.system(size: AppTheme.FontSize.xs))
                     .foregroundStyle(AppTheme.Text.tertiaryColor)
             } else {
@@ -153,7 +153,7 @@ struct MetagVoiceSheet: View {
                             .font(.system(size: AppTheme.FontSize.smMd))
                             .foregroundStyle(AppTheme.Text.primaryColor)
                         Spacer()
-                        Button(L10n.key("Delete")) {
+                        Button(L10n.string("Delete")) {
                             Task { await model.delete(v) }
                         }
                         .buttonStyle(.plain)
@@ -168,12 +168,12 @@ struct MetagVoiceSheet: View {
 
     private var cloneForm: some View {
         VStack(alignment: .leading, spacing: AppTheme.Spacing.smMd) {
-            Text(L10n.key("Clone a voice"))
+            Text(L10n.string("Clone a voice"))
                 .font(.system(size: AppTheme.FontSize.smMd, weight: AppTheme.FontWeight.medium))
                 .foregroundStyle(AppTheme.Text.primaryColor)
 
             HStack(spacing: AppTheme.Spacing.smMd) {
-                Button(L10n.key("Choose sample…")) { pickSample() }
+                Button(L10n.string("Choose sample…")) { pickSample() }
                 Text(form.sample?.lastPathComponent ?? L10n.key("WAV, MP3 or M4A · up to 16 MB"))
                     .font(.system(size: AppTheme.FontSize.xs))
                     .foregroundStyle(AppTheme.Text.tertiaryColor)
@@ -184,7 +184,7 @@ struct MetagVoiceSheet: View {
 
             // 授权：不预勾选。措辞说清楚"本人或已获授权"，因为这正是网关记录 IP 要留痕的那件事。
             Toggle(isOn: $form.consent) {
-                Text(L10n.key("This sample is my own voice, or I have permission to use it."))
+                Text(L10n.string("This sample is my own voice, or I have permission to use it."))
                     .font(.system(size: AppTheme.FontSize.xs))
                     .foregroundStyle(AppTheme.Text.secondaryColor)
             }
@@ -211,7 +211,7 @@ struct MetagVoiceSheet: View {
 
     private var dubbing: some View {
         VStack(alignment: .leading, spacing: AppTheme.Spacing.smMd) {
-            Text(L10n.key("Record a voiceover"))
+            Text(L10n.string("Record a voiceover"))
                 .font(.system(size: AppTheme.FontSize.smMd, weight: AppTheme.FontWeight.medium))
                 .foregroundStyle(AppTheme.Text.primaryColor)
 
@@ -219,8 +219,8 @@ struct MetagVoiceSheet: View {
                 .lineLimit(2...5)
 
             HStack(spacing: AppTheme.Spacing.smMd) {
-                Picker(L10n.key("Voice"), selection: $speaking) {
-                    Text(L10n.key("Built-in (free)")).tag(String?.none)
+                Picker(L10n.string("Voice"), selection: $speaking) {
+                    Text(L10n.string("Built-in (free)")).tag(String?.none)
                     ForEach(model.voices) { v in
                         Text(v.name).tag(String?.some(v.id))
                     }
@@ -228,14 +228,14 @@ struct MetagVoiceSheet: View {
                 .labelsHidden()
                 .frame(maxWidth: AppTheme.Director.sheetWidth / 2)
 
-                Button(L10n.key("Generate")) {
+                Button(L10n.string("Generate")) {
                     let t = script.trimmingCharacters(in: .whitespacesAndNewlines)
                     Task { await model.speak(text: t, voiceId: speaking, editor: editor) }
                 }
                 .disabled(model.busy || script.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
             }
 
-            Text(L10n.key("Generated audio lands in your media panel — drag it onto the timeline."))
+            Text(L10n.string("Generated audio lands in your media panel — drag it onto the timeline."))
                 .font(.system(size: AppTheme.FontSize.xxs))
                 .foregroundStyle(AppTheme.Text.tertiaryColor)
         }

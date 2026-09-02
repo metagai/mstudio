@@ -30,13 +30,13 @@ struct MetagCreditsView: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: AppTheme.Spacing.sm) {
-            Text(L10n.key("Credit activity")).font(.system(size: AppTheme.FontSize.mdLg, weight: AppTheme.FontWeight.semibold))
+            Text(L10n.string("Credit activity")).font(.system(size: AppTheme.FontSize.mdLg, weight: AppTheme.FontWeight.semibold))
             if model.loading && model.items.isEmpty {
-                Text(L10n.key("Loading…")).font(.system(size: AppTheme.FontSize.sm)).foregroundStyle(AppTheme.Text.secondaryColor)
+                Text(L10n.string("Loading…")).font(.system(size: AppTheme.FontSize.sm)).foregroundStyle(AppTheme.Text.secondaryColor)
             } else if let e = model.error {
                 Text(e).font(.system(size: AppTheme.FontSize.sm)).foregroundStyle(AppTheme.Text.secondaryColor)
             } else if model.items.isEmpty {
-                Text(L10n.key("No credit activity yet")).font(.system(size: AppTheme.FontSize.sm)).foregroundStyle(AppTheme.Text.secondaryColor)
+                Text(L10n.string("No credit activity yet")).font(.system(size: AppTheme.FontSize.sm)).foregroundStyle(AppTheme.Text.secondaryColor)
             } else {
                 ScrollView {
                     VStack(alignment: .leading, spacing: 6) {

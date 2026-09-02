@@ -312,7 +312,7 @@ struct MetagDraftSheet: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: AppTheme.Spacing.md) {
-            Text(L10n.key("See the draft first, then decide"))
+            Text(L10n.string("See the draft first, then decide"))
                 .font(.system(size: AppTheme.FontSize.xl, weight: AppTheme.FontWeight.medium))
                 .foregroundStyle(AppTheme.Text.primaryColor)
             if model.jobId == nil {
@@ -440,15 +440,15 @@ struct MetagDraftSheet: View {
             HStack(spacing: AppTheme.Spacing.xxs) {
                 Image(systemName: "checkmark.seal")
                     .font(.system(size: AppTheme.FontSize.xs))
-                Text(L10n.key("Drafts are free — no credits charged"))
+                Text(L10n.string("Drafts are free — no credits charged"))
                     .font(.system(size: AppTheme.FontSize.sm))
             }
             .foregroundStyle(AppTheme.Status.successColor)
             HStack {
                 Spacer()
-                Button(L10n.key("Cancel")) { dismiss() }
+                Button(L10n.string("Cancel")) { dismiss() }
                     .buttonStyle(.capsule(.secondary, size: .regular))
-                Button(L10n.key("Draft it")) {
+                Button(L10n.string("Draft it")) {
                     // 卡片在这一刻兑现：稿子并回 prompt（接口那一侧始终只有一个
                     // prompt），图片交给 `assets`。
                     model.prompt = PromptPaste.composed(line: model.prompt, attachments: attachments)
@@ -500,7 +500,7 @@ struct MetagDraftSheet: View {
                     ))
                     .font(.system(size: AppTheme.FontSize.sm))
                     .foregroundStyle(AppTheme.Text.primaryColor)
-                    Toggle(L10n.key("Different composition"), isOn: Binding(
+                    Toggle(L10n.string("Different composition"), isOn: Binding(
                         get: { model.rerolls.contains(i) },
                         set: { on in if on { model.rerolls.insert(i) } else { model.rerolls.remove(i) } }
                     ))
@@ -513,7 +513,7 @@ struct MetagDraftSheet: View {
             // 音色摆在引擎上面：用户先关心"谁在讲我的片子"，再关心画质档位。
             // 免费必须写出来，否则他不敢点 —— 而"敢试"正是这个交互的全部价值。
             if let current = model.narrator {
-                Picker(L10n.key("Narrator voice"), selection: Binding(
+                Picker(L10n.string("Narrator voice"), selection: Binding(
                     get: { current },
                     set: { n in Task { await model.swapNarrator(n) } }
                 )) {
@@ -523,17 +523,17 @@ struct MetagDraftSheet: View {
                 }
                 .font(.system(size: AppTheme.FontSize.sm))
                 .disabled(model.busy)
-                Text(L10n.key("Changing the voice is free — only the narration is re-recorded"))
+                Text(L10n.string("Changing the voice is free — only the narration is re-recorded"))
                     .font(.system(size: AppTheme.FontSize.xs)).foregroundStyle(AppTheme.Text.mutedColor)
                 // 选中的档位自带音轨时，这个音色只作用于草案。**说出来** ——
                 // 否则用户挑了半天旁白，成片里说话的是模型自己，他会以为我们弄丢了。
                 // 判据取自报价单的 native_audio，不硬编引擎名单。
                 if selectedEngineHasNativeAudio {
-                    Text(L10n.key("This tier records its own dialogue — the voice above applies to the draft only"))
+                    Text(L10n.string("This tier records its own dialogue — the voice above applies to the draft only"))
                         .font(.system(size: AppTheme.FontSize.xs)).foregroundStyle(AppTheme.Status.warningColor)
                 }
             }
-            Picker(L10n.key("Engine"), selection: $engine) {
+            Picker(L10n.string("Engine"), selection: $engine) {
                 ForEach(engines, id: \.id) { e in
                     // 停售的档位标出来但**不隐藏** —— 抹掉会让用户以为
                     // "我昨天用的那档去哪了"，而让他选中再拿 503 更糟。
@@ -593,19 +593,19 @@ struct MetagDraftSheet: View {
                 .font(.system(size: AppTheme.FontSize.xs))
             }
             if sampled {
-                Text(L10n.key("Sample shot is rendering — it appears in the draft when ready."))
+                Text(L10n.string("Sample shot is rendering — it appears in the draft when ready."))
                     .font(.system(size: AppTheme.FontSize.xs)).foregroundStyle(AppTheme.Text.mutedColor)
             }
             if let e = sampleError {
                 Text(e).font(.system(size: AppTheme.FontSize.xs)).foregroundStyle(AppTheme.Status.errorColor)
             }
             if engine != "local" {
-                Toggle(L10n.key("Use this tier for every shot"), isOn: $allShots)
+                Toggle(L10n.string("Use this tier for every shot"), isOn: $allShots)
                     .font(.system(size: AppTheme.FontSize.xs))
                     .foregroundStyle(AppTheme.Text.secondaryColor)
                 if !allShots {
                     // 说清楚默认会发生什么，而不是让他看完成片再问"为什么画质没变"
-                    Text(L10n.key("By default only lip-sync shots use it; the rest stay on the standard tier"))
+                    Text(L10n.string("By default only lip-sync shots use it; the rest stay on the standard tier"))
                         .font(.system(size: AppTheme.FontSize.xs)).foregroundStyle(AppTheme.Text.mutedColor)
                 }
             }

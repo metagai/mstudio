@@ -85,7 +85,7 @@ private struct CreditActionsPopover: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: AppTheme.Spacing.smMd) {
-            Text(L10n.key("Add credits"))
+            Text(L10n.string("Add credits"))
                 .font(.system(size: AppTheme.FontSize.xs, weight: AppTheme.FontWeight.medium))
                 .foregroundStyle(AppTheme.Text.tertiaryColor)
 
@@ -95,7 +95,7 @@ private struct CreditActionsPopover: View {
                 SettingsWindowController.shared.show(tab: .account)
                 isPresented = false
             } label: {
-                Text(L10n.key("Account settings")).frame(maxWidth: .infinity)
+                Text(L10n.string("Account settings")).frame(maxWidth: .infinity)
             }
             .buttonStyle(.capsule(.secondary))
             .controlSize(.small)
