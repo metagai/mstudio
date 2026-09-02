@@ -64,7 +64,13 @@ struct OnboardingStoreTests {
             store.advance()
             store.advance()
 
-            #expect(store.step == .profile, "问卷是最后一屏 —— 看片已经排到前面了")
+            // **走出最后一屏 = 引导结束，不是原地不动。**
+            //
+            // 上一版这里断言的是 `step == .profile` —— 而那正是一个死锁：
+            // `move(by:)` 的 guard 直接 return，`complete()` 永不调用，
+            // 覆盖层永远关不掉，退出重开还是这一屏。
+            // **这条判据当时为那个死锁作了证。**
+            #expect(store.isComplete, "答完问卷按下 Continue 之后引导没结束 —— 他被锁在一个关不掉的框里")
         }
     }
 

@@ -1547,3 +1547,4 @@
 "Add Film" = "载入片子";
 "Sign in and your films stay with you" = "登录，作品就跟着你走";
 "Loaded %lld shots with score. Captions aren't kept past 24 hours — your words stay yours." = "载入 %lld 镜，配乐已铺。字幕文本超过 24 小时不再保留 —— 你写的字只属于你。";
+"Reference footage would have to leave this Mac, and METAG doesn't upload your footage. Text and a first frame both work." = "参考素材得离开这台 Mac，而 METAG 不上传你的素材。用文字或者一张首帧都可以。";

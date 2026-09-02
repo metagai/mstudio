@@ -51,7 +51,14 @@ struct MetagReachabilityTests {
         let client = root.appendingPathComponent("Metag/MetagGateway.swift")
 
         let declaration = try String(contentsOf: client, encoding: .utf8)
+        // **`private static func` 是文件内部的帮手，不该有外部调用方。**
+        //
+        // 这条判据守的是"做好了没接线的机器"：一个网关方法全仓没人调，
+        // 说明那台机器建好了却没接到用户走的那条路上。
+        // 而内部帮手（比如 `decode` 那个把 `DecodingError` 收口成兜底文案的）
+        // 按定义就只在文件里被调 —— 把它算进来是在惩罚"把重复收敛成一处"。
         let names = declaration
+            .replacingOccurrences(of: "private static func ", with: "PRIVATE_HELPER ")
             .components(separatedBy: "static func ")
             .dropFirst()
             .compactMap { chunk -> String? in

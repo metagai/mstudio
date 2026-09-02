@@ -2,6 +2,14 @@ import Foundation
 
 enum BackendError: LocalizedError {
     case notConfigured
+    /// **参考图要把他的素材传上云，而我们承诺素材不出这台电脑。**
+    ///
+    /// 这原来复用 `.notConfigured`，于是屏幕上写的是「你没登录 METAG」——
+    /// 一个**产品决定**被报成了**他的错误**，而他明明已经登录。
+    /// 他会一遍遍去重新登录，永远也不会成功。
+    ///
+    /// 说清楚之后它甚至不是坏消息：那是我们守住的一条线。
+    case referencesStayLocal
     /// METAG 网关暂不支持的生成类型（音频/图片/放大）—— 明确报错而不是静默走视频
     case unsupported
     case transport(String)
@@ -14,6 +22,8 @@ enum BackendError: LocalizedError {
     var errorDescription: String? {
         switch self {
         case .notConfigured: L10n.key("Not signed in to METAG.")
+        case .referencesStayLocal:
+            L10n.key("Reference footage would have to leave this Mac, and METAG doesn't upload your footage. Text and a first frame both work.")
         case .unsupported: L10n.key("That generation type is not available yet — text-to-video and image-to-video are.")
         case .transport(let message): message
         case .api(_, _, let message): message

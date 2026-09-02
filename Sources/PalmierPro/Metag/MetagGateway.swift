@@ -441,7 +441,7 @@ enum MetagGateway {
         let (data, resp) = try await URLSession.shared.data(for: req)
         let code = (resp as? HTTPURLResponse)?.statusCode ?? 0
         guard (200..<300).contains(code) else { throw Failure.http(code) }
-        return try JSONDecoder().decode(Quote.self, from: data)
+        return try decode(Quote.self, from: data)
     }
 
     struct Quote: Decodable, Sendable {
@@ -500,6 +500,25 @@ enum MetagGateway {
     /// 只重试"没拿到答案"的情况：网络层错误与 5xx。
     /// 服务端已经答过的（401/402/4xx）不重试 —— 重试只会拿到同一个答案，
     /// 还会把一次"额度不足"变成连续三次。
+    /// 解码失败**不是给用户看的东西**。
+    ///
+    /// `DecodingError` 的 `localizedDescription` 是
+    /// 「The data couldn't be read because it is missing.」——
+    /// 它会原样出现在设置›账户、设置›模型、以及打开作品的 toast 上。
+    /// 触发条件是**网关回了 200 但字段对不上**：新增必填字段、灰度回滚、
+    /// CDN 把错误页当成 JSON 返回。那三种都不是他能理解、更不是他能处理的事。
+    ///
+    /// 换成已有的兜底文案（「那一下没通过。再试一次 —— 老是这样就告诉我们」），
+    /// 而真实原因进日志。
+    private static func decode<T: Decodable>(_ type: T.Type, from data: Data) throws -> T {
+        do {
+            return try JSONDecoder().decode(type, from: data)
+        } catch {
+            Log.app.error("gateway decode failed for \(String(describing: type)): \(error)")
+            throw Failure.http(0)
+        }
+    }
+
     static func send<T: Decodable>(_ req: URLRequest, as: T.Type) async throws -> T {
         let canRetry = retryableMethods.contains(req.httpMethod?.uppercased() ?? "GET")
         let attempts = canRetry ? 3 : 1
@@ -510,7 +529,7 @@ enum MetagGateway {
                 let (data, response) = try await URLSession.shared.data(for: req)
                 let code = (response as? HTTPURLResponse)?.statusCode ?? 0
                 switch code {
-                case 200..<300: return try JSONDecoder().decode(T.self, from: data)
+                case 200..<300: return try decode(T.self, from: data)
                 case 401:
                     token = nil
                     throw Failure.signedOut

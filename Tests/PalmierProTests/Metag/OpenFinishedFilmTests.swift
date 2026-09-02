@@ -78,6 +78,56 @@ struct OpenFinishedFilmTests {
                 "读不出的那一镜顶错了长度：\(p.shotStarts)")
     }
 
+    /// **这份铺法里真正被用上的那一半是长度，不是起始帧。**
+    ///
+    /// 2026-09-02：上一版 `Plan` 只回 `shotStarts`，而调用点用的是 `addClips` ——
+    /// 它按 `clipDurationFrames` → `asset.duration` 定每段长度，
+    /// 而那个值在铺片子那一刻还是 0（后台 Task 才填）。
+    /// **N 个镜头全部一帧宽、挤在时间线最开头**，而算出来的起始帧
+    /// **生产代码里一次都没被消费过** —— 判据测的正是它。
+    ///
+    /// 「判据覆盖的那条路，和用户走的那条路，是同一条吗」——
+    /// 我写下这一问的当天就犯了它。
+    @Test func thePlanCarriesTheLengthsThePlacementNeeds() throws {
+        let p = plan(try job(shotCount: 3), measured: { [2.0, 4.0, 1.0][$0] })
+        #expect(p.shotSeconds == [2, 4, 1],
+                "铺法不带每段长度 —— 调用点只能落到 asset.duration，那一刻是 0")
+        // 起始帧必须和长度一致：错开的距离就是前面那些镜的总长。
+        #expect(p.shotStarts == [0, 60, 180])
+    }
+
+    /// **权威时长按镜号取，不是按槽位。**
+    ///
+    /// 抢救回来的片子（只有一部分镜可用）或某几镜下载失败时，
+    /// 槽位和镜号对不上 —— 每一段都会按**错误那一镜**的长度铺。
+    @Test func authoritativeSecondsAreLookedUpByShotNumber() throws {
+        // 网关给了四镜的时长，而只有第 0、3 镜下载成功。
+        let all = [1.0, 2.0, 3.0, 8.0]
+        let p = MetagFilmLayout.plan(
+            shotIndices: [0, 3], narrationIndices: [0, 3],
+            clipSeconds: all, masterGainDB: nil,
+            measured: { _ in Issue.record("有权威时长还去量文件"); return 0 },
+            frame: { Int($0 * 30) })
+        #expect(p.shotSeconds == [1, 8],
+                "按槽位取了 \(p.shotSeconds) —— 第二段用的是第 1 镜的长度，不是第 3 镜的")
+    }
+
+    /// **铺上去那一步必须把长度交出去。**
+    ///
+    /// 上面那两条问的是铺法算得对不对，而铺法算对了、调用点不用，
+    /// 正是这一天最贵的那个 bug。这一条只能比源码 ——
+    /// 那一步在异步网络里，判据够不着。**明知道弱，写在这里。**
+    @Test func theOpenerHandsThoseLengthsToTheTimeline() throws {
+        let src = try String(
+            contentsOf: URL(fileURLWithPath: #filePath)
+                .deletingLastPathComponent().deletingLastPathComponent()
+                .deletingLastPathComponent().deletingLastPathComponent()
+                .appendingPathComponent("Sources/PalmierPro/Metag/MetagJobOpener.swift"),
+            encoding: .utf8)
+        #expect(src.contains("segments: Dictionary(uniqueKeysWithValues: zip(shotAssets, plan.shotSeconds)"),
+                "铺画面时没把每段长度交出去 —— 它会落到 asset.duration，而那一刻是 0，N 个镜头一帧宽挤在开头")
+    }
+
     /// **主音量差要跟着这份铺法一起算出来** —— 它是同一个决定的一部分。
     @Test func theMasterGainRidesAlongWithThePlan() throws {
         let plain = plan(try job(shotCount: 2), measured: { _ in 3 })

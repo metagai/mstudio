@@ -319,15 +319,30 @@ struct MetagDraftSheet: View {
     private var selectedEngineHasNativeAudio: Bool {
         engines.first { $0.id == engine }?.native_audio == true
     }
-    /// 报价必须等于实扣：默认路由下只有口播镜走贵引擎，这里没有逐镜口播标记，
-    /// 所以只在"全片使用"时按贵引擎报价，否则按 local 报 —— 宁可少报也不能多报。
-    private var quote: Int {
-        // 还不知道镜数时按 1 报 —— **宁可少报也不能多报**（下面那句注释的规矩）。
-        guard allShots else { return model.knownShots ?? 1 }
-        // 网关的登记表是唯一真源。本地那份 `perShot × shots` 只在问不到价时兜底 ——
-        // 网关改了档位价格，本地那份会照旧报旧价，而用户按下去扣的是新价。
+    /// 出片按钮上那个数字。**问不到权威价就不印数。**
+    ///
+    /// ## 它原来印的是镜数
+    ///
+    /// 上一版是 `guard allShots else { return model.knownShots ?? 1 }` ——
+    /// 不勾"全片使用"时（**这是默认**）返回的是**镜数**，被印成
+    /// 「Produce · 6 credits」。而同一屏自己写着默认路由是
+    /// 「口播镜用所选付费档，其余走 local」：选 veo（90cr/镜）、6 镜的片子，
+    /// 按钮写 6，实扣约 184。
+    ///
+    /// **他按下去、扣完、去看余额少了 184 —— 在他心里这就是我们偷偷加价。**
+    /// 这不需要任何故障，是默认路径上每天都会发生的事。
+    ///
+    /// ## 也不再拿本地单价乘一遍
+    ///
+    /// `?? perShot * shots` 那个兜底同样是编数字：网关改了档位价，
+    /// 本地那份照旧报旧价，而他按下去扣的是新价。
+    ///
+    /// 混合路由这一侧客户端**算不出来**（没有逐镜口播标记），
+    /// 所以只有两种诚实的结果：网关报了价就印它，没有就不印。
+    /// 产品里已经有这个写法（`MetagVoiceSheet.cloneLabel`：问不到价只写「克隆」）。
+    private var quote: Int? {
+        guard allShots else { return nil }
         return model.quote?.options.first { $0.engine == engine }?.total_credits
-            ?? perShot * (model.knownShots ?? 1)
     }
 
     /// 有没有档位坏到不能出片。
@@ -684,7 +699,8 @@ struct MetagDraftSheet: View {
                 // 价钱写在按钮上，不写在按钮旁边。**这是全站一致的规矩** ——
                 // 旁边那行会被换行、被挤走、被读屏跳过，而按钮不会。
                 // 导演台（MetagDirectorSheet）和 Web 端都是这么做的。
-                Button(L10n.string("Produce · \(quote.formatted()) credits")) {
+                Button(quote.map { L10n.string("Produce · \($0.formatted()) credits") }
+                       ?? L10n.string("Produce")) {
                     Task {
                         if let job = await model.approve(engine: engine, allShots: allShots) {
                             editor.mediaPanelToast = MediaPanelToast(

@@ -117,7 +117,22 @@ final class OnboardingStore {
     }
 
     private func move(by offset: Int) {
-        guard let destination = OnboardingStep(rawValue: step.rawValue + offset) else { return }
+        guard let destination = OnboardingStep(rawValue: step.rawValue + offset) else {
+            // **往前走出最后一屏 = 引导结束。**
+            //
+            // 上一版这里直接 `return`：`submitSurvey()` → `advance()` →
+            // `OnboardingStep(rawValue: 4)` → nil → 什么都不发生，
+            // 而 `complete()` 在这条路上一次都不会被调用。
+            //
+            // 覆盖层由 `!isComplete` 驱动、开着命中测试、没有 Esc、没有关闭按钮，
+            // `isComplete` 又没写进 UserDefaults —— **答完问卷按下 Continue 的人，
+            // 退出重开还是这一屏，永远看不到那个输入框，也就永远打不出第一行字。**
+            //
+            // 而 `OnboardingStoreTests.stepsClampAtBothEnds` 把这个死锁
+            // 当成"问卷是最后一屏"钉住了：**一条判据为一个死锁作了证。**
+            if offset > 0 { complete() }
+            return
+        }
         step = destination
     }
 }

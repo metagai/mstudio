@@ -124,7 +124,7 @@ enum MetagJobOpener {
                     editor.timeline.tracks.insert(Track(type: .audio), at: 0)
                     editor.timeline.tracks.insert(Track(type: .video), at: 0)
 
-                    editor.addClips(assets: shotAssets.map(\.asset), trackIndex: 0, startFrame: 0)
+                    // 见下：每段长度由 `plan.shotSeconds` 给，不能落到 `asset.duration`。
 
                     // 旁白对齐到各自那一镜的起点 —— 它比镜头短，
                     // 一段接一段挨着放会越走越偏，第四镜的话会压在第三镜上。
@@ -138,6 +138,19 @@ enum MetagJobOpener {
                         measured: { shotAssets[$0].seconds },
                         frame: editor.frame(atSeconds:)
                     )
+                    // **每段长度显式给。**
+                    //
+                    // `addClips` 不传 `segments` 就落到 `clipDurationFrames` →
+                    // `asset.duration`，而那个值在这一刻还是 0（后台 Task 才填）——
+                    // N 个镜头会全部一帧宽、挤在时间线最开头。
+                    // 上一版只修了旁白的落点，画面这一半一直是坏的，
+                    // 而算出来的起始帧**生产代码里一次都没被消费过**。
+                    editor.addClips(
+                        assets: shotAssets.map(\.asset), trackIndex: 0, startFrame: 0,
+                        segments: Dictionary(uniqueKeysWithValues: zip(shotAssets, plan.shotSeconds)
+                            .map { ($0.asset.id, 0...$1) })
+                    )
+
                     for (shot, frame) in plan.narrations {
                         guard let narration = narrationAssets.first(where: { $0.index == shot })
                         else { continue }

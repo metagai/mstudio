@@ -79,8 +79,10 @@ enum GenerationBackend {
         fileURL: URL,
         contentType: String,
     ) async throws -> String {
-        // 参考图/视频需要用户素材上传到云端 —— 与"素材不出设备"冲突，暂不开放
-        throw BackendError.notConfigured
+        // 参考图/视频需要用户素材上传到云端 —— 与"素材不出设备"冲突，暂不开放。
+        // **它有自己的那句话。** 复用 `.notConfigured` 的话屏幕上写的是
+        // 「你没登录」，而他明明登录了 —— 一个产品决定被报成他的错误。
+        throw BackendError.referencesStayLocal
     }
 
     static func submit(

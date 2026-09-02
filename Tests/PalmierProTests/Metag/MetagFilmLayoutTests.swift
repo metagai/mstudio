@@ -15,8 +15,8 @@ import Testing
 struct MetagFilmLayoutTests {
     /// 网关给的逐段时长是权威的 —— 30fps 下 2 秒就是 60 帧。
     @Test func startsComeFromTheGatewaysDurations() {
-        let starts = MetagFilmLayout.startSeconds(
-            shotCount: 3, clipSeconds: [2.0, 1.0, 3.0],
+        let starts = MetagFilmLayout.lengthsAndStarts(
+            shotCount: 3, authoritative: [2.0, 1.0, 3.0],
             measured: { _ in Issue.record("有权威时长还去量文件"); return 1 }
         )
         #expect(starts == [0, 2, 3])
@@ -24,26 +24,20 @@ struct MetagFilmLayoutTests {
 
     /// **拿不到就自己量，不要凭空假设等长。**
     @Test func withoutDurationsItMeasures() {
-        let starts = MetagFilmLayout.startSeconds(
-            shotCount: 3, clipSeconds: nil, measured: { _ in 1.5 }
-        )
+        let starts = MetagFilmLayout.lengthsAndStarts(shotCount: 3, authoritative: [], measured: { _ in 1.5 })
         #expect(starts == [0, 1.5, 3])
     }
 
     /// 清单比镜头短、或者某一段是 0 —— 那几段退回实测，**不整条作废**。
     @Test func aShortOrBrokenListFallsBackPerShot() {
-        let starts = MetagFilmLayout.startSeconds(
-            shotCount: 3, clipSeconds: [2.0, 0], measured: { _ in 0.5 }
-        )
+        let starts = MetagFilmLayout.lengthsAndStarts(shotCount: 3, authoritative: [2.0, 0].map { $0 > 0 ? $0 : nil }, measured: { _ in 0.5 })
         #expect(starts == [0, 2, 2.5])
     }
 
     /// 一镜也是对的；零镜不该崩。
     @Test(arguments: [(0, [Double]()), (1, [0.0])])
     func edgesHold(count: Int, expected: [Double]) {
-        #expect(MetagFilmLayout.startSeconds(
-            shotCount: count, clipSeconds: nil, measured: { _ in 1 }
-        ) == expected)
+        #expect(MetagFilmLayout.lengthsAndStarts(shotCount: count, authoritative: [], measured: { _ in 1 }) == expected)
     }
 
     /// **旁白落在各自那一镜的起点。**
@@ -62,8 +56,7 @@ struct MetagFilmLayoutTests {
 
     /// **不许全叠在开头。**
     @Test func narrationsNeverAllStackAtTheStart() {
-        let starts = MetagFilmLayout.startSeconds(
-            shotCount: 3, clipSeconds: [2, 2, 2], measured: { _ in 1 }).map { Int($0 * 30) }
+        let starts = MetagFilmLayout.lengthsAndStarts(shotCount: 3, authoritative: [2, 2, 2].map { $0 > 0 ? $0 : nil }, measured: { _ in 1 }).map { Int($0 * 30) }
         let placed = MetagFilmLayout.narrationFrames(
             shots: [0, 1, 2], narrations: [0, 1, 2], starts: starts)
         #expect(Set(placed.map(\.frame)).count == 3,
@@ -83,8 +76,7 @@ struct MetagFilmLayoutTests {
         editor.timeline = Fixtures.timeline(tracks: [])
         // 时间线自己的 fps 被弄坏时也不塌成一堆 —— 换算那一处兜了下限。
         editor.timeline.fps = 0
-        let seconds = MetagFilmLayout.startSeconds(
-            shotCount: 3, clipSeconds: [2, 2, 2], measured: { _ in 1 })
+        let seconds = MetagFilmLayout.lengthsAndStarts(shotCount: 3, authoritative: [2, 2, 2].map { $0 > 0 ? $0 : nil }, measured: { _ in 1 })
         let frames = seconds.map(editor.frame(atSeconds:))
         #expect(Set(frames).count == 3, "起点算出来是 \(frames) —— 三镜叠在一起了")
     }
@@ -101,8 +93,7 @@ struct MetagFilmLayoutTests {
     ///
     /// 现在时长在下载完那一刻现量。这一条盯着：**量不到就不该铺出一堆重叠。**
     @Test func withoutGatewayDurationsTheShotsStillSeparate() {
-        let starts = MetagFilmLayout.startSeconds(
-            shotCount: 4, clipSeconds: nil, measured: { _ in 5.0 })
+        let starts = MetagFilmLayout.lengthsAndStarts(shotCount: 4, authoritative: [], measured: { _ in 5.0 })
         #expect(starts == [0, 5, 10, 15], "网关不给时长时铺成了 \(starts)")
         #expect(Set(starts).count == 4)
     }
@@ -120,16 +111,14 @@ struct MetagFilmLayoutTests {
         // （第一次写的夹具就是三镜都 5 秒，变异 B 因此红不起来 ——
         // 夹具分不出来，判据就没在守那个选择。）
         let lengths = [3.0, 0, 5.0, 9.0]        // 第二镜读不出
-        let starts = MetagFilmLayout.startSeconds(
-            shotCount: 4, clipSeconds: nil, measured: { lengths[$0] })
+        let starts = MetagFilmLayout.lengthsAndStarts(shotCount: 4, authoritative: [], measured: { lengths[$0] })
         // 顶上来的是中位数 5，不是最短的 3：**一镜坏掉不该把整片压扁**。
         #expect(starts == [0, 3, 8, 13], "读不出的那一镜顶错了长度：\(starts)")
     }
 
     /// 一镜都量不到（每个文件都读不出）也不许塌成一堆。
     @Test func evenAZeroMeasurementDoesNotStackThem() {
-        let starts = MetagFilmLayout.startSeconds(
-            shotCount: 4, clipSeconds: nil, measured: { _ in 0 })
+        let starts = MetagFilmLayout.lengthsAndStarts(shotCount: 4, authoritative: [], measured: { _ in 0 })
         let gaps = zip(starts.dropFirst(), starts).map(-)
         #expect(gaps.allSatisfy { $0 >= 1 },
                 "起点是 \(starts) —— 数值不相等，但 30fps 下还是叠在一起")

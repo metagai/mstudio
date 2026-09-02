@@ -42,6 +42,14 @@ enum MetagFilmLayout {
     struct Plan: Equatable {
         /// 每一镜的起始帧，按画面顺序。
         var shotStarts: [Int]
+        /// 每一镜的**长度**（秒），按画面顺序。
+        ///
+        /// **这个字段是这份铺法真正被用上的那一半。**
+        /// 上一版只回起始帧，而调用点用的是 `addClips`，它按
+        /// `clipDurationFrames` → `asset.duration` 定每段长度 ——
+        /// 而那个值在铺片子那一刻还是 0，于是 N 个镜头全部一帧宽、挤在开头。
+        /// **算出来的起始帧一次都没被消费过，而判据测的正是它。**
+        var shotSeconds: [Double]
         /// 每一段旁白：落在哪一镜、哪一帧。
         var narrations: [Int: Int]
         /// 乘到每个出声片段上的倍数。
@@ -61,14 +69,21 @@ enum MetagFilmLayout {
         measured: (Int) -> Double,
         frame: (Double) -> Int
     ) -> Plan {
-        let starts = startSeconds(
-            shotCount: shotIndices.count, clipSeconds: clipSeconds, measured: measured
-        ).map(frame)
+        // **`clipSeconds` 按槽位取，而 `shot_clips` 是按原始镜号排的。**
+        // 抢救回来的片子（只有一部分镜可用）或者某几镜下载失败时，
+        // 两者对不上 —— 每一段都会按错误那一镜的长度铺。
+        let byShot = shotIndices.map { shot -> Double? in
+            guard let clipSeconds, shot < clipSeconds.count, clipSeconds[shot] > 0 else { return nil }
+            return clipSeconds[shot]
+        }
+        let lengths = lengths(shotCount: shotIndices.count, authoritative: byShot, measured: measured)
+        let starts = runningStarts(lengths).map(frame)
         let placements = narrationFrames(
             shots: shotIndices, narrations: narrationIndices, starts: starts
         )
         return Plan(
             shotStarts: starts,
+            shotSeconds: lengths,
             narrations: Dictionary(uniqueKeysWithValues: placements.map { ($0.shot, $0.frame) }),
             volume: volumeFactor(masterGainDB: masterGainDB)
         )
@@ -134,28 +149,32 @@ enum MetagFilmLayout {
     /// 而长度猜偏一点，他一眼就看得出来、也拖得动。
     static let nominalShotSeconds: Double = 4
 
-    static func startSeconds(
-        shotCount: Int,
-        clipSeconds: [Double]?,
-        measured: (Int) -> Double
+    /// 每一镜的长度（秒）。权威值优先，量不到的拿量得到的中位数顶上。
+    static func lengths(
+        shotCount: Int, authoritative: [Double?], measured: (Int) -> Double
     ) -> [Double] {
-        var lengths: [Double] = (0..<shotCount).map { i in
-            if let seconds = clipSeconds, i < seconds.count, seconds[i] > 0 { return seconds[i] }
+        var out: [Double] = (0..<shotCount).map { i in
+            if i < authoritative.count, let s = authoritative[i], s > 0 { return s }
             let m = measured(i)
             return m.isFinite && m > 0 ? m : 0
         }
-
-        // **量不到的那几镜，拿量得到的那些的中位数顶上。**
-        //
-        // 上一版给的是 0.04 秒的下限 —— 四个起点确实互不相同，
-        // 于是判据绿；而 30fps 下那是第 0/1/2/4 帧，用户看到的仍然是全叠在一起。
-        // **判据绿的时候，用户拿到的是完整的，还是只是"拿到了"。**
-        //
+        // 量不到的那几镜，拿量得到的那些的中位数顶上 ——
         // 同一部片子里各镜长度接近，中位数是这里能拿到的最好的猜。
-        let known = lengths.filter { $0 > 0 }.sorted()
+        // 中位数不是最小值：**一镜坏掉不该把整片压扁。**
+        let known = out.filter { $0 > 0 }.sorted()
         let fill = known.isEmpty ? nominalShotSeconds : known[known.count / 2]
-        lengths = lengths.map { $0 > 0 ? $0 : fill }
+        return out.map { $0 > 0 ? $0 : fill }
+    }
 
+    /// 长度算完直接给起点。判据里最常问的就是这个组合。
+    static func lengthsAndStarts(
+        shotCount: Int, authoritative: [Double?], measured: (Int) -> Double
+    ) -> [Double] {
+        runningStarts(lengths(shotCount: shotCount, authoritative: authoritative, measured: measured))
+    }
+
+    /// 逐段累加成起点。
+    static func runningStarts(_ lengths: [Double]) -> [Double] {
         var starts: [Double] = []
         var cursor = 0.0
         for length in lengths {
