@@ -26,20 +26,28 @@ enum MetagJobOpener {
                 ])
             }
             guard !wanted.isEmpty else {
-                // **这一次尝试原来一个字都不记。** 用户看到"没有可用镜头"，
-                // 而漏斗里它根本不存在 —— 分母缺了失败，成功率就不是成功率，
-                // 是"成功的人里有多少成功了"。
+                let kind = MetagFailureKind(job.error_kind)
+                // **这一次尝试原来一个字都不记。** 分母缺了失败，
+                // 成功率就不是成功率，是"成功的人里有多少成功了"。
+                //
+                // `why` 用网关白名单里的三种；**真实种类另记一格** ——
+                // 那是网关分出来的，比我们在客户端猜准。
                 MetagFunnel.track(.filmFailed, meta: [
                     "why": (job.status == "failed"
                             ? MetagFunnel.FailureReason.renderFailed
                             : .noShots).rawValue,
+                    "kind": kind.rawValue,
                     "shots": job.shots.count,
                 ])
-                editor.mediaPanelToast = MediaPanelToast(
-                    // **他等完了，拿到一个句号。** 原来只说"没有可用镜头"——
-                    // 不说为什么、不说下一步、也不说钱。钱这件事我不替网关承诺
-                    // （退不退是它说了算），但**下一步必须给**。
-                    message: L10n.key("None of the shots came back usable. Change a line or pick another tier, then try again."))
+                // **三种失败要说的话完全不一样，说错一种比不说更糟。**
+                //
+                // 2026-09-01 上午我把这里改成过「换个说法或者换一档再试」——
+                // 那是给内容判回的话，却发给了所有人。对着一次上游 503 说这句，
+                // 他会去改一句根本没问题的话、改完再失败一次，
+                // **我们把自己的故障算在了他头上**。
+                //
+                // 而分类一直在响应里（`error_kind`），只是客户端从没解过它。
+            editor.mediaPanelToast = MediaPanelToast(message: kind.message)
                 return
             }
             let native = MetagNarrationPlan.nativeAudioEngineIds(try? await MetagGateway.pricing())
@@ -73,8 +81,24 @@ enum MetagJobOpener {
                     "shots": job.shots.count,
                 ])
             }
+            // **配乐。** 网关专门把它从混音里分出来，就是为了让编辑器铺在
+            // 那几段下面 —— 而 Mac 一直没下过它：用户看的是一条有配乐的草案，
+            // 批准之后拿到的时间线上只有画面和旁白。
+            // **他看的那条片子，和他拿到的那条不是同一条。**
+            //
+            // 放在镜头之后取：先让画面到手。取不到不影响已经铺好的那几段，
+            // 但**要说出来** —— 少了配乐他会以为是我们没做，而不是没取到。
+            var score = false
+            if added > 0, let bed = job.music_bed, !bed.isEmpty,
+               let url = try? await MetagGateway.download(
+                job: jobId, name: bed, to: FileManager.default.temporaryDirectory) {
+                editor.addMediaAsset(from: url, type: .audio)
+                score = true
+            }
+
             editor.mediaPanelToast = MediaPanelToast(
-                message: message(added: added, narrations: narrations, salvaged: job.status == "failed"),
+                message: message(added: added, narrations: narrations,
+                                 score: score, salvaged: job.status == "failed"),
                 kind: added > 0 ? .success : .warning,
                 // **他刚拿到片子，这一刻请他留住它。**
                 // 「愿不愿意导出」就是我们量的那个内容质量指标，而在此之前
@@ -95,7 +119,7 @@ enum MetagJobOpener {
 
     @MainActor
 
-    private static func message(added: Int, narrations: Int, salvaged: Bool) -> String {
+    private static func message(added: Int, narrations: Int, score: Bool, salvaged: Bool) -> String {
         // 取不到就直说。含糊其辞比说不出口更伤信任。
         guard added > 0 else {
             // 取件是内存盘，过期就真的没有了 —— 说清楚它要重做，
@@ -107,6 +131,12 @@ enum MetagJobOpener {
             return L10n.string("Kept the \(added.formatted()) shots that rendered before this one failed.")
         }
         // 旁白条数单独说：原生出声的档位一条都不会有，用户不该以为旁白丢了。
+        // 配乐单独说一句。**少了它他会以为是我们没做**，而不是没取到。
+        if !score {
+            return narrations > 0
+                ? L10n.string("Loaded \(added.formatted()) shots and \(narrations.formatted()) narration tracks — no score.")
+                : L10n.string("Loaded \(added.formatted()) shots — no score.")
+        }
         return narrations > 0
             ? L10n.string("Loaded \(added.formatted()) shots and \(narrations.formatted()) narration tracks.")
             : L10n.string("Loaded \(added.formatted()) shots.")

@@ -1534,3 +1534,8 @@
 "Couldn't load the model list." = "Couldn't load the model list.";
 "Try again" = "Try again";
 "No models available right now." = "No models available right now.";
+"Our side had trouble making this one. Nothing was charged — try again in a few minutes." = "Our side had trouble making this one. Nothing was charged — try again in a few minutes.";
+"This one couldn't be filmed as written. Try describing the scene a different way." = "This one couldn't be filmed as written. Try describing the scene a different way.";
+"This one didn't come out. We can see it on our side — try again, or change a line." = "This one didn't come out. We can see it on our side — try again, or change a line.";
+"Loaded %@ shots and %@ narration tracks — no score." = "Loaded %@ shots and %@ narration tracks — no score.";
+"Loaded %@ shots — no score." = "Loaded %@ shots — no score.";

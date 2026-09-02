@@ -1538,3 +1538,8 @@
 "Couldn't load the model list." = "模型列表没加载出来。";
 "Try again" = "再试一次";
 "No models available right now." = "现在没有可用的模型。";
+"Our side had trouble making this one. Nothing was charged — try again in a few minutes." = "这一条是我们这边出了问题，没有扣费 —— 过几分钟再试。";
+"This one couldn't be filmed as written. Try describing the scene a different way." = "这一条按原话拍不出来。换个说法描述这个画面试试。";
+"This one didn't come out. We can see it on our side — try again, or change a line." = "这一条没出来。我们这边看得到 —— 再试一次，或者改一句话。";
+"Loaded %@ shots and %@ narration tracks — no score." = "载入 %@ 镜和 %@ 条旁白 —— 没取到配乐。";
+"Loaded %@ shots — no score." = "载入 %@ 镜 —— 没取到配乐。";

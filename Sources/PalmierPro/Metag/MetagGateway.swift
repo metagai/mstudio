@@ -150,6 +150,24 @@ enum MetagGateway {
         /// 于是"先看一眼"在 Mac 上给的是一排静态图加一堆输入框。
         /// 那不是"看一眼"，那是"看一眼它的证据"。
         let preview: String?
+        /// 失败的**种类**，不只是失败的那句话。
+        ///
+        /// `upstream` / `moderation` / `unknown`。网关那侧的
+        /// `workers/failure.py` 写得很清楚：**`error` 那一句是给人看的，
+        /// 种类是给界面看的** —— 界面据此决定下一步那颗按钮该说什么。
+        ///
+        /// **而 Mac 从来没解过它**，于是那个"据此决定"的界面从来没拿到过依据：
+        /// 三种失败共用一句话。而这三种要说的话正好相反 ——
+        /// 对着一次上游 503 说「换个说法」，他会去改一句根本没问题的话、
+        /// 改完再失败一次，**我们把自己的故障算在了他头上**。
+        let error_kind: String?
+        /// 配乐轨。**不是原始的那条音乐**，是从草案那一次混音里分出来的
+        /// 「除旁白之外的全部」——已经压过电平、被旁白闪避过，riser/impact 都在。
+        ///
+        /// **Mac 从来没下过它。** 于是用户看的是一条有配乐的草案，
+        /// 批准之后拿到的时间线上只有画面和旁白 ——
+        /// **他看的那条片子，和他拿到的那条不是同一条。**
+        let music_bed: String?
         /// Per-shot re-shoot state: queued / running / done / "failed: …", nil when never re-shot.
         let reshoot: [String?]?
         /// Per-shot takes, best first. The delivered take is always element 0.
