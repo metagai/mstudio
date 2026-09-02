@@ -56,14 +56,17 @@ struct HomeHero: View {
                 notices: notices
             )
 
+            // **挪到输入框正下方。** 原来它压在三个例子底下 ——
+            // 而"要不要注册、会不会扣钱"这个顾虑，是在**他手放在输入框上的那一刻**
+            // 起来的，不是在他读完三个例子之后。
+            footnote
+
             VStack(alignment: .leading, spacing: AppTheme.Spacing.smMd) {
                 ForEach(Self.starters, id: \.self) { starter in
                     StarterLine(text: starter) { start(starter) }
                         .disabled(busy)
                 }
             }
-
-            footnote
         }
         .frame(maxWidth: maxWidth, alignment: .leading)
         .onAppear { focused = true }
@@ -79,8 +82,13 @@ struct HomeHero: View {
         HStack(spacing: AppTheme.Spacing.sm) {
             switch account.signInPhase {
             case .idle:
+                // **和草案面板上那句同一个长相。** 那边是 `checkmark.seal` + 成功绿，
+                // 这边原来是整屏最小最灰的字 —— 同一句承诺两种说法，
+                // 而这一句是他决定要不要开始之前唯一要问的那个问题的答案。
+                Image(systemName: "checkmark.seal")
+                    .foregroundStyle(AppTheme.Status.successColor)
                 Text(L10n.string("Free, and no account needed for the first look."))
-                    .foregroundStyle(AppTheme.Text.mutedColor)
+                    .foregroundStyle(AppTheme.Status.successColor)
             case .waiting:
                 ProgressView().controlSize(.small)
                 Text(L10n.string("Waiting for you to finish in your browser."))

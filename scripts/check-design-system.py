@@ -61,7 +61,17 @@ SYSTEM_BUTTON = re.compile(r"\.buttonStyle\(\.bordered(?:Prominent)?\)")
 # **三元里的裸色号原来抓不到**：`.foregroundStyle(x ? .orange : .blue)`
 # 整个躲过了上一版的正则，而它正是 MetagMyFilms 里那处 systemOrange 的写法。
 # 判据只认它见过的那一种写法，就等于只防它已经修过的那一次。
-RAW_COLOR = re.compile(r"foregroundStyle\([^)\n]*(?<![A-Za-z0-9_.])\.(?:orange|green|red|blue|yellow|gray|secondary|tertiary|quaternary)\b")
+# **两种写法都要抓。** 上一版的负向零宽断言把 `Color.green` 挡在门外 ——
+# 只认 `.green`。于是「额度流水」里那四处 `Color.green` / `Color.primary`
+# 一直是绿的，而 systemGreen 在我们的纸底上约 1.9:1，过不了 AA ——
+# 那正是**告诉他"钱退回来了"的那一行**。
+#
+# 判据只认它见过的那一种写法，就等于只防它已经修过的那一次。这是第二次了。
+RAW_COLOR = re.compile(
+    r"foregroundStyle\([^)\n]*"
+    r"(?:(?<![A-Za-z0-9_.])|(?<=\bColor))"
+    r"\.(?:orange|green|red|blue|yellow|gray|secondary|tertiary|quaternary|primary)\b"
+)
 # 真正的"手搓卡片"签名：`.background(RoundedRectangle…fill)` 紧跟
 # `.overlay(RoundedRectangle…strokeBorder)` —— 那正是 `cardSurface` 做的事。
 # `clipShape` / 选中环 / 悬停填充都不算：它们本来就不是卡片。

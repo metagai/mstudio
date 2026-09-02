@@ -39,7 +39,7 @@ struct MetagCreditsView: View {
                 Text(L10n.string("No credit activity yet")).font(.system(size: AppTheme.FontSize.sm)).foregroundStyle(AppTheme.Text.secondaryColor)
             } else {
                 ScrollView {
-                    VStack(alignment: .leading, spacing: 6) {
+                    VStack(alignment: .leading, spacing: AppTheme.Spacing.xs) {
                         ForEach(model.items) { e in row(e) }
                     }
                 }
@@ -57,7 +57,7 @@ struct MetagCreditsView: View {
             VStack(alignment: .leading, spacing: 1) {
                 Text(d.label)
                     .font(.system(size: AppTheme.FontSize.sm))
-                    .foregroundStyle(d.isRefund ? Color.green : Color.primary)
+                    .foregroundStyle(d.isRefund ? AppTheme.Status.successColor : AppTheme.Text.primaryColor)
                 if let title = e.title, !title.isEmpty {
                     Text(title).font(.system(size: AppTheme.FontSize.xs)).foregroundStyle(AppTheme.Text.secondaryColor).lineLimit(1)
                 }
@@ -66,7 +66,7 @@ struct MetagCreditsView: View {
             Spacer()
             Text(e.delta > 0 ? "+\(e.delta)" : "\(e.delta)")
                 .font(.system(size: AppTheme.FontSize.sm)).monospacedDigit()
-                .foregroundStyle(e.delta > 0 ? Color.green : Color.secondary)
+                .foregroundStyle(e.delta > 0 ? AppTheme.Status.successColor : AppTheme.Text.secondaryColor)
         }
     }
 

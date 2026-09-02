@@ -221,7 +221,7 @@ struct GenerationView: View {
                 if let dropError {
                     Text(dropError)
                         .font(.system(size: AppTheme.FontSize.xs))
-                        .foregroundStyle(Color.orange)
+                        .foregroundStyle(AppTheme.Status.warningColor)
                         .frame(maxWidth: .infinity, alignment: .leading)
                         .transition(.opacity)
                 }

@@ -114,7 +114,8 @@ struct ViewSnapshots {
     /// 账户浮窗和 credits —— 转化那条路上的两块。
     @Test func account() throws {
         try snapshot("account-popover", width: 320) { AccountPopoverCard() }
-        try snapshot("credits", width: 560) { MetagCreditsView() }
+        // 它自己就是 360 宽 —— 按别的宽度渲，看到的居中是取景器的锅，不是产品的。
+        try snapshot("credits", width: 360) { MetagCreditsView() }
     }
 
     /// 模型列表 —— 今天加了一句话简介和每镜价，还有四个空状态，都没看过。
