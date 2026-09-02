@@ -1548,3 +1548,5 @@
 "Sign in and your films stay with you" = "登录，作品就跟着你走";
 "Loaded %lld shots with score. Captions aren't kept past 24 hours — your words stay yours." = "载入 %lld 镜，配乐已铺。字幕文本超过 24 小时不再保留 —— 你写的字只属于你。";
 "Reference footage would have to leave this Mac, and METAG doesn't upload your footage. Text and a first frame both work." = "参考素材得离开这台 Mac，而 METAG 不上传你的素材。用文字或者一张首帧都可以。";
+"Payment may still be processing — your balance will update on its own. You can check credit activity any time." = "付款可能还在处理 —— 余额会自己更新。你随时可以去看额度流水。";
+"Transcribed on this Mac — your audio never leaves it, and it costs no credits." = "在这台 Mac 上转写 —— 音频不出这台机器，也不花额度。";

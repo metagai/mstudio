@@ -243,10 +243,50 @@ final class AccountService {
             // `handoff` 说清这一格在 Mac 上比 web 松一档：web 记的是
             // "那一页真的打开了"，我们只知道自己把它交给了系统浏览器。
             MetagFunnel.track(.checkoutOpen, meta: ["plan": plan, "handoff": true])
+            watchForPayment()
         } catch {
             lastError = error.localizedDescription
         }
     }
+
+    /// 他付完钱、切回 Mac 的那一刻。
+    ///
+    /// ## 之前什么都不做
+    ///
+    /// `openCheckout` 把浏览器打开、埋一个漏斗点，然后就结束了 ——
+    /// 没有 `didBecomeActive`、没有轮询、没有回跳处理。
+    /// **他付了钱、Stripe 说成功、切回 Mac，credits 胶囊还是付款前那个数**
+    /// （可能还是红色的 0）。
+    ///
+    /// 他不会再等等，他会发邮件问、或者要求退款 ——
+    /// **这是整条转化链上最贵的一次断裂，就发生在他刚决定信任我们之后的三秒。**
+    ///
+    /// ## 为什么要重试好几轮
+    ///
+    /// 入账走 Stripe 的 webhook，有延迟。切回来立刻问一次多半还是旧数 ——
+    /// **只问一次等于没问**。间隔按 webhook 的实际尺度排（见 `paymentPollDelays`）。
+    ///
+    /// ## 等不到也不假装
+    ///
+    /// 跑完还没到账就说一句实话，并指向他能自己看的地方（额度流水）——
+    /// 而不是沉默，也不是说"失败了"（钱很可能已经收了）。
+    private func watchForPayment() {
+        Task { @MainActor in
+            await waitUntilAppIsFrontmost()
+            let before = metagCredits
+            for delay in Self.paymentPollDelays {
+                if delay > 0 { try? await Task.sleep(for: .seconds(delay)) }
+                await refreshMetagAccount()
+                if metagCredits > before { return }
+            }
+            lastError = L10n.string("Payment may still be processing — your balance will update on its own. You can check credit activity any time.")
+        }
+    }
+
+    /// 切回来之后问余额的节奏（秒）。
+    ///
+    /// **总跨度要盖得住 webhook 的延迟** —— 只等两三秒等于没等。
+    static let paymentPollDelays: [Int] = [0, 3, 6, 12]
 
     /// 交出去了返回 true。**拒绝打开也是一种结果**，不能被当成成功。
     @discardableResult

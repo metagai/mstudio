@@ -10,7 +10,6 @@ struct CaptionTab: View {
     @Bindable private var account = AccountService.shared
     private let output: Output
 
-    @State private var estimatedCloudCost: Int?
 
     @State private var style: TextStyle = .caption
     @State private var center = AppTheme.Caption.defaultCenter
@@ -80,32 +79,11 @@ struct CaptionTab: View {
     private var captionTrackIndices: [Int] {
         editor.timeline.tracks.indices.filter { !editor.captionTargets(trackIds: [editor.timeline.tracks[$0].id]).isEmpty }
     }
-    private var remainingCloudCredits: Int? {
-        account.remainingCredits == nil ? nil : account.remainingCredits
-    }
-    private var cloudModeUnavailableMessage: String? {
-        guard provider == .cloud else { return nil }
-        guard account.isSignedIn else { return L10n.string("Sign in to use Cloud.") }
-        return nil
-    }
+    /// 转写**一直是端侧**：`CloudTranscription.transcribe` 原样调
+    /// `Transcription`（Apple SpeechAnalyzer）。所以没有登录门、没有额度门 ——
+    /// 上一版两道门都在，为一个不花钱的功能设的。
     private var canGenerateCaptions: Bool {
-        effectiveCount > 0 && !isGenerating && cloudModeUnavailableMessage == nil
-    }
-    private var costEstimateKey: String {
-        "\(provider.rawValue)|\(sourceClipIds.joined(separator: ","))|\(isAutoSource)|\(locale?.identifier ?? "")"
-    }
-    private var costHelpText: String {
-        guard let cost = estimatedCloudCost else {
-            return L10n.string("Estimated cost. Actual billing may differ slightly.")
-        }
-        guard cost > 0 else { return L10n.string("Cached — no credits used.") }
-        guard let remaining = remainingCloudCredits else {
-            return CostEstimator.localizedEstimate(cost)
-        }
-        if cost > remaining {
-            return CostEstimator.localizedInsufficientCredits(cost, remaining: remaining)
-        }
-        return CostEstimator.localizedRemainingCredits(cost, remaining: remaining - cost)
+        effectiveCount > 0 && !isGenerating
     }
 
     private static let translateLanguages = [
@@ -276,11 +254,7 @@ struct CaptionTab: View {
                     selectedClipTargets = []
                 }
             ) { sourceMenu }
-            InspectorRow(
-                label: L10n.string("Mode"),
-                labelHelp: L10n.string("Local runs with Apple's SpeechAnalyzer. Cloud uses credits and a more accurate model with more capabilities."),
-                onReset: { provider = .cloud }
-            ) { providerPicker }
+            InspectorRow(label: L10n.string("Mode")) { localOnlyNote }
         }
     }
 
@@ -417,38 +391,24 @@ struct CaptionTab: View {
         .frame(maxWidth: .infinity)
     }
 
-    private var providerPicker: some View {
-        HStack(spacing: AppTheme.Spacing.md) {
-            providerOption(.local, title: TranscriptionProvider.local.label)
-            providerOption(.cloud, title: TranscriptionProvider.cloud.label)
-        }
-        .fixedSize()
+    /// **那个"云端"档在卖一个我们故意不做的东西。**
+    ///
+    /// `CloudTranscription` 文件开头自己写着：「云端转写在 METAG 版本里不存在：
+    /// 音频不出用户设备是产品前提，不是可选项」，实现原样调本地那一份。
+    /// 而界面上它标着「自动识别语言、更准、能分辨说话人、**25 credits/小时**」，
+    /// 未登录灰掉、额度为 0 灰掉，`onReset` 还把用户推到这一档。
+    ///
+    /// 三件事一起发生：**给不存在的功能标了价、为不花钱的功能设了两道门、
+    /// 而且把我们最强的那条承诺（音频不出你的机器）说成了一条收费劣势。**
+    ///
+    /// 删掉那一档，把那句话翻过来当它本来的样子。
+    private var localOnlyNote: some View {
+        Text(L10n.string("Transcribed on this Mac — your audio never leaves it, and it costs no credits."))
+            .font(.system(size: AppTheme.FontSize.xs))
+            .foregroundStyle(AppTheme.Text.secondaryColor)
+            .fixedSize(horizontal: false, vertical: true)
     }
 
-    private var cloudCreditHelp: String {
-        L10n.string("Cloud auto-detects languages, produces more accurate transcripts, can identify speakers, and uses 25 credits/hr when a transcript is not cached.")
-    }
-
-    private func providerOption(_ option: TranscriptionProvider, title: String) -> some View {
-        let selected = provider == option
-        return Button {
-            provider = option
-        } label: {
-            HStack(spacing: AppTheme.Spacing.xs) {
-                RadioIndicator(selected: selected, size: AppTheme.IconSize.xxs, innerPadding: AppTheme.Spacing.xxs)
-                Text(L10n.string(key: title))
-                    .font(.system(size: AppTheme.FontSize.sm, weight: selected ? AppTheme.FontWeight.semibold : AppTheme.FontWeight.medium))
-                    .foregroundStyle(selected ? AppTheme.Text.primaryColor : AppTheme.Text.secondaryColor)
-                    .lineLimit(1)
-            }
-            .contentShape(Rectangle())
-        }
-        .buttonStyle(.plain)
-        .focusable(false)
-        .help(option == .cloud
-            ? cloudCreditHelp
-            : L10n.string("Local runs with Apple's SpeechAnalyzer."))
-    }
 
     private func rememberSelectedClipTargets() {
         let targets = liveTargets
@@ -551,21 +511,10 @@ struct CaptionTab: View {
         }
     }
 
+    /// **不带价钱** —— 端侧转写不花额度。上一版按钮上写着
+    /// 「Transcribe · N credits」，那个数是为一个不存在的付费档估的。
     private var generateLabel: String {
-        if cloudModeUnavailableMessage == nil, provider == .cloud, let cost = estimatedCloudCost, cost > 0 {
-            if isTranscriptOnly {
-                return cost == 1
-                    ? L10n.string("Transcribe · 1 credit")
-                    : L10n.string("Transcribe · \(cost) credits")
-            }
-            return CostEstimator.localizedGenerateLabel(cost)
-        }
-        return isTranscriptOnly ? L10n.string("Transcribe") : L10n.string("Generate")
-    }
-
-    private var generateHelp: String {
-        if let cloudModeUnavailableMessage { return cloudModeUnavailableMessage }
-        return provider == .cloud ? costHelpText : String()
+        isTranscriptOnly ? L10n.string("Transcribe") : L10n.string("Generate")
     }
 
     private var agentMenu: some View {
@@ -603,7 +552,7 @@ struct CaptionTab: View {
     }
 
     private var generateBar: some View {
-        EditorActionFooter(message: note ?? cloudModeUnavailableMessage) {
+        EditorActionFooter(message: note) {
             HStack(spacing: AppTheme.Spacing.sm) {
                 Spacer(minLength: AppTheme.Spacing.zero)
                 Button(action: generate) {
@@ -614,7 +563,6 @@ struct CaptionTab: View {
                 .fixedSize()
                 .focusable(false)
                 .disabled(!canGenerateCaptions)
-                .help(generateHelp)
 
                 if !isTranscriptOnly {
                     agentMenu
@@ -647,17 +595,8 @@ struct CaptionTab: View {
             isGenerating = true
             defer { isGenerating = false }
             do {
-                if request.provider == .cloud {
-                    if let message = cloudUnavailableMessage(cost: nil, provider: request.provider) {
-                        note = message
-                        return
-                    }
-                    let cost = await editor.captionCloudCreditCost(for: request)
-                    if let message = cloudUnavailableMessage(cost: cost, provider: request.provider) {
-                        note = message
-                        return
-                    }
-                }
+                // 这里原来先查登录、再估价、再查余额 —— 全部为一个
+                // **不存在的付费档**设的。端侧转写不花额度，直接走。
                 switch output {
                 case .transcript(let onGeneratedTranscript):
                     let transcript = try await editor.timelineTranscript(
@@ -702,18 +641,6 @@ struct CaptionTab: View {
         maxWords = count > 0 ? count : nil
     }
 
-    private func cloudUnavailableMessage(cost: Int?, provider mode: TranscriptionProvider? = nil) -> String? {
-        guard (mode ?? provider) == .cloud else { return nil }
-        guard account.isSignedIn else { return L10n.string("Sign in to use Cloud.") }
-        guard let cost else { return nil }
-        guard cost > 0 else { return nil }
-        guard let remaining = remainingCloudCredits else { return nil }
-        guard remaining > 0 else { return L10n.string("Add credits to use Cloud.") }
-        if cost > remaining {
-            return CostEstimator.localizedInsufficientCredits(cost, remaining: remaining)
-        }
-        return nil
-    }
 
     private func localizedCaptionError(_ error: Error) -> String {
         guard let error = error as? TranscriptionError else { return error.localizedDescription }
