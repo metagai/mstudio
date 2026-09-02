@@ -68,14 +68,14 @@ if git rev-parse "$TAG" >/dev/null 2>&1; then
   exit 1
 fi
 
-git fetch origin main --quiet
+git fetch origin "$DEFAULT_BRANCH" --quiet
 git fetch origin --tags --quiet
 if git rev-parse "refs/tags/$TAG" >/dev/null 2>&1; then
   echo "error: tag $TAG already exists on origin" >&2
   exit 1
 fi
-if [ "$(git rev-parse HEAD)" != "$(git rev-parse origin/main)" ]; then
-  echo "error: local main differs from origin/main. Push or pull first." >&2
+if [ "$(git rev-parse HEAD)" != "$(git rev-parse origin/$DEFAULT_BRANCH)" ]; then
+  echo "error: local main differs from origin/$DEFAULT_BRANCH. Push or pull first." >&2
   exit 1
 fi
 
