@@ -40,6 +40,21 @@ struct ModelsPaneTests {
                 "挑一档就是在花钱，而这一屏一个数字都没有")
     }
 
+    /// **一张空列表要说清为什么空。**
+    ///
+    /// 原来只有两种说法，两种都会说谎：报价单拉不到时（国内打 api.metag.ai，
+    /// 超时是最常见的失败）它永远停在"正在加载模型…"，而它根本没在加载、
+    /// 它已经失败了 —— `catalog.lastError` 一直有，只是这一屏从来没读过；
+    /// 搜索框空着的时候它说 `No models match ""`，而他压根没搜过。
+    @Test func anEmptyListSaysWhyItIsEmpty() {
+        let src = Self.source("Settings/ModelsPane.swift")
+        #expect(src.contains("if let error = catalog.lastError"),
+                "目录加载失败时这一屏又什么都不说了 —— 它会一直显示'正在加载'")
+        #expect(src.contains("Try again"), "失败了没给他一条路")
+        #expect(src.contains("query.trimmingCharacters(in: .whitespaces).isEmpty"),
+                "搜索框空着时又说'没有匹配 \"\"'了")
+    }
+
     /// **没有就不说** —— 不给一句凑出来的介绍，也不印一个猜的价。
     @Test func nothingIsInvented() {
         let src = Self.source("Settings/ModelsPane.swift")

@@ -1535,3 +1535,6 @@
 "Let METAG decide" = "交给 METAG";
 "%@ credits / shot" = "%@ credits / 镜";
 "%@ shots · refunded" = "%@ 镜 · 已退款";
+"Couldn't load the model list." = "模型列表没加载出来。";
+"Try again" = "再试一次";
+"No models available right now." = "现在没有可用的模型。";

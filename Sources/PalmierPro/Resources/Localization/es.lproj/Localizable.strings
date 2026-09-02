@@ -1532,3 +1532,6 @@
 "Let METAG decide" = "Que decida METAG";
 "%@ credits / shot" = "%@ créditos / toma";
 "%@ shots · refunded" = "%@ tomas · reembolsado";
+"Couldn't load the model list." = "No se pudo cargar la lista de modelos.";
+"Try again" = "Reintentar";
+"No models available right now." = "No hay modelos disponibles ahora mismo.";

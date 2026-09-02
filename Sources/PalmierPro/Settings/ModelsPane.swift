@@ -63,17 +63,50 @@ struct ModelsPane: View {
         )
     }
 
+    /// 一张空列表要说清**为什么空**。
+    ///
+    /// 原来只有两种说法：`isLoaded` 就说"没有匹配"，否则说"正在加载"。
+    /// 两种都会说谎：
+    ///
+    /// - **报价单拉不到时**（国内打 `api.metag.ai`，超时是最常见的失败），
+    ///   它永远停在"正在加载模型…" —— 而它根本没在加载，它已经失败了。
+    ///   `catalog.lastError` 一直有，只是这一屏从来没读过。
+    /// - **搜索框是空的时候**，它说 `No models match ""` —— 引号里什么都没有，
+    ///   而他压根没搜过。
+    @ViewBuilder
+    private var emptyState: some View {
+        VStack(alignment: .leading, spacing: AppTheme.Spacing.sm) {
+            if let error = catalog.lastError {
+                Text(L10n.string("Couldn't load the model list."))
+                    .foregroundStyle(AppTheme.Text.secondaryColor)
+                Text(verbatim: error)
+                    .font(.system(size: AppTheme.FontSize.xs))
+                    .foregroundStyle(AppTheme.Text.mutedColor)
+                    .lineLimit(2)
+                Button(L10n.string("Try again")) { Task { await catalog.load() } }
+                    .buttonStyle(.capsule(.secondary))
+                    .controlSize(.small)
+            } else if !catalog.isLoaded {
+                Text(L10n.string("Loading models…"))
+                    .foregroundStyle(AppTheme.Text.tertiaryColor)
+            } else if query.trimmingCharacters(in: .whitespaces).isEmpty {
+                Text(L10n.string("No models available right now."))
+                    .foregroundStyle(AppTheme.Text.tertiaryColor)
+            } else {
+                Text(L10n.string("No models match \"\(query)\"."))
+                    .foregroundStyle(AppTheme.Text.tertiaryColor)
+            }
+        }
+        .font(.system(size: AppTheme.FontSize.sm))
+        .padding(.top, AppTheme.Spacing.lg)
+    }
+
     var body: some View {
         VStack(alignment: .leading, spacing: AppTheme.Spacing.lg) {
             searchBar
 
             if sections.isEmpty {
-                Text(catalog.isLoaded
-                    ? L10n.string("No models match \"\(query)\".")
-                    : L10n.string("Loading models…"))
-                    .font(.system(size: AppTheme.FontSize.sm))
-                    .foregroundStyle(AppTheme.Text.tertiaryColor)
-                    .padding(.top, AppTheme.Spacing.lg)
+                emptyState
             } else {
                 ForEach(sections) { section in
                     sectionView(section)
