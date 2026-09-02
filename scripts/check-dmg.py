@@ -89,7 +89,38 @@ def main() -> int:
         if ink_x1 >= right_edge:
             fails.append(f"胶片右端到了 {ink_x1}，压进了 Applications（它左边缘在 {right_edge}）")
 
+    # **DMG 装的是 tiff，而上面那几条查的是 png。**
+    #
+    # 谁重新生成了 png 却忘了跑 `tiffutil`，上面全绿，
+    # 而发出去的 DMG 里还是旧图 —— 判据看着一个文件，用户拿到另一个。
+    #
+    # 比的是**解出来的像素**，不是文件字节：`tiffutil` 的输出在不同
+    # macOS 版本上不保证逐字节一致，比字节会变成假红。
+    checks += 2
+    fails += tiff_matches_png(ROOT / "Resources/dmg")
+
     return report(checks, fails, win_w, win_h, h)
+
+
+def tiff_matches_png(folder: Path) -> list:
+    from PIL import Image, ImageChops
+    tiff = folder / "background.tiff"
+    if not tiff.exists():
+        return ["background.tiff 不在 —— DMG 摆样子那一步会直接退出"]
+    out = []
+    try:
+        im = Image.open(tiff)
+        for index, name in enumerate(["background.png", "background@2x.png"]):
+            im.seek(index)
+            a = im.convert("RGB")
+            b = Image.open(folder / name).convert("RGB")
+            if a.size != b.size:
+                out.append(f"tiff 第 {index + 1} 帧是 {a.size}，{name} 是 {b.size} —— tiff 没重新生成")
+            elif ImageChops.difference(a, b).getbbox() is not None:
+                out.append(f"tiff 第 {index + 1} 帧和 {name} 画的不是一张图 —— 忘了跑 tiffutil")
+    except EOFError:
+        out.append("background.tiff 只有一帧 —— Retina 上会糊（要 1x + 2x 两张）")
+    return out
 
 
 def ink_extent(png: Path):

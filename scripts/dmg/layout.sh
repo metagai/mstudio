@@ -41,13 +41,6 @@ MOUNT="$(hdiutil attach -readwrite -noverify -noautoopen "$RW" | \
 mkdir -p "$MOUNT/.background"
 cp "$BG" "$MOUNT/.background/background.tiff"
 
-# **卷图标要打标记才生效。** 光把 `.VolumeIcon.icns` 拷进去不够 ——
-# 没有这一句，标题栏上是系统通用的磁盘映像图标，不是 METAG。
-# （2026-09-02 真机截图照出来的：标题栏那个小灰图标。）
-if [ -f "$MOUNT/.VolumeIcon.icns" ]; then
-  SetFile -a C "$MOUNT"
-fi
-
 # **替身角标留着。** `/Applications` 是符号链接，Finder 会在左下角盖一个
 # 黑箭头角标 —— 那一屏上唯一一处系统杂音。
 #
@@ -83,6 +76,19 @@ EOF
 # Finder 把 .DS_Store 写回去需要一点时间；不等就可能压进一个还没落盘的版本。
 sync; /bin/sleep 2
 
+# **卷图标的标记要打在 AppleScript 之后。**
+#
+# 光把 `.VolumeIcon.icns` 拷进去不够，得给卷打上"我有自定义图标"的标志位；
+# 否则标题栏上是系统通用的磁盘映像图标，不是 METAG。
+#
+# 而它必须排在 Finder 那一段**后面** —— Finder 摆完样子会重写卷的 Finder info，
+# 把先打的标记冲掉。第一版打在前面，于是自检报"卷图标没生效"，
+# 而那条自检当时还会**把成品删掉**：一个装饰细节，把"你根本没法测"塞给了创始人。
+if [ -f "$MOUNT/.VolumeIcon.icns" ]; then
+  SetFile -a C "$MOUNT" || echo "warn: 卷图标标记没打上，标题栏会是通用磁盘图标" >&2
+fi
+sync
+
 hdiutil detach "$MOUNT" >/dev/null
 rm -f "$OUT"
 hdiutil convert "$RW" -format UDZO -imagekey zlib-level=9 -o "$OUT" >/dev/null
@@ -95,18 +101,26 @@ hdiutil convert "$RW" -format UDZO -imagekey zlib-level=9 -o "$OUT" >/dev/null
 # 这个项目在这个形状上栽过太多次。
 CHECK="$(hdiutil attach -readonly -noverify -noautoopen "$OUT" | grep -o '/Volumes/.*$' | head -1)"
 [ -n "$CHECK" ] || { echo "error: 成品 DMG 挂不上" >&2; exit 1; }
-fail=""
-[ -f "$CHECK/.background/background.tiff" ] || fail="$fail 背景图没进去"
-# 卷图标的自定义标记 —— 没打的话标题栏是通用磁盘图标。
-[ "$(GetFileInfo -a "$CHECK" 2>/dev/null | cut -c6)" = "C" ] || fail="$fail 卷图标没生效"
+# **分两档：能不能装 vs 好不好看。**
+#
+# 第一版把两档混在一起，而且验不过就 `rm -f "$OUT"` —— 于是卷图标
+# （纯装饰）没生效时，创始人拿到的是"没有成品，你没法测"。
+# **一个装饰细节不该有权力把交付物删掉。**
+fatal=""
+cosmetic=""
+[ -f "$CHECK/.background/background.tiff" ] || fatal="$fatal 背景图没进去；"
 # 空 .DS_Store 约 6KB；带了视图设置和两个图标位置的会明显更大。
 size=$(stat -f%z "$CHECK/.DS_Store" 2>/dev/null || echo 0)
-[ "$size" -gt 8000 ] || fail="$fail .DS_Store 只有 ${size}B（样子没摆上）"
+[ "$size" -gt 8000 ] || fatal="$fatal .DS_Store 只有 ${size}B（样子没摆上）；"
+# 卷图标：标题栏上那个小图标。没有也照样能装。
+[ "$(GetFileInfo -a "$CHECK" 2>/dev/null | cut -c6)" = "C" ] || cosmetic="标题栏是通用磁盘图标"
 hdiutil detach "$CHECK" >/dev/null
-if [ -n "$fail" ]; then
-  rm -f "$OUT"
-  echo "error:$fail" >&2
-  echo "       —— 没有摆好样子的 DMG 不算成品，已删除。" >&2
+
+if [ -n "$fatal" ]; then
+  # **不删。** 留着让人能打开看看到底哪里不对 —— 退出码已经拦住了发布。
+  echo "error: DMG 的样子没摆上：$fatal" >&2
+  echo "       成品留在 $OUT，打开看一眼。" >&2
   exit 1
 fi
+[ -n "$cosmetic" ] && echo "warn: $cosmetic（不影响安装）" >&2
 echo "==> DMG 摆好了并验过：$OUT"
