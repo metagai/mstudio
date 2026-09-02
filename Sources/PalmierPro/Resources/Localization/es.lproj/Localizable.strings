@@ -1460,7 +1460,7 @@
 "Free, and no account needed for the first look." = "Gratis, y no hace falta cuenta para la primera vez.";
 "How did you find METAG?" = "¿Cómo llegaste a METAG?";
 "Kai picked the voice. Reading Nova's %@ lines now." = "Kai eligió la voz. Ahora leo las %@ líneas de Nova.";
-"Kept in ~/Library/Application Support/PalmierPro/mcp-token, readable only by you. The bundled Claude Desktop connector reads it automatically." = "Se guarda en ~/Library/Application Support/PalmierPro/mcp-token y solo tú puedes leerlo. El conector de Claude Desktop lo lee automáticamente.";
+"Kept in ~/Library/Application Support/METAG/mcp-token, readable only by you. The bundled Claude Desktop connector reads it automatically." = "Se guarda en ~/Library/Application Support/METAG/mcp-token y solo tú puedes leerlo. El conector de Claude Desktop lo lee automáticamente.";
 "Lining up the first frame" = "Encuadrando el primer fotograma";
 "Local generation failed:" = "La generación local falló:";
 "Local generation is not set up yet, missing:" = "La generación local aún no está lista, falta:";

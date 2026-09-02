@@ -10,6 +10,13 @@ final class OnboardingStore {
     private static let surveyVersion = 2
 
     private(set) var step = OnboardingStep.welcome
+
+    /// 直接落到某一步 —— **给取景器用**。
+    ///
+    /// 引导一共四屏，而此前只有第一屏可能被人看过：要看第四屏得先答完问卷。
+    /// 2026-09-02 创始人装完真机截了一张，四个登录按钮的字**全竖排了** ——
+    /// 那一屏是新用户看到的第一样东西，而没有任何人看过它。
+    func jumpForTesting(to step: OnboardingStep) { self.step = step }
     private(set) var isComplete: Bool
     private(set) var selections: [OnboardingQuestion: Set<String>] = [:]
     private(set) var sampleState: OnboardingSampleState = .idle

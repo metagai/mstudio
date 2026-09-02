@@ -12,6 +12,20 @@ import SwiftUI
 /// **存得住却找不到，和没存住没有区别。**
 @MainActor
 final class MetagMyFilmsModel: ObservableObject {
+    /// 已经有货的模型：**给取景器和 Xcode 预览用**。
+    ///
+    /// 这一屏此前只被看过「正在载入」那一版 —— 而空屋子里藏不住东西。
+    /// 有货那一版的问题（行怎么排、缩略图什么时候到、长 prompt 会不会把行撑爆）
+    /// 只有真喂了数据才看得见。
+    ///
+    /// `load()` 见到 `seeded` 就不再去网络，否则一喂进来就被一个失败的请求盖掉。
+    convenience init(preloaded: [MetagGateway.FilmRow]) {
+        self.init()
+        films = preloaded
+        seeded = true
+    }
+
+    private var seeded = false
     @Published private(set) var films: [MetagGateway.FilmRow] = []
     @Published private(set) var loading = false
     @Published private(set) var error: String?
@@ -64,6 +78,7 @@ final class MetagMyFilmsModel: ObservableObject {
     }
 
     func load() async {
+        guard !seeded else { return }
         loading = true
         defer { loading = false }
         do {
@@ -76,7 +91,13 @@ final class MetagMyFilmsModel: ObservableObject {
 }
 
 struct MetagMyFilmsView: View {
-    @StateObject private var model = MetagMyFilmsModel()
+    @StateObject private var model: MetagMyFilmsModel
+
+    init(onOpen: @escaping (MetagGateway.FilmRow) -> Void,
+         model: MetagMyFilmsModel = MetagMyFilmsModel()) {
+        self.onOpen = onOpen
+        _model = StateObject(wrappedValue: model)
+    }
     /// 点开一部作品要做什么，由调用方决定 —— 这个视图只负责"看得见、点得到"。
     var onOpen: (MetagGateway.FilmRow) -> Void
 

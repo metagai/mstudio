@@ -2,7 +2,7 @@ import Foundation
 
 /// Shared secret that gates the loopback MCP server.
 ///
-/// Stored at `~/Library/Application Support/PalmierPro/mcp-token` with mode `0600`, so only
+/// Stored at `~/Library/Application Support/METAG/mcp-token` with mode `0600`, so only
 /// processes running as the logged-in user can read it. Web pages cannot read files at all,
 /// which is the boundary this closes: before the token, any page in any browser could drive
 /// the whole timeline through `fetch("http://127.0.0.1:19789/mcp")`.
@@ -23,11 +23,7 @@ enum MCPAccessToken {
     }
 
     nonisolated static var fileURL: URL {
-        let base = (try? FileManager.default.url(
-            for: .applicationSupportDirectory, in: .userDomainMask, appropriateFor: nil, create: false
-        )) ?? FileManager.default.homeDirectoryForCurrentUser
-            .appendingPathComponent("Library/Application Support", isDirectory: true)
-        return base.appendingPathComponent("PalmierPro/mcp-token", isDirectory: false)
+        AppIdentity.applicationSupportRoot.appendingPathComponent("mcp-token", isDirectory: false)
     }
 
     nonisolated static func generate() -> String {

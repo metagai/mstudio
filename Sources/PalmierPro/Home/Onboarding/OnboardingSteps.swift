@@ -166,7 +166,7 @@ struct OnboardingAccountStep: View {
             // 宁可少说一句，也不要说错一个数（我们改过赠额，写死的那句就开始骗人）。
             // **先说他能立刻得到什么，再说需要什么。**
             // 赠额那句留给"登录"那颗按钮旁边 —— 它是登录的理由，不是打开 app 的理由。
-            : L10n.key("Write one line and see your film. No account needed for the first look.")
+            : L10n.string("Write one line and see your film. No account needed for the first look.")
     }
 
     private var failure: String? {

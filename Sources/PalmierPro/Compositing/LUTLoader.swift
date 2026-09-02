@@ -26,7 +26,7 @@ enum LUTLoader {
         guard FileManager.default.fileExists(atPath: sourceURL.path) else { throw LUTStoreError.noFile(sourceURL.path) }
         guard let lut = loadFromDisk(path: sourceURL.path) else { throw LUTStoreError.invalid(sourceURL.lastPathComponent) }
         let lutDir = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask)[0]
-            .appendingPathComponent("PalmierPro/luts/\(projectId ?? "default")", isDirectory: true)
+            .appendingPathComponent("\(AppIdentity.directoryName)/luts/\(projectId ?? "default")", isDirectory: true)
         try FileManager.default.createDirectory(at: lutDir, withIntermediateDirectories: true)
         let dest = lutDir.appendingPathComponent(sourceURL.lastPathComponent)
         if sourceURL.standardizedFileURL != dest.standardizedFileURL {

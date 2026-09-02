@@ -1461,7 +1461,7 @@
 "Free, and no account needed for the first look." = "Free, and no account needed for the first look.";
 "How did you find METAG?" = "How did you find METAG?";
 "Kai picked the voice. Reading Nova's %@ lines now." = "Kai picked the voice. Reading Nova's %@ lines now.";
-"Kept in ~/Library/Application Support/PalmierPro/mcp-token, readable only by you. The bundled Claude Desktop connector reads it automatically." = "Kept in ~/Library/Application Support/PalmierPro/mcp-token, readable only by you. The bundled Claude Desktop connector reads it automatically.";
+"Kept in ~/Library/Application Support/METAG/mcp-token, readable only by you. The bundled Claude Desktop connector reads it automatically." = "Kept in ~/Library/Application Support/METAG/mcp-token, readable only by you. The bundled Claude Desktop connector reads it automatically.";
 "Lining up the first frame" = "Lining up the first frame";
 "Local generation failed:" = "Local generation failed:";
 "Local generation is not set up yet, missing:" = "Local generation is not set up yet, missing:";

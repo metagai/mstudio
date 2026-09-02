@@ -1,9 +1,8 @@
 import Foundation
 
-/// A named directory under ~/Library/Caches/PalmierPro with size/clear helpers.
+/// A named directory under ~/Library/Caches/METAG with size/clear helpers.
 struct DiskCache: Sendable {
-    static let rootDirectory = FileManager.default.urls(for: .cachesDirectory, in: .userDomainMask)[0]
-        .appendingPathComponent("PalmierPro", isDirectory: true)
+    static let rootDirectory = AppIdentity.cachesRoot
 
     let directory: URL
 

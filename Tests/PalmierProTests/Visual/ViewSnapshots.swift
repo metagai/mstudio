@@ -111,6 +111,148 @@ struct ViewSnapshots {
         try snapshot("my-films", width: 640) { MetagMyFilmsView(onOpen: { _ in }) }
     }
 
+    /// **引导四屏。**
+    ///
+    /// 此前只有第一屏可能被人看过 —— 要看第四屏得先答完问卷。
+    /// 而第四屏是他刚装完 app 看到的第一样东西，也是转化的第一道门。
+    @Test func onboarding() throws {
+        for step in [OnboardingStep.welcome, .account] {
+            let store = OnboardingStore(defaults: UserDefaults(
+                suiteName: "onboarding-shot-\(UUID().uuidString)")!)
+            store.jumpForTesting(to: step)
+            try snapshot("onboarding-\(step)", width: AppTheme.Onboarding.cardWidth) {
+                // **不替它定高度** —— 登录屏现在自己贴着内容长，
+                // 外面钉一个数就看不出它到底长多高了。
+                OnboardingOverlay(onboarding: store)
+            }
+        }
+    }
+
+    /// **登录按钮上的字不许竖起来。**
+    ///
+    /// 2026-09-02 创始人装完真机截图：四颗登录按钮的字全折成了两行 ——
+    /// WeC/hat、App/le、Goo/gle、Git/Hub。原因是 `accountAction` 按竖排设计，
+    /// 却被塞进了 footer 那个 `HStack`：六颗按钮加一句赠额文字挤在一行里放不下，
+    /// provider 按钮被压到最窄。**而这一屏是新用户看到的第一样东西。**
+    ///
+    /// 判据是**把窗子挤窄，这一屏的高度不许变** —— 折行的唯一表现就是变高。
+    /// 比断言"源码里有 lineLimit"结实：那句在不在，和字会不会竖起来是两件事。
+    @Test func theSignInButtonsNeverStackTheirLetters() throws {
+        func height(width: CGFloat) throws -> Int {
+            let store = OnboardingStore(defaults: UserDefaults(
+                suiteName: "onboarding-wrap-\(UUID().uuidString)")!)
+            store.jumpForTesting(to: .account)
+            let renderer = ImageRenderer(content:
+                OnboardingOverlay(onboarding: store).frame(width: width))
+            renderer.scale = 1
+            return Int(try #require(renderer.nsImage).size.height)
+        }
+        let roomy = try height(width: AppTheme.Onboarding.cardWidth)
+        let cramped = try height(width: AppTheme.Onboarding.cardWidth * 0.55)
+        #expect(roomy == cramped,
+                "挤窄之后这一屏从 \(roomy) 变成 \(cramped) —— 按钮上的字折行了")
+    }
+
+    /// **对话框按它说的话定大小。**
+    ///
+    /// 420 是四屏共用的一个数：欢迎屏有一张 240pt 的图撑得住，
+    /// 登录屏只有标题加一行字，中间空掉一半 —— 读起来就是"没做完"。
+    @Test func theAccountCardDoesNotLeaveAVoid() throws {
+        func height(_ step: OnboardingStep) throws -> Int {
+            let store = OnboardingStore(defaults: UserDefaults(
+                suiteName: "onboarding-void-\(UUID().uuidString)")!)
+            store.jumpForTesting(to: step)
+            let renderer = ImageRenderer(content:
+                OnboardingOverlay(onboarding: store).frame(width: AppTheme.Onboarding.cardWidth))
+            renderer.scale = 1
+            return Int(try #require(renderer.nsImage).size.height)
+        }
+        #expect(try height(.account) < Int(AppTheme.Onboarding.cardHeight),
+                "登录屏还是四屏共用那个高度 —— 中间空掉一半")
+    }
+
+    /// **侧栏底部那两行，图标必须对齐。**
+    ///
+    /// 2026-09-02 创始人真机截图量出来：「新建项目」20.5pt、「打开项目」18pt、
+    /// 「设置」18.5pt，而**「登录」10pt** —— 差了 8.5pt，一眼看出这两行不是一套。
+    ///
+    /// 我此前为这块写过一条守卫，它**一直是绿的** ——
+    /// 它比的是"源码里两行是不是同一个组件"，而它们确实是同一个（`SidebarRowLabel`）。
+    /// 差出来的 8.5pt 来自 `Menu` 自己的内嵌（`.borderlessButton` 底下是
+    /// NSPopUpButton，cell 有自己的 inset）。
+    ///
+    /// **那条判据从一开始就问错了问题。** 现在量的是图上那两个图标真实的 x。
+    @Test func theSidebarFooterRowsLineUp() throws {
+        let renderer = ImageRenderer(content:
+            HomeView().frame(width: 900, height: 620))
+        renderer.scale = 1
+        let image = try #require(renderer.nsImage)
+        let data = try #require(image.tiffRepresentation)
+        let bitmap = try #require(NSBitmapImageRep(data: data))
+        try (bitmap.representation(using: .png, properties: [:]))
+            .map { try $0.write(to: Self.outputDirectory.appendingPathComponent("home-sidebar.png")) }
+
+        /// 一行里第一个"画了东西"的像素在哪 —— 那就是图标的左边缘。
+        func firstInk(row y: Int, within x: Range<Int>) -> Int? {
+            x.first { px in
+                guard let c = bitmap.colorAt(x: px, y: y) else { return false }
+                return c.alphaComponent > 0.5 && c.brightnessComponent < 0.55
+            }
+        }
+        // 侧栏里所有行的图标左边缘，从上往下扫，取出现过的那几个不同的值。
+        var edges: Set<Int> = []
+        for y in 0..<bitmap.pixelsHigh {
+            if let x = firstInk(row: y, within: 0..<200) { edges.insert(x) }
+        }
+        // **同一列上不该有两种起点。** 允许 1px 的抗锯齿差。
+        let clustered = edges.sorted().reduce(into: [Int]()) { out, x in
+            if out.last.map({ x - $0 > 2 }) ?? true { out.append(x) }
+        }
+        #expect(clustered.count <= 1,
+                "侧栏里图标有 \(clustered.count) 种左边缘：\(clustered) —— 这几行不是一套")
+    }
+
+    /// **有货的那一版。**
+    ///
+    /// 2026-09-02：这一天照的头几屏几乎全是「正在载入」——
+    /// **空屋子里藏不住东西**。等片子那三十秒是五个空盒子，
+    /// 是喂了真数据之后才看见的。
+    @Test func loadedStates() throws {
+        let now = Date().timeIntervalSince1970
+        try snapshot("my-films-loaded", width: 640) {
+            MetagMyFilmsView(onOpen: { _ in }, model: MetagMyFilmsModel(preloaded: [
+                .init(job_id: "j1", status: "done", engine: "seedance", shots: 5,
+                      credits: 120, created_at: now - 600,
+                      prompt: "一个女孩在天台上看城市的灯一格一格亮起来",
+                      retrievable: true, refunded: nil, poster: "shot_0.mp4"),
+                // **长 prompt 是常态不是异常** —— 创始人在 web 端粘过两千字。
+                .init(job_id: "j2", status: "done", engine: "veo", shots: 8,
+                      credits: 640, created_at: now - 86_400,
+                      prompt: String(repeating: "他站在那里很久，什么也没说。", count: 40),
+                      retrievable: true, refunded: nil, poster: "shot_0.mp4"),
+                // 取件过期：**扣了钱却打不开**，这一行必须如实标出来。
+                .init(job_id: "j3", status: "done", engine: "local", shots: 3,
+                      credits: 30, created_at: now - 3 * 86_400,
+                      prompt: "夜里的东京雨中，一个快递员骑车穿过街道",
+                      retrievable: false, refunded: nil, poster: nil),
+                // 失败并退款。
+                .init(job_id: "j4", status: "failed", engine: "seedance", shots: 4,
+                      credits: 96, created_at: now - 7 * 86_400,
+                      prompt: nil, retrievable: false, refunded: true, poster: nil),
+            ]))
+        }
+        try snapshot("credits-loaded", width: 360) {
+            MetagCreditsView(model: MetagCreditsModel(preloaded: [
+                .init(at: now - 300, reason: "generate", delta: -120, job_id: "j1",
+                      title: "一个女孩在天台上看城市的灯"),
+                .init(at: now - 3600, reason: "refund_lost_artifact", delta: 96, job_id: "j4",
+                      title: nil),
+                .init(at: now - 86_400, reason: "purchase", delta: 2000, job_id: nil, title: nil),
+                .init(at: now - 30 * 86_400, reason: "signup", delta: 300, job_id: nil, title: nil),
+            ]))
+        }
+    }
+
     /// 账户浮窗和 credits —— 转化那条路上的两块。
     @Test func account() throws {
         try snapshot("account-popover", width: 320) { AccountPopoverCard() }

@@ -116,7 +116,7 @@ struct MCPInstructionsPane: View {
                     showsCopy: token != nil
                 )
                 HStack(spacing: AppTheme.Spacing.md) {
-                    Text(L10n.string("Kept in ~/Library/Application Support/PalmierPro/mcp-token, readable only by you. The bundled Claude Desktop connector reads it automatically."))
+                    Text(L10n.string("Kept in ~/Library/Application Support/METAG/mcp-token, readable only by you. The bundled Claude Desktop connector reads it automatically."))
                         .font(.system(size: AppTheme.FontSize.sm, weight: AppTheme.FontWeight.regular))
                         .foregroundStyle(AppTheme.Text.tertiaryColor)
                         .fixedSize(horizontal: false, vertical: true)

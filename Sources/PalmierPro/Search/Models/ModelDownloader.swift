@@ -43,9 +43,7 @@ final class ModelDownloader: @unchecked Sendable {
         case missingPackage(String)
     }
 
-    static let modelsDir = FileManager.default
-        .urls(for: .applicationSupportDirectory, in: .userDomainMask)[0]
-        .appendingPathComponent("PalmierPro/Models")
+    static let modelsDir = AppIdentity.applicationSupportRoot.appendingPathComponent("Models")
 
     static func installDir(for manifest: Manifest) -> URL {
         modelsDir.appendingPathComponent("\(manifest.model)-v\(manifest.version)")

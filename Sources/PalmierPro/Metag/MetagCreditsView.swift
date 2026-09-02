@@ -9,11 +9,21 @@ import SwiftUI
 /// 信任不会因为我们修好了就自动回来。**它得被看见。**
 @MainActor
 final class MetagCreditsModel: ObservableObject {
+    /// 已经有货的模型 —— 理由同 `MetagMyFilmsModel(preloaded:)`：
+    /// 这一屏此前只被看过「正在载入」那一版。
+    convenience init(preloaded: [MetagGateway.CreditEntry]) {
+        self.init()
+        items = preloaded
+        seeded = true
+    }
+
+    private var seeded = false
     @Published private(set) var items: [MetagGateway.CreditEntry] = []
     @Published private(set) var loading = false
     @Published private(set) var error: String?
 
     func load() async {
+        guard !seeded else { return }
         loading = true
         defer { loading = false }
         do {
@@ -26,7 +36,11 @@ final class MetagCreditsModel: ObservableObject {
 }
 
 struct MetagCreditsView: View {
-    @StateObject private var model = MetagCreditsModel()
+    @StateObject private var model: MetagCreditsModel
+
+    init(model: MetagCreditsModel = MetagCreditsModel()) {
+        _model = StateObject(wrappedValue: model)
+    }
 
     var body: some View {
         VStack(alignment: .leading, spacing: AppTheme.Spacing.sm) {

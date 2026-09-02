@@ -1477,7 +1477,7 @@
 "All %@ shots are in. Cutting them together." = "%@ 个镜头都到齐了，正在接成一条。";
 "Extract Audio" = "提取音频";
 "Kai picked the voice. Reading Nova's %@ lines now." = "Kai 定好了音色，正在读 Nova 写的那 %@ 句。";
-"Kept in ~/Library/Application Support/PalmierPro/mcp-token, readable only by you. The bundled Claude Desktop connector reads it automatically." = "存在 ~/Library/Application Support/PalmierPro/mcp-token，只有你能读。随附的 Claude Desktop 连接器会自动读取。";
+"Kept in ~/Library/Application Support/METAG/mcp-token, readable only by you. The bundled Claude Desktop connector reads it automatically." = "存在 ~/Library/Application Support/METAG/mcp-token，只有你能读。随附的 Claude Desktop 连接器会自动读取。";
 "Local generation failed:" = "本地出图失败：";
 "Local generation is not set up yet, missing:" = "本地出图还没准备好，缺：";
 "METAG Project" = "METAG 工程";

@@ -134,7 +134,8 @@ private struct HomeSidebar: View {
                     .contentShape(Capsule(style: .continuous))
                 }
                 // 系统那个小箭头去掉：它让这一行比旁边那行多一个零件。
-                .menuStyle(.borderlessButton)
+                .menuStyle(.button)
+                .buttonStyle(.plain)
                 .menuIndicator(.hidden)
             }
 
