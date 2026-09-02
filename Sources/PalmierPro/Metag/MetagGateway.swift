@@ -174,6 +174,19 @@ enum MetagGateway {
         /// **Mac 有一整个字幕面板，而它一直靠转写自己的旁白来拿字幕** ——
         /// 慢、要联网、要额度，而且不可能比原文更准：那段文字本来就是我们写的。
         let subtitles: [Subtitle]?
+        /// 逐段清单：`{file, seconds, caption}`。
+        ///
+        /// 网关的注释写明了它为什么存在：「一条压平的片子在时间线上只有一个色块，
+        /// 拆不开、换不了序、改不了字幕。有了这份清单，编辑器铺的是 N 段可编辑素材。」
+        ///
+        /// Mac 这边用它的 `seconds` **把旁白对齐到各自那一镜的起点** ——
+        /// 旁白比镜头短，一段一段挨着铺会越走越偏。
+        let shot_clips: [ShotClip]?
+
+        struct ShotClip: Decodable, Sendable {
+            let file: String
+            let seconds: Double
+        }
 
         /// 一句旁白和它的词级时间。字段名和网关那侧一致，直接解。
         struct Subtitle: Decodable, Sendable {

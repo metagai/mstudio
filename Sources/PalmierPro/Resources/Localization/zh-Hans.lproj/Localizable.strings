@@ -1544,3 +1544,4 @@
 "Loaded %@ shots and %@ narration tracks — no score." = "载入 %@ 镜和 %@ 条旁白 —— 没取到配乐。";
 "Loaded %@ shots — no score." = "载入 %@ 镜 —— 没取到配乐。";
 "Loaded %@ shots, with score and captions." = "载入 %@ 镜，配乐和字幕都在。";
+"Add Film" = "载入片子";

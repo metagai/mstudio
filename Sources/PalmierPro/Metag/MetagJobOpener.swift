@@ -55,25 +55,27 @@ enum MetagJobOpener {
                 shots: job.shots.count, shotEngines: job.shot_engines, nativeAudioEngineIds: native
             ))
 
-            var added = 0
-            var narrations = 0
+            // 先把素材取全，**取完再一次铺上去** —— 边下边铺的话，
+            // 撤销会变成 N 步，而他做的只是"打开一条片子"这一件事。
+            var shotAssets: [(index: Int, asset: MediaAsset)] = []
+            var narrationAssets: [(index: Int, asset: MediaAsset)] = []
             for i in wanted {
                 let shot = job.shots[i]
                 if let url = try? await MetagGateway.download(
                     job: jobId, name: shot.video, to: FileManager.default.temporaryDirectory) {
                     // addMediaAsset 返回非可选，原来那句 `!= nil` 恒真、每次构建都报警告。
                     // 计数没错过（它本来就总会加），错的是那句判断在假装自己在判断。
-                    editor.addMediaAsset(from: url, type: .video)
-                    added += 1
+                    shotAssets.append((i, editor.addMediaAsset(from: url, type: .video)))
                 }
                 // 原生出声的那几镜不取旁白 —— 取回来只会被用户铺到模型自己的声音上面。
                 guard needsNarration.contains(i), !shot.audio.isEmpty else { continue }
                 if let url = try? await MetagGateway.download(
                     job: jobId, name: shot.audio, to: FileManager.default.temporaryDirectory) {
-                    editor.addMediaAsset(from: url, type: .audio)
-                    narrations += 1
+                    narrationAssets.append((i, editor.addMediaAsset(from: url, type: .audio)))
                 }
             }
+            let added = shotAssets.count
+            let narrations = narrationAssets.count
             // 有镜可取、却一条都没取下来 —— 取件过期。他等完了，手上还是空的。
             if added == 0 {
                 MetagFunnel.track(.filmFailed, meta: [
@@ -88,12 +90,51 @@ enum MetagJobOpener {
             //
             // 放在镜头之后取：先让画面到手。取不到不影响已经铺好的那几段，
             // 但**要说出来** —— 少了配乐他会以为是我们没做，而不是没取到。
-            var score = false
+            var scoreAsset: MediaAsset?
             if added > 0, let bed = job.music_bed, !bed.isEmpty,
                let url = try? await MetagGateway.download(
                 job: jobId, name: bed, to: FileManager.default.temporaryDirectory) {
-                editor.addMediaAsset(from: url, type: .audio)
-                score = true
+                scoreAsset = editor.addMediaAsset(from: url, type: .audio)
+            }
+            let score = scoreAsset != nil
+
+            // **把片子铺到时间线上。**
+            //
+            // 在此之前 `addMediaAsset` 只把素材加进库 —— 用户写一句话、
+            // 等九十秒、付了 credits，拿到的是素材库里 N 个散文件和一条空时间线。
+            // 这个产品的承诺是"一句话变成一条片子"，交付的是一堆配料。
+            //
+            // 整件事一步撤销：他做的是"打开一条片子"这一个动作。
+            if added > 0 {
+                editor.undo.perform(L10n.string("Add Film")) {
+                    let fps = editor.timeline.fps
+                    // 画面一条轨、声音一条轨。**新建工程的时间线是空的**，
+                    // 所以先把轨道立起来 —— `addClips` 只往已有的轨上放。
+                    editor.timeline.tracks.insert(Track(type: .audio), at: 0)
+                    editor.timeline.tracks.insert(Track(type: .video), at: 0)
+
+                    editor.addClips(assets: shotAssets.map(\.asset), trackIndex: 0, startFrame: 0)
+
+                    // 旁白对齐到各自那一镜的起点 —— 它比镜头短，
+                    // 一段接一段挨着放会越走越偏，第四镜的话会压在第三镜上。
+                    let starts = MetagFilmLayout.startFrames(
+                        shotCount: shotAssets.count,
+                        clipSeconds: job.shot_clips?.map(\.seconds),
+                        fps: fps,
+                        measured: { editor.clipDurationFrames(for: shotAssets[$0].asset, segment: nil) }
+                    )
+                    for (slot, entry) in shotAssets.enumerated() {
+                        guard let narration = narrationAssets.first(where: { $0.index == entry.index })
+                        else { continue }
+                        editor.addClips(assets: [narration.asset], trackIndex: 1, startFrame: starts[slot])
+                    }
+
+                    if let bed = scoreAsset {
+                        editor.timeline.tracks.append(Track(type: .audio))
+                        editor.addClips(assets: [bed], trackIndex: editor.timeline.tracks.count - 1,
+                                        startFrame: 0)
+                    }
+                }
             }
 
             // **字幕。** 片子自带词级字幕（网关逐句合成时就对齐好了），
