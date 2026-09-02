@@ -30,6 +30,40 @@ struct KeyGoesThroughLookupTests {
                 "词条表这条路本身不通了 —— 底下那条守卫会变成空绿的")
     }
 
+    /// **网关的失败文案要是人话，不是 key。**
+    ///
+    /// 这 29 条出现在他最需要看懂的那一刻：没网、超时、被限流、片子没了。
+    /// 它们原来全是 `L10n.key` —— 因为 `errorDescription` 是 nonisolated，
+    /// 而查表当时要主线程，够不着。**够不着就退回原文**，
+    /// 于是中文用户在失败那一刻看到一行英文。
+    @Test @MainActor func theGatewayFailureCopyIsInTheUsersLanguage() throws {
+        let suite = try #require(UserDefaults(suiteName: "l10n-fail-\(UUID().uuidString)"))
+        defer { suite.removePersistentDomain(forName: suite.description) }
+        let zh = AppLocalization(defaults: suite, preferredLanguages: ["zh-Hans"])
+        // **必须让生产代码在一本非英文的表下真跑一遍。**
+        // 第一版只查了"词条表里有没有中文"，于是把 `errorDescription`
+        // 原样改回 `L10n.key` 它照样绿 —— 空绿的守卫，同一个下午第二条。
+        let (offline, timeout) = AppLocalization.Catalog.withCatalog(zh.catalog) {
+            (MetagGateway.Failure.offline(.notConnectedToInternet).errorDescription,
+             MetagGateway.Failure.offline(.timedOut).errorDescription)
+        }
+        #expect(offline == "连不上网络。检查一下连接再试。",
+                "没网那一刻他看到的是「\(offline ?? "nil")」—— 没过词条表")
+        #expect(timeout != "The network took too long to answer. Try again.",
+                "超时那一刻还是英文原文")
+    }
+
+    /// `Catalog.current` 是 `nonisolated(unsafe)` —— 它的不变量是**只写一次**。
+    ///
+    /// 改语言要重启（`requiresRestart`），所以一个进程里那本表不会变。
+    /// 这条盯着那个"一次"：多一次写就是多一条数据竞争。
+    @Test @MainActor func theInstalledCatalogIsWrittenOnce() {
+        _ = AppLocalization.shared
+        _ = AppLocalization.shared
+        #expect(AppLocalization.Catalog.installs == 1,
+                "全局词条表被写了 \(AppLocalization.Catalog.installs) 次 —— nonisolated(unsafe) 的前提没了")
+    }
+
     /// 界面控件不许直接吃 `L10n.key` 的返回值。
     ///
     /// `L10n.key` 是给**存进模型的标签**用的（取出来时用 `L10n.string(key:)`

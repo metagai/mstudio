@@ -250,13 +250,13 @@ enum MetagGateway {
 
         var errorDescription: String? {
             switch self {
-            case .signedOut: return L10n.key("Sign in to METAG to generate.")
+            case .signedOut: return L10n.string("Sign in to METAG to generate.")
             case .tokenNotAcceptedHere(let provider):
                 return "\(provider): " + L10n.key("signed you in, but this app can't use that session yet. Try another sign-in method.")
             // **这是转化那一刻，而它原来是个句号。** 「额度不够」说完就没了，
             // 他得自己去找哪里能买 —— 而这一句正好落在他最想继续的时候。
             case .insufficientCredits:
-                return L10n.key("Not enough credits — top up or subscribe in Settings › Account.")
+                return L10n.string("Not enough credits — top up or subscribe in Settings › Account.")
             // 这几条以前全都落到下面那句 "METAG request failed (404)"，
             // 而**紧挨着的注释就写着**"用户看到的必须是能据此行动的话"。
             // 它们不是罕见情况，是最常见的那几种：打开昨天的链接、连点两次出片、
@@ -266,82 +266,82 @@ enum MetagGateway {
                 // 陌生人能看草案、不能出片（网关白名单挡的就是这一步）。
                 // 说"请先登录"像一道门；说"这一条留给你"是同一件事的另一种说法，
                 // 而后者是真的：登录之后那条草案还在他名下。
-                return L10n.key("Signing in keeps this draft and lets you produce it.")
+                return L10n.string("Signing in keeps this draft and lets you produce it.")
             case .http(403) where MetagTicket.isAnonymous(MetagGateway.token),
                  .http(404) where MetagTicket.isAnonymous(MetagGateway.token):
                 // **临时身份只活 7 天，而且过期之后换的是新身份。**
                 // 他八天后回来，之前那条片子不是"要登录"，是查无此物 ——
                 // 说"东西不见了"对他是假话，他会以为我们弄丢了。
-                return L10n.key("That one was made with a temporary identity that has since expired. Sign in and your films stay with you.")
+                return L10n.string("That one was made with a temporary identity that has since expired. Sign in and your films stay with you.")
             case .offline(let code):
                 switch code {
                 case .notConnectedToInternet, .networkConnectionLost:
-                    return L10n.key("No connection. Check your network and try again.")
+                    return L10n.string("No connection. Check your network and try again.")
                 case .timedOut:
-                    return L10n.key("The network took too long to answer. Try again.")
+                    return L10n.string("The network took too long to answer. Try again.")
                 case .cannotFindHost, .cannotConnectToHost, .dnsLookupFailed:
-                    return L10n.key("Can't reach METAG right now. Try again in a moment.")
+                    return L10n.string("Can't reach METAG right now. Try again in a moment.")
                 default:
-                    return L10n.key("The network dropped that one. Try again.")
+                    return L10n.string("The network dropped that one. Try again.")
                 }
             case .http(404):
                 // 404 同时表示"过期"和"不是你的"，措辞要两边都成立 ——
                 // 说"已过期"对拿到别人链接的人是假话。
-                return L10n.key("That job is gone — jobs are kept for 24 hours, free files for 60 minutes.")
+                return L10n.string("That job is gone — jobs are kept for 24 hours, free files for 60 minutes.")
             case .http(409):
-                return L10n.key("Not ready — the draft is still rendering, or this one was already produced.")
+                return L10n.string("Not ready — the draft is still rendering, or this one was already produced.")
             case .http(413):
-                return L10n.key("That file is too large — images up to 8 MB, voice samples up to 16 MB.")
+                return L10n.string("That file is too large — images up to 8 MB, voice samples up to 16 MB.")
             case .http(415):
-                return L10n.key("That file type is not supported — images as PNG/JPEG/WebP, audio as WAV/MP3/M4A.")
+                return L10n.string("That file type is not supported — images as PNG/JPEG/WebP, audio as WAV/MP3/M4A.")
             case .http(403):
-                return L10n.key("That is not yours to open.")
+                return L10n.string("That is not yours to open.")
             case .http(502), .http(504):
-                return L10n.key("The provider did not answer — try again in a moment.")
+                return L10n.string("The provider did not answer — try again in a moment.")
             // 兜底那句原来是「METAG request failed. (500)」—— 那是机器的话，
             // 他既不知道发生了什么，也不知道该做什么。**状态码留着**（他要报错时用得上），
             // 但前面得有一句人话。
             case .http(let code):
-                return L10n.key("That didn't go through. Try again — if it keeps happening, tell us.") + " (\(code))"
+                return L10n.string("That didn't go through. Try again — if it keeps happening, tell us.") + " (\(code))"
             case .rejected(_, let reason):
                 switch reason {
                 case "inflight_limit":
-                    return L10n.key("You already have two films rendering — wait for one to finish")
+                    return L10n.string("You already have two films rendering — wait for one to finish")
                 case "queue_full":
-                    return L10n.key("Everyone is generating right now — try again in a few minutes")
+                    return L10n.string("Everyone is generating right now — try again in a few minutes")
                 case "insufficient_credits":
-                    return L10n.key("Not enough credits — top up or subscribe in Settings › Account.")
+                    return L10n.string("Not enough credits — top up or subscribe in Settings › Account.")
                 case "engine_degraded":
-                    return L10n.key("That engine is temporarily unavailable — pick another")
+                    return L10n.string("That engine is temporarily unavailable — pick another")
                 // 频控此前一律回裸 429，于是这几种都落到下面那句"稍后再试" ——
                 // 而它们是**用户自己的配额**，不是我们忙。把用户的正常状态说成
                 // 我们坏了，他会以为产品有问题，而不是知道歇一会儿。
                 // 并发和配额是两件事：前者"等一条跑完就行"，后者"这一小时别再来了"。
                 case "sample_used":
-                    return L10n.key("You've already used your free preview shot.")
+                    return L10n.string("You've already used your free preview shot.")
                 case "sample_engine":
-                    return L10n.key("Pick a premium tier to preview — the built-in one is always free.")
+                    return L10n.string("Pick a premium tier to preview — the built-in one is always free.")
                 case "draft_not_ready":
-                    return L10n.key("The draft is still rendering — wait a moment.")
+                    return L10n.string("The draft is still rendering — wait a moment.")
                 case "draft_inflight":
-                    return L10n.key("You already have a few drafts running — one will free up in a moment.")
+                    return L10n.string("You already have a few drafts running — one will free up in a moment.")
                 // **撞这一格的时候，他手上已经有一条草案了。**
                 // 所以别只说"要登录"——那听起来像我们要收门票。
                 // 说他自己那条还在、登录就能接着往下走：同一件事，而后者是真的。
                 case "anon_draft_used":
-                    return L10n.key("That's the free one for today — your draft is still here. Sign in to keep it and make more.")
+                    return L10n.string("That's the free one for today — your draft is still here. Sign in to keep it and make more.")
                 case "anon_daily_cap":
-                    return L10n.key("Today's free drafts are all taken. Sign in to make your own, or come back tomorrow.")
+                    return L10n.string("Today's free drafts are all taken. Sign in to make your own, or come back tomorrow.")
                 case "draft_quota":
-                    return L10n.key("You've made a lot of drafts this hour — take a break and come back shortly.")
+                    return L10n.string("You've made a lot of drafts this hour — take a break and come back shortly.")
                 case "generate_quota":
-                    return L10n.key("You've produced a lot this hour — take a break and come back shortly.")
+                    return L10n.string("You've produced a lot this hour — take a break and come back shortly.")
                 case "voice_quota", "upload_quota":
-                    return L10n.key("Too many requests this hour — try again later.")
+                    return L10n.string("Too many requests this hour — try again later.")
                 case "tts_quota", "highlight_quota", "plan_quota":
-                    return L10n.key("Too many requests this minute — try again in a moment.")
+                    return L10n.string("Too many requests this minute — try again in a moment.")
                 default:
-                    return L10n.key("Temporarily unavailable — try again shortly")
+                    return L10n.string("Temporarily unavailable — try again shortly")
                 }
             }
         }
