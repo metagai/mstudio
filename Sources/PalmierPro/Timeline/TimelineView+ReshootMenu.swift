@@ -11,10 +11,14 @@ extension TimelineView {
 
         let menu = NSMenu()
         menu.autoenablesItems = false
+        // **`L10n.key` 只把 key 原样还回来** —— 要显示得用 `L10n.string` 查一次。
+        // 同一个右键菜单里，用 `L10n.string` 的两项（「挑一条」「修判低的镜头」）
+        // 是中文，这三项和下面两条悬停说明是英文，紧挨着摆在一起。
+        // 同一形状今天在额度流水那一屏也抓到一次。
         let entries: [(String, Bool, Int)] = [
-            (L10n.key("Re-shoot This Shot"), false, 1),
-            (L10n.key("Another Composition"), true, 1),
-            (L10n.key("Three More Takes"), true, 3),
+            (L10n.string("Re-shoot This Shot"), false, 1),
+            (L10n.string("Another Composition"), true, 1),
+            (L10n.string("Three More Takes"), true, 3),
         ]
         for (title, reroll, candidates) in entries {
             let item = NSMenuItem(title: title, action: #selector(performReshoot(_:)), keyEquivalent: "")
@@ -28,7 +32,7 @@ extension TimelineView {
         let pick = NSMenuItem(title: L10n.string("Pick a Take…"), action: #selector(performPickTake(_:)), keyEquivalent: "")
         pick.target = self
         pick.representedObject = clipId
-        pick.toolTip = L10n.key("Compare the takes this shot already has and choose one.")
+        pick.toolTip = L10n.string("Compare the takes this shot already has and choose one.")
         menu.addItem(pick)
 
         // Always offered rather than shown only when a shot is flagged: menu construction is
@@ -37,7 +41,7 @@ extension TimelineView {
         let fix = NSMenuItem(title: L10n.string("Fix Flagged Shots"), action: #selector(performFixFlagged(_:)), keyEquivalent: "")
         fix.target = self
         fix.representedObject = clipId
-        fix.toolTip = L10n.key("Re-runs only shots the automatic check flagged. What you have is kept as a take.")
+        fix.toolTip = L10n.string("Re-runs only shots the automatic check flagged. What you have is kept as a take.")
         menu.addItem(fix)
         return menu
     }

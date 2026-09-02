@@ -236,19 +236,38 @@ struct KeyframesLaneRow: View {
     // MARK: - Context menu
 
     @ViewBuilder
+    private func interpolationItem(_ title: String, _ kind: Interpolation,
+                                   _ current: Interpolation, _ frame: Int) -> some View {
+        Button {
+            editor.setInterpolation(clipId: clip.id, property: property,
+                                    frame: frame, interpolation: kind)
+        } label: {
+            if current == kind {
+                Label(title, systemImage: "checkmark")
+            } else {
+                Text(title)
+            }
+        }
+    }
+
+    @ViewBuilder
     private func contextMenu(for frame: Int) -> some View {
+        // **同一个功能两个入口，文案不该只有一处是中文的。**
+        // 时间线那份（TimelineView.swift:1347）走了 L10n.string，这份没走 ——
+        // 于是右键关键帧在中文界面里是英文。
+        //
+        // `systemImage: ""` 也一并去掉：空串不是"没有图标"，它会占一个空白位，
+        // 未选中的两项看起来像少了什么。改成选中才给 Label、否则只有文字。
+        //
+        // ⚠ 我先写成 `Toggle` + `.onTapGesture` —— **菜单会把点击吃掉，
+        // 按钮很可能点不动**，那正是这一轮在找的"控件说谎"。
+        // 一个我验不了的交互，不能拿去换一个图标问题。Button 是确定能点的。
         let current = editor.interpolation(clipId: clip.id, property: property, atFrame: frame) ?? .smooth
-        Button { editor.setInterpolation(clipId: clip.id, property: property, frame: frame, interpolation: .linear) } label: {
-            Label("Linear", systemImage: current == .linear ? "checkmark" : "")
-        }
-        Button { editor.setInterpolation(clipId: clip.id, property: property, frame: frame, interpolation: .smooth) } label: {
-            Label("Smooth", systemImage: current == .smooth ? "checkmark" : "")
-        }
-        Button { editor.setInterpolation(clipId: clip.id, property: property, frame: frame, interpolation: .hold) } label: {
-            Label("Hold", systemImage: current == .hold ? "checkmark" : "")
-        }
+        interpolationItem(L10n.string("Linear"), .linear, current, frame)
+        interpolationItem(L10n.string("Smooth"), .smooth, current, frame)
+        interpolationItem(L10n.string("Hold"), .hold, current, frame)
         Divider()
-        Button("Delete Keyframe", role: .destructive) {
+        Button(L10n.string("Delete Keyframe"), role: .destructive) {
             editor.removeKeyframe(clipId: clip.id, property: property, at: frame)
         }
     }

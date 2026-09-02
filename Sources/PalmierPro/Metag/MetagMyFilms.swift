@@ -125,14 +125,27 @@ struct MetagMyFilmsView: View {
                 Text(L10n.string("Link copied") + " · " + u)
                     .foregroundStyle(AppTheme.Text.secondaryColor).font(.system(size: AppTheme.FontSize.sm)).textSelection(.enabled)
             }
+            // **一次分享失败，不该让他的作品全部消失。**
+            //
+            // 原来 `error` 这一支排在 `films` 前面：列表已经加载好之后，
+            // 点分享或删除失败会把 `model.error` 置上，于是整屏作品被一行灰字顶掉 ——
+            // 他看到的是"我的东西全没了"，而它们好好地在服务器上。
+            //
+            // 分成两种：**取不到列表**（那时确实只有一句话可说）和
+            // **列表在、这一次操作失败**（那句话该贴在列表上方，不是取代列表）。
             if model.loading && model.films.isEmpty {
                 Text(L10n.string("Loading…")).foregroundStyle(AppTheme.Text.secondaryColor).font(.system(size: AppTheme.FontSize.sm))
-            } else if let e = model.error {
+            } else if let e = model.error, model.films.isEmpty {
                 Text(e).foregroundStyle(AppTheme.Text.secondaryColor).font(.system(size: AppTheme.FontSize.sm))
             } else if model.films.isEmpty {
                 Text(L10n.string("No films yet — generate one and it shows up here"))
                     .foregroundStyle(AppTheme.Text.secondaryColor).font(.system(size: AppTheme.FontSize.sm))
             } else {
+                if let e = model.error {
+                    Text(e)
+                        .foregroundStyle(AppTheme.Status.warningColor)
+                        .font(.system(size: AppTheme.FontSize.sm))
+                }
                 ForEach(model.films) { f in
                     HStack(spacing: AppTheme.Spacing.xs) {
                         Button { onOpen(f) } label: { row(f) }

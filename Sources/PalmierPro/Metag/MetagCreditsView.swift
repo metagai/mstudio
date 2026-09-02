@@ -72,6 +72,9 @@ struct MetagCreditsView: View {
                 Text(d.label)
                     .font(.system(size: AppTheme.FontSize.sm))
                     .foregroundStyle(d.isRefund ? AppTheme.Status.successColor : AppTheme.Text.primaryColor)
+                    // 原始理由**可查但不摆在正文**：对账要得到它，
+                    // 而用户的账单上不该出现 `director_run` 这种下划线代码。
+                    .help(Text(verbatim: e.reason))
                 if let title = e.title, !title.isEmpty {
                     Text(title).font(.system(size: AppTheme.FontSize.xs)).foregroundStyle(AppTheme.Text.secondaryColor).lineLimit(1)
                 }
@@ -90,6 +93,22 @@ struct MetagCreditsView: View {
     /// 文案走 `L()`：这里是**账单**，而账单用用户看不懂的语言写，等于没给。
     @MainActor
     static func describe(_ e: MetagGateway.CreditEntry) -> (label: String, isRefund: Bool) {
+        let (key, isRefund) = reasonKey(e)
+        // **`L10n.key` 只把 key 原样还回来，得再查一次才是那门语言的话。**
+        //
+        // 2026-09-02 取景器照到的中文界面「额度流水」下面四行全是英文：
+        //   Film / Top-up / Signup credits /
+        //   Refunded — we lost this film and cannot recover it
+        // 最后那句恰恰是**最需要被读懂的一句**（我们弄丢了你的片子，钱退了），
+        // 而中文用户一个字都读不了。上面那句注释写着"账单用用户看不懂的语言写，
+        // 等于没给"—— 意图一直是对的，只是少了最后这一步。
+        // （同一个形状：重拍右键菜单五处也是 `L10n.key` 该用 `L10n.string`。）
+        return (L10n.string(key: key), isRefund)
+    }
+
+    /// 这一笔是什么。**只挑 key，不查表** —— 查表交给上面那一处收口。
+    @MainActor
+    private static func reasonKey(_ e: MetagGateway.CreditEntry) -> (String, Bool) {
         switch e.reason {
         case "signup":               return (L10n.key("Signup credits"), false)
         case "purchase":             return (L10n.key("Top-up"), false)
@@ -106,12 +125,24 @@ struct MetagCreditsView: View {
             if e.reason.hasPrefix("refund:") { return (L10n.key("Refunded — that step did not complete"), true) }
             // 认不出的理由原样显示。**不要翻译它，也不要写"其他"** ——
             // 原始理由至少能被搜索和对账，"其他"什么都不是。
+            //
+            // 2026-09-02：我一度把它改成「额度变动」，理由是不该让用户在账单上
+            // 看见 `director_run` 这种下划线代码。**单测当场红**，而它是对的：
+            // 那句话让产品**假装看得懂一个它不认识的理由**，比一个丑但真实的
+            // 字符串更糟。真正该做的是**把新理由翻译过来**（上面那张表），
+            // 而不是给所有不认识的东西套一个和善的壳。
             return (e.reason, e.delta > 0)
         }
     }
 
+    /// **别写死 `M/d`** —— 欧洲用户会把 9/1 读成 1 月 9 日，而且它不跟界面语言走。
+    /// 用 `AppLocalization.relativeString`，和「我的作品」那一列同一种写法
+    /// （那边为同一个问题已经改过，并在注释里点名了这个坑；一个仓库里
+    /// 同一种时间不该有两种写法）。
+    @MainActor
     private static func when(_ epoch: Double) -> String {
-        let f = DateFormatter(); f.dateFormat = "M/d HH:mm"
-        return f.string(from: Date(timeIntervalSince1970: epoch))
+        AppLocalization.shared.relativeString(
+            for: Date(timeIntervalSince1970: epoch), style: .short
+        )
     }
 }
