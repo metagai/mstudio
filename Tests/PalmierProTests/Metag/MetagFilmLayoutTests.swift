@@ -135,8 +135,14 @@ struct MetagFilmLayoutTests {
                 "起点是 \(starts) —— 数值不相等，但 30fps 下还是叠在一起")
     }
 
-    /// 剩下的仍然只能比源码：**"整件事是一步撤销"没有别的问法** ——
-    /// 它是一个结构事实，不是一个可以算出来的值。
+    /// **只剩这一条比源码：整件事是一步撤销。**
+    ///
+    /// 它是一个结构事实，不是能算出来的值 —— 没有别的问法。
+    ///
+    /// 上一版这里还有两条（"调用点有没有算旁白落点""有没有补主音量"），
+    /// 而它们在我把那几个决定收成一份 `Plan` 之后**当场红了** ——
+    /// 咬的是函数名，代码变好它就报警。那两件事现在由
+    /// `OpenFinishedFilmTests` 直接问那份铺法，比问名字结实。
     @Test func theWholeFilmIsOneUndoStep() throws {
         let src = try String(
             contentsOf: URL(fileURLWithPath: #filePath)
@@ -146,12 +152,5 @@ struct MetagFilmLayoutTests {
             encoding: .utf8)
         #expect(src.contains("editor.undo.perform(L10n.string(\"Add Film\"))"),
                 "铺片子变成好几步撤销了 —— 他做的是「打开一条片子」这一个动作")
-        #expect(src.contains("MetagFilmLayout.narrationFrames("),
-                "又自己在调用点算旁白落点了 —— 那一层没有判据看得见")
-        // 主音量差要真的补上去。**这一条仍然只能比源码** ——
-        // "铺完之后有没有调用它"是调用点的事实，而那一层要跑起来需要网络。
-        // 它属于我明知道弱、但暂时没有更好问法的那一族。
-        #expect(src.contains("MetagFilmLayout.applyMasterGain(volume,"),
-                "主音量差没补 —— 他刚看完草案，进编辑器同一部片子轻了一半")
     }
 }

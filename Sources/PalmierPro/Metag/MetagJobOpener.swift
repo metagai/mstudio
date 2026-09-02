@@ -128,18 +128,17 @@ enum MetagJobOpener {
 
                     // 旁白对齐到各自那一镜的起点 —— 它比镜头短，
                     // 一段接一段挨着放会越走越偏，第四镜的话会压在第三镜上。
-                    // **这里没有 fps 可传** —— 起点按秒算，换算由时间线自己做。
-                    let starts = MetagFilmLayout.startSeconds(
-                        shotCount: shotAssets.count,
+                    // **一份铺法，一次算完。** 散在这里的话判据够不着 ——
+                    // 这条路要网络、要编辑器，而它是每一部片子唯一走的那条。
+                    let plan = MetagFilmLayout.plan(
+                        shotIndices: shotAssets.map(\.index),
+                        narrationIndices: Set(narrationAssets.map(\.index)),
                         clipSeconds: job.shot_clips?.map(\.seconds),
-                        measured: { shotAssets[$0].seconds }
-                    ).map(editor.frame(atSeconds:))
-                    let placements = MetagFilmLayout.narrationFrames(
-                        shots: shotAssets.map(\.index),
-                        narrations: Set(narrationAssets.map(\.index)),
-                        starts: starts
+                        masterGainDB: job.master_gain_db,
+                        measured: { shotAssets[$0].seconds },
+                        frame: editor.frame(atSeconds:)
                     )
-                    for (shot, frame) in placements {
+                    for (shot, frame) in plan.narrations {
                         guard let narration = narrationAssets.first(where: { $0.index == shot })
                         else { continue }
                         editor.addClips(assets: [narration.asset], trackIndex: 1, startFrame: frame)
@@ -152,8 +151,6 @@ enum MetagJobOpener {
                     // 点进编辑器，同一部片子突然轻了一半。
                     //
                     // 乘在每一个出声的片段上（画面自带的声音也算），配比不变。
-                    let volume = MetagFilmLayout.volumeFactor(masterGainDB: job.master_gain_db)
-
                     if let bed = scoreAsset {
                         editor.timeline.tracks.append(Track(type: .audio))
                         editor.addClips(assets: [bed], trackIndex: editor.timeline.tracks.count - 1,
@@ -161,7 +158,7 @@ enum MetagJobOpener {
                     }
 
                     // 这几条轨都是这一步刚立起来的，里面每一段都是这部片子的。
-                    MetagFilmLayout.applyMasterGain(volume, to: &editor.timeline.tracks)
+                    MetagFilmLayout.applyMasterGain(plan.volume, to: &editor.timeline.tracks)
                 }
             }
 

@@ -27,6 +27,53 @@ enum MetagFilmLayout {
     ///
     /// 优先用网关给的逐段时长（`shot_clips[i].seconds`）—— 那是权威的。
     /// 拿不到就退回按素材实测时长累加：**宁可自己量，也不要凭空假设等长**。
+    /// 一部片子铺上时间线的**全部决定**：每一镜落在哪、每段旁白落在哪、主音量补多少。
+    ///
+    /// ## 为什么要有这个类型
+    ///
+    /// 这些决定原来散在 `MetagJobOpener.open()` 里 —— 那是一段要网络、
+    /// 要编辑器、要真下载的异步流程，**判据够不着**。于是那条路上只有
+    /// 几条"源码里那行还在吗"的断言。
+    ///
+    /// 而产品技术负责人在 web 那侧撞见的形状是：
+    /// **判据覆盖的是回退路，而每一部片子走的是另一条。**
+    /// Mac 这侧更彻底 —— 那条路一条行为判据都没有，
+    /// 而在我们两个修完之前，它是**每一部片子**唯一走的路。
+    struct Plan: Equatable {
+        /// 每一镜的起始帧，按画面顺序。
+        var shotStarts: [Int]
+        /// 每一段旁白：落在哪一镜、哪一帧。
+        var narrations: [Int: Int]
+        /// 乘到每个出声片段上的倍数。
+        var volume: Double
+    }
+
+    /// 把一份任务详情算成一份铺法。
+    ///
+    /// `measured` 是从**下载下来的文件**上量的秒数（不是 `MediaAsset.duration`
+    /// —— 那个在铺片子那一刻还是 0）。`frame` 由时间线自己做换算，
+    /// 这里没有 fps 可传错。
+    static func plan(
+        shotIndices: [Int],
+        narrationIndices: Set<Int>,
+        clipSeconds: [Double]?,
+        masterGainDB: Double?,
+        measured: (Int) -> Double,
+        frame: (Double) -> Int
+    ) -> Plan {
+        let starts = startSeconds(
+            shotCount: shotIndices.count, clipSeconds: clipSeconds, measured: measured
+        ).map(frame)
+        let placements = narrationFrames(
+            shots: shotIndices, narrations: narrationIndices, starts: starts
+        )
+        return Plan(
+            shotStarts: starts,
+            narrations: Dictionary(uniqueKeysWithValues: placements.map { ($0.shot, $0.frame) }),
+            volume: volumeFactor(masterGainDB: masterGainDB)
+        )
+    }
+
     /// 主音量差 → 线性倍数。
     ///
     /// 时间线上没有"主音量"这一层，只有每个片段自己的 `volume`。
