@@ -128,6 +128,9 @@ def code_lines():
 
 def main():
     failed = False
+    # 自己看了多少东西，先说出来。**一条报绿的判据可能一个文件都没扫到**
+    # —— 这个数就是唯一能当场看出来的地方。
+    print(f"SCOPE {sum(1 for _ in SOURCES.rglob('*.swift'))} 个 Swift 文件")
     findings = {"系统语义字号": [], "系统按钮样式": [], "裸系统色": []}
 
     for rel, n, line in code_lines():

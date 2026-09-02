@@ -471,7 +471,8 @@ struct MetagDraftSheet: View {
     private var filmStrip: some View {
         MetagFilmStrip(
             shots: model.knownShots ?? 0,
-            frames: model.frames
+            frames: model.frames,
+            narrations: model.narrations
         )
     }
 

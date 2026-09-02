@@ -25,6 +25,16 @@ struct MetagFilmStrip: View {
     let shots: Int
     let frames: [Int: NSImage]
 
+    /// 每一镜的旁白。**分镜比画面早到** —— 网关先写完这几句，才开始渲。
+    ///
+    /// 之前空格子里写的是格子自己的编号。那对他没有任何意义：
+    /// 他按下出片后头三十秒盯着的，是**五个写着 1 2 3 4 5 的空盒子**。
+    /// 而这几句话当时就在手上（同一个调用点的 `model.narrations`，
+    /// 底下的编辑框正在用它）。
+    ///
+    /// 摆上之后，那段等待从"进度条"变成**看着自己的片子被写出来**。
+    var narrations: [String] = []
+
     /// 全到齐了。最后那一下落定挂在它上面。
     private var complete: Bool { shots > 0 && frames.count >= shots }
 
@@ -66,10 +76,21 @@ struct MetagFilmStrip: View {
                 // 不放转圈、不放骨架闪光 —— 一直在动的东西会把注意力
                 // 从已经到了的画面上拽走，而那才是他想看的。
                 AppTheme.Background.baseColor
-                Text(verbatim: "\(index + 1)")
-                    .font(.system(size: AppTheme.FontSize.xs, weight: AppTheme.FontWeight.medium))
-                    .foregroundStyle(AppTheme.Text.mutedColor)
-                    .monospacedDigit()
+                // 有旁白就摆那句话；还没写到这一镜才退回编号 ——
+                // **编号是没话可说时的下策，不是默认。**
+                if let line = narrations.indices.contains(index) ? narrations[index] : nil, !line.isEmpty {
+                    Text(verbatim: line)
+                        .font(.system(size: AppTheme.FontSize.xs))
+                        .foregroundStyle(AppTheme.Text.secondaryColor)
+                        .lineLimit(3)
+                        .multilineTextAlignment(.center)
+                        .padding(.horizontal, AppTheme.Spacing.sm)
+                } else {
+                    Text(verbatim: "\(index + 1)")
+                        .font(.system(size: AppTheme.FontSize.xs, weight: AppTheme.FontWeight.medium))
+                        .foregroundStyle(AppTheme.Text.mutedColor)
+                        .monospacedDigit()
+                }
             }
         }
         .frame(width: AppTheme.MetagDraft.stripCellWidth,
