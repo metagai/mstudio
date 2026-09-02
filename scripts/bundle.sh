@@ -293,7 +293,9 @@ if [ "$MODE" = "dev" ] || [ "$MODE" = "dmg" ]; then
     VER="$(/usr/libexec/PlistBuddy -c "Print :CFBundleShortVersionString" "$APP/Contents/Info.plist")"
     DMG="$ROOT/.build/METAG-$VER-mac.dmg"
     echo "==> Building DMG $DMG"
-    rm -f "$DMG"
+    # 旧版本的安装包一起清掉。**每次打包留一个 70MB，从来没人清** ——
+    # 十个版本之后 .build 里就躺着 700MB 谁也不会再打开的东西。
+    rm -f "$ROOT"/.build/METAG-*-mac.dmg "$DMG"
     STAGING="$(mktemp -d)"
     cp -R "$APP" "$STAGING/METAG.app"
     ln -s /Applications "$STAGING/Applications"
