@@ -154,7 +154,9 @@ final class ModelCatalog {
             ),
             creditsPerSecond: rate,
             // The gateway gates on credits, not on subscription tier.
-            paidOnly: false
+            paidOnly: false,
+            blurb: engine.blurb(for: language),
+            creditsPerShot: engine.credits_per_shot
         )
     }
 
@@ -233,6 +235,14 @@ struct CatalogEntry: Decodable, Sendable {
     let creditsPerSecondUpscale: Double?
     let upscalePricing: UpscalePricing?
     let paidOnly: Bool
+    /// 这一档适合拍什么，一句话。**报价单里本来就有，而我们一直扔掉。**
+    ///
+    /// 草案表那边早就在显示它了（"这一档适合拍什么"），而设置里的模型页
+    /// 只有一排名字和开关 —— 用户看不出"前沿"和"专业"差在哪，只能靠猜。
+    /// 一张只有名字的库存清单，不是一套可以挑的积木。
+    var blurb: String? = nil
+    /// 每镜多少 credits。同上：报价单给了，我们没留。
+    var creditsPerShot: Int? = nil
 
     enum Kind: String, Decodable, Sendable { case video, image, audio, upscale }
     enum ResponseShape: String, Decodable, Sendable {
@@ -299,7 +309,9 @@ struct CatalogEntry: Decodable, Sendable {
         audioPricing: AudioPricing? = nil,
         creditsPerSecondUpscale: Double? = nil,
         upscalePricing: UpscalePricing? = nil,
-        paidOnly: Bool = false
+        paidOnly: Bool = false,
+        blurb: String? = nil,
+        creditsPerShot: Int? = nil
     ) {
         self.id = id
         self.kind = kind
@@ -318,6 +330,8 @@ struct CatalogEntry: Decodable, Sendable {
         self.creditsPerSecondUpscale = creditsPerSecondUpscale
         self.upscalePricing = upscalePricing
         self.paidOnly = paidOnly
+        self.blurb = blurb
+        self.creditsPerShot = creditsPerShot
     }
 
     init(from decoder: Decoder) throws {

@@ -10,10 +10,16 @@ struct ModelsPane: View {
     private struct Row: Identifiable {
         let id: String
         let displayName: String
-        /// 这一档是什么（`1080p · 5s` 这类）。**目录里一直有，而这一屏一直没用** ——
-        /// 于是它是一张只有名字和开关的库存清单：他看不出"前沿"和"专业"差在哪，
-        /// 只能靠猜。同一份数据草案表那边早就在显示了。
+        /// 这一档是什么（`1080p · 5s` 这类）。
         let spec: String?
+        /// **这一档适合拍什么，一句话。** 报价单里本来就有，
+        /// 草案表那边也早就在显示 —— 而这一屏一直没用。
+        ///
+        /// 一张只有名字和开关的库存清单，不是一套可以挑的积木：
+        /// 他看不出"前沿"和"专业"差在哪，只能靠猜。
+        let blurb: String?
+        /// 每镜多少 credits。**挑一档就是在花钱**，而这一屏原来一个数字都没有。
+        let creditsPerShot: Int?
         let paidOnly: Bool
         let providerIconKey: String?
     }
@@ -49,6 +55,9 @@ struct ModelsPane: View {
             displayName: entry.displayName,
             spec: entry.description?.trimmingCharacters(in: .whitespaces).isEmpty == false
                 ? entry.description?.trimmingCharacters(in: .whitespaces) : nil,
+            blurb: entry.blurb?.trimmingCharacters(in: .whitespaces).isEmpty == false
+                ? entry.blurb?.trimmingCharacters(in: .whitespaces) : nil,
+            creditsPerShot: entry.creditsPerShot,
             paidOnly: entry.paidOnly,
             providerIconKey: entry.providerIconKey
         )
@@ -116,13 +125,29 @@ struct ModelsPane: View {
                 Text(row.displayName)
                     .font(.system(size: AppTheme.FontSize.md))
                     .foregroundStyle(locked ? AppTheme.Text.tertiaryColor : AppTheme.Text.primaryColor)
-                // 有就说，没有就不说 —— **不给一句凑出来的介绍**。
-                if let spec = row.spec {
-                    Text(verbatim: spec)
+                // **这一档适合拍什么。** 有就说，没有就不说 ——
+                // 不给一句凑出来的介绍。
+                if let blurb = row.blurb {
+                    Text(verbatim: blurb)
                         .font(.system(size: AppTheme.FontSize.xs))
-                        .foregroundStyle(AppTheme.Text.mutedColor)
-                        .lineLimit(1)
+                        .foregroundStyle(AppTheme.Text.secondaryColor)
+                        .lineLimit(2)
+                        .fixedSize(horizontal: false, vertical: true)
                 }
+                // 规格和单价并排：**挑一档就是在花钱**，
+                // 而这一屏原来一个数字都没有。
+                HStack(spacing: AppTheme.Spacing.xs) {
+                    if let spec = row.spec {
+                        Text(verbatim: spec)
+                    }
+                    if let price = row.creditsPerShot {
+                        if row.spec != nil { Text(verbatim: "·") }
+                        Text(L10n.string("\(price.formatted()) credits / shot"))
+                            .monospacedDigit()
+                    }
+                }
+                .font(.system(size: AppTheme.FontSize.xs))
+                .foregroundStyle(AppTheme.Text.mutedColor)
             }
             Spacer(minLength: AppTheme.Spacing.lg)
             if locked {
