@@ -298,7 +298,7 @@ if [ "$MODE" = "dev" ] || [ "$MODE" = "dmg" ]; then
     cp -R "$APP" "$STAGING/METAG.app"
     ln -s /Applications "$STAGING/Applications"
     cp "$RESOURCES/AppIcon.icns" "$STAGING/.VolumeIcon.icns"
-    hdiutil create -volname "METAG" -srcfolder "$STAGING" -ov -format UDZO "$DMG"
+    "$ROOT/scripts/dmg/layout.sh" "$STAGING" "$DMG"
     rm -rf "$STAGING"
     echo "==> Done: $DMG (ad-hoc signed, NOT notarised —"
     echo "    first launch needs Privacy & Security -> Open Anyway)"
@@ -365,11 +365,9 @@ STAGING="$(mktemp -d)"
 cp -R "$APP" "$STAGING/METAG.app"
 ln -s /Applications "$STAGING/Applications"
 cp "$RESOURCES/AppIcon.icns" "$STAGING/.VolumeIcon.icns"
-hdiutil create \
-  -volname "METAG" \
-  -srcfolder "$STAGING" \
-  -ov -format UDZO \
-  "$DMG"
+# 摆样子和压缩都在这里面 —— **两条 DMG 路走同一份实现**，
+# 各写一遍的话迟早只有一条是好看的，而好看的那条不一定是发出去的那条。
+"$ROOT/scripts/dmg/layout.sh" "$STAGING" "$DMG"
 rm -rf "$STAGING"
 
 echo "==> Codesigning DMG"
