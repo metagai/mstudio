@@ -215,7 +215,11 @@ def main():
         for rel, n in cards[:10]:
             print(f"       {rel}:{n}")
     elif len(cards) < HIGH_WATER:
-        print(f"OK   手搓卡片降到 {len(cards)} 处 —— **把 HIGH_WATER 改成 {len(cards)}**（棘轮只能往下）")
+        # **降下来也判红。** 上一版这里打的是 OK ——
+        # 而一句"请把数字改小"的 OK，和没有这句话是一回事：
+        # 隔壁那把尺子的下限从 18 落后到 27，中间那 9 次提醒全被无视了。
+        failed = True
+        print(f"FAIL 手搓卡片降到 {len(cards)} 处 —— 把 HIGH_WATER 改成 {len(cards)}（棘轮只能往下，而且要真拧一下）")
     else:
         print(f"OK   手搓卡片 {len(cards)} 处，和棘轮持平")
 

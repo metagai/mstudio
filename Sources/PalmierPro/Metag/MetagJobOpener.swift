@@ -107,7 +107,6 @@ enum MetagJobOpener {
             // 整件事一步撤销：他做的是"打开一条片子"这一个动作。
             if added > 0 {
                 editor.undo.perform(L10n.string("Add Film")) {
-                    let fps = editor.timeline.fps
                     // 画面一条轨、声音一条轨。**新建工程的时间线是空的**，
                     // 所以先把轨道立起来 —— `addClips` 只往已有的轨上放。
                     editor.timeline.tracks.insert(Track(type: .audio), at: 0)
@@ -117,16 +116,21 @@ enum MetagJobOpener {
 
                     // 旁白对齐到各自那一镜的起点 —— 它比镜头短，
                     // 一段接一段挨着放会越走越偏，第四镜的话会压在第三镜上。
-                    let starts = MetagFilmLayout.startFrames(
+                    // **这里没有 fps 可传** —— 起点按秒算，换算由时间线自己做。
+                    let starts = MetagFilmLayout.startSeconds(
                         shotCount: shotAssets.count,
                         clipSeconds: job.shot_clips?.map(\.seconds),
-                        fps: fps,
-                        measured: { editor.clipDurationFrames(for: shotAssets[$0].asset, segment: nil) }
+                        measured: { shotAssets[$0].asset.duration }
+                    ).map(editor.frame(atSeconds:))
+                    let placements = MetagFilmLayout.narrationFrames(
+                        shots: shotAssets.map(\.index),
+                        narrations: Set(narrationAssets.map(\.index)),
+                        starts: starts
                     )
-                    for (slot, entry) in shotAssets.enumerated() {
-                        guard let narration = narrationAssets.first(where: { $0.index == entry.index })
+                    for (shot, frame) in placements {
+                        guard let narration = narrationAssets.first(where: { $0.index == shot })
                         else { continue }
-                        editor.addClips(assets: [narration.asset], trackIndex: 1, startFrame: starts[slot])
+                        editor.addClips(assets: [narration.asset], trackIndex: 1, startFrame: frame)
                     }
 
                     if let bed = scoreAsset {

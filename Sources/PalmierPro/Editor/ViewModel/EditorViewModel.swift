@@ -652,6 +652,16 @@ final class EditorViewModel {
         return clipIds
     }
 
+    /// 秒 → 帧，**fps 从这条时间线自己读**。
+    ///
+    /// 存在的理由是"少一个能传错的参数"：铺片子那一处原来自己拿着一个 fps
+    /// 去调 `MetagFilmLayout.startFrames`，而把它传成 0 —— 源码字符串一字不改 ——
+    /// 每一段旁白都会落到开头（正是 web 端那次「多个音轨叠加」）。
+    /// 判据看不见这种错；**让它传不了才是解法**。
+    func frame(atSeconds seconds: Double) -> Int {
+        max(0, secondsToFrame(seconds: seconds, fps: max(1, timeline.fps)))
+    }
+
     func clipDurationFrames(for asset: MediaAsset, segment: ClosedRange<Double>?) -> Int {
         let seconds = segment.map { $0.upperBound - $0.lowerBound } ?? asset.duration
         return max(1, secondsToFrame(seconds: seconds, fps: timeline.fps))

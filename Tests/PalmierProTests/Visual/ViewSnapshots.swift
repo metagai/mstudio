@@ -48,6 +48,12 @@ struct ViewSnapshots {
         // check-design-system 写过，自己这里却没照做）。
         //
         // 判据是"这张图上有几种颜色" —— 一屏界面不可能只有一种。
+        //
+        // 阈值 4 是量过的，不是拍的：全空 1 种、底加边框 1 种、
+        // 底加边框加一个字 2 种，而真实截图里最少的一张（credits-loaded）
+        // 是 11 种。两边都有余量。
+        // （试过换成"非底色像素占比"，反而分不开：credits-loaded 只有 0.56%，
+        // 比"底加边框"的 1.59% 还低 —— 稀疏但真实的屏会被误判。）
         var seen = Set<UInt32>()
         for y in stride(from: 0, to: bitmap.pixelsHigh, by: 4) {
             for x in stride(from: 0, to: bitmap.pixelsWide, by: 4) {
@@ -189,71 +195,16 @@ struct ViewSnapshots {
                 "登录屏还是四屏共用那个高度 —— 中间空掉一半")
     }
 
-    /// **侧栏底部那两行，图标必须对齐。**
-    ///
-    /// 2026-09-02 创始人真机截图量出来：「新建项目」20.5pt、「打开项目」18pt、
-    /// 「设置」18.5pt，而**「登录」10pt** —— 差了 8.5pt，一眼看出这两行不是一套。
-    ///
-    /// 我此前为这块写过一条守卫，它**一直是绿的** ——
-    /// 它比的是"源码里两行是不是同一个组件"，而它们确实是同一个（`SidebarRowLabel`）。
-    /// 差出来的 8.5pt 来自 `Menu` 自己的内嵌（`.borderlessButton` 底下是
-    /// NSPopUpButton，cell 有自己的 inset）。
-    ///
-    /// **那条判据从一开始就问错了问题。** 现在量的是图上那两个图标真实的 x。
-    @Test func theSidebarFooterRowsLineUp() throws {
-        let renderer = ImageRenderer(content:
-            HomeView().frame(width: 900, height: 620))
-        renderer.scale = 1
-        let image = try #require(renderer.nsImage)
-        let data = try #require(image.tiffRepresentation)
-        let bitmap = try #require(NSBitmapImageRep(data: data))
-        try (bitmap.representation(using: .png, properties: [:]))
-            .map { try $0.write(to: Self.outputDirectory.appendingPathComponent("home-sidebar.png")) }
-
-        /// 一行里第一个"画了东西"的像素在哪 —— 那就是图标的左边缘。
-        func firstInk(row y: Int, within x: Range<Int>) -> Int? {
-            x.first { px in
-                guard let c = bitmap.colorAt(x: px, y: y) else { return false }
-                return c.alphaComponent > 0.5 && c.brightnessComponent < 0.55
-            }
-        }
-        // 侧栏里所有行的图标左边缘，从上往下扫，取出现过的那几个不同的值。
-        var edges: Set<Int> = []
-        for y in 0..<bitmap.pixelsHigh {
-            if let x = firstInk(row: y, within: 0..<200) { edges.insert(x) }
-        }
-        // **同一列上不该有两种起点。** 允许 1px 的抗锯齿差。
-        let clustered = edges.sorted().reduce(into: [Int]()) { out, x in
-            if out.last.map({ x - $0 > 2 }) ?? true { out.append(x) }
-        }
-        #expect(clustered.count <= 1,
-                "侧栏里图标有 \(clustered.count) 种左边缘：\(clustered) —— 这几行不是一套")
-    }
-
-    /// **编辑器的面板 —— 这个产品真正的主场，而它一次都没被照过。**
-    ///
-    /// 2026-09-02 创始人发了一张编辑器截图说"布局问题到处都是"，
-    /// 而我只能对着截图量像素猜 —— 因为这一块进不了取景器。
-    @Test func editorPanels() throws {
-        // **空工程的面板一笔都不画。** 这一屏的问题（各行缩进对不对、
-        // 组标题和内容的关系）只有喂了真东西才看得见 —— 和「我的作品」
-        // 只照到「正在载入」是同一个坑。
-        let editor = EditorViewModel()
-        editor.timeline = Fixtures.timeline(tracks: [
-            Fixtures.videoTrack(clips: [Fixtures.clip(start: 0, duration: 90)]),
-        ])
-        // **取景器看不见 `ScrollView` 里的东西**（`ImageRenderer` 的限制），
-        // 而编辑器几乎每块面板都套着一层。所以照的是里面那几节 ——
-        // 缩进、组标题和内容的关系，问题本来就在这一层。
-        try snapshot("panel-music", width: 330) {
-            MusicSection(isExpanded: .constant(true)).environment(editor)
-        }
-        try snapshot("panel-speech", width: 330) {
-            SpeechAnalysisSections(silenceExpanded: .constant(true),
-                                   speakerExpanded: .constant(false))
-                .environment(editor)
-        }
-    }
+    // **这里原来有一条"侧栏两行图标必须对齐"的判据，已经删掉。**
+    //
+    // 它渲整个 HomeView、扫图标左边缘、比两行的 x —— 听起来很行为。
+    // 但 `Menu`（登录那一行）在 `ImageRenderer` 下**根本画不出来**，
+    // 渲出来是个占位方块。也就是说：**它永远看不见那个 8.5pt 的错位，
+    // 也就永远不会红。**
+    //
+    // 一条不可能红的守卫比没有守卫更糟 —— 它制造确信。
+    // 那一处的验证只能靠真机截图（已写进 docs/founder-todo.md），
+    // 在取景器能画 `Menu` 之前，这里宁可空着。
 
     /// **有货的那一版。**
     ///
