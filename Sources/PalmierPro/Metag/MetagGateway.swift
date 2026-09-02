@@ -168,6 +168,25 @@ enum MetagGateway {
         /// 批准之后拿到的时间线上只有画面和旁白 ——
         /// **他看的那条片子，和他拿到的那条不是同一条。**
         let music_bed: String?
+        /// 词级字幕。网关那侧逐句合成时就对齐好了 ——
+        /// 「模板、词级对齐、出片三块能力各自建好很久，缺的就是这一根线」。
+        ///
+        /// **Mac 有一整个字幕面板，而它一直靠转写自己的旁白来拿字幕** ——
+        /// 慢、要联网、要额度，而且不可能比原文更准：那段文字本来就是我们写的。
+        let subtitles: [Subtitle]?
+
+        /// 一句旁白和它的词级时间。字段名和网关那侧一致，直接解。
+        struct Subtitle: Decodable, Sendable {
+            struct Word: Decodable, Sendable {
+                let text: String
+                let startTime: Double
+                let endTime: Double
+            }
+            let text: String
+            let startTime: Double
+            let endTime: Double
+            let words: [Word]?
+        }
         /// Per-shot re-shoot state: queued / running / done / "failed: …", nil when never re-shot.
         let reshoot: [String?]?
         /// Per-shot takes, best first. The delivered take is always element 0.

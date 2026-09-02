@@ -1540,3 +1540,4 @@
 "This one didn't come out. We can see it on our side — try again, or change a line." = "Esta no salió. Lo vemos por nuestro lado: inténtalo de nuevo o cambia una línea.";
 "Loaded %@ shots and %@ narration tracks — no score." = "Se cargaron %@ tomas y %@ pistas de narración: sin música.";
 "Loaded %@ shots — no score." = "Se cargaron %@ tomas: sin música.";
+"Loaded %@ shots, with score and captions." = "Se cargaron %@ tomas, con música y subtítulos.";

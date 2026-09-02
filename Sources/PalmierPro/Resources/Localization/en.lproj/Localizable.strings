@@ -1539,3 +1539,4 @@
 "This one didn't come out. We can see it on our side — try again, or change a line." = "This one didn't come out. We can see it on our side — try again, or change a line.";
 "Loaded %@ shots and %@ narration tracks — no score." = "Loaded %@ shots and %@ narration tracks — no score.";
 "Loaded %@ shots — no score." = "Loaded %@ shots — no score.";
+"Loaded %@ shots, with score and captions." = "Loaded %@ shots, with score and captions.";

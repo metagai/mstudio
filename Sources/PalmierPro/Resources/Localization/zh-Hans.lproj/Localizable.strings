@@ -1543,3 +1543,4 @@
 "This one didn't come out. We can see it on our side — try again, or change a line." = "这一条没出来。我们这边看得到 —— 再试一次，或者改一句话。";
 "Loaded %@ shots and %@ narration tracks — no score." = "载入 %@ 镜和 %@ 条旁白 —— 没取到配乐。";
 "Loaded %@ shots — no score." = "载入 %@ 镜 —— 没取到配乐。";
+"Loaded %@ shots, with score and captions." = "载入 %@ 镜，配乐和字幕都在。";

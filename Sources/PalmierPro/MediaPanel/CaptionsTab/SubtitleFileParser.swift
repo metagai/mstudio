@@ -3,9 +3,23 @@ import UniformTypeIdentifiers
 
 /// A subtitle cue timed in timeline seconds, with markup already stripped.
 struct SubtitleCue: Equatable, Sendable {
+    /// 一个词和它的时间。**秒制** —— 帧要到铺进时间线那一步才知道。
+    struct Word: Equatable, Sendable {
+        var text: String
+        var startSeconds: Double
+        var endSeconds: Double
+    }
+
     var text: String
     var startSeconds: Double
     var endSeconds: Double
+    /// 词级时间。SRT / WebVTT 里没有这个，所以是可选的；
+    /// **METAG 的片子自带**（网关那侧逐句合成时就对齐好了），
+    /// 有了它卡拉OK 那套模板才有东西可放。
+    ///
+    /// 给已有的类型加一层可选能力，而不是另开一个"带词的 cue" ——
+    /// 两个类型就会有两条铺字幕的路，而它们迟早不一样。
+    var words: [Word]?
 }
 
 /// Parses SRT and WebVTT subtitle files into plain-text cues.

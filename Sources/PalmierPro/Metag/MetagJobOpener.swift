@@ -96,8 +96,27 @@ enum MetagJobOpener {
                 score = true
             }
 
+            // **字幕。** 片子自带词级字幕（网关逐句合成时就对齐好了），
+            // 而这个面板此前拿字幕的唯一办法是转写这条片子自己的旁白 ——
+            // 慢、要联网、要额度，**而且不可能比原文更准：那段话本来就是我们写的**。
+            //
+            // 单独一步撤销（"Add Captions"）：它改了他的时间线，
+            // 而他要的是片子 —— 一次 ⌘Z 就能拿掉。
+            var captioned = false
+            if added > 0, let subs = job.subtitles {
+                let cues = MetagSubtitles.cues(from: subs)
+                if !cues.isEmpty,
+                   let specs = try? await CaptionSpecBuilder.build(
+                    cues: cues, fps: editor.timeline.fps,
+                    canvasWidth: editor.timeline.width, canvasHeight: editor.timeline.height,
+                    style: .caption, center: AppTheme.Caption.defaultCenter),
+                   !specs.isEmpty {
+                    captioned = !editor.placeCaptionTrack(specs, actionName: "Add Captions").isEmpty
+                }
+            }
+
             editor.mediaPanelToast = MediaPanelToast(
-                message: message(added: added, narrations: narrations,
+                message: message(added: added, narrations: narrations, captioned: captioned,
                                  score: score, salvaged: job.status == "failed"),
                 kind: added > 0 ? .success : .warning,
                 // **他刚拿到片子，这一刻请他留住它。**
@@ -119,7 +138,8 @@ enum MetagJobOpener {
 
     @MainActor
 
-    private static func message(added: Int, narrations: Int, score: Bool, salvaged: Bool) -> String {
+    private static func message(added: Int, narrations: Int, captioned: Bool,
+                                score: Bool, salvaged: Bool) -> String {
         // 取不到就直说。含糊其辞比说不出口更伤信任。
         guard added > 0 else {
             // 取件是内存盘，过期就真的没有了 —— 说清楚它要重做，
@@ -136,6 +156,10 @@ enum MetagJobOpener {
             return narrations > 0
                 ? L10n.string("Loaded \(added.formatted()) shots and \(narrations.formatted()) narration tracks — no score.")
                 : L10n.string("Loaded \(added.formatted()) shots — no score.")
+        }
+        // 字幕铺上了就说一句 —— 他没要过它，得知道它在那儿、也知道能撤掉。
+        if captioned {
+            return L10n.string("Loaded \(added.formatted()) shots, with score and captions.")
         }
         return narrations > 0
             ? L10n.string("Loaded \(added.formatted()) shots and \(narrations.formatted()) narration tracks.")

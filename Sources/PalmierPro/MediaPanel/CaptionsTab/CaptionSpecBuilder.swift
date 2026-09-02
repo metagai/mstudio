@@ -101,7 +101,20 @@ enum CaptionSpecBuilder {
                     for: cue.text, style: style, center: center,
                     canvas: CGSize(width: canvasWidth, height: canvasHeight)
                 ),
-                captionGroupId: groupId
+                captionGroupId: groupId,
+                // 词级时间跟着走。**帧是相对这一段自己的** ——
+                // 卡拉OK 高亮是在片段内部走的，不是在时间线上走的。
+                // SRT / WebVTT 没有词，那一支照旧是 nil。
+                words: cue.words.map { words in
+                    words.compactMap { word -> WordTiming? in
+                        let ws = Int((word.startSeconds * Double(fps)).rounded()) - startFrame
+                        let we = Int((word.endSeconds * Double(fps)).rounded()) - startFrame
+                        let clampedStart = max(0, min(ws, endFrame - startFrame))
+                        let clampedEnd = max(clampedStart, min(we, endFrame - startFrame))
+                        guard clampedEnd > clampedStart else { return nil }
+                        return WordTiming(text: word.text, startFrame: clampedStart, endFrame: clampedEnd)
+                    }
+                }.flatMap { $0.isEmpty ? nil : $0 }
             ))
         }
         // Zero-gap settings also make the trailing timeline-end hold a no-op.
