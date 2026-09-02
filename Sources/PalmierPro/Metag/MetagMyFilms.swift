@@ -135,7 +135,7 @@ struct MetagMyFilmsView: View {
                         .buttonStyle(.plain)
                         .foregroundStyle(AppTheme.Accent.brand)
                         .disabled(!f.retrievable || f.status != "done" || model.busy != nil)
-                        .help(L10n.key("Send it to someone"))
+                        .help(L10n.string("Send it to someone"))
                         Button {
                             Task { await model.remove(f.job_id) }
                         } label: {
@@ -145,7 +145,7 @@ struct MetagMyFilmsView: View {
                         .buttonStyle(.plain)
                         .foregroundStyle(AppTheme.Text.secondaryColor)
                         .disabled(model.busy != nil)
-                        .help(L10n.key("Delete"))
+                        .help(L10n.string("Delete"))
                     }
                 }
             }

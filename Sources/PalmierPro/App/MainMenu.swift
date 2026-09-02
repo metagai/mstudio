@@ -61,8 +61,8 @@ enum MainMenuBuilder {
         menu.addItem(exportItem)
 
         menu.addItem(.separator())
-        menu.addItem(NSMenuItem(title: L10n.key("Export Recipe…"), action: #selector(EditorActions.exportRecipe(_:)), keyEquivalent: ""))
-        menu.addItem(NSMenuItem(title: L10n.key("Import Recipe…"), action: #selector(EditorActions.importRecipe(_:)), keyEquivalent: ""))
+        menu.addItem(NSMenuItem(title: L10n.string("Export Recipe…"), action: #selector(EditorActions.exportRecipe(_:)), keyEquivalent: ""))
+        menu.addItem(NSMenuItem(title: L10n.string("Import Recipe…"), action: #selector(EditorActions.importRecipe(_:)), keyEquivalent: ""))
 
         item.submenu = menu
         return item

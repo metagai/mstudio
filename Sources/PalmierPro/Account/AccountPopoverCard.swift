@@ -128,7 +128,7 @@ struct AccountPopoverCard: View {
                 SettingsWindowController.shared.show()
                 dismiss()
             }
-            footerButton(label: L10n.key("Feedback"), systemImage: "bubble.left.and.bubble.right") {
+            footerButton(label: L10n.string("Feedback"), systemImage: "bubble.left.and.bubble.right") {
                 FeedbackMail.open()
                 dismiss()
             }

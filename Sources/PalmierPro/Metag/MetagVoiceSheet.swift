@@ -180,7 +180,7 @@ struct MetagVoiceSheet: View {
                     .lineLimit(1)
             }
 
-            TextField(L10n.key("Name this voice"), text: $form.name)
+            TextField(L10n.string("Name this voice"), text: $form.name)
 
             // 授权：不预勾选。措辞说清楚"本人或已获授权"，因为这正是网关记录 IP 要留痕的那件事。
             Toggle(isOn: $form.consent) {
@@ -215,7 +215,7 @@ struct MetagVoiceSheet: View {
                 .font(.system(size: AppTheme.FontSize.smMd, weight: AppTheme.FontWeight.medium))
                 .foregroundStyle(AppTheme.Text.primaryColor)
 
-            TextField(L10n.key("What should it say?"), text: $script, axis: .vertical)
+            TextField(L10n.string("What should it say?"), text: $script, axis: .vertical)
                 .lineLimit(2...5)
 
             HStack(spacing: AppTheme.Spacing.smMd) {

@@ -268,9 +268,18 @@ final class AccountService {
 
 extension AccountService {
     /// Verified email when we have one. Never `sub` — that is an internal identifier.
+    /// 这张卡最上面那行字。
+    ///
+    /// **原来没登录时写的是 "Signed out"** —— 两处问题：它是个裸字面量
+    /// （压根没登记过，非英文用户看到的就是这两个英文词），
+    /// 而且它在**描述机器自己的状态**。在他能按下登录的那张卡上，
+    /// 最大的字应该说清他能换到什么。
+    ///
+    /// 换成产品里本来就在用的那句承诺（网关的临时身份过期文案是同一句），
+    /// **一件事全产品一个说法。**
     var displayPrimaryText: String {
-        guard isSignedIn else { return "Signed out" }
-        return email ?? "Signed in"
+        guard isSignedIn else { return L10n.string("Sign in and your films stay with you") }
+        return email ?? L10n.string("Signed in")
     }
 
     /// Second line: the plan, unless the first line already used it.

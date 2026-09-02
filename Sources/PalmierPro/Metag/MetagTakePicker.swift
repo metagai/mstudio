@@ -134,8 +134,8 @@ struct MetagTakePicker: View {
                 return
             }
             let previousURL = asset.url
-            editor.undo.perform(L10n.key("Pick a take")) {
-                editor.registerTimelineUndo(L10n.key("Pick a take")) { vm in
+            editor.undo.perform(L10n.string("Pick a take")) {
+                editor.registerTimelineUndo(L10n.string("Pick a take")) { vm in
                     vm.relinkAsset(id: assetId, to: previousURL)
                 }
                 editor.relinkAsset(id: assetId, to: installed)

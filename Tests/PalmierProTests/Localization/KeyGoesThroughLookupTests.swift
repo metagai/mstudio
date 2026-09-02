@@ -53,6 +53,24 @@ struct KeyGoesThroughLookupTests {
                 "超时那一刻还是英文原文")
     }
 
+    /// **他还没登录时，那张卡最上面那行字。**
+    ///
+    /// 原来是裸字面量 `"Signed out"` —— 压根没登记过词条，
+    /// 于是非英文用户看到的就是这两个英文词（而旁边的「设置」是中文）。
+    /// `check-l10n.py` 抓的是裸**中文**，裸英文它不管。
+    ///
+    /// 顺带换掉了那句话本身：在他能按下登录的那张卡上，
+    /// 最大的字**不该是机器在描述自己的状态**，该说清他能换到什么。
+    @Test @MainActor func theSignedOutHeadlineIsInHisLanguage() throws {
+        let suite = try #require(UserDefaults(suiteName: "l10n-out-\(UUID().uuidString)"))
+        defer { suite.removePersistentDomain(forName: suite.description) }
+        let zh = AppLocalization(defaults: suite, preferredLanguages: ["zh-Hans"])
+        let line = AppLocalization.Catalog.withCatalog(zh.catalog) {
+            AccountService.shared.displayPrimaryText
+        }
+        #expect(line == "登录，作品就跟着你走", "没登录那张卡上写的是「\(line)」")
+    }
+
     /// **全局那本表不许等着谁来填对。**
     ///
     /// 第一版它的初始值是 `.main` bundle，等 `AppLocalization.shared` 初始化时
@@ -81,15 +99,24 @@ struct KeyGoesThroughLookupTests {
         let files = try #require(FileManager.default.enumerator(at: root, includingPropertiesForKeys: nil))
         var offenders: [String] = []
         var scanned = 0
+        // **接手的那个 API 本身就是逐字的** —— 这几个不需要看下游，
+        // 交进去就是把英文原文印在屏幕上：
+        // SwiftUI 的 `TextField(String,…)` / `.help(String)`、
+        // AppKit 的 `NSMenuItem(title:)`、`setActionName`（撤销菜单里那行字）。
+        //
+        // 存进枚举再由 `L10n.string(key:)` 取出来的写法（`case .x: L10n.key(…)`）
+        // 是**正当**的，不在此列 —— 第一版没分清，把 190 处正当写法一起判红了。
+        let verbatimSinks = ["Text(", "Button(", "Label(", "Toggle(", "Picker(",
+                             "TextField(", ".help(", "NSMenuItem(title: ",
+                             "undo.perform(", "registerTimelineUndo("]
         for case let url as URL in files where url.pathExtension == "swift" {
             guard let text = try? String(contentsOf: url, encoding: .utf8) else { continue }
             scanned += 1
             for (n, line) in text.split(separator: "\n", omittingEmptySubsequences: false).enumerated() {
                 let code = line.trimmingCharacters(in: .whitespaces)
                 guard !code.hasPrefix("//") else { continue }
-                for control in ["Text(", "Button(", "Label(", "Toggle(", "Picker("]
-                where code.contains(control + "L10n.key(\"") {
-                    offenders.append("\(url.lastPathComponent):\(n + 1)")
+                for sink in verbatimSinks where code.contains(sink + "L10n.key(\"") {
+                    offenders.append("\(url.lastPathComponent):\(n + 1)  \(code.prefix(56))")
                 }
             }
         }

@@ -11,7 +11,7 @@ struct GeneratingOverlay: View {
         var barHeight: CGFloat { self == .preview ? 4 : 3 }
     }
 
-    var label: String = L10n.key("Generating…")
+    var label: String = L10n.string("Generating…")
     var size: Size = .thumbnail
 
     @State private var progress: CGFloat = 0

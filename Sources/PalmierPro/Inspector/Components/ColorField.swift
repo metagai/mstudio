@@ -7,7 +7,7 @@ struct ColorField: View {
     let displayColor: Color
     let onUserChange: (Color) -> Void
     var supportsOpacity: Bool = true
-    var accessibilityLabel: String = L10n.key("Choose color")
+    var accessibilityLabel: String = L10n.string("Choose color")
     var swatchSize = CGSize(width: AppTheme.IconSize.mdLg, height: AppTheme.IconSize.xs)
 
     var body: some View {

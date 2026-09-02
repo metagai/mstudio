@@ -1507,7 +1507,7 @@ final class TimelineView: NSView, NSPopoverDelegate {
             aiItems.append(aiEditItem)
         }
         if let reshootSubmenu = reshootSubmenu(for: clip.id) {
-            let item = NSMenuItem(title: L10n.key("Re-shoot"), action: nil, keyEquivalent: "")
+            let item = NSMenuItem(title: L10n.string("Re-shoot"), action: nil, keyEquivalent: "")
             item.submenu = reshootSubmenu
             aiItems.append(item)
         }

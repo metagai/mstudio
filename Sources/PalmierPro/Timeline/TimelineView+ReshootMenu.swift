@@ -25,7 +25,7 @@ extension TimelineView {
         menu.addItem(.separator())
         // 挑一条：候选一直躺在 job.alts 里，而"Three More Takes"是自动采用最后一条。
         // 用户为几个候选付了钱，挑选权就该在他手里。
-        let pick = NSMenuItem(title: L10n.key("Pick a Take…"), action: #selector(performPickTake(_:)), keyEquivalent: "")
+        let pick = NSMenuItem(title: L10n.string("Pick a Take…"), action: #selector(performPickTake(_:)), keyEquivalent: "")
         pick.target = self
         pick.representedObject = clipId
         pick.toolTip = L10n.key("Compare the takes this shot already has and choose one.")
@@ -34,7 +34,7 @@ extension TimelineView {
         // Always offered rather than shown only when a shot is flagged: menu construction is
         // synchronous and the scores live on the server. Clicking says what it found, including
         // that nothing needed fixing.
-        let fix = NSMenuItem(title: L10n.key("Fix Flagged Shots"), action: #selector(performFixFlagged(_:)), keyEquivalent: "")
+        let fix = NSMenuItem(title: L10n.string("Fix Flagged Shots"), action: #selector(performFixFlagged(_:)), keyEquivalent: "")
         fix.target = self
         fix.representedObject = clipId
         fix.toolTip = L10n.key("Re-runs only shots the automatic check flagged. What you have is kept as a take.")

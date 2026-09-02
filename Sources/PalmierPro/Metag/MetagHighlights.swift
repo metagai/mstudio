@@ -74,7 +74,7 @@ struct MetagHighlightsSheet: View {
                 .font(.system(size: AppTheme.FontSize.xxs))
                 .foregroundStyle(AppTheme.Text.tertiaryColor)
 
-            TextField(L10n.key("Anything specific? e.g. 3 clips, 10 seconds each"),
+            TextField(L10n.string("Anything specific? e.g. 3 clips, 10 seconds each"),
                       text: $model.preferences)
                 .disabled(model.busy)
 

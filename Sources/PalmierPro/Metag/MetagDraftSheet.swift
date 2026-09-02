@@ -423,7 +423,7 @@ struct MetagDraftSheet: View {
 
     private var promptStage: some View {
         VStack(alignment: .leading, spacing: AppTheme.Spacing.sm) {
-            TextField(L10n.key("Say what you want to film, in one line"), text: $model.prompt, axis: .vertical)
+            TextField(L10n.string("Say what you want to film, in one line"), text: $model.prompt, axis: .vertical)
                 .lineLimit(2...4)
                 // 一键成片这一屏最可能被粘进来的就是一份大纲。收成卡片，
                 // 别把输入框撑成一堵墙。

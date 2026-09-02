@@ -101,8 +101,8 @@ enum MetagReshoot {
             )
             return
         }
-        editor.undo.perform(L10n.key("Fix Flagged Shots")) {
-            editor.registerTimelineUndo(L10n.key("Fix Flagged Shots")) { vm in
+        editor.undo.perform(L10n.string("Fix Flagged Shots")) {
+            editor.registerTimelineUndo(L10n.string("Fix Flagged Shots")) { vm in
                 for item in staged { vm.relinkAsset(id: item.asset.id, to: item.from) }
             }
             for item in staged { editor.relinkAsset(id: item.asset.id, to: item.to) }
@@ -128,8 +128,8 @@ enum MetagReshoot {
             // silently no-op and we would still report success, so check before claiming it.
             guard editor.mediaAssets.contains(where: { $0.id == asset.id }) else { return false }
             let previousURL = asset.url
-            editor.undo.perform(L10n.key("Re-shoot")) {
-                editor.registerTimelineUndo(L10n.key("Re-shoot")) { vm in
+            editor.undo.perform(L10n.string("Re-shoot")) {
+                editor.registerTimelineUndo(L10n.string("Re-shoot")) { vm in
                     vm.relinkAsset(id: asset.id, to: previousURL)
                 }
                 editor.relinkAsset(id: asset.id, to: installed)

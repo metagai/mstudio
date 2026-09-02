@@ -205,7 +205,7 @@ struct CaptionTab: View {
                 .buttonStyle(.capsule(.secondary))
                 .focusable(false)
                 .disabled(selectedTemplate == nil)
-                .help(L10n.key("Restyle the captions already on the timeline. Undoable as one step."))
+                .help(L10n.string("Restyle the captions already on the timeline. Undoable as one step."))
             }
         }
     }

@@ -61,7 +61,7 @@ struct MetagImageEditSheet: View {
                 }
             }
 
-            TextField(L10n.key("What should change? e.g. make it night, add rain"),
+            TextField(L10n.string("What should change? e.g. make it night, add rain"),
                       text: $model.instruction, axis: .vertical)
                 .lineLimit(1...3)
                 .disabled(model.busy)
