@@ -118,6 +118,65 @@ struct ViewSnapshots {
         try snapshot("credits", width: 360) { MetagCreditsView() }
     }
 
+    /// **导演组。** 创始人点名要过的那段仪式感 —— 而我从来没看过它。
+    ///
+    /// 六个人各画一张：每一张是他在那六十秒里某一刻**真正看到的那一屏**。
+    @Test func crew() throws {
+        for member in MetagCrew.members {
+            try snapshot("crew-\(member.stage)", width: 560) {
+                MetagCrewView(stage: member.stage, shotCount: 5)
+            }
+        }
+        // 还没开始的那一刻：一个人都不该亮。
+        try snapshot("crew-idle", width: 560) { MetagCrewView(stage: nil, shotCount: nil) }
+    }
+
+    /// **这一排必须看得出片子过了几手。**
+    ///
+    /// 2026-09-01 六个阶段各渲一张才发现：「什么都没开始」和
+    /// 「六个人里五个交接完了」两张图放一起，差别只有一个圈的位置 ——
+    /// 经手过的人是 `Opacity.subtle`（**4%**），等于没上色。
+    /// 他盯着这块看九十秒，看到的是一排静止的灰圆点。
+    ///
+    /// **仪式感的本质是累积。**
+    ///
+    /// 判据量的是**屏幕上真上了多少颜色**，不是"两张图一不一样"。
+    /// 第一版比的是图片字节：4% 透明度和填实画出来的字节当然不同，
+    /// 于是把那 4% 原样改回去它照样绿 —— **量了"有没有变"，
+    /// 而要问的是"看不看得见"**。今天第三条空绿的判据。
+    @Test func theCrewStripAccumulates() throws {
+        /// 一张图里有多少像素是**真上了色的**（够饱和、不是灰底也不是描边）。
+        func inked(_ stage: String?) throws -> Int {
+            let renderer = ImageRenderer(content:
+                MetagCrewView(stage: stage, shotCount: 5).frame(width: 560))
+            renderer.scale = 1
+            let image = try #require(renderer.nsImage)
+            let data = try #require(image.tiffRepresentation)
+            let bitmap = try #require(NSBitmapImageRep(data: data))
+            var count = 0
+            for y in stride(from: 0, to: bitmap.pixelsHigh, by: 2) {
+                for x in stride(from: 0, to: bitmap.pixelsWide, by: 2) {
+                    guard let c = bitmap.colorAt(x: x, y: y) else { continue }
+                    var (h, sat, b, a) = (CGFloat(0), CGFloat(0), CGFloat(0), CGFloat(0))
+                    c.usingColorSpace(.sRGB)?.getHue(&h, saturation: &sat, brightness: &b, alpha: &a)
+                    if sat > 0.35, b > 0.25, a > 0.5 { count += 1 }
+                }
+            }
+            return count
+        }
+
+        let idle = try inked(nil)
+        let done = try inked(MetagCrew.members.last?.stage)
+        // 一个人都没交活的时候，屏幕上不该有成片的颜色。
+        #expect(idle < 40, "还没开始就已经上了 \(idle) 个彩色像素")
+        // **绝对下限，不是"比 idle 多几倍"。**
+        // 第一版写的是 `done > idle * 8`，而 idle 是 0 —— 乘 0 的阈值等于没有阈值，
+        // 把 4% 原样改回去照样绿。实测：填实 539，4% 只有 33
+        // （那 33 是正在干活那位的描边，跟"交完活的人上没上色"无关）。
+        #expect(done > 300,
+                "五个人交接完，屏幕上才 \(done) 个彩色像素 —— 这一排不累积，他盯九十秒看到的是一排灰点")
+    }
+
     /// 模型列表 —— 今天加了一句话简介和每镜价，还有四个空状态，都没看过。
     @Test func modelsPane() throws {
         try snapshot("models-pane", width: 560) { ModelsPane() }

@@ -52,10 +52,16 @@ struct MetagCrewView: View {
     private func badge(_ member: MetagCrew.Member) -> some View {
         let standing = MetagCrew.standing(of: member, stage: stage)
         return ZStack {
-            Circle()
-                .fill(standing == .done
-                      ? member.tint.opacity(AppTheme.Opacity.subtle)
-                      : Color.clear)
+            // **交完活的人，把自己的颜色留在这儿。**
+            //
+            // 原来是 `Opacity.subtle` —— 4%。于是"六个人里五个已经交接完"
+            // 和"什么都还没开始"两张图放一起看，差别只有一个圈的位置：
+            // 他盯着这块看九十秒，看到的是一排静止的灰圆点。
+            //
+            // 仪式感的本质是**累积**。填实之后这一排从左往右一格格上色，
+            // 一眼就知道片子已经过了几手 —— 这不是动画，是状态，
+            // 不会把注意力从首帧上拽走。
+            Circle().fill(standing == .done ? member.tint : Color.clear)
             Circle()
                 .strokeBorder(
                     standing == .working ? member.tint : AppTheme.Border.subtleColor,
@@ -63,7 +69,7 @@ struct MetagCrewView: View {
                 )
             Text(verbatim: member.monogram)
                 .font(.system(size: AppTheme.FontSize.sm, weight: AppTheme.FontWeight.semibold))
-                .foregroundStyle(standing == .waiting ? AppTheme.Text.mutedColor : AppTheme.Text.primaryColor)
+                .foregroundStyle(monogramColor(standing))
         }
         .frame(width: AppTheme.IconSize.lg, height: AppTheme.IconSize.lg)
         // 正在干活的那位稍微抬起来一点。**只有一档**，不做呼吸动画 ——
@@ -74,11 +80,20 @@ struct MetagCrewView: View {
         .accessibilityLabel(Text(verbatim: "\(member.name), \(L10n.string(key: member.title))"))
     }
 
+    /// 填实的底上，字要反白 —— 深色底配深色字读不出来。
+    private func monogramColor(_ standing: MetagCrew.Standing) -> Color {
+        switch standing {
+        case .done: AppTheme.Text.onDarkColor
+        case .working: AppTheme.Text.primaryColor
+        case .waiting: AppTheme.Text.mutedColor
+        }
+    }
+
     /// 两个人之间那道线。交活了才连上 —— **协作是看得见的交接，不是并排站着。**
     private func handoffRule(after member: MetagCrew.Member) -> some View {
         let passed = MetagCrew.standing(of: member, stage: stage) == .done
         return Rectangle()
-            .fill(passed ? member.tint.opacity(AppTheme.Opacity.muted) : AppTheme.Border.subtleColor)
+            .fill(passed ? member.tint : AppTheme.Border.subtleColor)
             .frame(width: AppTheme.Spacing.sm, height: AppTheme.BorderWidth.hairline)
             .animation(.easeOut(duration: AppTheme.Anim.transition), value: passed)
     }
