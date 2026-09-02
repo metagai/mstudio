@@ -43,9 +43,17 @@ if ! git remote get-url origin >/dev/null 2>&1; then
   exit 1
 fi
 
+# 默认分支**问 origin，不写死**。
+#
+# 这里原来写死 `main`，而这个仓库的默认分支是 `master`（而且不打算改名）——
+# 也就是说**发版脚本的第一道门就永远关着**，谁都跑不到打包那一步。
+# 写死一个名字，等于把"我这台机器上叫什么"钉进了交付流程。
+DEFAULT_BRANCH="$(git symbolic-ref --quiet --short refs/remotes/origin/HEAD 2>/dev/null | sed 's#^origin/##')"
+DEFAULT_BRANCH="${DEFAULT_BRANCH:-$(git remote show origin 2>/dev/null | sed -n 's/.*HEAD branch: //p')}"
+DEFAULT_BRANCH="${DEFAULT_BRANCH:-master}"
 BRANCH="$(git rev-parse --abbrev-ref HEAD)"
-if [ "$BRANCH" != "main" ]; then
-  echo "error: must be on main (got: $BRANCH)" >&2
+if [ "$BRANCH" != "$DEFAULT_BRANCH" ]; then
+  echo "error: must be on $DEFAULT_BRANCH (got: $BRANCH)" >&2
   exit 1
 fi
 
@@ -124,7 +132,7 @@ fi
 echo "==> Committing + pushing version bump"
 git add "$PLIST"
 git commit -m "Bump to $VERSION"
-git push origin main
+git push origin "$DEFAULT_BRANCH"
 
 echo "==> Tagging $TAG"
 git tag "$TAG"
@@ -168,7 +176,7 @@ PYEOF
 
 git add "$APPCAST"
 git commit -m "Add $TAG to appcast"
-git push origin main
+git push origin "$DEFAULT_BRANCH"
 
 echo ""
 echo "==> Released $TAG"
