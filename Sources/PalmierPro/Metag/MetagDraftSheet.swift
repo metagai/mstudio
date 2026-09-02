@@ -63,14 +63,44 @@ final class MetagDraftModel: ObservableObject {
     /// 首帧比成片早得多，没有理由让用户对着转圈干等。
     @Published private(set) var frames: [Int: NSImage] = [:]
 
+    /// 第一张画面**落到他屏幕上**的那一刻，距离它在世界上就绪隔了多久。
+    ///
+    /// 只记一次，跟着 `draft_seen` 一起报上去。
+    private(set) var firstFrameLagMs: Int?
+
     private func fetchFrames(_ id: String, _ job: MetagGateway.Job) async {
         guard let names = job.first_frames else { return }
         for (i, name) in names.enumerated() where frames[i] == nil {
             guard let url = try? await MetagGateway.download(
                 job: id, name: name, to: FileManager.default.temporaryDirectory),
                   let img = NSImage(contentsOf: url) else { continue }
+            let wasEmpty = frames.isEmpty
             frames[i] = img
+            // **就绪到看见，中间那段第一次能量了。**
+            //
+            // 判据落在"图真的进了 `frames`"这一刻，不落在"我问到了"——
+            // 那两件事之间还隔着一次下载，而那一段也算在他等的时间里。
+            if wasEmpty { noteFirstFrameLag(job) }
         }
+    }
+
+    /// 网关还没发这个字段（或首帧还没出现）就不记 ——
+    /// **宁可这一格没有数，也不要编一个出来。**
+    private func noteFirstFrameLag(_ job: MetagGateway.Job) {
+        noteLag(readyAt: job.first_frame_at_ms)
+    }
+
+    /// 判据直接喂那个时间戳 —— 造一整个 `Job` 只为测一个减法，
+    /// 测的就变成"我会不会拼 JSON"了。
+    func noteLagForTesting(readyAt: Int64?) { noteLag(readyAt: readyAt) }
+
+    private func noteLag(readyAt: Int64?) {
+        guard firstFrameLagMs == nil, let readyAt else { return }
+        let now = Int64(Date().timeIntervalSince1970 * 1000)
+        let lag = now - readyAt
+        // 机器时钟跟服务端对不齐是常事：负数或大得离谱的数是钟的问题，不是产品的。
+        guard lag >= 0, lag < 10 * 60 * 1000 else { return }
+        firstFrameLagMs = Int(lag)
     }
 
     /// 真正会改变草案的编辑条数。不能直接数 `edits` 的键 ——
@@ -192,6 +222,9 @@ final class MetagDraftModel: ObservableObject {
     /// 终局是走网关那条 WebSocket（它早就在了，Mac 一行都没接）。
     /// 在那之前这是十分之一代价的修法：只在**还没有任何一张画面**的时候追紧，
     /// 那段最多二十来秒，多打的请求是个位数；首帧一到就退回 4 秒。
+    ///
+    /// **不要"顺手统一成 4 秒"。** 追紧只为救第一张画面那一刻；
+    /// 整场都追是拿网关的负载换一个已经拿到的东西。
     nonisolated static func pollInterval(hasFrame: Bool) -> Duration {
         hasFrame ? .seconds(4) : .milliseconds(1200)
     }
@@ -215,7 +248,13 @@ final class MetagDraftModel: ObservableObject {
                 if j.status == "done" || j.status == "failed" {
                     // **草案真的到他屏幕上了** —— 判据落在"渲完并且这一页还在"，
                     // 不落在"我们提交成功了"。那两件事之间就是流失。
-                    if j.status == "done" { MetagFunnel.track(.draftSeen) }
+                    if j.status == "done" {
+                        // `first_frame_lag_ms`：首帧就绪到他真的看见，隔了多久。
+                        // **这是那 4.4 秒第一次进报表** —— 在此之前它连量都量不了。
+                        MetagFunnel.track(.draftSeen, meta: firstFrameLagMs.map {
+                            ["first_frame_lag_ms": $0]
+                        })
+                    }
                     return
                 }
             }
