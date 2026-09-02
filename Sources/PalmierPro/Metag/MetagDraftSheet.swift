@@ -181,8 +181,25 @@ final class MetagDraftModel: ObservableObject {
         }
     }
 
+    /// 等第一张画面的时候追紧一点，拿到之后退回去。
+    ///
+    /// **这段等待里唯一能救场的就是第一张画面。** 网关那侧约第 13 秒就绪，
+    /// 而固定 4 秒一轮的话（加上从国内打过去实测 1.0–1.5 秒的来回，
+    /// 一轮实际 5.2 秒），轮询点落在 0 / 5.2 / 10.4 / 15.6 ——
+    /// **他第 15.6 秒才知道，再下载完约第 17.4 秒才看见**。
+    /// 白丢 2.6 秒（最坏 5.2 秒），跟模型快不快无关，是我们自己的架构损耗。
+    ///
+    /// 终局是走网关那条 WebSocket（它早就在了，Mac 一行都没接）。
+    /// 在那之前这是十分之一代价的修法：只在**还没有任何一张画面**的时候追紧，
+    /// 那段最多二十来秒，多打的请求是个位数；首帧一到就退回 4 秒。
+    nonisolated static func pollInterval(hasFrame: Bool) -> Duration {
+        hasFrame ? .seconds(4) : .milliseconds(1200)
+    }
+
     private func poll(_ id: String) async {
-        for _ in 0..<90 {
+        // 从数轮数改成看时钟 —— 间隔不再是常数，轮数就不再等于时长。
+        let deadline = ContinuousClock.now.advanced(by: .seconds(480))
+        while ContinuousClock.now < deadline {
             if let j = try? await MetagGateway.job(id) {
                 job = j
                 // **知道真镜数了才问价。**
@@ -202,9 +219,9 @@ final class MetagDraftModel: ObservableObject {
                     return
                 }
             }
-            try? await Task.sleep(for: .seconds(4))
+            try? await Task.sleep(for: Self.pollInterval(hasFrame: !frames.isEmpty))
         }
-        note = L10n.key("The draft is taking too long — try again in a moment.")
+        note = L10n.string("The draft is taking too long — try again in a moment.")
     }
 }
 
