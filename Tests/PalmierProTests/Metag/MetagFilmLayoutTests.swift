@@ -107,12 +107,32 @@ struct MetagFilmLayoutTests {
         #expect(Set(starts).count == 4)
     }
 
-    /// **量出来是 0（文件坏了、还没落盘）也不许全叠在一起。**
-    /// 塌成一堆比错开一点更糟：他看到的是"好像什么都没发生"。
+    /// **量不到的那一镜，拿量得到的那些顶上。**
+    ///
+    /// 上一版这条断言的是"四个起点互不相同" —— 而下限是 0.04 秒，
+    /// 30fps 下那是第 0/1/2/4 帧，**判据绿而用户看到的仍然是全叠在一起**。
+    /// 产品技术负责人那一问：「它绿的时候，用户拿到的是完整的，还是只是拿到了？」
+    ///
+    /// 所以现在断言的是**真的分得开**（每镜至少一秒），不是"数值不相等"。
+    @Test func anUnmeasurableShotBorrowsFromTheOthers() {
+        // **各镜长度要不一样** —— 都一样的话，最小值和中位数是同一个数，
+        // 这条判据就分不出"拿中位数顶"和"拿最短的那一镜顶"。
+        // （第一次写的夹具就是三镜都 5 秒，变异 B 因此红不起来 ——
+        // 夹具分不出来，判据就没在守那个选择。）
+        let lengths = [3.0, 0, 5.0, 9.0]        // 第二镜读不出
+        let starts = MetagFilmLayout.startSeconds(
+            shotCount: 4, clipSeconds: nil, measured: { lengths[$0] })
+        // 顶上来的是中位数 5，不是最短的 3：**一镜坏掉不该把整片压扁**。
+        #expect(starts == [0, 3, 8, 13], "读不出的那一镜顶错了长度：\(starts)")
+    }
+
+    /// 一镜都量不到（每个文件都读不出）也不许塌成一堆。
     @Test func evenAZeroMeasurementDoesNotStackThem() {
         let starts = MetagFilmLayout.startSeconds(
             shotCount: 4, clipSeconds: nil, measured: { _ in 0 })
-        #expect(Set(starts).count == 4, "全量到 0 就叠成了 \(starts)")
+        let gaps = zip(starts.dropFirst(), starts).map(-)
+        #expect(gaps.allSatisfy { $0 >= 1 },
+                "起点是 \(starts) —— 数值不相等，但 30fps 下还是叠在一起")
     }
 
     /// 剩下的仍然只能比源码：**"整件事是一步撤销"没有别的问法** ——

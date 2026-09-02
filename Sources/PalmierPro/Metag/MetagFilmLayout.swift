@@ -80,20 +80,40 @@ enum MetagFilmLayout {
     /// 每一镜只推进 1 帧，十一镜全叠在前十一帧上，
     /// 而它长得跟"铺好了"一模一样。**判据看不见这种错，所以让它传不了。**
     /// 换算交给 `EditorViewModel.frame(atSeconds:)`，fps 从时间线自己读。
+    /// 全都量不到的时候，一镜按多长算。
+    ///
+    /// 走到这里意味着**每个文件都读不出时长** —— 那时摆多长都是猜。
+    /// 选一个不会让它们叠在一起的数：叠在一起看起来像"什么都没发生"，
+    /// 而长度猜偏一点，他一眼就看得出来、也拖得动。
+    static let nominalShotSeconds: Double = 4
+
     static func startSeconds(
         shotCount: Int,
         clipSeconds: [Double]?,
         measured: (Int) -> Double
     ) -> [Double] {
+        var lengths: [Double] = (0..<shotCount).map { i in
+            if let seconds = clipSeconds, i < seconds.count, seconds[i] > 0 { return seconds[i] }
+            let m = measured(i)
+            return m.isFinite && m > 0 ? m : 0
+        }
+
+        // **量不到的那几镜，拿量得到的那些的中位数顶上。**
+        //
+        // 上一版给的是 0.04 秒的下限 —— 四个起点确实互不相同，
+        // 于是判据绿；而 30fps 下那是第 0/1/2/4 帧，用户看到的仍然是全叠在一起。
+        // **判据绿的时候，用户拿到的是完整的，还是只是"拿到了"。**
+        //
+        // 同一部片子里各镜长度接近，中位数是这里能拿到的最好的猜。
+        let known = lengths.filter { $0 > 0 }.sorted()
+        let fill = known.isEmpty ? nominalShotSeconds : known[known.count / 2]
+        lengths = lengths.map { $0 > 0 ? $0 : fill }
+
         var starts: [Double] = []
         var cursor = 0.0
-        for i in 0..<shotCount {
+        for length in lengths {
             starts.append(cursor)
-            if let seconds = clipSeconds, i < seconds.count, seconds[i] > 0 {
-                cursor += seconds[i]
-            } else {
-                cursor += max(0.04, measured(i))   // 一帧都不到的镜不存在，兜个下限
-            }
+            cursor += length
         }
         return starts
     }
