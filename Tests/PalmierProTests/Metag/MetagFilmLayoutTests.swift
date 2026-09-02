@@ -128,5 +128,10 @@ struct MetagFilmLayoutTests {
                 "铺片子变成好几步撤销了 —— 他做的是「打开一条片子」这一个动作")
         #expect(src.contains("MetagFilmLayout.narrationFrames("),
                 "又自己在调用点算旁白落点了 —— 那一层没有判据看得见")
+        // 主音量差要真的补上去。**这一条仍然只能比源码** ——
+        // "铺完之后有没有调用它"是调用点的事实，而那一层要跑起来需要网络。
+        // 它属于我明知道弱、但暂时没有更好问法的那一族。
+        #expect(src.contains("MetagFilmLayout.applyMasterGain(volume,"),
+                "主音量差没补 —— 他刚看完草案，进编辑器同一部片子轻了一半")
     }
 }

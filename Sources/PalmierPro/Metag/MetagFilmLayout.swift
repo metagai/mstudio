@@ -27,6 +27,33 @@ enum MetagFilmLayout {
     ///
     /// 优先用网关给的逐段时长（`shot_clips[i].seconds`）—— 那是权威的。
     /// 拿不到就退回按素材实测时长累加：**宁可自己量，也不要凭空假设等长**。
+    /// 主音量差 → 线性倍数。
+    ///
+    /// 时间线上没有"主音量"这一层，只有每个片段自己的 `volume`。
+    /// **同一个倍数乘到每一个出声的片段上**，配比不变 —— 那正是主音量的定义。
+    ///
+    /// 字段缺席时返回 1（不动），而**不动就是偏 6 dB** ——
+    /// 这不是中性的默认，只是我们能做的最诚实的一件事：不瞎补。
+    ///
+    /// 上下各夹一档：网关给出一个荒谬的数时，宁可少补，也不要把他的片子削顶。
+    static func volumeFactor(masterGainDB: Double?) -> Double {
+        guard let db = masterGainDB, db.isFinite else { return 1 }
+        return pow(10, min(24, max(-24, db)) / 20)
+    }
+
+    /// 把主音量乘到每一个片段上。
+    ///
+    /// 抽出来是为了让判据能直接跑它 —— 留在调用点的话，
+    /// 唯一的问法就是"源码里那个循环还在吗"。
+    static func applyMasterGain(_ factor: Double, to tracks: inout [Track]) {
+        guard factor != 1, factor > 0 else { return }
+        for t in tracks.indices {
+            for c in tracks[t].clips.indices {
+                tracks[t].clips[c].volume *= factor
+            }
+        }
+    }
+
     /// 每一段旁白落在哪一帧。
     ///
     /// **抽出来是因为上一版判据在比源码字符串**：它断言那行

@@ -145,11 +145,23 @@ enum MetagJobOpener {
                         editor.addClips(assets: [narration.asset], trackIndex: 1, startFrame: frame)
                     }
 
+                    // **补上主音量差。**
+                    //
+                    // 草案过了 `loudnorm=I=-16`，时间线没过 —— 网关每一单实测
+                    // 那一档差并回在 `master_gain_db` 上。不补的话他刚看完草案
+                    // 点进编辑器，同一部片子突然轻了一半。
+                    //
+                    // 乘在每一个出声的片段上（画面自带的声音也算），配比不变。
+                    let volume = MetagFilmLayout.volumeFactor(masterGainDB: job.master_gain_db)
+
                     if let bed = scoreAsset {
                         editor.timeline.tracks.append(Track(type: .audio))
                         editor.addClips(assets: [bed], trackIndex: editor.timeline.tracks.count - 1,
                                         startFrame: 0)
                     }
+
+                    // 这几条轨都是这一步刚立起来的，里面每一段都是这部片子的。
+                    MetagFilmLayout.applyMasterGain(volume, to: &editor.timeline.tracks)
                 }
             }
 
