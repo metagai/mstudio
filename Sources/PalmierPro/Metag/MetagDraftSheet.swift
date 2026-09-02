@@ -477,9 +477,19 @@ struct MetagDraftSheet: View {
 
     private var draftStage: some View {
         VStack(alignment: .leading, spacing: AppTheme.Spacing.sm) {
-            // 幕布留在原地。他刚看着它一格格填满，这一刻它才真正拉开 ——
-            // 底下那些输入框是"接下来做什么"，不该抢走"这就是你的片子"。
-            filmStrip
+            // **幕布真正拉开的那一刻。**
+            //
+            // 等待时它是一格格填满的场记板；片子好了，它就该换成片子本身。
+            // 草案的 `preview.mp4` 一直都在（网关在发、web 的幕布在播），
+            // 而 Mac 之前连这个字段都没解 —— 于是"先看一眼"给的是
+            // 一排静态图：那不是"看一眼"，那是"看一眼它的证据"。
+            //
+            // 拿不到那条片子就退回场记板，不留空白。
+            if let preview = model.job?.preview {
+                MetagDraftPlayer(jobId: model.jobId ?? "", name: preview)
+            } else {
+                filmStrip
+            }
 
             ForEach(Array(model.narrations.enumerated()), id: \.offset) { i, text in
                 VStack(alignment: .leading, spacing: AppTheme.Spacing.xxs) {

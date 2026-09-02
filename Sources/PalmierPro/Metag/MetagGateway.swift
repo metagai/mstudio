@@ -144,6 +144,12 @@ enum MetagGateway {
         /// 图早就画好了（草案阶段或出片时画的），只是从没回给过客户端。
         /// 盯着一个转圈和盯着自己片子的开场画面，是两种等待。
         let first_frames: [String]?
+        /// 草案那条**能看的片子**（`preview.mp4`，已经混过配乐）。
+        ///
+        /// **网关一直在发，web 的幕布一直在播，而 Mac 从来没解过这个字段** ——
+        /// 于是"先看一眼"在 Mac 上给的是一排静态图加一堆输入框。
+        /// 那不是"看一眼"，那是"看一眼它的证据"。
+        let preview: String?
         /// Per-shot re-shoot state: queued / running / done / "failed: …", nil when never re-shot.
         let reshoot: [String?]?
         /// Per-shot takes, best first. The delivered take is always element 0.
