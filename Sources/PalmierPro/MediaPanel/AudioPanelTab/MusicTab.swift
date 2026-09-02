@@ -71,10 +71,43 @@ struct MusicSection: View {
         )
     }
 
-    private var validationNote: String? {
-        guard let model else { return L10n.string("No music models available.") }
+    /// 这一行说的是**"还没到时候"还是"这一步过不去"** —— 两件事不该一个颜色。
+    ///
+    /// 之前所有提示都刷成错误红。而其中最常见的那句
+    /// 「说说你想要什么样的音乐」是在他**什么都还没做**的时候出现的：
+    /// 打开面板就是一行红字，等于开门先说他错了。
+    enum Note: Equatable {
+        /// 他还没动手 —— 安静的灰，是引导不是指责。
+        case hint(String)
+        /// 这一步真的过不去（没模型、余额不够、参数不合法）。
+        case blocked(String)
+
+        var text: String {
+            switch self { case .hint(let t), .blocked(let t): t }
+        }
+
+        var isBlocking: Bool { if case .blocked = self { true } else { false } }
+    }
+
+    /// **他还没动手的那两种情况。**
+    ///
+    /// 抽出来是为了让判据能直接问它 —— 上一版判据只会比源码里那一行长什么样，
+    /// 把 `.hint` 改成 `.blocked` 它一声不响。
+    /// 判据要去解析源码，通常说明源码该长得更清楚一点。
+    static func missingInputHint(isTextMode: Bool, promptIsEmpty: Bool, hasSource: Bool) -> Note? {
         if isTextMode {
-            if trimmedPrompt.isEmpty { return L10n.string("Describe the music to generate.") }
+            return promptIsEmpty ? .hint(L10n.string("Describe the music to generate.")) : nil
+        }
+        return hasSource ? nil
+            : .hint(L10n.string("Add video to the timeline, then mark a range to score only part of it."))
+    }
+
+    private var validationNote: Note? {
+        guard let model else { return .blocked(L10n.string("No music models available.")) }
+        if let hint = Self.missingInputHint(
+            isTextMode: isTextMode, promptIsEmpty: trimmedPrompt.isEmpty, hasSource: source != nil
+        ) { return hint }
+        if isTextMode {
             let params = AudioGenerationParams(
                 prompt: trimmedPrompt,
                 voice: nil,
@@ -83,19 +116,16 @@ struct MusicSection: View {
                 instrumental: false,
                 durationSeconds: costDuration
             )
-            if let issue = model.validate(params: params) { return issue }
-        } else {
-            guard source != nil else {
-                return L10n.string("Add video to the timeline, then mark a range to score only part of it.")
-            }
-            if let issue = model.validate(spanSeconds: spanSeconds) { return issue }
+            if let issue = model.validate(params: params) { return .blocked(issue) }
+        } else if let issue = model.validate(spanSeconds: spanSeconds) {
+            return .blocked(issue)
         }
         if let cost = estimatedCost, cost > AccountService.shared.remainingCredits,
            AccountService.shared.remainingCredits != nil {
-            return CostEstimator.localizedInsufficientCredits(
+            return .blocked(CostEstimator.localizedInsufficientCredits(
                 cost,
                 remaining: AccountService.shared.remainingCredits
-            )
+            ))
         }
         return nil
     }
@@ -237,10 +267,14 @@ struct MusicSection: View {
 
     private var musicActions: some View {
         VStack(alignment: .leading, spacing: AppTheme.Spacing.sm) {
-            if let message = note ?? validationNote {
-                Text(message)
+            // `note` 是真跑失败之后那句，一定是红的；
+            // `validationNote` 分两档 —— 引导用灰，过不去才用红。
+            if let message = note.map(Note.blocked) ?? validationNote {
+                Text(message.text)
                     .font(.system(size: AppTheme.FontSize.xs, weight: AppTheme.FontWeight.medium))
-                    .foregroundStyle(AppTheme.Status.errorColor)
+                    .foregroundStyle(message.isBlocking
+                                     ? AppTheme.Status.errorColor
+                                     : AppTheme.Text.secondaryColor)
                     .fixedSize(horizontal: false, vertical: true)
             }
             HStack(spacing: AppTheme.Spacing.sm) {

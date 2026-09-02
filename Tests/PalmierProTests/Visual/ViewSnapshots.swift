@@ -39,6 +39,24 @@ struct ViewSnapshots {
         let image = try #require(renderer.nsImage, "\(name) 画不出来")
         #expect(image.size.width > 0 && image.size.height > 0, "\(name) 是张空图")
         let bitmap = try #require(image.tiffRepresentation.flatMap(NSBitmapImageRep.init(data:)))
+
+        // **一张纯色的图也是"画出来了"。**
+        //
+        // 上一版只断言尺寸大于零 —— 于是 `AudioPanelTab` 没有工程时
+        // 一笔都不画，取景器照样报绿。二十张全空掉，闸也是绿的：
+        // **一台什么都没拍到的相机，比没有相机更糟**（这句我给
+        // check-design-system 写过，自己这里却没照做）。
+        //
+        // 判据是"这张图上有几种颜色" —— 一屏界面不可能只有一种。
+        var seen = Set<UInt32>()
+        for y in stride(from: 0, to: bitmap.pixelsHigh, by: 4) {
+            for x in stride(from: 0, to: bitmap.pixelsWide, by: 4) {
+                guard let c = bitmap.colorAt(x: x, y: y)?.usingColorSpace(.sRGB) else { continue }
+                seen.insert(UInt32(c.redComponent * 31) << 10
+                    | UInt32(c.greenComponent * 31) << 5 | UInt32(c.blueComponent * 31))
+            }
+        }
+        #expect(seen.count >= 4, "\(name) 只有 \(seen.count) 种颜色 —— 这一屏什么都没画出来")
         let data = try #require(bitmap.representation(
             using: NSBitmapImageRep.FileType.png,
             properties: [NSBitmapImageRep.PropertyKey: Any]()))
@@ -210,6 +228,31 @@ struct ViewSnapshots {
         }
         #expect(clustered.count <= 1,
                 "侧栏里图标有 \(clustered.count) 种左边缘：\(clustered) —— 这几行不是一套")
+    }
+
+    /// **编辑器的面板 —— 这个产品真正的主场，而它一次都没被照过。**
+    ///
+    /// 2026-09-02 创始人发了一张编辑器截图说"布局问题到处都是"，
+    /// 而我只能对着截图量像素猜 —— 因为这一块进不了取景器。
+    @Test func editorPanels() throws {
+        // **空工程的面板一笔都不画。** 这一屏的问题（各行缩进对不对、
+        // 组标题和内容的关系）只有喂了真东西才看得见 —— 和「我的作品」
+        // 只照到「正在载入」是同一个坑。
+        let editor = EditorViewModel()
+        editor.timeline = Fixtures.timeline(tracks: [
+            Fixtures.videoTrack(clips: [Fixtures.clip(start: 0, duration: 90)]),
+        ])
+        // **取景器看不见 `ScrollView` 里的东西**（`ImageRenderer` 的限制），
+        // 而编辑器几乎每块面板都套着一层。所以照的是里面那几节 ——
+        // 缩进、组标题和内容的关系，问题本来就在这一层。
+        try snapshot("panel-music", width: 330) {
+            MusicSection(isExpanded: .constant(true)).environment(editor)
+        }
+        try snapshot("panel-speech", width: 330) {
+            SpeechAnalysisSections(silenceExpanded: .constant(true),
+                                   speakerExpanded: .constant(false))
+                .environment(editor)
+        }
     }
 
     /// **有货的那一版。**
