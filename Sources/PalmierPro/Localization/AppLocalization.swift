@@ -16,27 +16,46 @@ final class AppLocalization {
         let bundle: Bundle
         let locale: Locale
 
-        /// init 里写一次，之后只读。**不变量就是"只写一次"** ——
-        /// `installedCatalogIsWriteOnce()` 盯着它。
-        nonisolated(unsafe) private(set) static var current =
-            Catalog(bundle: .main, locale: .current)
-        nonisolated(unsafe) private(set) static var installs = 0
+        /// **自己算得出来，不等谁来装。**
+        ///
+        /// 第一版是 `Catalog(bundle: .main, locale: .current)`，等着
+        /// `AppLocalization.shared` 初始化时装进来。于是**谁都没碰过 shared
+        /// 的时候，查表退回 `.main`** —— 那里一个 `.lproj` 都没有，
+        /// 整屏是英文。「我的作品」那一屏当场就是这样渲出来的。
+        ///
+        /// 一个"要等别人来填对"的全局，早晚会在没人填的那条路上被读到。
+        /// 现在它自己走一遍和 `AppLocalization.init` 同一套解析。
+        nonisolated(unsafe) private(set) static var current = resolve()
 
-        static func install(_ catalog: Catalog) {
-            current = catalog
-            installs += 1
+        nonisolated static func resolve(
+            defaults: UserDefaults = .standard,
+            resourceBundle: Bundle = BundledResource.bundle,
+            preferredLanguages: [String] = Locale.preferredLanguages
+        ) -> Catalog {
+            let resources = AppLocalization.localizationResources(in: resourceBundle)
+            let system = AppLocalization.preferredIdentifier(
+                in: resources, preferredLanguages: preferredLanguages)
+            let stored = AppLanguage.stored(in: defaults)
+            let identifiers = resources.map(\.identifier)
+            let active = (stored.identifier.flatMap { identifiers.contains($0) ? $0 : nil }) ?? system
+            let resourceIdentifier =
+                resources.first { $0.identifier == active }?.resourceIdentifier ?? active
+            return Catalog(
+                bundle: AppLocalization.localizedBundle(
+                    for: resourceIdentifier, resourceBundle: resourceBundle),
+                locale: Locale(identifier: active)
+            )
         }
 
-        /// 临时换一本表跑一段。**只给判据用** —— 生产代码里这本表只写一次。
+        /// 临时换一本表跑一段。**只给判据用** —— 生产代码里这本表算一次就不再动。
         ///
         /// 存在的理由：`errorDescription` 走的是全局那一份，
         /// 而"它到底有没有查表"这件事，在英文机器上两种写法输出一模一样，
         /// **只有换到非英文才看得出来**。
         static func withCatalog<T>(_ catalog: Catalog, _ body: () throws -> T) rethrows -> T {
             let saved = current
-            let savedInstalls = installs
             current = catalog
-            defer { current = saved; installs = savedInstalls }
+            defer { current = saved }
             return try body()
         }
 
@@ -49,13 +68,7 @@ final class AppLocalization {
         }
     }
 
-    static let shared: AppLocalization = {
-        let instance = AppLocalization()
-        // **只有 shared 装进全局。** `L10n.string` 走的是这一份，
-        // 而测试里造出来的实例只影响它自己。
-        Catalog.install(instance.catalog)
-        return instance
-    }()
+    static let shared = AppLocalization()
 
     let activeIdentifier: String
     let activeLocale: Locale
@@ -172,12 +185,12 @@ final class AppLocalization {
         return locale.localizedString(forIdentifier: identifier) ?? identifier
     }
 
-    private struct LocalizationResource {
+    fileprivate struct LocalizationResource {
         let identifier: String
         let resourceIdentifier: String
     }
 
-    private static func localizationResources(in bundle: Bundle) -> [LocalizationResource] {
+    nonisolated fileprivate static func localizationResources(in bundle: Bundle) -> [LocalizationResource] {
         bundle.localizations
             .filter { $0 != "Base" }
             .map {
@@ -195,7 +208,7 @@ final class AppLocalization {
             }
     }
 
-    private static func preferredIdentifier(
+    nonisolated fileprivate static func preferredIdentifier(
         in resources: [LocalizationResource],
         preferredLanguages: [String]
     ) -> String {
@@ -205,7 +218,7 @@ final class AppLocalization {
         ).first.map { Locale(identifier: $0).identifier } ?? "en"
     }
 
-    private static func localizedBundle(for identifier: String, resourceBundle: Bundle) -> Bundle {
+    nonisolated fileprivate static func localizedBundle(for identifier: String, resourceBundle: Bundle) -> Bundle {
         guard let url = resourceBundle.url(forResource: identifier, withExtension: "lproj"),
               let bundle = Bundle(url: url) else {
             return resourceBundle

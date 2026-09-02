@@ -101,6 +101,22 @@ struct ViewSnapshots {
         }
     }
 
+    /// **首屏。** 除了那句问话，它是常驻的东西 —— 而侧栏底部那两行今天刚重画过。
+    @Test func home() throws {
+        try snapshot("home-hero", width: 720) { HomeHero() }
+    }
+
+    /// 「我的作品」—— 今天加了缩略图，一张都没看过。
+    @Test func myFilms() throws {
+        try snapshot("my-films", width: 640) { MetagMyFilmsView(onOpen: { _ in }) }
+    }
+
+    /// 账户浮窗和 credits —— 转化那条路上的两块。
+    @Test func account() throws {
+        try snapshot("account-popover", width: 320) { AccountPopoverCard() }
+        try snapshot("credits", width: 560) { MetagCreditsView() }
+    }
+
     /// 模型列表 —— 今天加了一句话简介和每镜价，还有四个空状态，都没看过。
     @Test func modelsPane() throws {
         try snapshot("models-pane", width: 560) { ModelsPane() }

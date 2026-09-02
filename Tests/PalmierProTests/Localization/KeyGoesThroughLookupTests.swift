@@ -53,15 +53,18 @@ struct KeyGoesThroughLookupTests {
                 "超时那一刻还是英文原文")
     }
 
-    /// `Catalog.current` 是 `nonisolated(unsafe)` —— 它的不变量是**只写一次**。
+    /// **全局那本表不许等着谁来填对。**
     ///
-    /// 改语言要重启（`requiresRestart`），所以一个进程里那本表不会变。
-    /// 这条盯着那个"一次"：多一次写就是多一条数据竞争。
-    @Test @MainActor func theInstalledCatalogIsWrittenOnce() {
-        _ = AppLocalization.shared
-        _ = AppLocalization.shared
-        #expect(AppLocalization.Catalog.installs == 1,
-                "全局词条表被写了 \(AppLocalization.Catalog.installs) 次 —— nonisolated(unsafe) 的前提没了")
+    /// 第一版它的初始值是 `.main` bundle，等 `AppLocalization.shared` 初始化时
+    /// 装进来。于是谁都没碰过 shared 的那条路上，查表退回 `.main` ——
+    /// 那里一个 `.lproj` 都没有，整屏英文。「我的作品」那一屏当场就是这样渲出来的。
+    ///
+    /// 一个"要等别人来填对"的全局，早晚会在没人填的那条路上被读到。
+    @Test func theGlobalCatalogIsRightBeforeAnyoneTouchesIt() {
+        #expect(AppLocalization.Catalog.current.bundle != .main,
+                "全局词条表还是 .main —— 那里没有 .lproj，先被读到的那一屏会是英文")
+        #expect(AppLocalization.Catalog.current.bundle
+                == AppLocalization.Catalog.resolve().bundle)
     }
 
     /// 界面控件不许直接吃 `L10n.key` 的返回值。
