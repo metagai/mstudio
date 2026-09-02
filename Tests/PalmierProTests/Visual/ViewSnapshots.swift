@@ -1,3 +1,4 @@
+import AppKit
 import SwiftUI
 import Testing
 @testable import PalmierPro
@@ -27,42 +28,69 @@ struct ViewSnapshots {
 
     /// 画一张，落盘，并且**确认它不是一张空白** —— 渲染失败最常见的样子
     /// 不是崩溃，是一张什么都没有的图，而那种图看起来像"这一屏还没做"。
-    private func snapshot(_ name: String, width: CGFloat = 420,
-                          @ViewBuilder _ view: () -> some View) throws {
-        let renderer = ImageRenderer(content:
-            view()
+    /// 画一张，落盘，并且**确认它不是一张空白**。
+    ///
+    /// ## 为什么是 `NSHostingView` 而不是 `ImageRenderer`
+    ///
+    /// `ImageRenderer` 有两个硬限制，而它们正好盖住了这个产品最要紧的两块：
+    ///
+    /// | | ImageRenderer | NSHostingView |
+    /// |---|---|---|
+    /// | 裸文字 | 1430 | 2414 |
+    /// | **`ScrollView` 里的东西** | **0** | 2414 |
+    /// | **`Menu` 里的东西** | **画不出** | 2593 |
+    ///
+    /// 编辑器几乎每块面板都套着 `ScrollView`，侧栏那一行登录是个 `Menu` ——
+    /// 2026-09-02 创始人发的四张截图里，有两处问题我**只能对着像素猜**，
+    /// 就是因为取景器画不出它们。换成 AppKit 这条路之后两处都照得到。
+    ///
+    /// （量的时候先栽了一次：`cacheDisplay` 出来是透明位图，
+    /// 而"透明"的 brightness 是 0，于是每个像素都被算成深色，
+    /// 三种情形返回同一个数 —— **一个成功了却什么都没量到的测量**。
+    /// 底色给白的才量得准。）
+    /// 把一个视图画成位图。
+    ///
+    /// **快照和"量像素"那几条判据走同一套构图** —— 各搭各的话，
+    /// 判据量到的坐标和落盘那张图对不上，而人看的是那张图。
+    /// （第一版就是这样：判据不带内边距，扫出九档左边缘，而图上只有一档。）
+    private func render(_ view: some View, width: CGFloat) throws -> NSBitmapImageRep {
+        let host = NSHostingView(rootView: AnyView(
+            view
                 .frame(width: width)
                 .padding(AppTheme.Spacing.lg)
-                .background(AppTheme.Background.baseColor)
-        )
-        renderer.scale = 2
-        let image = try #require(renderer.nsImage, "\(name) 画不出来")
-        #expect(image.size.width > 0 && image.size.height > 0, "\(name) 是张空图")
-        let bitmap = try #require(image.tiffRepresentation.flatMap(NSBitmapImageRep.init(data:)))
+                .background(AppTheme.Background.baseColor)))
+        host.frame = CGRect(origin: .zero, size: host.fittingSize)
+        host.layoutSubtreeIfNeeded()
+        let bitmap = try #require(host.bitmapImageRepForCachingDisplay(in: host.bounds))
+        host.cacheDisplay(in: host.bounds, to: bitmap)
+        return bitmap
+    }
+
+    private func snapshot(_ name: String, width: CGFloat = 420,
+                          @ViewBuilder _ view: () -> some View) throws {
+        let bitmap = try render(view(), width: width)
+        #expect(bitmap.pixelsWide > 0 && bitmap.pixelsHigh > 0, "\(name) 是张空图")
 
         // **一张纯色的图也是"画出来了"。**
         //
         // 上一版只断言尺寸大于零 —— 于是 `AudioPanelTab` 没有工程时
         // 一笔都不画，取景器照样报绿。二十张全空掉，闸也是绿的：
-        // **一台什么都没拍到的相机，比没有相机更糟**（这句我给
-        // check-design-system 写过，自己这里却没照做）。
+        // **一台什么都没拍到的相机，比没有相机更糟**。
         //
         // 判据是"这张图上有几种颜色" —— 一屏界面不可能只有一种。
-        //
-        // 阈值 4 是量过的，不是拍的：全空 1 种、底加边框 1 种、
-        // 底加边框加一个字 2 种，而真实截图里最少的一张（credits-loaded）
-        // 是 11 种。两边都有余量。
-        // （试过换成"非底色像素占比"，反而分不开：credits-loaded 只有 0.56%，
-        // 比"底加边框"的 1.59% 还低 —— 稀疏但真实的屏会被误判。）
+        // 阈值 4 是量过的：全空 1 种、底加边框 1 种、加一个字 2 种，
+        // 而真实截图里最少的一张（credits-loaded）是 11 种。两边都有余量。
         var seen = Set<UInt32>()
         for y in stride(from: 0, to: bitmap.pixelsHigh, by: 4) {
             for x in stride(from: 0, to: bitmap.pixelsWide, by: 4) {
-                guard let c = bitmap.colorAt(x: x, y: y)?.usingColorSpace(.sRGB) else { continue }
+                guard let c = bitmap.colorAt(x: x, y: y)?.usingColorSpace(.sRGB),
+                      c.alphaComponent > 0.5 else { continue }
                 seen.insert(UInt32(c.redComponent * 31) << 10
                     | UInt32(c.greenComponent * 31) << 5 | UInt32(c.blueComponent * 31))
             }
         }
         #expect(seen.count >= 4, "\(name) 只有 \(seen.count) 种颜色 —— 这一屏什么都没画出来")
+
         let data = try #require(bitmap.representation(
             using: NSBitmapImageRep.FileType.png,
             properties: [NSBitmapImageRep.PropertyKey: Any]()))
@@ -128,6 +156,10 @@ struct ViewSnapshots {
     /// **首屏。** 除了那句问话，它是常驻的东西 —— 而侧栏底部那两行今天刚重画过。
     @Test func home() throws {
         try snapshot("home-hero", width: 720) { HomeHero() }
+        // **侧栏底部那两行。** 创始人 2026-09-02 真机量出来：
+        // 「登录」的图标比其余三行左 8.5pt。那一行是个 `Menu`，
+        // 而 `ImageRenderer` 画不出 `Menu` —— 换成 NSHostingView 才照得到。
+        try snapshot("home-sidebar", width: 900) { HomeView() }
     }
 
     /// 「我的作品」—— 今天加了缩略图，一张都没看过。
@@ -195,16 +227,27 @@ struct ViewSnapshots {
                 "登录屏还是四屏共用那个高度 —— 中间空掉一半")
     }
 
-    // **这里原来有一条"侧栏两行图标必须对齐"的判据，已经删掉。**
+    // **侧栏对齐这条判据，两次都没做成，第二次的原因值得留下。**
     //
-    // 它渲整个 HomeView、扫图标左边缘、比两行的 x —— 听起来很行为。
-    // 但 `Menu`（登录那一行）在 `ImageRenderer` 下**根本画不出来**，
-    // 渲出来是个占位方块。也就是说：**它永远看不见那个 8.5pt 的错位，
-    // 也就永远不会红。**
+    // 第一次删掉是因为 `ImageRenderer` 画不出 `Menu` —— 它永远看不见那个错位。
+    // 换成 `NSHostingView` 之后 `Menu` 画得出来了（实测 2593 个深色像素），
+    // 于是再写了一次：整列扫像素、把图标左边缘聚类、要求只有一档。
     //
-    // 一条不可能红的守卫比没有守卫更糟 —— 它制造确信。
-    // 那一处的验证只能靠真机截图（已写进 docs/founder-todo.md），
-    // 在取景器能画 `Menu` 之前，这里宁可空着。
+    // **变异前后都是 [26, 34]pt 两档** —— 也就是说它量的根本不是那 8.5pt。
+    // 因为四行的图标是四个不同的字形（`plus` / `folder` /
+    // `person.crop.circle` / `gearshape`），**每个字形在自己的框里
+    // 左侧留白都不一样**。
+    //
+    // > **量墨迹回答不了"框对不对齐"。**
+    //
+    // 同一个坑我今天在别处踩过一次：拿创始人截图量两个组标题的缩进，
+    // 7pt 和 10pt，而那是 `chevron.down` 和 `chevron.right` 的字形差，
+    // 不是布局差。
+    //
+    // 要真守住这一条，得去问**框**而不是墨 ——
+    // 遍历 `NSHostingView` 的子视图树、比图标那几个 `NSView` 的 frame。
+    // 那是另一块活，记在这里，不在这一轮硬凑。
+    // 那 8.5pt 的修复本身（`.menuStyle(.button)`）已由创始人真机截图确认。
 
     /// **有货的那一版。**
     ///
@@ -225,10 +268,12 @@ struct ViewSnapshots {
         editor.timeline = Fixtures.timeline(tracks: [
             Fixtures.videoTrack(clips: [Fixtures.clip(start: 0, duration: 90)]),
         ])
-        // ⚠ 检视器还没照上。`projectSettingsContent` 在视图层级之外求值时
-        // `@Environment` 还没注入（直接崩：No Observable object of type
-        // EditorViewModel found）—— 要照它得把那一节抽成独立的 View 类型。
-        // **没照上就说没照上**，不摆一张凑数的图。
+        // 检视器：他在编辑器里待最久的那一块。
+        // 换成 NSHostingView 之后 `ScrollView` 里的东西照得到了，
+        // 所以这里照的是**整块面板**，不用再把内容抠出来。
+        try snapshot("panel-inspector", width: 330) {
+            InspectorView().environment(editor)
+        }
         try snapshot("panel-music", width: 330) {
             MusicSection(isExpanded: .constant(true)).environment(editor)
         }
