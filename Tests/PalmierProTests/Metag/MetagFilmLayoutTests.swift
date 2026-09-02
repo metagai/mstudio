@@ -89,6 +89,32 @@ struct MetagFilmLayoutTests {
         #expect(Set(frames).count == 3, "起点算出来是 \(frames) —— 三镜叠在一起了")
     }
 
+    /// **网关不给时长的时候，实测那一路必须真的量得出东西。**
+    ///
+    /// 2026-09-02 产品技术负责人查出：`shot_clips` 只活在 Redis 里，
+    /// 24 小时后走 PG 归档路，那条路上没有这个字段 ——
+    /// **也就是每一部第二天打开的片子**。
+    ///
+    /// 而 Mac 这侧的"退回实测"当时是假的：`addMediaAsset` 立刻返回，
+    /// `asset.duration` 是后台 Task 补的，铺片子那一刻还是 0 ——
+    /// 退回实测等于退回 0，十一镜全叠在一起相距一帧。
+    ///
+    /// 现在时长在下载完那一刻现量。这一条盯着：**量不到就不该铺出一堆重叠。**
+    @Test func withoutGatewayDurationsTheShotsStillSeparate() {
+        let starts = MetagFilmLayout.startSeconds(
+            shotCount: 4, clipSeconds: nil, measured: { _ in 5.0 })
+        #expect(starts == [0, 5, 10, 15], "网关不给时长时铺成了 \(starts)")
+        #expect(Set(starts).count == 4)
+    }
+
+    /// **量出来是 0（文件坏了、还没落盘）也不许全叠在一起。**
+    /// 塌成一堆比错开一点更糟：他看到的是"好像什么都没发生"。
+    @Test func evenAZeroMeasurementDoesNotStackThem() {
+        let starts = MetagFilmLayout.startSeconds(
+            shotCount: 4, clipSeconds: nil, measured: { _ in 0 })
+        #expect(Set(starts).count == 4, "全量到 0 就叠成了 \(starts)")
+    }
+
     /// 剩下的仍然只能比源码：**"整件事是一步撤销"没有别的问法** ——
     /// 它是一个结构事实，不是一个可以算出来的值。
     @Test func theWholeFilmIsOneUndoStep() throws {

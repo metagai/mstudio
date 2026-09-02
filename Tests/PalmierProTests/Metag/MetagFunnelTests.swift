@@ -51,10 +51,26 @@ struct MetagFunnelTests {
                 .appendingPathComponent("Sources/PalmierPro/Metag/MetagFunnel.swift"),
             encoding: .utf8
         )
-        #expect(src.contains("\"page\": Self.page"), "page 不是在发送处拼上的")
-        #expect(src.contains("\"meta\": payload"), "meta 可能仍然发出 NULL")
-        #expect(!src.contains("if let meta { body[\"meta\"] = meta }"),
-                "还留着「有 meta 才发」的旧写法 —— 那会让没有 meta 的事件发出 NULL")
+        // **问真正发出去的那一包，不问源码里那两行字。**
+        //
+        // 源码字符串对得上、发出去的东西却不对，是可能的：
+        // meta 合并方向反了就能把 page 冲掉，而那一行 `"page": Self.page` 还在。
+        let noMeta = MetagFunnel.body(.lineReady, meta: nil)
+        let withMeta = MetagFunnel.body(.lineReady, meta: ["why": "x"])
+
+        // 没有 meta 的事件也带 meta —— 发 NULL 的话，报表里它和一个裸脚本一样。
+        let bare = try #require(noMeta["meta"] as? [String: Any])
+        #expect(bare["page"] as? String == "mac", "page 没拼上：\(bare)")
+
+        let merged = try #require(withMeta["meta"] as? [String: Any])
+        #expect(merged["why"] as? String == "x", "调用点给的 meta 丢了")
+        #expect(merged["page"] as? String == "mac", "调用点的 meta 把 page 冲掉了")
+
+        // **调用点不许覆盖 page。** 它是"这一条属于哪个客户端"，不是自由字段。
+        let hijack = try #require(
+            MetagFunnel.body(.lineReady, meta: ["page": "landing"])["meta"] as? [String: Any])
+        #expect(hijack["page"] as? String == "mac",
+                "调用点能把自己伪装成 landing —— 两端的漏斗就合不到一张图上了")
     }
 
     /// **漏斗的默认是"全记"，不是"去重"。**

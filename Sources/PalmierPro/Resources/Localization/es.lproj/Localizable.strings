@@ -1543,3 +1543,4 @@
 "Loaded %@ shots, with score and captions." = "Se cargaron %@ tomas, con música y subtítulos.";
 "Add Film" = "Añadir película";
 "Sign in and your films stay with you" = "Inicia sesión y tus películas te acompañan";
+"Loaded %lld shots with score. Captions aren't kept past 24 hours — your words stay yours." = "Se cargaron %lld tomas con música. Los subtítulos no se conservan más de 24 horas: tus palabras son tuyas.";

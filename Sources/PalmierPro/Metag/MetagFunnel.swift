@@ -92,6 +92,21 @@ enum MetagFunnel {
     /// **一次会话里只记第一条草案** —— 用户做三条，我们只看到一条，
     /// 而"他试了几次"恰恰是这几格存在的全部理由。
     /// 漏斗的安全默认是"多记"，不是"少记"：多记看得出来，少记看不出来。
+    /// 真正发出去的那一包。
+    ///
+    /// **抽出来是为了让判据能直接问它。** 上一版判据比的是源码里
+    /// `"page": Self.page` 和 `"meta": payload` 这两行还在 ——
+    /// 而"字符串还在、发出去的东西却不对"是可能的（比如 `page` 被算成空串、
+    /// 或者 meta 合并方向反了把 page 冲掉）。判据看不见那种错。
+    static func body(_ step: Step, meta: [String: Any]?) -> [String: Any] {
+        var payload: [String: Any] = ["page": Self.page]
+        // 调用点给的 meta 后合并 —— 但**它不该能冲掉 page**：
+        // page 是这一条属于哪个客户端，不是调用点的自由字段。
+        if let meta { payload.merge(meta) { _, new in new } }
+        payload["page"] = Self.page
+        return ["anon": anon, "step": step.rawValue, "meta": payload]
+    }
+
     static func track(_ step: Step, once: Bool = false, meta: [String: Any]? = nil) {
         if once, !Self.once.fresh(step.rawValue) { return }
         // **每一条都带 page。** 不带的话 `meta` 整个是 NULL，而在报表里
@@ -100,10 +115,8 @@ enum MetagFunnel {
         //
         // 放在这里而不是各个调用点：每处各写一次，迟早有一处忘记，
         // 而忘记的后果是那一格的用户在报表里直接消失。
-        var payload: [String: Any] = ["page": Self.page]
-        if let meta { payload.merge(meta) { _, new in new } }
-        let body: [String: Any] = ["anon": anon, "step": step.rawValue, "meta": payload]
-        guard let data = try? JSONSerialization.data(withJSONObject: body) else { return }
+        guard let data = try? JSONSerialization.data(withJSONObject: Self.body(step, meta: meta))
+        else { return }
 
         var req = URLRequest(url: MetagGateway.baseURL.appendingPathComponent("api/v1/funnel"))
         req.httpMethod = "POST"

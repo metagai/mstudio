@@ -1,3 +1,4 @@
+import AVFoundation
 import Foundation
 
 /// 把一部已完成的作品拉回时间轴。
@@ -57,7 +58,7 @@ enum MetagJobOpener {
 
             // 先把素材取全，**取完再一次铺上去** —— 边下边铺的话，
             // 撤销会变成 N 步，而他做的只是"打开一条片子"这一件事。
-            var shotAssets: [(index: Int, asset: MediaAsset)] = []
+            var shotAssets: [(index: Int, asset: MediaAsset, seconds: Double)] = []
             var narrationAssets: [(index: Int, asset: MediaAsset)] = []
             for i in wanted {
                 let shot = job.shots[i]
@@ -65,7 +66,18 @@ enum MetagJobOpener {
                     job: jobId, name: shot.video, to: FileManager.default.temporaryDirectory) {
                     // addMediaAsset 返回非可选，原来那句 `!= nil` 恒真、每次构建都报警告。
                     // 计数没错过（它本来就总会加），错的是那句判断在假装自己在判断。
-                    shotAssets.append((i, editor.addMediaAsset(from: url, type: .video)))
+                    // **时长在这儿现量。**
+                    //
+                    // `addMediaAsset` 立刻返回，`asset.duration` 是后台 `Task`
+                    // 补的 —— 铺片子那一刻它基本还是 0。而 `shot_clips` 一旦缺失
+                    // （网关那侧 24 小时后走 PG 归档路，那条路上没有这个字段，
+                    // 也就是**每一部第二天打开的片子**），退回"实测"就等于退回 0：
+                    // 十一镜全叠在一起、相距一帧。
+                    //
+                    // 文件就在手上，量一下不要钱。
+                    let seconds = (try? await AVURLAsset(url: url).load(.duration).seconds) ?? 0
+                    shotAssets.append((i, editor.addMediaAsset(from: url, type: .video),
+                                       seconds.isFinite ? seconds : 0))
                 }
                 // 原生出声的那几镜不取旁白 —— 取回来只会被用户铺到模型自己的声音上面。
                 guard needsNarration.contains(i), !shot.audio.isEmpty else { continue }
@@ -120,7 +132,7 @@ enum MetagJobOpener {
                     let starts = MetagFilmLayout.startSeconds(
                         shotCount: shotAssets.count,
                         clipSeconds: job.shot_clips?.map(\.seconds),
-                        measured: { shotAssets[$0].asset.duration }
+                        measured: { shotAssets[$0].seconds }
                     ).map(editor.frame(atSeconds:))
                     let placements = MetagFilmLayout.narrationFrames(
                         shots: shotAssets.map(\.index),
@@ -162,7 +174,8 @@ enum MetagJobOpener {
 
             editor.mediaPanelToast = MediaPanelToast(
                 message: message(added: added, narrations: narrations, captioned: captioned,
-                                 score: score, salvaged: job.status == "failed"),
+                                 score: score, salvaged: job.status == "failed",
+                                 textExpired: job.text_expired == true),
                 kind: added > 0 ? .success : .warning,
                 // **他刚拿到片子，这一刻请他留住它。**
                 // 「愿不愿意导出」就是我们量的那个内容质量指标，而在此之前
@@ -183,8 +196,8 @@ enum MetagJobOpener {
 
     @MainActor
 
-    private static func message(added: Int, narrations: Int, captioned: Bool,
-                                score: Bool, salvaged: Bool) -> String {
+    static func message(added: Int, narrations: Int, captioned: Bool,
+                        score: Bool, salvaged: Bool, textExpired: Bool) -> String {
         // 取不到就直说。含糊其辞比说不出口更伤信任。
         guard added > 0 else {
             // 取件是内存盘，过期就真的没有了 —— 说清楚它要重做，
@@ -205,6 +218,14 @@ enum MetagJobOpener {
         // 字幕铺上了就说一句 —— 他没要过它，得知道它在那儿、也知道能撤掉。
         if captioned {
             return L10n.string("Loaded \(added.formatted()) shots, with score and captions.")
+        }
+        // **没有字幕的时候要说清楚为什么。**
+        //
+        // 超过 24 小时，网关按隐私承诺不再回任何用户文本 —— 片子还在、
+        // 每一镜还在、配乐还在，只有他写的那些字没了。
+        // 不说的话他读到的是"字幕丢了"，而那像是我们弄丢的。
+        if textExpired {
+            return L10n.string("Loaded \(added.formatted()) shots with score. Captions aren't kept past 24 hours — your words stay yours.")
         }
         return narrations > 0
             ? L10n.string("Loaded \(added.formatted()) shots and \(narrations.formatted()) narration tracks.")

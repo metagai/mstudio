@@ -193,6 +193,14 @@ enum MetagGateway {
         /// ⚠ 是毫秒，不是秒。
         let first_frame_at_ms: Int64?
 
+        /// **他写的字，24 小时之后我们不再留。**
+        ///
+        /// 网关那侧超过 24 小时走 PG 归档路，那条路上一个用户文本都不回
+        /// （`subtitles` 是 null）。这不是故障，是隐私承诺兑现了 ——
+        /// **所以它必须说出来**：不说的话，他打开第二天的片子，
+        /// 看到的是"字幕不见了"，而那读起来像我们弄丢了东西。
+        let text_expired: Bool?
+
         let shot_clips: [ShotClip]?
 
         struct ShotClip: Decodable, Sendable {
