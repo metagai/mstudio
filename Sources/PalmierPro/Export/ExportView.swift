@@ -478,13 +478,28 @@ struct ExportView: View {
             Spacer()
             Button(L10n.string("Close")) { editor.showExportDialog = false }
                 .keyboardShortcut(.cancelAction)
+            // 和草案面板上那颗「起草」同一个长相。**产品里只该有一种主按钮** ——
+            // 这颗原来是 `.glassProminent` 且没上 tint，于是落成系统蓝，
+            // 全产品只有它是蓝的。
             Button(exportQueue.hasActivity ? L10n.string("Add to Queue") : L10n.string("Export")) { startExport() }
-                .buttonStyle(.glassProminent)
-                .buttonBorderShape(.capsule)
+                .buttonStyle(.capsule(.prominent, size: .regular))
                 .keyboardShortcut(.defaultAction)
+                // **空时间线上没得导。** 原来这颗照样能按，
+                // 按下去导出一条 0 帧的片子 —— 一个坏结果，长得跟正常操作一样。
+                .disabled(exportTimeline.totalFrames <= 0)
         }
         .padding(.horizontal, AppTheme.Spacing.xl)
         .padding(.vertical, AppTheme.Spacing.lg)
+    }
+
+    @ViewBuilder
+    private func sizeItem(_ symbol: String, _ text: String) -> some View {
+        if !text.isEmpty {
+            HStack(spacing: AppTheme.Spacing.xs) {
+                Image(systemName: symbol)
+                Text(verbatim: text)
+            }
+        }
     }
 
     private var exportSummary: some View {
@@ -496,10 +511,9 @@ struct ExportView: View {
             }
             switch destination {
             case .video:
-                HStack(spacing: AppTheme.Spacing.xs) {
-                    Image(systemName: "doc")
-                    Text(verbatim: "~\(estimatedFileSize)")
-                }
+                // **图标和数字一起来、一起走。** 空字符串只藏得住文字 ——
+                // 上一版空时间线上留下一个后面什么都没有的文件图标。
+                sizeItem("doc", estimatedFileSize)
                 let out = resolution.renderSize(for: CGSize(width: exportTimeline.width, height: exportTimeline.height))
                 Text(verbatim: "\(Int(out.width))×\(Int(out.height))")
                 Text(verbatim: codec.containerLabel)
@@ -507,10 +521,7 @@ struct ExportView: View {
                 Text(verbatim: "\(exportTimeline.width)×\(exportTimeline.height)")
                 Text(verbatim: timelineFormat.extensionLabel)
             case .palmierProject:
-                HStack(spacing: AppTheme.Spacing.xs) {
-                    Image(systemName: "shippingbox")
-                    Text(verbatim: "~\(ByteCountFormatter.string(fromByteCount: palmierSummary.bytes, countStyle: .file))")
-                }
+                sizeItem("shippingbox", Self.approximateSize(palmierSummary.bytes))
                 Text(verbatim: ".\(Project.fileExtension)")
             }
         }
@@ -619,7 +630,17 @@ struct ExportView: View {
         case .hdr:    0.45e6
         }
         let bytesPerSec = bytesPerSecPerMP * max(0.1, megapixels)
-        return ByteCountFormatter.string(fromByteCount: Int64(bytesPerSec * seconds), countStyle: .file)
+        return Self.approximateSize(Int64(bytesPerSec * seconds))
+    }
+
+    /// 「约 240 MB」。**没得导的时候什么都不说。**
+    ///
+    /// 原来是 `"~\(ByteCountFormatter…)"` —— 空时间线上
+    /// `ByteCountFormatter` 吐的是 `"Zero KB"`，前面再加个波浪号，
+    /// 屏幕左下角写着 **「~Zero KB」**。那是机器话漏到了用户那一侧。
+    static func approximateSize(_ bytes: Int64) -> String {
+        guard bytes > 0 else { return "" }
+        return "~" + ByteCountFormatter.string(fromByteCount: bytes, countStyle: .file)
     }
 
     private var exportFormat: ExportFormat {

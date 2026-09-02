@@ -57,7 +57,20 @@ ALLOW = {
 }
 
 SEMANTIC_FONT = re.compile(r"\.font\(\.(?:headline|subheadline|caption2?|title\d?|body|footnote)\)")
+# **系统按钮样式不止 bordered 那两种。** macOS 26 的 `.glass` / `.glassProminent`
+# 上一版一个都不认 —— 导出面板那颗系统蓝的「导出」，就是这么一直绿着的。
+# 产品里的主按钮是 `.capsule(.prominent)`（黑色药丸），两颗放一起不像一个产品。
+#
+# 判据只认它见过的那一种写法，就等于只防它已经修过的那一次。今天第三次。
 SYSTEM_BUTTON = re.compile(r"\.buttonStyle\(\.bordered(?:Prominent)?\)")
+
+# `.glass` / `.glassProminent` 是 macOS 26 的材质，**本身不是问题** ——
+# 问题是**没上我们的色**：不写 `.tint`，它就落成系统蓝。
+# 那四颗圆形图标按钮都显式 `.tint(AppTheme.Accent.primary)`，是正当的；
+# 导出面板那颗文字主按钮什么都没写，于是全产品只有它是蓝的
+# （别处的主按钮是 `.capsule(.prominent)`，黑色药丸）。
+GLASS_BUTTON = re.compile(r"\.buttonStyle\(\.glass(?:Prominent)?\)")
+TINTED = re.compile(r"\.tint\(AppTheme\.")
 # **三元里的裸色号原来抓不到**：`.foregroundStyle(x ? .orange : .blue)`
 # 整个躲过了上一版的正则，而它正是 MetagMyFilms 里那处 systemOrange 的写法。
 # 判据只认它见过的那一种写法，就等于只防它已经修过的那一次。
@@ -126,6 +139,20 @@ def handrolled_cards():
     return out
 
 
+def untinted_glass_buttons():
+    """借了系统材质、又没上我们颜色的按钮。"""
+    out = []
+    for path in sorted(SOURCES.rglob("*.swift")):
+        lines = path.read_text().splitlines()
+        for i, line in enumerate(lines):
+            if line.strip().startswith(("//", "///")) or not GLASS_BUTTON.search(line):
+                continue
+            # `.tint` 通常跟在后面几个修饰符里
+            if not TINTED.search("\n".join(lines[i : i + 6])):
+                out.append((str(path.relative_to(SOURCES)), i + 1, line.strip()[:60]))
+    return out
+
+
 def code_lines():
     for path in sorted(SOURCES.rglob("*.swift")):
         rel = str(path.relative_to(SOURCES))
@@ -171,6 +198,15 @@ def main():
             print(f"       {rel}:{n}  {line}")
     else:
         print("OK   用户文字都有上限")
+
+    glass = untinted_glass_buttons()
+    if glass:
+        failed = True
+        print(f"FAIL 借了系统材质又没上我们的色 {len(glass)} 处（会落成系统蓝）：")
+        for rel, n, line in glass:
+            print(f"       {rel}:{n}  {line}")
+    else:
+        print("OK   系统材质的按钮都上了我们的色")
 
     cards = handrolled_cards()
     if len(cards) > HIGH_WATER:

@@ -177,6 +177,14 @@ struct ViewSnapshots {
                 "五个人交接完，屏幕上才 \(done) 个彩色像素 —— 这一排不累积，他盯九十秒看到的是一排灰点")
     }
 
+    /// **导出。** 北极星第二条（他愿不愿意把片子留下）就落在这一屏，
+    /// 而它从来没被人看过。
+    @Test func export() throws {
+        try snapshot("export", width: 980) {
+            ExportView().environment(EditorViewModel())
+        }
+    }
+
     /// 模型列表 —— 今天加了一句话简介和每镜价，还有四个空状态，都没看过。
     @Test func modelsPane() throws {
         try snapshot("models-pane", width: 560) { ModelsPane() }
