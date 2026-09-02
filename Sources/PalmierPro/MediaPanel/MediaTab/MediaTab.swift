@@ -255,6 +255,13 @@ struct MediaTab: View {
                 .foregroundStyle(AppTheme.Text.primaryColor)
                 .lineLimit(2)
                 .fixedSize(horizontal: false, vertical: true)
+
+            // 片子刚落到他手上，这一刻请他留住它。
+            if toast.action == .export {
+                Button(L10n.string("Export")) { editor.showExportDialog = true }
+                    .buttonStyle(.capsule(.secondary))
+                    .controlSize(.small)
+            }
         }
         .padding(.horizontal, AppTheme.Spacing.mdLg)
         .padding(.vertical, AppTheme.Spacing.smMd)

@@ -75,7 +75,12 @@ enum MetagJobOpener {
             }
             editor.mediaPanelToast = MediaPanelToast(
                 message: message(added: added, narrations: narrations, salvaged: job.status == "failed"),
-                kind: added > 0 ? .success : .warning
+                kind: added > 0 ? .success : .warning,
+                // **他刚拿到片子，这一刻请他留住它。**
+                // 「愿不愿意导出」就是我们量的那个内容质量指标，而在此之前
+                // 那件事只存在于菜单栏第二层 —— 我们从没在他最想留住它的时候
+                // 开过口。取不到片子时不挂：没有东西可导。
+                action: added > 0 ? .export : nil
             )
         } catch {
             // **这里我不记。**
