@@ -210,6 +210,35 @@ struct ViewSnapshots {
     ///
     /// 2026-09-02：这一天照的头几屏几乎全是「正在载入」——
     /// **空屋子里藏不住东西**。等片子那三十秒是五个空盒子，
+    /// **编辑器的面板 —— 这个产品真正的主场。**
+    ///
+    /// 2026-09-02 创始人发了一张编辑器截图说"布局问题到处都是"，
+    /// 而我只能对着截图量像素猜，因为这一块进不了取景器。
+    ///
+    /// ⚠ **取景器看不进 `ScrollView`** —— `ImageRenderer` 在里面画的是
+    /// **零个像素**（实测：裸文字 1430 个深色像素，套一层之后 0，
+    /// `scrollDisabled(true)` 和给死高度都救不了）。
+    /// 而编辑器几乎每块面板都套着一层。所以照的是**里面那几节**。
+    @Test func editorPanels() throws {
+        // 空工程的面板一笔都不画 —— 和「我的作品」只照到「正在载入」是同一个坑。
+        let editor = EditorViewModel()
+        editor.timeline = Fixtures.timeline(tracks: [
+            Fixtures.videoTrack(clips: [Fixtures.clip(start: 0, duration: 90)]),
+        ])
+        // ⚠ 检视器还没照上。`projectSettingsContent` 在视图层级之外求值时
+        // `@Environment` 还没注入（直接崩：No Observable object of type
+        // EditorViewModel found）—— 要照它得把那一节抽成独立的 View 类型。
+        // **没照上就说没照上**，不摆一张凑数的图。
+        try snapshot("panel-music", width: 330) {
+            MusicSection(isExpanded: .constant(true)).environment(editor)
+        }
+        try snapshot("panel-speech", width: 330) {
+            SpeechAnalysisSections(silenceExpanded: .constant(true),
+                                   speakerExpanded: .constant(false))
+                .environment(editor)
+        }
+    }
+
     /// 是喂了真数据之后才看见的。
     @Test func loadedStates() throws {
         let now = Date().timeIntervalSince1970

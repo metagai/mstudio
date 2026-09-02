@@ -156,18 +156,28 @@ struct InspectorView: View {
     private var projectMetadataContent: some View {
         VStack(spacing: AppTheme.Spacing.zero) {
             projectInspectorHeader
-            ScrollView {
-                EditorPanelGroup(
-                    L10n.string("Canvas"),
-                    contentSpacing: AppTheme.Spacing.sm
-                ) {
-                    menuMetadataRow(label: L10n.string("Resolution"), value: "\(editor.timeline.width) × \(editor.timeline.height)") { qualityMenuItems }
-                    menuMetadataRow(label: L10n.string("Frame Rate"), value: "\(editor.timeline.fps) fps") { fpsMenuItems }
-                    menuMetadataRow(label: L10n.string("Aspect Ratio"), value: CanvasAspectRatio.displayLabel(width: editor.timeline.width, height: editor.timeline.height)) { aspectMenuItems }
-                }
-                .frame(maxWidth: .infinity, alignment: .leading)
-            }
+            ScrollView { projectSettingsContent }
         }
+    }
+
+    /// 「项目设置」那一屏的内容，**独立于外面那层 `ScrollView`**。
+    ///
+    /// 拆出来是因为取景器看不进 `ScrollView` —— `ImageRenderer` 在里面
+    /// 画的是**零个像素**（实测：裸文字 1430 个深色像素，套一层 ScrollView 后 0；
+    /// `scrollDisabled(true)` 和给死高度都救不了）。
+    ///
+    /// 而编辑器几乎每块面板都套着一层，也就是说**这个产品真正的主场
+    /// 一张图都照不出来**。把内容和滚动分开，那一层就能被看见了。
+    var projectSettingsContent: some View {
+        EditorPanelGroup(
+            L10n.string("Canvas"),
+            contentSpacing: AppTheme.Spacing.sm
+        ) {
+            menuMetadataRow(label: L10n.string("Resolution"), value: "\(editor.timeline.width) × \(editor.timeline.height)") { qualityMenuItems }
+            menuMetadataRow(label: L10n.string("Frame Rate"), value: "\(editor.timeline.fps) fps") { fpsMenuItems }
+            menuMetadataRow(label: L10n.string("Aspect Ratio"), value: CanvasAspectRatio.displayLabel(width: editor.timeline.width, height: editor.timeline.height)) { aspectMenuItems }
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
     }
 
     private var projectInspectorHeader: some View {
