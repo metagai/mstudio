@@ -279,7 +279,16 @@ enum MetagGateway {
         /// 那 39 处一起变好；每一处各写一遍，迟早有一处忘记。
         case offline(URLError.Code)
 
-        var errorDescription: String? {
+        var errorDescription: String? { message(anonymous: MetagTicket.isAnonymous(MetagGateway.token)) }
+
+        /// 同一个状态码对**登录过的人**和**临时身份**说的不是同一句话。
+        ///
+        /// 抽出这个参数是因为判据够不着它：它原来直接读全局的
+        /// `MetagGateway.token`，于是 `MetagErrorCopyTests` 在并行跑的时候
+        /// 会**偶发红** —— 别的判据把 token 设成匿名，它就拿到了另一支的文案。
+        ///
+        /// 判据伸手去够全局状态，就说明代码该把那个决定摆出来。
+        func message(anonymous: Bool) -> String? {
             switch self {
             case .signedOut: return L10n.string("Sign in to METAG to generate.")
             case .tokenNotAcceptedHere(let provider):
@@ -298,8 +307,7 @@ enum MetagGateway {
                 // 说"请先登录"像一道门；说"这一条留给你"是同一件事的另一种说法，
                 // 而后者是真的：登录之后那条草案还在他名下。
                 return L10n.string("Signing in keeps this draft and lets you produce it.")
-            case .http(403) where MetagTicket.isAnonymous(MetagGateway.token),
-                 .http(404) where MetagTicket.isAnonymous(MetagGateway.token):
+            case .http(403) where anonymous, .http(404) where anonymous:
                 // **临时身份只活 7 天，而且过期之后换的是新身份。**
                 // 他八天后回来，之前那条片子不是"要登录"，是查无此物 ——
                 // 说"东西不见了"对他是假话，他会以为我们弄丢了。
