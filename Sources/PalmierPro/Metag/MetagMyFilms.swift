@@ -80,6 +80,8 @@ struct MetagMyFilmsView: View {
     /// 点开一部作品要做什么，由调用方决定 —— 这个视图只负责"看得见、点得到"。
     var onOpen: (MetagGateway.FilmRow) -> Void
 
+    @State private var posters = MetagPosterCache.shared
+
     var body: some View {
         VStack(alignment: .leading, spacing: AppTheme.Spacing.sm) {
             HStack {
@@ -153,9 +155,14 @@ struct MetagMyFilmsView: View {
 
     private func row(_ f: MetagGateway.FilmRow) -> some View {
         HStack(alignment: .top, spacing: AppTheme.Spacing.sm) {
+            poster(f)
             VStack(alignment: .leading, spacing: 2) {
                 Text(f.prompt ?? L10n.key("Untitled")).lineLimit(1)
-                Text(L10n.string("\(f.shots.formatted()) shots · \(f.credits.formatted()) credits") + " · " + Self.when(f.created_at))
+                // **失败又退过款的，不能只报一个扣费数字。**
+                // 「没渲成 · 120 credits」读起来就是"失败了还扣我钱"。
+                Text(f.refunded == true
+                     ? L10n.string("\(f.shots.formatted()) shots · refunded") + " · " + Self.when(f.created_at)
+                     : L10n.string("\(f.shots.formatted()) shots · \(f.credits.formatted()) credits") + " · " + Self.when(f.created_at))
                     .font(.system(size: AppTheme.FontSize.sm)).foregroundStyle(AppTheme.Text.secondaryColor)
             }
             Spacer()
@@ -171,6 +178,33 @@ struct MetagMyFilmsView: View {
                                  : AppTheme.Accent.brand)
         }
         .contentShape(Rectangle())
+    }
+
+    /// 缩略图。**这一屏叫「我的作品」，列的是片子** —— 而在这之前整屏是文字。
+    ///
+    /// 取不到就留一个安静的空格，**不摆占位的假图**：那会让人以为片子长那样。
+    @ViewBuilder
+    private func poster(_ f: MetagGateway.FilmRow) -> some View {
+        Group {
+            if let image = posters.poster(for: f.job_id) {
+                Image(nsImage: image)
+                    .resizable()
+                    .aspectRatio(contentMode: .fill)
+            } else {
+                AppTheme.Background.baseColor
+            }
+        }
+        .frame(width: AppTheme.MetagDraft.stripCellWidth,
+               height: AppTheme.MetagDraft.stripCellHeight)
+        .clipShape(RoundedRectangle(cornerRadius: AppTheme.Radius.xs, style: .continuous))
+        .overlay(
+            RoundedRectangle(cornerRadius: AppTheme.Radius.xs, style: .continuous)
+                .strokeBorder(AppTheme.Border.subtleColor, lineWidth: AppTheme.BorderWidth.hairline)
+        )
+        .task(id: f.job_id) {
+            guard let name = f.poster else { return }
+            posters.load(jobId: f.job_id, name: name)
+        }
     }
 
     /// **跟界面语言走，而且每行不新建一个 formatter。**

@@ -480,6 +480,20 @@ enum MetagGateway {
         /// 产物还取不取得到。**扣了钱就必须取得到** ——
         /// 取不到要如实标出，不能假装能打开。
         let retrievable: Bool
+        /// 这一笔退过款没有。
+        ///
+        /// **失败的任务不能只报一个扣费数字。** 退款走的是另一条台账，
+        /// 客户端从流水里认不出这一笔退没退 —— 不带这个字段，
+        /// 界面上就是「没渲成 · 120 credits」，用户读到的是"失败了还扣我钱"。
+        let refunded: Bool?
+        /// 缩略图取哪个文件（`shot_0.mp4`），没有就是 nil。
+        ///
+        /// **不是首帧**：首帧只活在 Redis 的任务哈希里，过了 TTL 就没有 ——
+        /// 缩略图会随着时间一张张消失，那比一张都没有更糟。
+        /// 而 `shot_0.mp4` 每一条成片都有，它就是第一镜本身。
+        ///
+        /// 给的是名字不是 URL：URL 带票、有时效，列表这一跳不该背它。
+        let poster: String?
         var id: String { job_id }
     }
 
@@ -912,6 +926,27 @@ enum MetagGateway {
 
     /// 轮询至终态。取消由调用方通过 Task 取消传递。
     /// 下载镜头文件到临时目录，返回本地 URL。`name` 为 shots[i].video/audio。
+    /// 一个能直接拿去播/取帧的带票 URL。
+    ///
+    /// **用票据，不要把 JWT 放进 URL。** 查询串会进浏览器历史、Referer、
+    /// 以及任何一天有人打开访问日志时的日志文件。而我们的 JWT 是 7 天有效、
+    /// 全端点权限 —— 泄漏一次等于账号被接管。票据只活 300 秒、只绑这一个任务：
+    /// 泄漏的代价从"整个账号七天"降到"一个任务五分钟"。
+    ///
+    /// 取不到票据时退回 token：宁可取得到，也不要因为鉴权升级而变得取不到片子。
+    static func fileURL(job id: String, name: String) async throws -> URL {
+        if let absolute = URL(string: name), absolute.scheme != nil { return absolute }
+        let query: URLQueryItem
+        if let ticket = try? await fileTicket(job: id) {
+            query = URLQueryItem(name: "ticket", value: ticket)
+        } else {
+            guard let token else { throw Failure.signedOut }
+            query = URLQueryItem(name: "token", value: token)
+        }
+        return baseURL.appendingPathComponent("files/\(id)/\(name)")
+            .appending(queryItems: [query])
+    }
+
     static func download(job id: String, name: String, to directory: URL) async throws -> URL {
         // 绝对 URL 说明结果已落 S3（付费档），直接取；否则走网关流式端点
         let url: URL
@@ -927,15 +962,7 @@ enum MetagGateway {
             //
             // web 端早就在用票据了（fileUrl），只有这里还在发完整 JWT。
             // 取不到票据时退回 token：宁可下载得到，也不要因为鉴权升级而变得取不到片子。
-            let query: URLQueryItem
-            if let ticket = try? await fileTicket(job: id) {
-                query = URLQueryItem(name: "ticket", value: ticket)
-            } else {
-                guard let token else { throw Failure.signedOut }
-                query = URLQueryItem(name: "token", value: token)
-            }
-            url = baseURL.appendingPathComponent("files/\(id)/\(name)")
-                .appending(queryItems: [query])
+            url = try await fileURL(job: id, name: name)
         }
         // **下载也要重试。** API 调用早就有重试了（这条链路实测丢包 6.7%–20%），
         // 而下载的文件比一次 API 响应大两个数量级 —— 中途断掉的概率高得多，
