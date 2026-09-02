@@ -1530,3 +1530,6 @@
 "These files have expired — this one needs generating again." = "取件已经过期 —— 这一条要重新生成。";
 "Share" = "分享";
 "Not now" = "以后再说";
+"METAG picks how many shots" = "镜数由 METAG 定";
+"I'll choose" = "我来定";
+"Let METAG decide" = "交给 METAG";

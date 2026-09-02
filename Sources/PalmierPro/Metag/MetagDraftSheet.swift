@@ -16,7 +16,13 @@ extension Notification.Name {
 @MainActor
 final class MetagDraftModel: ObservableObject {
     @Published var prompt = ""
-    @Published var shots = 4
+    /// 用户亲口挑的镜数。**nil = 由 METAG 决定** —— 那是默认，也是对的默认。
+    ///
+    /// 原来这里写死 4，于是一句"一镜到底"的提示词照样出四镜。
+    @Published var chosenShots: Int?
+
+    /// 已经知道的镜数：他挑的，或者分镜回来之后真实的那个。
+    var knownShots: Int? { chosenShots ?? job?.shots.count.nonZero }
     /// 网关给的这一条片子的报价。为空就退回本地按档位单价算 ——
     /// 那是第二份真源，只在问不到价时用。
     @Published var quote: MetagGateway.Quote?
@@ -25,6 +31,7 @@ final class MetagDraftModel: ObservableObject {
     @Published private(set) var busy = false
     @Published private(set) var note: String?
     /// 逐镜改过的旁白。key 是镜号 —— 只有真变了的才发出去。
+    @ObservationIgnored private var askedForQuote = false
     @Published var edits: [Int: String] = [:]
     @Published var rerolls: Set<Int> = []
 
@@ -97,13 +104,6 @@ final class MetagDraftModel: ObservableObject {
             note = L10n.key("Couldn't reach METAG — check your connection and try again.")
             return
         }
-        // 同时去问价。**报价免费也不需要登录**，而等草案的那 90 秒本来就是空的 ——
-        // 让他在决定之前就知道代价，而不是按下去之后看余额少了多少。
-        // 失败一律吞掉：问不到价不该挡住免费草案。
-        Task { [prompt, shots] in
-            let lang = AppLocalization.shared.selection.identifier.map { String($0.prefix(2)) } ?? "en"
-            quote = try? await MetagGateway.quote(prompt: prompt, shots: shots, lang: lang)
-        }
         do {
             // 图先上传换 frame_id。**哪张没传上去要说出来** ——
             // 悄悄少一张，他会以为导演没看懂他的参考图。
@@ -113,7 +113,8 @@ final class MetagDraftModel: ObservableObject {
                 if let id = try? await MetagGateway.uploadFrame(url) { assets.append(id) } else { failed += 1 }
             }
             if failed > 0 { note = PromptPaste.Notice.imageFailed.text }
-            let id = try await MetagGateway.preview(prompt: prompt, shots: shots, assets: assets)
+            // 他没挑就不传 —— 让读过提示词的那一方去定。
+            let id = try await MetagGateway.preview(prompt: prompt, shots: chosenShots, assets: assets)
             jobId = id
             await poll(id)
         } catch {
@@ -170,10 +171,29 @@ final class MetagDraftModel: ObservableObject {
         }
     }
 
+    /// 报价问一次就够。失败一律吞掉：问不到价不该挡住免费草案。
+    private func quoteOnce() {
+        guard quote == nil, !askedForQuote, let shots = knownShots else { return }
+        askedForQuote = true
+        Task { [prompt] in
+            let lang = AppLocalization.shared.selection.identifier.map { String($0.prefix(2)) } ?? "en"
+            quote = try? await MetagGateway.quote(prompt: prompt, shots: shots, lang: lang)
+        }
+    }
+
     private func poll(_ id: String) async {
         for _ in 0..<90 {
             if let j = try? await MetagGateway.job(id) {
                 job = j
+                // **知道真镜数了才问价。**
+                //
+                // 原来在起草那一刻就按客户端那个 4 去问 —— 而镜数现在由服务端定，
+                // 我们那时根本不知道会切几镜，报出来的是个假设。
+                // 分镜是第一个阶段，这个数在等待的早期就到了，
+                // 所以他仍然是"在决定之前就知道代价"，只是这回那个代价是真的。
+                //
+                // 只问一次：轮询每 4 秒一轮，每轮都问会打爆报价接口。
+                quoteOnce()
                 await fetchFrames(id, j)
                 if j.status == "done" || j.status == "failed" {
                     // **草案真的到他屏幕上了** —— 判据落在"渲完并且这一页还在"，
@@ -246,11 +266,12 @@ struct MetagDraftSheet: View {
     /// 报价必须等于实扣：默认路由下只有口播镜走贵引擎，这里没有逐镜口播标记，
     /// 所以只在"全片使用"时按贵引擎报价，否则按 local 报 —— 宁可少报也不能多报。
     private var quote: Int {
-        guard allShots else { return model.shots }
+        // 还不知道镜数时按 1 报 —— **宁可少报也不能多报**（下面那句注释的规矩）。
+        guard allShots else { return model.knownShots ?? 1 }
         // 网关的登记表是唯一真源。本地那份 `perShot × shots` 只在问不到价时兜底 ——
         // 网关改了档位价格，本地那份会照旧报旧价，而用户按下去扣的是新价。
         return model.quote?.options.first { $0.engine == engine }?.total_credits
-            ?? perShot * model.shots
+            ?? perShot * (model.knownShots ?? 1)
     }
 
     /// 有没有档位坏到不能出片。
@@ -306,7 +327,7 @@ struct MetagDraftSheet: View {
                     // 现在不给数字，给的是这一刻真的有人在做的那件事。
                     MetagCrewView(
                         stage: model.job?.stage,
-                        shotCount: model.job?.shots.count.nonZero ?? model.shots
+                        shotCount: model.knownShots
                     )
                     // 幕布紧跟在班底后面：**上一句说谁在干活，这一块就给出他干的活。**
                     // 报价排最后 —— 他此刻想看的是画面，不是账。
@@ -348,6 +369,37 @@ struct MetagDraftSheet: View {
         Task { await model.draft() }
     }
 
+    /// 镜数。**默认由 METAG 定，而这是对的默认。**
+    ///
+    /// 原来这里是一个从 4 起步的旋钮 —— 于是每个用户都"选了" 4，
+    /// 包括那些写了"一镜到底"的人。只有读过提示词的那一方有资格决定切几镜。
+    ///
+    /// 想自己定的人仍然能定：点一下就变成旋钮。**能力没少，默认变对了。**
+    @ViewBuilder
+    private var shotCountControl: some View {
+        HStack(spacing: AppTheme.Spacing.sm) {
+            if let chosen = model.chosenShots {
+                Stepper(
+                    L10n.string("\(chosen.formatted()) shots"),
+                    value: Binding(get: { chosen }, set: { model.chosenShots = $0 }),
+                    in: 1...8
+                )
+                .fixedSize()
+                Button(L10n.string("Let METAG decide")) { model.chosenShots = nil }
+                    .buttonStyle(.plain)
+                    .foregroundStyle(AppTheme.Accent.brand)
+            } else {
+                Text(L10n.string("METAG picks how many shots"))
+                    .foregroundStyle(AppTheme.Text.secondaryColor)
+                Button(L10n.string("I'll choose")) { model.chosenShots = 4 }
+                    .buttonStyle(.plain)
+                    .foregroundStyle(AppTheme.Accent.brand)
+            }
+            Spacer(minLength: 0)
+        }
+        .font(.system(size: AppTheme.FontSize.sm))
+    }
+
     /// 一句话或者一份稿子，有一样就能起草。
     private var canDraft: Bool {
         !PromptPaste.composed(line: model.prompt, attachments: attachments).isEmpty
@@ -383,9 +435,7 @@ struct MetagDraftSheet: View {
                 overflow: PromptPaste.overflow(line: model.prompt, attachments: attachments),
                 notices: notices
             )
-            Stepper(L10n.string("\(model.shots.formatted()) shots"), value: $model.shots, in: 1...8)
-                .font(.system(size: AppTheme.FontSize.sm))
-                .foregroundStyle(AppTheme.Text.secondaryColor)
+            shotCountControl
             // 把代价说在前面：草案免费。不说清楚的话，用户不敢点。
             HStack(spacing: AppTheme.Spacing.xxs) {
                 Image(systemName: "checkmark.seal")
@@ -420,7 +470,7 @@ struct MetagDraftSheet: View {
     /// 眼前是一张表。
     private var filmStrip: some View {
         MetagFilmStrip(
-            shots: model.job?.shots.count.nonZero ?? model.shots,
+            shots: model.knownShots ?? 0,
             frames: model.frames
         )
     }

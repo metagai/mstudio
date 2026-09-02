@@ -1527,3 +1527,6 @@
 "These files have expired — this one needs generating again." = "Estos archivos caducaron: hay que generar esta otra vez.";
 "Share" = "Compartir";
 "Not now" = "Ahora no";
+"METAG picks how many shots" = "METAG decide cuántas tomas";
+"I'll choose" = "Yo elijo";
+"Let METAG decide" = "Que decida METAG";

@@ -537,17 +537,28 @@ enum MetagGateway {
     ///
     /// **只有这条路收 `assets`。** `/api/v1/generate` 不收 —— 挂上去会被
     /// 静默丢掉，而素材真正被用到的地方是导演写分镜，分镜就在这一步。
+    /// **镜数由服务端定，客户端只在用户亲口挑了的时候才传。**
+    ///
+    /// 原来这里默认 `shots = 4`，而客户端一共有四个地方各写了一个 4。
+    /// 后果：一句写着 `one continuous build process`（一镜到底）的提示词，
+    /// 照样被切成四镜、四镜各自生成 —— 那几个小工人当然每镜长得不一样。
+    /// **竞品把同一段话照做，我们改写了它。**
+    ///
+    /// 而首页那条路（打一句话直接开拍）用户压根没见过那个旋钮，
+    /// 就已经被定成 4 镜了。**只有读过提示词的那一方有资格决定切几镜**，
+    /// 那一方是网关。
     static func preview(
         prompt: String,
-        shots: Int = 4,
+        shots: Int? = nil,
         firstFrame: String? = nil,
         assets: [String] = []
     ) async throws -> String {
         struct Response: Decodable { let job_id: String }
         var body: [String: Any] = [
-            "prompt": prompt, "shots": shots,
+            "prompt": prompt,
             "lang": await currentLanguageCode(),
         ]
+        if let shots { body["shots"] = shots }
         if let firstFrame { body["first_frame"] = firstFrame }
         if !assets.isEmpty { body["assets"] = Array(assets.prefix(8)) }
         return try await send(request("api/v1/preview", method: "POST", body: body), as: Response.self).job_id
@@ -632,7 +643,10 @@ enum MetagGateway {
         prompt: String,
         engine: String = "local",
         cover: Bool = false,
-        shots: Int = 4,
+        /// **没有默认值是故意的。** 这条路上镜数是调用方的明确意图
+        /// （生成面板就是生成一个镜头），而一个默认的 4 会被人不知不觉继承 ——
+        /// 客户端此前正是这么在四个地方各写了一个 4。
+        shots: Int,
         firstFrame: String? = nil
     ) async throws -> String {
         struct Response: Decodable { let job_id: String }
