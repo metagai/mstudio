@@ -38,6 +38,30 @@ ALLOW = {
 STRING = re.compile(r'"([^"\\]*(?:\\.[^"\\]*)*)"')
 
 
+def code_only(line):
+    """去掉行尾注释。**只跳过整行注释是不够的** ——
+    `guard ... else { return }   // 没有 app 就没有"前台"可等` 里那个"前台"
+    会被当成一个裸中文字符串，判据当场误报。
+
+    误报比漏报更伤：一条老是喊狼来了的判据，最后会被人加 `# noqa` 绕过去。
+    所以逐字符扫，只在**字符串外面**的 `//` 处截断。
+    """
+    out, in_str, i = [], False, 0
+    while i < len(line):
+        c = line[i]
+        if in_str:
+            if c == "\\":
+                out.append(line[i:i + 2]); i += 2; continue
+            if c == '"':
+                in_str = False
+        elif c == '"':
+            in_str = True
+        elif c == "/" and line[i:i + 2] == "//":
+            break
+        out.append(c); i += 1
+    return "".join(out)
+
+
 def source_lines():
     for path in sorted((ROOT / "Sources").rglob("*.swift")):
         rel = str(path.relative_to(ROOT))
@@ -53,7 +77,7 @@ def raw_chinese():
         stripped = line.strip()
         if stripped.startswith(("//", "///", "*")):
             continue
-        for m in STRING.finditer(line):
+        for m in STRING.finditer(code_only(line)):
             if CJK.search(m.group(1)):
                 out.append((rel, n, stripped[:90]))
                 break
@@ -76,7 +100,7 @@ def l_keys():
         # 注释里的 `L("…")` 是在讲用法，不是调用。不跳过它，这份清单第一条就是假的。
         if line.strip().startswith(("//", "///", "*")):
             continue
-        for m in call.finditer(line):
+        for m in call.finditer(code_only(line)):
             keys.setdefault(m.group(1).replace('\\"', '"'), (rel, n))
     return keys
 

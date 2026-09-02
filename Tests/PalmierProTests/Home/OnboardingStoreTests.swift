@@ -24,24 +24,31 @@ struct OnboardingStoreTests {
         }
     }
 
-    @Test func discoveryAdvancesToProfile() throws {
+    /// **欢迎之后就是看片**，不是问卷。
+    ///
+    /// 2026-09-01 把顺序从 `welcome → discovery → profile → account`
+    /// 换成 `welcome → account → discovery → profile`：一个刚装完、
+    /// 什么都还没看到的人，原来要先答完两屏问卷才走到"看你的片子"。
+    @Test func welcomeLeadsStraightToTheFilm() throws {
         try withDefaults { defaults in
             let store = OnboardingStore(defaults: defaults)
             store.advance()
-            store.advance()
 
-            #expect(store.step == .profile)
+            #expect(store.step == .account)
         }
     }
 
-    @Test func submittingSurveyAdvancesToAccount() throws {
+    /// 不动手的人才走到问卷，而且它排在看片后面。
+    @Test func theSurveyComesAfterTheFilm() throws {
         try withDefaults { defaults in
             let store = OnboardingStore(defaults: defaults)
             store.advance()
             store.advance()
-            store.submitSurvey()
 
-            #expect(store.step == .account)
+            #expect(store.step == .discovery)
+
+            store.advance()
+            #expect(store.step == .profile)
         }
     }
 
@@ -57,7 +64,7 @@ struct OnboardingStoreTests {
             store.advance()
             store.advance()
 
-            #expect(store.step == .account)
+            #expect(store.step == .profile, "问卷是最后一屏 —— 看片已经排到前面了")
         }
     }
 

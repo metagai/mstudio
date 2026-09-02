@@ -87,25 +87,43 @@ struct OnboardingOverlay: View {
     }
 
     private var footer: some View {
-        HStack(spacing: AppTheme.Spacing.sm) {
-            if onboarding.step != .welcome {
-                secondaryButton(L10n.string("Back"), action: onboarding.goBack)
+        VStack(spacing: AppTheme.Spacing.xs) {
+            HStack(spacing: AppTheme.Spacing.sm) {
+                if onboarding.step != .welcome {
+                    secondaryButton(L10n.string("Back"), action: onboarding.goBack)
+                }
+                Spacer()
+                switch onboarding.step {
+                case .welcome:
+                    primaryButton(L10n.string("Continue"), action: onboarding.advance)
+                case .discovery:
+                    primaryButton(L10n.string("Continue"), action: onboarding.advance)
+                case .profile:
+                    primaryButton(L10n.string("Continue"), action: onboarding.submitSurvey)
+                case .account:
+                    // **主按钮是"先看一眼"，不是"先登录"。**
+                    // 8/29 起 1112 个人落地、0 个人打过一行字 —— 而他们在这一屏
+                    // 看到的最响的一句话是"用 Google 登录"。他刚下完一个安装包，
+                    // 比网页访客更有耐心，但这不构成让他先交身份的理由。
+                    // 陌生人本来就能建草案（网关放行），墙在"想出片"那一步。
+                    accountAction
+                }
             }
-            Spacer()
-            switch onboarding.step {
-            case .welcome:
-                primaryButton(L10n.string("Continue"), action: onboarding.advance)
-            case .discovery:
-                primaryButton(L10n.string("Continue"), action: onboarding.advance)
-            case .profile:
-                primaryButton(L10n.string("Continue"), action: onboarding.submitSurvey)
-            case .account:
-                // **主按钮是"先看一眼"，不是"先登录"。**
-                // 8/29 起 1112 个人落地、0 个人打过一行字 —— 而他们在这一屏
-                // 看到的最响的一句话是"用 Google 登录"。他刚下完一个安装包，
-                // 比网页访客更有耐心，但这不构成让他先交身份的理由。
-                // 陌生人本来就能建草案（网关放行），墙在"想出片"那一步。
-                accountAction
+
+            // 看片这一屏现在排在问卷前面，所以它不再是最后一屏 ——
+            // 不动手的人得有一条往下走的路。
+            //
+            // **它是次要的、小的、在最下面**：这一屏的主角是"先看一眼"，
+            // 而一颗和主按钮一样重的"跳过"会把两条路变成一道选择题。
+            if onboarding.step == .account, !account.isSignedIn, !account.isMisconfigured {
+                HStack {
+                    Spacer()
+                    Button(L10n.string("Not now"), action: onboarding.advance)
+                        .buttonStyle(.plain)
+                        .font(.system(size: AppTheme.FontSize.xs))
+                        .foregroundStyle(AppTheme.Text.mutedColor)
+                        .disabled(isBusy)
+                }
             }
         }
     }

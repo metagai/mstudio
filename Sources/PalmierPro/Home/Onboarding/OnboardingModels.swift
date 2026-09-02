@@ -1,7 +1,19 @@
 import Foundation
 
+/// 引导页的顺序。**翻页完全由这里的 raw value 决定**（`move(by:)`），
+/// 所以改顺序就是改这一行。
+///
+/// 原来是 `welcome → discovery → profile → account`：一个刚装完、
+/// 什么都还没看到的人，要先答完**两屏问卷**，才走到"看你的片子"那一步。
+///
+/// 8/29 起 1112 个人落地、**0 个人打过一行字**。在人看到价值之前问他是做什么的，
+/// 得到的就是 0 —— 而这两屏正好站在价值前面。
+///
+/// 现在看片排在问卷前面。真正的效果是：**愿意动手的人一屏问卷都不会看到**
+/// （"先看一眼"和登录都直接结束引导），问卷只留给那些看完介绍就是不动手的人。
+/// 而那恰恰是"你从哪儿知道我们"最该问的一群 —— 他们来了又要走。
 enum OnboardingStep: Int {
-    case welcome, discovery, profile, account
+    case welcome, account, discovery, profile
 }
 
 enum OnboardingSampleState: Equatable {
