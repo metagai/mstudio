@@ -328,20 +328,42 @@ codesign --force --options runtime --timestamp \
   --sign "$SIGNING_IDENTITY" \
   "$APP/Contents/Frameworks/Sparkle.framework"
 
-echo "==> Embedding provisioning profile + keychain access group"
-if [ ! -f "$PROVISION_PROFILE" ]; then
-  echo "!! provisioning profile not found at $PROVISION_PROFILE" >&2
-  exit 1
-fi
-cp "$PROVISION_PROFILE" "$APP/Contents/embedded.provisionprofile"
-inject_plist PalmierClerkKeychainAccessGroup "$KEYCHAIN_ACCESS_GROUP"
-
+# **不嵌描述文件，也不签那三个 entitlement。**
+#
+# 2026-09-03：0.1.10 / 0.1.11 / 0.1.12 三版**发出去都起不来** ——
+# 公证通过、`spctl` 判 accepted，而 `open` 直接 Launch failed、
+# 跑可执行文件退出码 137（SIGKILL）。
+#
+# 真因：**描述文件里那张证书，和我们签名用的不是同一张。**
+#
+#     描述文件里   EF:C4:CB:3F…（2031 到期）
+#     我们签的     A7:26:C3:AD…（2027 到期）
+#
+# AMFI 要求签名证书必须在描述文件的证书列表里。不在 → exec 时杀掉。
+# 而钥匙串里只有 A726 那张的私钥，签不成另一张。
+#
+# 那三个 entitlement（`keychain-access-groups` / `application-identifier` /
+# `team-identifier`）**没有任何一处消费**：`BackendConfig.clerkKeychainAccessGroup`
+# 读进来之后没人用它。0.1.8 就是不带它们签的，而 0.1.8 跑得起来。
+#
+# **所以删掉的是一件没人用、却把整个 app 弄死的东西。**
+# 哪天真要用 keychain 共享，得先拿一份包含当前签名证书的描述文件
+# （见 docs/founder-todo.md）。
 echo "==> Codesigning main app"
 codesign --force --options runtime --timestamp \
-  --entitlements "$ENTITLEMENTS" \
   --sign "$SIGNING_IDENTITY" \
   "$APP"
 codesign --verify --strict --verbose=2 "$APP"
+
+# **签完就把它启一次。**
+#
+# 2026-09-03：0.1.9 / 0.1.10 / 0.1.11 / 0.1.12 四版发出去都起不来，
+# 而每一版都走完了整条流水线 —— 签名通过、`codesign --verify` 通过、
+# 两次苹果公证 Accepted、`spctl` 判 `accepted / Notarized Developer ID`。
+#
+# **上面这一行 `--verify` 说的是"这个签名是完整的"，
+# 不是"这个 app 跑得起来"。** 那四版它全程绿着。
+"$ROOT/scripts/check-app-launches.sh" "$APP"
 
 if [ "$MODE" = "sign" ]; then
   echo "==> Done: $APP (signed, not notarized)"
