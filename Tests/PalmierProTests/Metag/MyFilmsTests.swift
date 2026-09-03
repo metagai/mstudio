@@ -42,14 +42,13 @@ struct MyFilmsTests {
         #expect(row.refunded == nil)
     }
 
-    /// **失败又退过款的，不能只报一个扣费数字。**
-    /// 「没渲成 · 120 credits」读起来就是"失败了还扣我钱"。
-    @Test func arefundedFilmDoesNotLookLikeACharge() {
-        let src = Self.source("Metag/MetagMyFilms.swift")
-        #expect(src.contains("f.refunded == true"),
-                "退过款的又显示成扣费了 —— 用户读到的是'失败了还扣我钱'")
-        #expect(src.contains("shots · refunded"))
-    }
+    // 「失败又退过款的不能只报一个扣费数字」这一条搬去了
+    // `FilmWallTests.aRefundedFilmDoesNotReadAsACharge`。
+    //
+    // **原来这条比的是源码字符串**（`src.contains("f.refunded == true")`）——
+    // 那一行搬到 `MetagFilmCard` 之后它当场红了，而行为一个字没变。
+    // 现在问的是那句话本身：退过款的那条里不许出现扣费数字。
+    // 判据咬住实现细节，会在代码变好的时候报警。
 
     /// 缩略图取一次就够：列表滚动时 SwiftUI 会反复调 body。
     @Test func postersAreFetchedOnce() {

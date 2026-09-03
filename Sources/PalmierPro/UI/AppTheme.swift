@@ -463,6 +463,14 @@ enum AppTheme {
         static let updateOverlayWidth: CGFloat = 640
     }
 
+    /// 「我的作品」那面墙。
+    enum FilmWall {
+        /// 每张卡最窄这么宽；一行放几张由窗口自己决定。
+        static let cardMinWidth: CGFloat = 208
+        /// 海报按 16:9 —— 他的片子多数是横的，混排时统一比例才排得齐。
+        static let posterAspect: CGFloat = 16.0 / 9
+    }
+
     /// 首屏那几条真片子。
     enum Showcase {
         /// 海报统一这么高，宽度按各自比例走 —— 竖片横片混排，

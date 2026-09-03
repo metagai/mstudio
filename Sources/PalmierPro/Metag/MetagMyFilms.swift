@@ -146,99 +146,39 @@ struct MetagMyFilmsView: View {
                         .foregroundStyle(AppTheme.Status.warningColor)
                         .font(.system(size: AppTheme.FontSize.sm))
                 }
-                ForEach(model.films) { f in
-                    HStack(spacing: AppTheme.Spacing.xs) {
-                        Button { onOpen(f) } label: { row(f) }
-                            .buttonStyle(.plain)
-                            .disabled(!f.retrievable || model.busy != nil)
-                            .opacity(f.retrievable ? AppTheme.Opacity.opaque : AppTheme.Opacity.medium)
-                        // 他自己想炫耀是这门生意最便宜的一条获客路，而此前
-                        // 一条做好的片子在全站没有任何办法递给第二个人。
-                        Button {
-                            Task { await model.share(f.job_id) }
-                        } label: {
-                            // **给它一个名字。** 这一屏存在的理由之一就是
-                            // "他愿不愿意给别人看" —— 而那件事原来是一个
-                            // 10 点的图标，要悬停才知道是什么。
-                            HStack(spacing: AppTheme.Spacing.xxs) {
-                                Image(systemName: "square.and.arrow.up")
-                                Text(L10n.string("Share"))
-                            }
-                            .font(.system(size: AppTheme.FontSize.xs))
+                // **一面墙，不是一份日志。**
+                //
+                // 这一屏列的是片子，而它原来长得像日志：一行提示词、
+                // 一行「几镜 · 多少 credits · 多久以前」、右边一个状态词。
+                // 而每一条成片都带 `shot_0.mp4` —— 我们手里有画面，他看不到。
+                //
+                // 卡片自适应铺开；鼠标停上去那一张自己动起来（静音播第一镜）。
+                LazyVGrid(
+                    columns: [GridItem(
+                        .adaptive(minimum: AppTheme.FilmWall.cardMinWidth),
+                        spacing: AppTheme.Spacing.md, alignment: .top
+                    )],
+                    alignment: .leading,
+                    spacing: AppTheme.Spacing.md
+                ) {
+                    ForEach(model.films) { f in
+                        MetagFilmCard(
+                            film: f,
+                            poster: posters.poster(for: f.job_id),
+                            onOpen: { onOpen(f) },
+                            onShare: { Task { await model.share(f.job_id) } },
+                            onDelete: { Task { await model.remove(f.job_id) } },
+                            busy: model.busy != nil
+                        )
+                        .task(id: f.job_id) {
+                            guard let name = f.poster else { return }
+                            posters.load(jobId: f.job_id, name: name)
                         }
-                        .buttonStyle(.plain)
-                        .foregroundStyle(AppTheme.Accent.brand)
-                        .disabled(!f.retrievable || f.status != "done" || model.busy != nil)
-                        .help(L10n.string("Send it to someone"))
-                        Button {
-                            Task { await model.remove(f.job_id) }
-                        } label: {
-                            Image(systemName: "xmark")
-                                .font(.system(size: AppTheme.FontSize.xs))
-                        }
-                        .buttonStyle(.plain)
-                        .foregroundStyle(AppTheme.Text.secondaryColor)
-                        .disabled(model.busy != nil)
-                        .help(L10n.string("Delete"))
                     }
                 }
             }
         }
         .task { await model.load() }
-    }
-
-    private func row(_ f: MetagGateway.FilmRow) -> some View {
-        HStack(alignment: .top, spacing: AppTheme.Spacing.sm) {
-            poster(f)
-            VStack(alignment: .leading, spacing: 2) {
-                Text(f.prompt ?? L10n.key("Untitled")).lineLimit(1)
-                // **失败又退过款的，不能只报一个扣费数字。**
-                // 「没渲成 · 120 credits」读起来就是"失败了还扣我钱"。
-                Text(f.refunded == true
-                     ? L10n.string("\(f.shots.formatted()) shots · refunded") + " · " + Self.when(f.created_at)
-                     : L10n.string("\(f.shots.formatted()) shots · \(f.credits.formatted()) credits") + " · " + Self.when(f.created_at))
-                    .font(.system(size: AppTheme.FontSize.sm)).foregroundStyle(AppTheme.Text.secondaryColor)
-            }
-            Spacer()
-            // 如实说：这一单的产物已经不在了。含糊其辞比说不出口更伤信任。
-            Text(f.status == "failed" ? L10n.key("Failed")
-                 : (f.retrievable ? L10n.key("Open") : L10n.key("Expired")))
-                .font(.system(size: AppTheme.FontSize.sm))
-                // `systemOrange` 在纸底上 2.11:1，过不了 AA —— AppTheme 为此
-                // 专门收敛过一版，而这里又把它写回来了（藏在三元里，
-                // 判据的正则只认直写的那一种）。
-                .foregroundStyle(f.status == "failed" || !f.retrievable
-                                 ? AppTheme.Status.warningColor
-                                 : AppTheme.Accent.brand)
-        }
-        .contentShape(Rectangle())
-    }
-
-    /// 缩略图。**这一屏叫「我的作品」，列的是片子** —— 而在这之前整屏是文字。
-    ///
-    /// 取不到就留一个安静的空格，**不摆占位的假图**：那会让人以为片子长那样。
-    @ViewBuilder
-    private func poster(_ f: MetagGateway.FilmRow) -> some View {
-        Group {
-            if let image = posters.poster(for: f.job_id) {
-                Image(nsImage: image)
-                    .resizable()
-                    .aspectRatio(contentMode: .fill)
-            } else {
-                AppTheme.Background.baseColor
-            }
-        }
-        .frame(width: AppTheme.MetagDraft.stripCellWidth,
-               height: AppTheme.MetagDraft.stripCellHeight)
-        .clipShape(RoundedRectangle(cornerRadius: AppTheme.Radius.xs, style: .continuous))
-        .overlay(
-            RoundedRectangle(cornerRadius: AppTheme.Radius.xs, style: .continuous)
-                .strokeBorder(AppTheme.Border.subtleColor, lineWidth: AppTheme.BorderWidth.hairline)
-        )
-        .task(id: f.job_id) {
-            guard let name = f.poster else { return }
-            posters.load(jobId: f.job_id, name: name)
-        }
     }
 
     /// **跟界面语言走，而且每行不新建一个 formatter。**
@@ -251,7 +191,7 @@ struct MetagMyFilmsView: View {
     /// 用 `AppLocalization.relativeString` —— 首页项目卡用的就是它
     /// （"7小时前"），同一个产品里同一种时间不该有两种写法。
     @MainActor
-    private static func when(_ epoch: Double) -> String {
+    static func when(_ epoch: Double) -> String {
         AppLocalization.shared.relativeString(
             for: Date(timeIntervalSince1970: epoch), style: .short
         )
