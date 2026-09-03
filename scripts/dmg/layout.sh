@@ -12,10 +12,18 @@
 # bundle.sh 里有两条造 DMG 的路（`--dmg` 本地、`--dist` 发布）。
 # 各写一遍的话，迟早只有一条是好看的 —— 而好看的那条不一定是发出去的那条。
 #
+# ## 为什么不再用 Finder（2026-09-03）
+#
+# 摆样子原来靠 AppleScript 驱动 Finder，那需要 macOS 的「自动化」权限。
+# **一个需要人去点授权框的步骤，是一个会烂掉的步骤**：CI 跑不了、
+# 后台会话跑不了（TCC 认 bundle 身份，实测 -1743）、换台机器要重点一次。
+# 于是这一步长期只能由创始人本人跑，而发版被这一件事卡了很久。
+#
+# `.DS_Store` 就是个有格式的文件。`write_ds_store.py` 直接写它。
+#
 # ## 失败就是失败
 #
-# 摆样子要用 AppleScript 驱动 Finder，需要"自动化"权限。
-# 拿不到权限时**直接退出**，不悄悄回落成一个没背景的 DMG ——
+# 写不成就**直接退出**，不悄悄回落成一个没背景的 DMG ——
 # 那样发出去的东西和我们以为发出去的东西是两回事，而没有一处会红。
 set -euo pipefail
 
@@ -51,37 +59,24 @@ cp "$BG" "$MOUNT/.background/background.tiff"
 #
 # 660×370 内容区。位置和 make-background.py 里的常量**必须一致** ——
 # 对不上就是图标压在箭头上，而那正是这一屏唯一要说的那句话。
-osascript <<EOF
-tell application "Finder"
-  tell disk "$VOL"
-    open
-    set current view of container window to icon view
-    set toolbar visible of container window to false
-    set statusbar visible of container window to false
-    -- **含标题栏。** 内容区 = 高度 - 29pt，背景图按 660×370 排的。
-    set the bounds of container window to {200, 160, 860, 559}
-    set opts to the icon view options of container window
-    set arrangement of opts to not arranged
-    set icon size of opts to 128
-    set text size of opts to 13
-    set background picture of opts to file ".background:background.tiff"
-    set position of item "METAG.app" of container window to {180, 171}
-    set position of item "Applications" of container window to {480, 171}
-    update without registering applications
-    close
-  end tell
-end tell
-EOF
+# **不经过 Finder。** 见 write_ds_store.py 开头那段。
+# 缺库时说清装什么 —— 不然报错是一行 ModuleNotFoundError，
+# 而这一步失败的后果是"发出去的和以为发出去的不一样"。
+python3 -c "import ds_store, mac_alias" 2>/dev/null || {
+  echo "error: 缺 ds-store / mac-alias。装一次：" >&2
+  echo "         uv pip install ds-store mac-alias" >&2
+  exit 1
+}
+python3 "$HERE/write_ds_store.py" "$MOUNT"
 
-# Finder 把 .DS_Store 写回去需要一点时间；不等就可能压进一个还没落盘的版本。
-sync; /bin/sleep 2
+sync
 
-# **卷图标的标记要打在 AppleScript 之后。**
+# **卷图标的标记要打在写完窗样子之后。**
 #
 # 光把 `.VolumeIcon.icns` 拷进去不够，得给卷打上"我有自定义图标"的标志位；
 # 否则标题栏上是系统通用的磁盘映像图标，不是 METAG。
 #
-# 而它必须排在 Finder 那一段**后面** —— Finder 摆完样子会重写卷的 Finder info，
+# 而它必须排在写窗样子那一段**后面** —— 那一步会重写卷的 Finder info，
 # 把先打的标记冲掉。第一版打在前面，于是自检报"卷图标没生效"，
 # 而那条自检当时还会**把成品删掉**：一个装饰细节，把"你根本没法测"塞给了创始人。
 if [ -f "$MOUNT/.VolumeIcon.icns" ]; then
@@ -109,9 +104,10 @@ CHECK="$(hdiutil attach -readonly -noverify -noautoopen "$OUT" | grep -o '/Volum
 fatal=""
 cosmetic=""
 [ -f "$CHECK/.background/background.tiff" ] || fatal="$fatal 背景图没进去；"
-# 空 .DS_Store 约 6KB；带了视图设置和两个图标位置的会明显更大。
-size=$(stat -f%z "$CHECK/.DS_Store" 2>/dev/null || echo 0)
-[ "$size" -gt 8000 ] || fatal="$fatal .DS_Store 只有 ${size}B（样子没摆上）；"
+# **问那扇窗会怎么打开，不问 .DS_Store 有多少字节。**
+# 字节数是 Finder 那条路留下的经验值，既不准也说不清哪里不对。
+python3 "$HERE/write_ds_store.py" --verify-only "$CHECK" >/dev/null 2>&1 || \
+  fatal="$fatal 窗样子没进成品（背景图/图标位置对不上）；"
 # 卷图标：标题栏上那个小图标。没有也照样能装。
 [ "$(GetFileInfo -a "$CHECK" 2>/dev/null | cut -c6)" = "C" ] || cosmetic="标题栏是通用磁盘图标"
 hdiutil detach "$CHECK" >/dev/null
