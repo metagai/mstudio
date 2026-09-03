@@ -45,7 +45,35 @@ struct MetagFilmStrip: View {
     var slotCountForTesting: Int { slots }
     var completeForTesting: Bool { complete }
 
+    /// **到了几格。这是个真的数，不是进度条。**
+    ///
+    /// 那九十秒里屏幕上没有任何一处说出"还差多少" —— 他只能自己数格子。
+    /// 而"正在拍第几镜"我们说不出来：网关报的是 `stage`（谁在干活），
+    /// 不报镜号，渲染顺序也不保证。**编一个出来就是这块幕布自己警告过的
+    /// 「演砸的仪式」** —— 片子卡住时它还会欢快地往前走。
+    ///
+    /// 所以只说我们真知道的那一件：**已到 N / 共 M。**
+    nonisolated static func arrivedLine(arrived: Int, total: Int) -> String? {
+        guard total > 0 else { return nil }
+        return arrived >= total
+            ? L10n.string("All \(total.formatted()) shots are in")
+            : L10n.string("\(arrived.formatted()) of \(total.formatted()) shots are in")
+    }
+
     var body: some View {
+        VStack(alignment: .leading, spacing: AppTheme.Spacing.sm) {
+            grid
+            if let line = Self.arrivedLine(arrived: frames.count, total: slots) {
+                Text(verbatim: line)
+                    .font(.system(size: AppTheme.FontSize.xs))
+                    .foregroundStyle(complete ? AppTheme.Accent.brand : AppTheme.Text.tertiaryColor)
+                    .monospacedDigit()
+                    .animation(.easeOut(duration: AppTheme.Anim.transition), value: frames.count)
+            }
+        }
+    }
+
+    private var grid: some View {
         LazyVGrid(
             columns: [GridItem(
                 .adaptive(minimum: AppTheme.MetagDraft.stripCellWidth),
@@ -80,9 +108,9 @@ struct MetagFilmStrip: View {
                 // **编号是没话可说时的下策，不是默认。**
                 if let line = narrations.indices.contains(index) ? narrations[index] : nil, !line.isEmpty {
                     Text(verbatim: line)
-                        .font(.system(size: AppTheme.FontSize.xs))
-                        .foregroundStyle(AppTheme.Text.secondaryColor)
-                        .lineLimit(3)
+                        .font(.system(size: AppTheme.FontSize.sm))
+                        .foregroundStyle(AppTheme.Text.primaryColor)
+                        .lineLimit(4)
                         .multilineTextAlignment(.center)
                         .padding(.horizontal, AppTheme.Spacing.sm)
                 } else {

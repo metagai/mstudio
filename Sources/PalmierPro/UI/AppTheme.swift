@@ -196,8 +196,15 @@ enum AppTheme {
         /// 幕布上一格的大小。460 宽的表里一排摆四格（4×96 + 3×6 = 402），
         /// 8 镜自动折成两排。比原来那排邮票大一档 —— **这一刻他想看的是画面，
         /// 不是画面的证明。**
-        static let stripCellWidth: CGFloat = 96
-        static let stripCellHeight: CGFloat = 54
+        /// 等待那块幕布上一格多大。
+        ///
+        /// **原来是 96×54** —— 邮票大小。而那一格里要放的是他这一镜的分镜句
+        /// （一句完整的中文），塞进去的结果是三行里每行两三个字、断在"上。"
+        /// 这种地方。那九十秒他盯着的东西，读不通。
+        ///
+        /// 168×94 还是 16:9，一句话能读完，而一行仍放得下三到四格。
+        static let stripCellWidth: CGFloat = 168
+        static let stripCellHeight: CGFloat = 94
     }
 
     enum Status {

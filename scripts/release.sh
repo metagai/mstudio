@@ -292,6 +292,37 @@ fi
 MIN_MACOS="$(/usr/libexec/PlistBuddy -c "Print :LSMinimumSystemVersion" "$PLIST")"
 APP_BYTES="$(du -sk "$ROOT/.build/METAG.app" | awk '{print $1 * 1024}')"
 echo ""
+# ==> 网站那条下载路，这个脚本既没填也没验
+#
+# **发版有两条互不相干的路，文件名都不一样：**
+#
+#   Sparkle 自动更新   metag.ai/mac/METAG-{v}.dmg          ← 上面刚传的、刚验的
+#   网站点"下载"       两个桶/METAG-{v}-mac.dmg            ← 这个脚本碰都没碰
+#
+# 2026-09-03：我核完上面那条就说"完整核实通过"，而网站那条的两个桶里
+# 当时只有到 0.1.10。网关常量一改成 0.1.11，**下载按钮在两个区同时坏了
+# （海外 404、国内 403），页面照常渲染、一处不报错。**
+#
+# 这正是 `docs/lessons.md` 第四十条：**我修的、我验的，都是我最熟的那条路。**
+# 所以这里主动去探一下另一条 —— 探不到不算发版失败（Sparkle 那条是真的成了），
+# 但**必须挡住"让网关声称这一版"那一步**：素材永远先于声明它的页面。
+probe_bucket() {
+  curl -sS -o /dev/null -w '%{http_code}' --max-time 25 -r 0-0 "$1" 2>/dev/null || echo 000
+}
+R2_URL="https://s3.metag.ai/metag/metag/releases/METAG-$VERSION-mac.dmg"
+OSS_URL="https://metagai.oss-cn-beijing.aliyuncs.com/metag/releases/METAG-$VERSION-mac.dmg"
+R2_CODE="$(probe_bucket "$R2_URL")"
+OSS_CODE="$(probe_bucket "$OSS_URL")"
+echo ""
+if [[ "$R2_CODE" =~ ^20[06]$ && "$OSS_CODE" =~ ^20[06]$ ]]; then
+  echo "==> 网站下载路也就位了（R2 $R2_CODE · OSS $OSS_CODE）"
+else
+  echo "⚠️  网站那条下载路还没就位 —— R2 $R2_CODE · OSS $OSS_CODE" >&2
+  echo "    这两个桶要的是 METAG-$VERSION-mac.dmg（注意文件名和上面那条不一样）" >&2
+  echo "    **在它们能取到之前，别让网关 meta 声称 $VERSION** —— " >&2
+  echo "    网关按版本号拼下载地址，声称早一步 = 下载按钮两个区同时 404/403，而页面不报错。" >&2
+fi
+
 # ⚠ **这是数，不是契约。** 形状由网关那侧定，别照着这里的引号写解析。
 #
 # 2026-09-03：我这份样例把 `min_macos` 写成 `"26.0"`（那是 `Info.plist` 里
