@@ -1341,3 +1341,7 @@
 "~%@s · %@ credits · ~%@ min" = "~%@s · %@ credits · ~%@ min";
 "“.%@” isn’t a subtitle file we can read — use .srt or .vtt." = "“.%@” isn’t a subtitle file we can read — use .srt or .vtt.";
 "Open the tutorial project" = "Open the tutorial project";
+"The credits are back in your balance." = "The credits are back in your balance.";
+"We're checking the credits for this one — any refund shows up in credit activity." = "We're checking the credits for this one — any refund shows up in credit activity.";
+"Our side had trouble making this one — try again in a few minutes." = "Our side had trouble making this one — try again in a few minutes.";
+"The re-shoot didn't finish. We're checking the credits — any refund shows up in credit activity." = "The re-shoot didn't finish. We're checking the credits — any refund shows up in credit activity.";

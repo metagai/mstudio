@@ -57,7 +57,7 @@ enum MetagJobOpener {
                 // **我们把自己的故障算在了他头上**。
                 //
                 // 而分类一直在响应里（`error_kind`），只是客户端从没解过它。
-            editor.mediaPanelToast = MediaPanelToast(message: kind.message)
+            editor.mediaPanelToast = MediaPanelToast(message: kind.message(refunded: job.refunded))
                 return
             }
             let native = MetagNarrationPlan.nativeAudioEngineIds(try? await MetagGateway.pricing())

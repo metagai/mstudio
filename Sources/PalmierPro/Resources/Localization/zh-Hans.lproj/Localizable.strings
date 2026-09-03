@@ -1614,3 +1614,7 @@
 "Start creating, or explore these to get the most out of %@." = "直接开始，或者看看这几样，把 %@ 用透。";
 "Unable to install" = "装不上";
 "Open the tutorial project" = "打开示例工程看看";
+"The credits are back in your balance." = "额度已经退回你的余额。";
+"We're checking the credits for this one — any refund shows up in credit activity." = "这一单的额度我们正在核对 —— 退回会出现在额度流水里。";
+"Our side had trouble making this one — try again in a few minutes." = "这一条是我们这边没做出来 —— 过几分钟再试一次。";
+"The re-shoot didn't finish. We're checking the credits — any refund shows up in credit activity." = "这次重拍没能完成。额度我们正在核对 —— 退回会出现在额度流水里。";

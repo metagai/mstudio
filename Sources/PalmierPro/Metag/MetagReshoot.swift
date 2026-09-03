@@ -38,7 +38,15 @@ enum MetagReshoot {
         editor.mediaPanelToast = MediaPanelToast(message: L10n.key("Re-shooting — the new take replaces this shot when it lands."), kind: .progress)
 
         guard await adoptNewTake(job: job, shot: index, asset: asset, editor: editor) else {
-            editor.mediaPanelToast = MediaPanelToast(message: L10n.key("The re-shoot did not finish. Nothing was charged."), kind: .warning)
+            // **上一版这里断言「没扣你钱」，而它有四条路走到这儿：**
+            // 轮询十分钟超时（任务可能还在服务端跑、已经计费）、
+            // 服务端真的失败、下载失败、以及**重拍其实成功了但他中途删了那个 clip**。
+            // 后两种是钱已经花掉、货也做出来了 ——
+            // 他随后在流水里看到一笔扣款，而我们刚刚当面对他说了一句假话。
+            // **主动断言错的，比不说更糟。**
+            editor.mediaPanelToast = MediaPanelToast(
+                message: L10n.string("The re-shoot didn't finish. We're checking the credits — any refund shows up in credit activity."),
+                kind: .warning)
             return
         }
         editor.mediaPanelToast = MediaPanelToast(message: L10n.key("New take is in the timeline."), kind: .success)

@@ -30,7 +30,7 @@ struct FailureKindTests {
 
     /// 三句话必须互不相同。**共用一句就等于没有分类。**
     @Test func eachKindSaysSomethingDifferent() {
-        let said = Set(MetagFailureKind.allCases.map(\.message))
+        let said = Set(MetagFailureKind.allCases.map { $0.message(refunded: nil) })
         #expect(said.count == MetagFailureKind.allCases.count,
                 "三种失败又共用一句话了 —— 那正是分类存在的理由")
     }

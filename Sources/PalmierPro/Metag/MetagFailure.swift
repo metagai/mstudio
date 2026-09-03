@@ -23,10 +23,31 @@ enum MetagFailureKind: String, CaseIterable, Sendable {
     }
 
     /// 这一种该跟他说什么。**每一句都带下一步。**
-    @MainActor var message: String {
+    ///
+    /// ## 关于钱的那半句，必须由事实决定
+    ///
+    /// 上一版 `.upstream` 无条件说「没扣你钱」—— 而网关那侧明确存在
+    /// 「退款三次全失败、打一行 `REFUND FAILED (owed)` 就走」的分支：
+    /// 那时 `refunded=false`，**我们照样在告诉他没扣钱**。
+    /// 而 `Job.refunded` 一直解出来了，它的注释自己写着
+    /// 「用户在出事那一刻最想知道这个」，然后没人用它。
+    ///
+    /// `.moderation` / `.unknown` 更干脆：**一个字都不提钱** ——
+    /// 他刚花掉 180 credits、片子没了，界面说"换个说法再试"。
+    ///
+    /// **关于钱，宁可说"我在查"，绝不能说错。**
+    /// `refunded` 为 nil（网关没说）时也走"正在核对"那一支 —— 不猜。
+    @MainActor func message(refunded: Bool?) -> String {
+        let money = refunded == true
+            ? L10n.string("The credits are back in your balance.")
+            : L10n.string("We're checking the credits for this one — any refund shows up in credit activity.")
+        return "\(headline) \(money)"
+    }
+
+    @MainActor private var headline: String {
         switch self {
         case .upstream:
-            L10n.string("Our side had trouble making this one. Nothing was charged — try again in a few minutes.")
+            L10n.string("Our side had trouble making this one — try again in a few minutes.")
         case .moderation:
             L10n.string("This one couldn't be filmed as written. Try describing the scene a different way.")
         case .unknown:
