@@ -45,6 +45,23 @@ struct InstallLocationTests {
                 "在开发目录/下载目录里跑也弹框 —— 每次 swift run 都要点一下")
     }
 
+    /// **不许把一个正在跑的 app 扔进废纸篓。**
+    ///
+    /// 升级最常见的那条路：已装的那份开着，他又下了新 DMG 双击进来。
+    /// 上一版只比版本号 —— 版本不同就覆盖，于是旧进程还在跑，
+    /// 而它的 bundle 已经不在原地了。那一份自己会通过自动更新拿到新版。
+    @Test func itNeverReplacesACopyThatIsRunning() {
+        let installed = URL(fileURLWithPath: "/Applications/METAG.app")
+        #expect(InstallLocation.isRunning(at: installed, among: [installed]))
+        #expect(InstallLocation.isRunning(at: installed, among: [
+            URL(fileURLWithPath: "/Applications/METAG.app/")
+        ]), "同一个路径多一个斜杠就认不出来了")
+        #expect(!InstallLocation.isRunning(at: installed, among: [
+            URL(fileURLWithPath: "/Volumes/METAG/METAG.app")
+        ]), "把映像里跑着的这一份当成了装好的那一份 —— 那样永远不会真的装")
+        #expect(!InstallLocation.isRunning(at: installed, among: []))
+    }
+
     /// **`/Applications` 写不进去时退回个人那一份，不问密码。**
     ///
     /// 要提权才能装的软件，在这一步会丢掉一半人。

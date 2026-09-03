@@ -4,7 +4,7 @@
 ## 咬过一次的那个耦合
 
 排版在 `scripts/dmg/make-background.py`（画背景图），
-摆位在 `scripts/dmg/write_ds_store.py`（直接写 `.DS_Store`，不经过 Finder）。
+摆位在 `scripts/dmg/build_dmg.py`（喂给 dmgbuild，不经过 Finder）。
 **两边各写一份数字，对不上就是图标压在箭头上** ——
 而那一屏总共只说一句话。
 
@@ -12,9 +12,9 @@
 **含标题栏**（实测 29pt），我按 660×400 排的版，而真正能画的只有
 660×370 —— 背景底下 30pt 被切掉，整组版心往下坠了半格。
 
-2026-09-03 摆位从 AppleScript 换成直接写 `.DS_Store`（不再需要人去点
-「自动化」授权框）。**这条判据当场就红了** —— 它是从 AppleScript 那几行
-正则里读坐标的。红得对：耦合还在，只是换了个文件。
+2026-09-03 摆位换了两次（AppleScript → 手写 `.DS_Store` → dmgbuild），
+**这条判据两次都当场红了**，而且两次都红得对：
+坐标那个耦合一直在，只是换了个文件。
 
 **这个数不是能记住的，是要被算出来的。**
 """
@@ -24,7 +24,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 BG_PY = ROOT / "scripts/dmg/make-background.py"
-LAYOUT = ROOT / "scripts/dmg/write_ds_store.py"
+LAYOUT = ROOT / "scripts/dmg/build_dmg.py"
 TITLE_BAR = 29          # 实测：真机截图上标题栏 29pt
 
 
@@ -58,7 +58,7 @@ def main() -> int:
         checks += 1
         m = re.search(r'"%s": \((\d+), (\d+)\)' % re.escape(name), sh)
         if not m:
-            fails.append(f"write_ds_store.py 里找不到 {name} 的位置")
+            fails.append(f"build_dmg.py 里找不到 {name} 的位置")
             continue
         if (int(m.group(1)), int(m.group(2))) != (x, icon_y):
             fails.append(f"{name} 摆在 {m.group(1)},{m.group(2)}，"

@@ -83,7 +83,12 @@ extension InstallLocation {
 
         // **他已经装过了，只是又从磁盘映像点了一次。** 别再复制一遍，
         // 直接把装好的那份叫到前面来。
-        if fm.fileExists(atPath: target.path), sameVersion(at: target) {
+        //
+        // 「正在运行」也走这一支 —— 上一版只看版本号，于是升级那条最常见的路
+        // （已装的那份开着，他又下了新 DMG 双击进来）会把**一个正在跑的 app
+        // 扔进废纸篓**再覆盖：旧进程还在，而它的 bundle 已经不在原地了。
+        // 那一份自己会通过自动更新拿到新版，我们不该在它跑着的时候动它。
+        if fm.fileExists(atPath: target.path), sameVersion(at: target) || isRunning(at: target) {
             launch(target, thenQuitFrom: bundle)
             return
         }
@@ -112,6 +117,19 @@ extension InstallLocation {
             return
         }
         launch(target, thenQuitFrom: bundle)
+    }
+
+    /// 装好的那一份此刻正开着吗。
+    nonisolated static func isRunning(at url: URL, among running: [URL]) -> Bool {
+        let target = url.standardizedFileURL.resolvingSymlinksInPath()
+        return running.contains { $0.standardizedFileURL.resolvingSymlinksInPath() == target }
+    }
+
+    private static func isRunning(at url: URL) -> Bool {
+        let id = Bundle.main.bundleIdentifier
+        return isRunning(at: url, among: NSWorkspace.shared.runningApplications
+            .filter { $0.bundleIdentifier == id }
+            .compactMap(\.bundleURL))
     }
 
     private static func sameVersion(at url: URL) -> Bool {

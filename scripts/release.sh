@@ -280,6 +280,29 @@ if ! gh release create "$TAG" "$DMG" --repo "$GH_REPO_SLUG" --title "$TAG" --not
   echo "   补一次：gh release create $TAG $DMG --repo $GH_REPO_SLUG --title $TAG" >&2
 fi
 
+# **发完把网关要的那几个数打印出来。**
+#
+# 落地页现在会在他点下载之前判断这台装不装得上，而那条判断依赖两个事实：
+# 最低系统版本、安装后体积。前端把它们写死在自己那侧 ——
+# 「两处要一起改」的东西，迟早只有一处改了，而那时页面会
+# **当着一个装得上的人的面说"你装不了"**，比不提示更糟。
+#
+# 真源在这里：`Info.plist` 的 `LSMinimumSystemVersion` 和刚构建出来的 `.app`。
+# 网关把它们吐进 `/api/v1/download/mac/meta`，前端就能把写死的那几行删掉。
+MIN_MACOS="$(/usr/libexec/PlistBuddy -c "Print :LSMinimumSystemVersion" "$PLIST")"
+APP_BYTES="$(du -sk "$ROOT/.build/METAG.app" | awk '{print $1 * 1024}')"
+echo ""
+echo "==> 网关 meta 要的数（partner：照抄）"
+cat <<META
+{
+  "version":        "$VERSION",
+  "bytes":          $LENGTH,
+  "released":       "$(date +%Y-%m-%d)",
+  "min_macos":      "$MIN_MACOS",
+  "installed_bytes": $APP_BYTES
+}
+META
+
 echo ""
 echo "==> Released $TAG"
 echo "    下载：https://metag.ai/mac/$REMOTE_DMG"
