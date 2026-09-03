@@ -34,9 +34,34 @@ struct CreditSummaryView: View {
 
     private var credits: Int { account.remainingCredits }
 
+    /// 余额那一格的**四种语气**。
+    ///
+    /// 抽成纯函数是因为上一版把「不知道」和「零」画成了同一样东西：
+    /// `metagCredits` 初值是 0，`tint` 的第一档是 `..<1 → .red`。
+    /// 于是登录之后、余额答上来之前的那一秒（从国内打网关一个来回一秒多），
+    /// 以及**任何一次失败的刷新之后**，屏幕上是一个刺眼的红 0 ——
+    /// 在告诉他"你没钱了，出不了片"。**不知道不是零。**
+    enum Tone: Equatable { case unknown, empty, low, normal }
+
+    nonisolated static func tone(credits: Int, known: Bool) -> Tone {
+        guard known else { return .unknown }
+        switch credits {
+        case ..<1: return .empty
+        case ..<20: return .low
+        default: return .normal
+        }
+    }
+
+    /// 屏幕上写的那几个字。不知道的时候写破折号，不写 0。
+    nonisolated static func amount(credits: Int, known: Bool) -> String {
+        known ? credits.formatted() : "—"
+    }
+
+    private var amount: String { Self.amount(credits: credits, known: account.creditsKnown) }
+
     private var fullView: some View {
         HStack(alignment: .firstTextBaseline, spacing: AppTheme.Spacing.xs) {
-            Text(credits.formatted())
+            Text(verbatim: amount)
                 .font(.system(size: AppTheme.FontSize.xl, weight: AppTheme.FontWeight.semibold))
                 .monospacedDigit()
                 .foregroundStyle(tint)
@@ -52,7 +77,7 @@ struct CreditSummaryView: View {
             Image(systemName: "dollarsign.circle.fill")
                 .font(.system(size: AppTheme.FontSize.sm))
                 .foregroundStyle(tint)
-            Text(credits.formatted())
+            Text(verbatim: amount)
                 .font(.system(size: AppTheme.FontSize.xs, weight: AppTheme.FontWeight.medium))
                 .monospacedDigit()
                 .foregroundStyle(tint)
@@ -64,15 +89,18 @@ struct CreditSummaryView: View {
             Capsule().stroke(AppTheme.Border.subtleColor, lineWidth: AppTheme.BorderWidth.hairline)
         )
         .fixedSize(horizontal: true, vertical: false)
-        .help(L10n.string("\(credits.formatted()) credits remaining"))
+        .help(account.creditsKnown
+              ? L10n.string("\(credits.formatted()) credits remaining")
+              : L10n.string("Checking your balance…"))
     }
 
     /// A drained balance is alarming; thresholds are absolute because there is no budget.
     private var tint: Color {
-        switch credits {
-        case ..<1: return .red
-        case ..<20: return .orange
-        default: return AppTheme.Accent.primary
+        switch Self.tone(credits: credits, known: account.creditsKnown) {
+        case .unknown: return AppTheme.Text.tertiaryColor
+        case .empty: return .red
+        case .low: return .orange
+        case .normal: return AppTheme.Accent.primary
         }
     }
 }
@@ -119,27 +147,33 @@ struct CreditPackButton: View {
     var fill: AnyShapeStyle?
     var showsExternalLinkIcon: Bool = false
 
+    /// **按钮永远在。** 上一版是 `if let pack = account.creditPack` ——
+    /// 报价单没拉到，这个产品唯一的付钱入口就整个消失，不留一句话。
+    /// 价钱是**标签**，不是**许可**：不知道价钱就先不写价钱，
+    /// 按下去的时候现拉（见 `buyCreditPack()`）。
     var body: some View {
-        if let pack = account.creditPack {
-            Button {
-                account.buyCreditPack()
-            } label: {
-                HStack(spacing: AppTheme.Spacing.xs) {
+        Button {
+            account.buyCreditPack()
+        } label: {
+            HStack(spacing: AppTheme.Spacing.xs) {
+                if let pack = account.creditPack {
                     Text(L10n.string("Buy \(pack.credits.formatted()) credits · $\(String(format: "%.2f", pack.price_usd))"))
-                    if showsExternalLinkIcon {
-                        Image(systemName: "arrow.up.right")
-                            .font(.system(
-                                size: AppTheme.FontSize.xs,
-                                weight: AppTheme.FontWeight.semibold
-                            ))
-                            .accessibilityHidden(true)
-                    }
+                } else {
+                    Text(L10n.string("Buy credits"))
                 }
-                .frame(maxWidth: .infinity)
+                if showsExternalLinkIcon {
+                    Image(systemName: "arrow.up.right")
+                        .font(.system(
+                            size: AppTheme.FontSize.xs,
+                            weight: AppTheme.FontWeight.semibold
+                        ))
+                        .accessibilityHidden(true)
+                }
             }
-            .buttonStyle(.capsule(.secondary, size: .small, fill: fill))
-            .disabled(account.isBuyingCredits)
-            .pointerStyle(.link)
+            .frame(maxWidth: .infinity)
         }
+        .buttonStyle(.capsule(.secondary, size: .small, fill: fill))
+        .disabled(account.isBuyingCredits)
+        .pointerStyle(.link)
     }
 }

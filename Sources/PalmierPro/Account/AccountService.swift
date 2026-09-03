@@ -42,7 +42,15 @@ final class AccountService {
     @ObservationIgnored private var landingTask: Task<Void, Never>?
     private(set) var isBuyingCredits: Bool = false
 
-    private(set) var metagCredits: Int = 0
+    /// 余额。**`nil` 是"还没问到"，不是"零"。**
+    ///
+    /// 上一版这里是 `Int = 0`，而界面上 0 是红的 —— 于是登录之后、
+    /// 余额答上来之前的那一秒，以及任何一次失败的刷新之后，
+    /// 屏幕都在告诉他"你没钱了，出不了片"。
+    ///
+    /// 用可选而不是另加一个 `creditsKnown` 布尔：**两格状态迟早会不一致**，
+    /// 而这一格错的代价是当面对用户说一句关于他钱的假话。
+    private(set) var metagCredits: Int?
     private(set) var isPaid: Bool = false
 
     /// 订阅到哪天为止，以及**为什么是这个状态**。
@@ -80,7 +88,8 @@ final class AccountService {
 
     var isSignedIn: Bool { MetagGateway.isSignedIn }
     var aiAllowed: Bool { isSignedIn }
-    var remainingCredits: Int { metagCredits }
+    var remainingCredits: Int { metagCredits ?? 0 }
+    var creditsKnown: Bool { metagCredits != nil }
     var hasCredits: Bool { remainingCredits > 0 }
 
     var creditPack: MetagGateway.Pricing.Plan? { plans.first { !$0.isSubscription } }
@@ -109,7 +118,7 @@ final class AccountService {
 
     func refreshMetagAccount() async {
         guard MetagGateway.isSignedIn else {
-            metagCredits = 0
+            metagCredits = nil
             isPaid = false
             return
         }
@@ -224,7 +233,7 @@ final class AccountService {
         landingTask?.cancel()
         signInPhase = .idle
         MetagAuth.shared.signOut()
-        metagCredits = 0
+        metagCredits = nil
         isPaid = false
         subscription = .none
     }
@@ -236,13 +245,26 @@ final class AccountService {
         await openCheckout(plan: planId)
     }
 
+    /// 买额度。
+    ///
+    /// **报价单拿不到不该把购买入口锁死。** `plans` 只在启动时拉一次，
+    /// 失败就空着，而空着的时候这个按钮整个不画 —— 一次网络抖动，
+    /// 他这一整个会话都没有地方付钱，也没有任何一句话告诉他为什么。
+    /// 从国内打网关一个来回一秒多，抖一下是常态不是边界。
+    ///
+    /// 所以：**按钮永远在，报价单在他按下的那一刻现拉。**
     func buyCreditPack() {
-        guard !isBuyingCredits, let pack = creditPack else { return }
+        guard !isBuyingCredits else { return }
         isBuyingCredits = true
         buyCreditsTask = Task { @MainActor [weak self] in
             defer {
                 self?.isBuyingCredits = false
                 self?.buyCreditsTask = nil
+            }
+            if self?.creditPack == nil { await self?.refreshPricing() }
+            guard let pack = self?.creditPack else {
+                self?.lastError = L10n.string("Couldn't reach the store just now — check your connection and try again.")
+                return
             }
             await self?.openCheckout(plan: pack.id)
         }
@@ -301,11 +323,11 @@ final class AccountService {
             // 等不到"他离开"也不卡死：多半是浏览器开在别处，那就照常去问。
             await waitUntilAppResignsActive(timeout: .seconds(20))
             await waitUntilAppIsFrontmost()
-            let before = metagCredits
+            let before = metagCredits ?? 0
             for delay in Self.paymentPollDelays {
                 if delay > 0 { try? await Task.sleep(for: .seconds(delay)) }
                 await refreshMetagAccount()
-                if metagCredits > before { return }
+                if (metagCredits ?? 0) > before { return }
             }
             lastError = L10n.string("Payment may still be processing — your balance will update on its own. You can check credit activity any time.")
         }

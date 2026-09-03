@@ -361,17 +361,16 @@ struct AgentPanelView: View {
             // Web 端三个撞墙点（生成对话框缺额、额度墙、个人模块）
             // 早就是直接开收银台的，Mac 这一侧落在了后面。
             //
-            // 报价单还没回来时（`creditPack == nil`）才退回设置页 ——
-            // 那时我们连价钱都说不出，给一颗不标价的付费按钮更糟。
-            if let pack = AccountService.shared.creditPack {
-                return ErrorCTA(
-                    title: L10n.string("Buy \(pack.credits.formatted()) credits · $\(String(format: "%.2f", pack.price_usd))")
-                ) {
-                    AccountService.shared.buyCreditPack()
-                }
-            }
-            return ErrorCTA(title: L10n.key("View plans")) {
-                SettingsWindowController.shared.show(tab: .account)
+            // 报价单没回来也照样给这颗按钮。上一版退回设置页 ——
+            // 而设置页那颗按钮当时也画不出来（同一个 `creditPack == nil`），
+            // 于是他被推过一道门，门后什么都没有。价钱现在按下去再拉。
+            let pack = AccountService.shared.creditPack
+            return ErrorCTA(
+                title: pack.map {
+                    L10n.string("Buy \($0.credits.formatted()) credits · $\(String(format: "%.2f", $0.price_usd))")
+                } ?? L10n.string("Buy credits")
+            ) {
+                AccountService.shared.buyCreditPack()
             }
         case .unavailable(let model) where model.requiresPaidHostedPlan && !AccountService.shared.isPaid:
             return ErrorCTA(title: L10n.string("View plans")) {

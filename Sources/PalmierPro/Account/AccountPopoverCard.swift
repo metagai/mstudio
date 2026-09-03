@@ -83,6 +83,13 @@ struct AccountPopoverCard: View {
     @ViewBuilder
     private var upgradeBlock: some View {
         VStack(spacing: AppTheme.Spacing.xs) {
+            // 报价单拉不到时 `ForEach` 是空的 —— 整块升级区**无声消失**。
+            // 说一句，别让他以为我们没在卖。
+            if account.subscriptionPlans.isEmpty {
+                Text(L10n.string("Plans are unavailable right now."))
+                    .font(.system(size: AppTheme.FontSize.xs))
+                    .foregroundStyle(AppTheme.Text.tertiaryColor)
+            }
             ForEach(account.subscriptionPlans) { plan in
                 planRow(plan)
             }

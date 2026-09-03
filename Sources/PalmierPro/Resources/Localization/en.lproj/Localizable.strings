@@ -155,6 +155,7 @@
 "Budget" = "Budget";
 "Built-in (free)" = "Built-in (free)";
 "Buy %@ credits · $%@" = "Buy %@ credits · $%@";
+"Buy credits" = "Buy credits";
 "By default only lip-sync shots use it; the rest stay on the standard tier" = "By default only lip-sync shots use it; the rest stay on the standard tier";
 "Cache" = "Cache";
 "Can't add captions from \"%@\" — %@" = "Can't add captions from \"%@\" — %@";
@@ -196,6 +197,7 @@
 "Chat with your agent! It can generate content, edit clips, organize your assets, and much more. Start by signing in, or bring your own Anthropic API key." = "Chat with your agent! It can generate content, edit clips, organize your assets, and much more. Start by signing in, or bring your own Anthropic API key.";
 "Check for Updates…" = "Check for Updates…";
 "Check the marker name, position, and duration." = "Check the marker name, position, and duration.";
+"Checking your balance…" = "Checking your balance…";
 "Choose a .cube LUT file" = "Choose a .cube LUT file";
 "Choose a crop aspect" = "Choose a crop aspect";
 "Choose animation clip color" = "Choose animation clip color";
@@ -275,6 +277,7 @@
 "Couldn't load the model list." = "Couldn't load the model list.";
 "Couldn't open the payment page — try again in a moment" = "Couldn't open the payment page — try again in a moment";
 "Couldn't reach METAG — check your connection and try again." = "Couldn't reach METAG — check your connection and try again.";
+"Couldn't reach the store just now — check your connection and try again." = "Couldn't reach the store just now — check your connection and try again.";
 "Couldn't read that file" = "Couldn't read that file";
 "Couldn't switch angle." = "Couldn't switch angle.";
 "Couldn’t move %@ to the Trash." = "Couldn’t move %@ to the Trash.";
@@ -777,13 +780,14 @@
 "Open Skills to browse community playbooks, create your own, or add them to other agents." = "Open Skills to browse community playbooks, create your own, or add them to other agents.";
 "Open Timeline" = "Open Timeline";
 "Open the AI Edit tab to upscale, prompt-edit, create video from a frame, or generate music, SFX, cleanup, and dubbing from the clip." = "Open the AI Edit tab to upscale, prompt-edit, create video from a frame, or generate music, SFX, cleanup, and dubbing from the clip.";
+"Open the tutorial project" = "Open the tutorial project";
 "OpenAI API Key" = "OpenAI API Key";
 "Opening…" = "Opening…";
 "Open…" = "Open…";
 "Organize with Agent" = "Organize with Agent";
 "Original" = "Original";
 "Original FPS" = "Original FPS";
-"Our side had trouble making this one. Nothing was charged — try again in a few minutes." = "Our side had trouble making this one. Nothing was charged — try again in a few minutes.";
+"Our side had trouble making this one — try again in a few minutes." = "Our side had trouble making this one — try again in a few minutes.";
 "Outline" = "Outline";
 "Outline Color" = "Outline Color";
 "Outline Width" = "Outline Width";
@@ -1123,6 +1127,7 @@
 "That's the free one for today — your draft is still here. Sign in to keep it and make more." = "That's the free one for today — your draft is still here. Sign in to keep it and make more.";
 "The assistant read your timeline" = "The assistant read your timeline";
 "The clip you're adding has different settings than the current project." = "The clip you're adding has different settings than the current project.";
+"The credits are back in your balance." = "The credits are back in your balance.";
 "The cut is locked. Writing something to carry it." = "The cut is locked. Writing something to carry it.";
 "The draft is still rendering — wait a moment." = "The draft is still rendering — wait a moment.";
 "The draft is taking too long — try again in a moment." = "The draft is taking too long — try again in a moment.";
@@ -1135,7 +1140,7 @@
 "The project will be moved to the Trash." = "The project will be moved to the Trash.";
 "The provider did not answer — try again in a moment." = "The provider did not answer — try again in a moment.";
 "The re-shoot could not start." = "The re-shoot could not start.";
-"The re-shoot did not finish. Nothing was charged." = "The re-shoot did not finish. Nothing was charged.";
+"The re-shoot didn't finish. We're checking the credits — any refund shows up in credit activity." = "The re-shoot didn't finish. We're checking the credits — any refund shows up in credit activity.";
 "The search model didn’t download — tap “Retry” above." = "The search model didn’t download — tap “Retry” above.";
 "The selected model refused this request. Revise the prompt and try again." = "The selected model refused this request. Revise the prompt and try again.";
 "The selected projects will be moved to the Trash." = "The selected projects will be moved to the Trash.";
@@ -1268,6 +1273,7 @@
 "Waiting for you to finish in your browser." = "Waiting for you to finish in your browser.";
 "Warmth" = "Warmth";
 "Watch the tutorial or start creating." = "Watch the tutorial or start creating.";
+"We're checking the credits for this one — any refund shows up in credit activity." = "We're checking the credits for this one — any refund shows up in credit activity.";
 "Welcome" = "Welcome";
 "Welcome to %@" = "Welcome to %@";
 "What best describes your role?" = "What best describes your role?";
@@ -1340,8 +1346,3 @@
 "using OpenAI API key" = "using OpenAI API key";
 "~%@s · %@ credits · ~%@ min" = "~%@s · %@ credits · ~%@ min";
 "“.%@” isn’t a subtitle file we can read — use .srt or .vtt." = "“.%@” isn’t a subtitle file we can read — use .srt or .vtt.";
-"Open the tutorial project" = "Open the tutorial project";
-"The credits are back in your balance." = "The credits are back in your balance.";
-"We're checking the credits for this one — any refund shows up in credit activity." = "We're checking the credits for this one — any refund shows up in credit activity.";
-"Our side had trouble making this one — try again in a few minutes." = "Our side had trouble making this one — try again in a few minutes.";
-"The re-shoot didn't finish. We're checking the credits — any refund shows up in credit activity." = "The re-shoot didn't finish. We're checking the credits — any refund shows up in credit activity.";
