@@ -852,6 +852,7 @@
 "No media" = "没有媒体";
 "No models available right now." = "现在没有可用的模型。";
 "No models match \"%@\"." = "没有与“%@”匹配的模型。";
+"No music model is set up yet." = "还没有配好可用的音乐模型。";
 "No music models available." = "没有可用的音乐模型。";
 "No network, no credits. About 3 minutes per image." = "不联网、不计费。一张约 3 分钟。";
 "No projects found" = "未找到项目";

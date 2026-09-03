@@ -154,6 +154,11 @@ struct AccountPopoverCard: View {
                 }
                 .menuStyle(.borderlessButton)
                 .menuIndicator(.hidden)
+                // **`Menu` 会缩到标签那么宽然后居中**，里面的 `Spacer` 撑不开它 ——
+                // 于是「登录」这一行浮在中间，而它上面的「设置」「反馈」是左对齐的。
+                // 那是创始人说的「布局问题到处都是」里的一处，
+                // 而它长期没被看见，正是因为取景器画不出 `Menu`。
+                .frame(maxWidth: .infinity, alignment: .leading)
             }
         }
     }

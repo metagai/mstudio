@@ -41,18 +41,27 @@ struct MusicNoteToneTests {
         #expect(MusicSection.Note.blocked("credits 不够").isBlocking)
     }
 
-    /// **两档都还能拦住「生成」。** 语气变了，闸门不能变 ——
-    /// 灰色的引导底下如果按钮亮了，他按下去就是一次白扣费。
-    @Test func bothKindsStillBlockGenerating() throws {
-        let src = try String(
-            contentsOf: URL(fileURLWithPath: #filePath)
-                .deletingLastPathComponent().deletingLastPathComponent()
-                .deletingLastPathComponent().deletingLastPathComponent()
-                .appendingPathComponent("Sources/PalmierPro/MediaPanel/AudioPanelTab/MusicTab.swift"),
-            encoding: .utf8)
-        #expect(src.contains("model != nil && validationNote == nil && !isGenerating"),
-                "分档之后「生成」的闸门被改动了 —— 引导变灰不代表可以按")
-        // 颜色是**按档选的**，不是写死一个。
-        #expect(src.contains("message.isBlocking"), "又把所有提示刷成同一个颜色了")
+    /// **过不去的那几档都还能拦住「生成」。** 语气变了，闸门不能变 ——
+    /// 灰色的提示底下如果按钮亮了，他按下去就是一次白扣费。
+    ///
+    /// 这条原来比的是源码字符串（`src.contains("message.isBlocking")`）——
+    /// 2026-09-03 加了第三档 `.setup`、把上色改成按 `isAlarming` 判之后，
+    /// **它当场红了，而行为变好了**。判据咬住实现细节，会在代码变好的时候报警。
+    @Test func everyKindThatCannotProceedStillBlocks() {
+        #expect(!MusicSection.Note.hint("写一句提示词").isBlocking)
+        #expect(MusicSection.Note.blocked("额度不够").isBlocking)
+        #expect(MusicSection.Note.setup("还没配好").isBlocking,
+                "没配好却让他按生成 —— 按下去只会失败")
+    }
+
+    /// 颜色是**按档选的**，不是三档刷成同一个。
+    @Test func theThreeKindsDoNotShareOneColour() {
+        let tones = [
+            MusicSection.Note.hint("a").isAlarming,
+            MusicSection.Note.blocked("b").isAlarming,
+            MusicSection.Note.setup("c").isAlarming,
+        ]
+        #expect(tones == [false, true, false],
+                "又把所有提示刷成同一个颜色了 —— 灰的和红的说的是两件事")
     }
 }

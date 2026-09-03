@@ -79,14 +79,31 @@ struct MusicSection: View {
     enum Note: Equatable {
         /// 他还没动手 —— 安静的灰，是引导不是指责。
         case hint(String)
-        /// 这一步真的过不去（没模型、余额不够、参数不合法）。
+        /// 这一步真的过不去（余额不够、参数不合法）。
         case blocked(String)
+        /// **过不去，但不是他做错了 —— 是这台机器还没配好。**
+        ///
+        /// 「没有可用的音乐模型」原来走 `.blocked`，于是他刚打开面板、
+        /// 什么都没做，就看到一句**红字**，而红色在这个产品里的意思是"出事了"。
+        /// 更糟的是它**没说下一步** —— 一句红色的死胡同。
+        ///
+        /// 这一档用平静的灰，而且**必须给一扇门**（去设置里开一个）。
+        case setup(String)
 
         var text: String {
-            switch self { case .hint(let t), .blocked(let t): t }
+            switch self { case .hint(let t), .blocked(let t), .setup(let t): t }
         }
 
-        var isBlocking: Bool { if case .blocked = self { true } else { false } }
+        /// 能不能按"生成"。**没配好也按不了**，所以它和 `.blocked` 同档。
+        var isBlocking: Bool {
+            switch self { case .blocked, .setup: true; case .hint: false }
+        }
+
+        /// 该不该涂红。**只有"出事了"才红。**
+        var isAlarming: Bool { if case .blocked = self { true } else { false } }
+
+        /// 该不该给一扇门。
+        var needsSetup: Bool { if case .setup = self { true } else { false } }
     }
 
     /// **他还没动手的那两种情况。**
@@ -103,7 +120,7 @@ struct MusicSection: View {
     }
 
     private var validationNote: Note? {
-        guard let model else { return .blocked(L10n.string("No music models available.")) }
+        guard let model else { return .setup(L10n.string("No music model is set up yet.")) }
         if let hint = Self.missingInputHint(
             isTextMode: isTextMode, promptIsEmpty: trimmedPrompt.isEmpty, hasSource: source != nil
         ) { return hint }
@@ -272,10 +289,23 @@ struct MusicSection: View {
             if let message = note.map(Note.blocked) ?? validationNote {
                 Text(message.text)
                     .font(.system(size: AppTheme.FontSize.xs, weight: AppTheme.FontWeight.medium))
-                    .foregroundStyle(message.isBlocking
+                    .foregroundStyle(message.isAlarming
                                      ? AppTheme.Status.errorColor
                                      : AppTheme.Text.secondaryColor)
                     .fixedSize(horizontal: false, vertical: true)
+                // **说了过不去，就得说往哪走。** 一句话加一扇门，
+                // 而不是一句红色的死胡同。
+                if message.needsSetup {
+                    Button {
+                        SettingsWindowController.shared.show(tab: .models)
+                    } label: {
+                        Label(L10n.string("Add models…"), systemImage: "plus")
+                            .font(.system(size: AppTheme.FontSize.xs))
+                    }
+                    .buttonStyle(.plain)
+                    .foregroundStyle(AppTheme.Accent.brand)
+                    .pointerStyle(.link)
+                }
             }
             HStack(spacing: AppTheme.Spacing.sm) {
                 Spacer(minLength: AppTheme.Spacing.zero)

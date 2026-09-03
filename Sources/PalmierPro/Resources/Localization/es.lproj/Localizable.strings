@@ -851,6 +851,7 @@
 "No media" = "No hay contenido multimedia";
 "No models available right now." = "No hay modelos disponibles ahora mismo.";
 "No models match \"%@\"." = "Ningún modelo coincide con \"%@\".";
+"No music model is set up yet." = "Aún no hay ningún modelo de música configurado.";
 "No music models available." = "No hay modelos de música disponibles.";
 "No network, no credits. About 3 minutes per image." = "Sin red y sin créditos. Unos 3 minutos por imagen.";
 "No projects found" = "No se encontraron proyectos";
