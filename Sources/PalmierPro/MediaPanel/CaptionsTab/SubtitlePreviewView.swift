@@ -38,7 +38,11 @@ struct SubtitlePreviewView: View {
             } catch {
                 guard !Task.isCancelled else { return }
                 cues = []
-                errorMessage = error.localizedDescription
+                // **界面上说人话，机器契约留给机器。**
+                // `errorDescription` 是 `add_captions` 那个 MCP 工具的错误串，
+                // 不许本地化；这里用它的 `userMessage`。
+                errorMessage = (error as? SubtitleFileParser.ParseError)?.userMessage
+                    ?? error.localizedDescription
             }
         }
     }

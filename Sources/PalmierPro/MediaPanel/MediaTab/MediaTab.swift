@@ -623,7 +623,7 @@ struct MediaTab: View {
                 }
                 .buttonStyle(.plain)
                 .focusable(false)
-                .help("Clear search")
+                .help(L10n.string("Clear search"))
             }
         }
         .padding(.leading, AppTheme.Spacing.smMd)
@@ -680,13 +680,13 @@ struct MediaTab: View {
             }
             if !AccountService.shared.isMisconfigured {
                 Button { showDraftSheet = true } label: {
-                    Label("Draft a film…", systemImage: "text.viewfinder")
+                    Label(L10n.string("Draft a film…"), systemImage: "text.viewfinder")
                 }
                 Button { showDirectorSheet = true } label: {
-                    Label("Auto Director…", systemImage: "film.stack")
+                    Label(L10n.string("Auto Director…"), systemImage: "film.stack")
                 }
                 Button { showVoiceSheet = true } label: {
-                    Label("Voices & Voiceover…", systemImage: "waveform")
+                    Label(L10n.string("Voices & Voiceover…"), systemImage: "waveform")
                 }
             }
             if canOrganize {

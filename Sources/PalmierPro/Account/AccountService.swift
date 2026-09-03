@@ -1,3 +1,4 @@
+import AuthenticationServices
 import AppKit
 import Foundation
 
@@ -159,7 +160,10 @@ final class AccountService {
 
     func signIn(with provider: MetagAuth.Provider) async {
         guard !isSigningIn else {
-            lastError = "Sign-in is already in progress."
+            // **这一句本来就不该给用户看。**
+            // 登录进行中按钮仍然可点，他多点一下是很自然的动作，
+            // 而"Sign-in is already in progress."既是英文、又在指责他重复操作。
+            // 正在办的事就静静办完，不用汇报。
             return
         }
         isSigningIn = true
@@ -176,7 +180,19 @@ final class AccountService {
             land(credits: account.credits)
         } catch {
             signInPhase = .idle
-            lastError = error.localizedDescription
+            // **他自己关掉登录窗口，不是失败。**
+            // 系统会抛 ASWebAuthenticationSessionError.canceledLogin，
+            // 而原来这里直接把 localizedDescription 摆出来，用户读到的是
+            // 「操作无法完成。(com.apple.AuthenticationServices.WebAuthenticationSession 错误 1。)」
+            // —— 一句他看不懂、也没有任何下一步的话，就因为他改了主意。
+            //
+            // 其余失败也不甩系统原文：那串东西对他没有意义，只进日志。
+            if (error as NSError).domain == ASWebAuthenticationSessionErrorDomain,
+               (error as NSError).code == ASWebAuthenticationSessionError.canceledLogin.rawValue {
+                lastError = nil
+            } else {
+                lastError = L10n.string("Sign-in didn't go through — try again")
+            }
             Log.account.warning(
                 "sign in failed provider=\(provider.rawValue)",
                 telemetry: "Sign in failed",
@@ -296,7 +312,10 @@ final class AccountService {
               let host = url.host,
               Self.allowedBillingHosts.contains(host)
         else {
-            lastError = "Refused to open untrusted URL."
+            // **"Refused to open untrusted URL." 是写给我们自己看的。**
+            // 他刚决定花钱，读到的却是一句开发者术语，而且没有下一步。
+            // 真实原因（那个 URL）进日志，界面上说清他能做什么。
+            lastError = L10n.string("Couldn't open the payment page — try again in a moment")
             return false
         }
         NSWorkspace.shared.open(url, configuration: .init(), completionHandler: nil)
@@ -334,7 +353,11 @@ extension AccountService {
         return String(first).uppercased()
     }
 
-    var planLabel: String { isPaid ? "Subscribed" : "Free" }
+    /// 中文界面的账户卡片上，这一行原来是英文的 "Free" / "Subscribed" ——
+    /// 和它上面刚修掉的 "Signed out" 是同一个毛病：裸字面量没走 L10n。
+    var planLabel: String {
+        isPaid ? L10n.string("Subscribed") : L10n.string("Free")
+    }
 }
 
 /// 等到 app 回到前台；已经在前台就立刻返回。

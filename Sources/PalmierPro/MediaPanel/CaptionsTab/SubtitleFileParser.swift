@@ -42,12 +42,34 @@ enum SubtitleFileParser {
         case malformedCue(line: Int)
         case noCues
 
+        /// **机器那一侧的错误串 —— 不许本地化。**
+        ///
+        /// 它同时是 `add_captions` 这个 MCP 工具的错误输出，而 AGENTS.md 写着
+        /// 「Agent 与 MCP 契约、持久化值、稳定标识、机器可读错误一律不本地化」。
+        /// 2026-09-02 我把它翻译了，`rejectsCombinedOptionsWrongTypesAndMalformedFiles`
+        /// 当场红 —— 判据是对的：**契约稳定和界面说人话是两件事，要两份。**
         var errorDescription: String? {
             switch self {
             case .unsupportedFileType(let ext): "Unsupported subtitle file type “.\(ext)”. Use SRT or WebVTT."
             case .missingWebVTTHeader: "Not a WebVTT file — the WEBVTT header is missing."
             case .malformedCue(let line): "Malformed cue timing at line \(line)."
             case .noCues: "The file contains no captions."
+            }
+        }
+
+        /// **人那一侧的那句话。** 在界面边界上用它（SubtitlePreviewView），
+        /// 每一句都说清他**能做什么** —— 「做不到」后面要跟一条「你可以」。
+        @MainActor
+        var userMessage: String {
+            switch self {
+            case .unsupportedFileType(let ext):
+                L10n.string("“.\(ext)” isn’t a subtitle file we can read — use .srt or .vtt.")
+            case .missingWebVTTHeader:
+                L10n.string("This .vtt file is missing its WEBVTT header — re-export it, or try the .srt version.")
+            case .malformedCue(let line):
+                L10n.string("The timing on line \(line) doesn’t look right — fix that line and drop it in again.")
+            case .noCues:
+                L10n.string("There are no captions in this file.")
             }
         }
     }

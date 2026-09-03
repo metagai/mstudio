@@ -106,7 +106,7 @@ struct MetagDirectorSheet: View {
                 Text(item.name)
                     .font(.system(size: AppTheme.FontSize.sm, weight: AppTheme.FontWeight.semibold))
                     .foregroundStyle(AppTheme.Text.primaryColor)
-                Text(item.isSupported ? item.tagline : "Available in METAG Studio only")
+                Text(item.isSupported ? item.tagline : L10n.string("Available in METAG Studio only"))
                     .font(.system(size: AppTheme.FontSize.xxs))
                     .foregroundStyle(AppTheme.Text.tertiaryColor)
                     .lineLimit(2)
@@ -240,7 +240,7 @@ struct MetagDirectorSheet: View {
                     .foregroundStyle(AppTheme.Text.secondaryColor)
                     .fixedSize(horizontal: false, vertical: true)
             }
-            Text(L10n.string("\(quote.stage.capitalized) costs \(quote.cost_credits.formatted()) credits — \(quote.engine), \(quote.shots.formatted()) shots. Billed only after you approve."))
+            Text(L10n.string("\(MetagDirector.stageLabel(quote.stage)) costs \(quote.cost_credits.formatted()) credits — \(quote.engine), \(quote.shots.formatted()) shots. Billed only after you approve."))
                 .font(.system(size: AppTheme.FontSize.sm, weight: AppTheme.FontWeight.medium))
                 .foregroundStyle(AppTheme.Text.primaryColor)
                 .fixedSize(horizontal: false, vertical: true)

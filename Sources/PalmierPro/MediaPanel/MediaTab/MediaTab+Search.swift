@@ -47,7 +47,16 @@ extension MediaTab {
                     resultsGrid { ForEach(nameMatches) { fileCard($0) } }
                 }
                 if visualHits.isEmpty, spokenHits.isEmpty, timelineMatches.isEmpty, nameMatches.isEmpty {
-                    Text(L10n.string("No matches for “\(trimmedSearchQuery)”"))
+                    // **"没有匹配"和"还搜不了"是两回事。**
+                    //
+                    // 画面搜索靠一个端侧模型，没下载时 `VisualModelLoader` 直接
+                    // 返回空 —— 而这里一律说「没有"日落"的结果」。新用户从没点过
+                    // 工具栏那个小按钮，所以**默认状态下他搜什么都"没有"**，
+                    // 读起来是"我的素材里没有"，其实是"这台机器还不会看画面"。
+                    //
+                    // 说清是哪一种，并且给他下一步 —— 这一屏本来就有下载入口
+                    // （MediaTab+IndexStatus），只是空态没提它。
+                    Text(searchNotReadyLine ?? L10n.string("No matches for “\(trimmedSearchQuery)”"))
                         .font(.system(size: AppTheme.FontSize.sm))
                         .foregroundStyle(AppTheme.Text.tertiaryColor)
                         .frame(maxWidth: .infinity)
@@ -154,6 +163,25 @@ extension MediaTab {
         }
         .overlay { searchSelectionBorder(for: hit.assetID) }
         .onTapGesture { selectSearchHit(assetID: hit.assetID, atSeconds: range.lowerBound) }
+    }
+
+    /// 画面搜索还没准备好时该说的那句话；准备好了返回 nil（照常说"没有匹配"）。
+    ///
+    /// 只在**这一次搜索一个结果都没有**时才用得上 —— 有结果就不必解释。
+    @MainActor
+    private var searchNotReadyLine: String? {
+        switch VisualModelLoader.shared.state {
+        case .notInstalled:
+            return L10n.string("Visual search isn’t set up yet — tap “Smart search” above to download the on-device model.")
+        case .downloading:
+            return L10n.string("Still downloading the search model — try again in a moment.")
+        case .preparing:
+            return L10n.string("Getting the search model ready — try again in a moment.")
+        case .failed:
+            return L10n.string("The search model didn’t download — tap “Retry” above.")
+        default:
+            return nil
+        }
     }
 
     @ViewBuilder

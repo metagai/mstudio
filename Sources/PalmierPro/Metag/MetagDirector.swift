@@ -75,13 +75,34 @@ enum MetagDirector {
     }
 
     /// 阶段进度条的标签，与网关的 stage 取值对应。
+    /// 阶段条上那几个词。**它们是给人读的，不是枚举值** ——
+    /// `id` 才是和服务端对齐的机器串，`label` 要跟界面语言走。
+    @MainActor
     static func stages(for pipeline: String) -> [(id: String, label: String)] {
         switch pipeline {
         case "site-promo":
-            return [("capture", "Fetch Site"), ("storyboard", "Storyboard"), ("generate", "Generate"), ("done", "Done")]
+            return [("capture", L10n.string("Fetch Site")),
+                    ("storyboard", L10n.string("Storyboard")),
+                    ("generate", L10n.string("Generate")),
+                    ("done", L10n.string("Done"))]
         default:
-            return [("storyboard", "Storyboard"), ("generate", "Generate"), ("deliver", "Deliver"), ("done", "Done")]
+            return [("storyboard", L10n.string("Storyboard")),
+                    ("generate", L10n.string("Generate")),
+                    ("deliver", L10n.string("Deliver")),
+                    ("done", L10n.string("Done"))]
         }
+    }
+
+    /// 报价句里那个阶段名。**服务端给的是机器串**（`storyboard` / `generate`），
+    /// 原来直接 `.capitalized` 摆进句子，于是中文界面读到
+    /// 「Storyboard 需要 40 积分」—— 一句中英混排的报价。
+    /// 查不到就退回原串：宁可丑，不假装看得懂（额度流水那条单测的同一个道理）。
+    @MainActor
+    static func stageLabel(_ id: String) -> String {
+        for p in ["site-promo", ""] {
+            if let hit = stages(for: p).first(where: { $0.id == id }) { return hit.label }
+        }
+        return id
     }
 }
 
