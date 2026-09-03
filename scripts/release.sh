@@ -292,7 +292,16 @@ fi
 MIN_MACOS="$(/usr/libexec/PlistBuddy -c "Print :LSMinimumSystemVersion" "$PLIST")"
 APP_BYTES="$(du -sk "$ROOT/.build/METAG.app" | awk '{print $1 * 1024}')"
 echo ""
-echo "==> 网关 meta 要的数（partner：照抄）"
+# ⚠ **这是数，不是契约。** 形状由网关那侧定，别照着这里的引号写解析。
+#
+# 2026-09-03：我这份样例把 `min_macos` 写成 `"26.0"`（那是 `Info.plist` 里
+# `LSMinimumSystemVersion` 的原文），网关实现发的是整数 `26`，
+# 而落地页照着我的样例写了 `(x ?? '').split('.')` —— 对整数调 `.split` 直接抛，
+# **两个站首页白屏**。三方都没写错，是三方对同一个字段的形状各自假设了一次。
+#
+# 契约已定死在整数那一侧（比大小是这个数唯一的用途，整数是它的自然形状）。
+# 这里继续吐原文，网关取整。
+echo "==> 网关 meta 要的数（partner：照抄数值，形状以网关文档为准）"
 cat <<META
 {
   "version":        "$VERSION",
