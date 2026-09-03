@@ -371,6 +371,7 @@
 "Couldn't change marker." = "无法更改标记。";
 "Couldn't delete marker." = "无法删除标记。";
 "Couldn't load the model list." = "模型列表没加载出来。";
+"Couldn't move METAG for you." = "没能替你放进去。";
 "Couldn't open the payment page — try again in a moment" = "支付页面打不开，过一会儿再试";
 "Couldn't reach METAG — check your connection and try again." = "连不上 METAG —— 检查一下网络再试。";
 "Couldn't reach the store just now — check your connection and try again." = "暂时连不上商店 —— 检查一下网络再试。";
@@ -471,6 +472,7 @@
 "Draft" = "草稿";
 "Drafting… this one is free" = "正在起草…这一步不扣 credits";
 "Drafts are free — no credits charged" = "草案免费，不扣任何 credits";
+"Drag METAG into your Applications folder and open it from there." = "把 METAG 拖进「应用程序」文件夹，再从那里打开。";
 "Drag to add or shape a point · double-click to remove" = "拖移以添加或调整控制点 · 连按两次以移除";
 "Draw Region" = "圈一块区域";
 "Draw the region on the canvas" = "在画布上圈出那块区域";
@@ -716,6 +718,7 @@
 "Invert Colors" = "反转颜色";
 "Inverted" = "反转";
 "Issues a new token. Every connected agent must be reconnected with the new configuration." = "换发一个新令牌。已经连上的每个 agent 都要用新配置重连一次。";
+"It's running from the disk image right now. Once it's in Applications you can open it from Launchpad, and updates install themselves." = "现在这个是从磁盘映像里打开的。放进「应用程序」之后，用启动台就能打开，更新也会自己装上。";
 "Italic" = "斜体";
 "Jump to Playhead" = "跳到播放头";
 "Kai picked the voice. Reading Nova's %@ lines now." = "Kai 定好了音色，正在读 Nova 写的那 %@ 句。";
@@ -1027,6 +1030,8 @@
 "Project" = "项目";
 "Projects Couldn’t Be Deleted" = "无法删除项目";
 "Prompt" = "提示词";
+"Put METAG in your Applications folder?" = "把 METAG 放进「应用程序」？";
+"Put in Applications" = "放进「应用程序」";
 "Putting a crew together for this one…" = "正在为这一条组建班底…";
 "Quality %@" = "质量 %@";
 "Quality" = "质量";

@@ -34,7 +34,7 @@
             <pubDate>Sun, 16 Aug 2026 15:28:39 +0000</pubDate>
             <sparkle:version>85</sparkle:version>
             <sparkle:shortVersionString>0.1.8</sparkle:shortVersionString>
-            <sparkle:minimumSystemVersion>14.0</sparkle:minimumSystemVersion>
+            <sparkle:minimumSystemVersion>26.0</sparkle:minimumSystemVersion>
             <description><![CDATA[
               <ul>
                 <li>额度不够时，当场就能买 —— 不再先把你推去一道设置窗口。</li>
@@ -54,7 +54,7 @@
             <pubDate>Wed, 12 Aug 2026 05:24:30 +0000</pubDate>
             <sparkle:version>84</sparkle:version>
             <sparkle:shortVersionString>0.1.7</sparkle:shortVersionString>
-            <sparkle:minimumSystemVersion>14.0</sparkle:minimumSystemVersion>
+            <sparkle:minimumSystemVersion>26.0</sparkle:minimumSystemVersion>
             <description><![CDATA[
               <ul>
                 <li>首个经 Apple 公证的版本 —— 双击即可打开，不再需要「仍要打开」。</li>

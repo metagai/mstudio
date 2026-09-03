@@ -369,6 +369,7 @@
 "Couldn't change marker." = "No se pudo cambiar el marcador.";
 "Couldn't delete marker." = "No se pudo eliminar el marcador.";
 "Couldn't load the model list." = "No se pudo cargar la lista de modelos.";
+"Couldn't move METAG for you." = "No pudimos moverlo por ti.";
 "Couldn't open the payment page — try again in a moment" = "No se pudo abrir la página de pago: inténtalo en un momento";
 "Couldn't reach METAG — check your connection and try again." = "No se pudo conectar con METAG. Revisa tu conexión e inténtalo de nuevo.";
 "Couldn't reach the store just now — check your connection and try again." = "No se pudo conectar con la tienda — revisa tu conexión e inténtalo de nuevo.";
@@ -469,6 +470,7 @@
 "Draft" = "Borrador";
 "Drafting… this one is free" = "Creando el borrador… es gratis";
 "Drafts are free — no credits charged" = "Los borradores son gratis: no se cobran créditos";
+"Drag METAG into your Applications folder and open it from there." = "Arrastra METAG a tu carpeta Aplicaciones y ábrelo desde ahí.";
 "Drag to add or shape a point · double-click to remove" = "Arrastra para añadir o dar forma a un punto · haz doble clic para eliminarlo";
 "Draw Region" = "Dibujar región";
 "Draw the region on the canvas" = "Dibuja la región en el lienzo";
@@ -714,6 +716,7 @@
 "Invert Colors" = "Invertir colores";
 "Inverted" = "Invertido";
 "Issues a new token. Every connected agent must be reconnected with the new configuration." = "Emite un token nuevo. Todos los agentes conectados deberán reconectarse con la nueva configuración.";
+"It's running from the disk image right now. Once it's in Applications you can open it from Launchpad, and updates install themselves." = "Ahora se está ejecutando desde la imagen de disco. Una vez en Aplicaciones podrás abrirlo desde Launchpad y las actualizaciones se instalarán solas.";
 "Italic" = "Cursiva";
 "Jump to Playhead" = "Ir al cabezal de reproducción";
 "Kai picked the voice. Reading Nova's %@ lines now." = "Kai eligió la voz. Ahora leo las %@ líneas de Nova.";
@@ -1025,6 +1028,8 @@
 "Project" = "Proyecto";
 "Projects Couldn’t Be Deleted" = "No se pudieron eliminar los proyectos";
 "Prompt" = "Indicación";
+"Put METAG in your Applications folder?" = "¿Poner METAG en tu carpeta Aplicaciones?";
+"Put in Applications" = "Poner en Aplicaciones";
 "Putting a crew together for this one…" = "Formando el equipo para esta pieza…";
 "Quality %@" = "Calidad %@";
 "Quality" = "Calidad";

@@ -26,7 +26,19 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
 
         // 漏斗第一步。**桌面端此前一步都没埋** —— 报表上它的流失会显示成零，
         // 而零和「没量到」长得一模一样（见 MetagFunnel）。
-        MetagFunnel.track(.landed, once: true)  // 一次启动一条
+        //
+        // 带上**他是从哪儿启动的**。在 Mac 上「双击磁盘映像里那个图标就开始用」
+        // 是最常见的一种"装好了"，而它其实没装 —— 自动更新永远失败、
+        // 弹出映像之后他就再也找不到 METAG。
+        // 不带这一格的话，这些人和真正装好的人在报表上一模一样，
+        // 「首次安装成功率」就无从算起。
+        MetagFunnel.track(.landed, once: true, meta: [
+            "install": InstallLocation.kind(of: Bundle.main.bundleURL).rawValue
+        ])  // 一次启动一条
+
+        // 没装好就替他装 —— **可能不会返回**（搬完会启动新那一份、退掉这一份）。
+        // 放在开窗之前：让他看见的第一个东西是那个问句，不是一个开在错地方的窗。
+        InstallLocation.settleIfNeeded()
 
         HomeWindowController.shared.showWindow(nil)
         SkillStore.shared.startSkillSync()

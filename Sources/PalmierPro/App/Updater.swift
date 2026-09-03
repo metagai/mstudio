@@ -17,6 +17,15 @@ final class Updater: NSObject {
         guard Bundle.main.bundleURL.pathExtension == "app",
               Bundle.main.object(forInfoDictionaryKey: "SUFeedURL") != nil
         else { return }
+        // **只读卷上装不了更新。**
+        //
+        // 他在磁盘映像里直接用（我们问过一次，他选了"先这样用"），
+        // 那 Sparkle 每次检查都会找到新版、下下来、然后写不进去。
+        // 结果是一个隔三差五弹出来、每次都失败的更新框 ——
+        // 而那件事他做不了什么，真正该做的是把 app 搬进「应用程序」。
+        // 不检查，比反复失败强。
+        guard !InstallLocation.needsMove(InstallLocation.kind(of: Bundle.main.bundleURL))
+        else { return }
         let controller = SPUStandardUpdaterController(
             startingUpdater: true,
             updaterDelegate: self,

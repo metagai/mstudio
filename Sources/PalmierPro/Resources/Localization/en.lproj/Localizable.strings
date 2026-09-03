@@ -276,6 +276,7 @@
 "Couldn't change marker." = "Couldn't change marker.";
 "Couldn't delete marker." = "Couldn't delete marker.";
 "Couldn't load the model list." = "Couldn't load the model list.";
+"Couldn't move METAG for you." = "Couldn't move METAG for you.";
 "Couldn't open the payment page — try again in a moment" = "Couldn't open the payment page — try again in a moment";
 "Couldn't reach METAG — check your connection and try again." = "Couldn't reach METAG — check your connection and try again.";
 "Couldn't reach the store just now — check your connection and try again." = "Couldn't reach the store just now — check your connection and try again.";
@@ -366,6 +367,7 @@
 "Draft it" = "Draft it";
 "Drafting… this one is free" = "Drafting… this one is free";
 "Drafts are free — no credits charged" = "Drafts are free — no credits charged";
+"Drag METAG into your Applications folder and open it from there." = "Drag METAG into your Applications folder and open it from there.";
 "Drag to add or shape a point · double-click to remove" = "Drag to add or shape a point · double-click to remove";
 "Draw Region" = "Draw Region";
 "Draw the region on the canvas" = "Draw the region on the canvas";
@@ -577,6 +579,7 @@
 "Invert Colors" = "Invert Colors";
 "Inverted" = "Inverted";
 "Issues a new token. Every connected agent must be reconnected with the new configuration." = "Issues a new token. Every connected agent must be reconnected with the new configuration.";
+"It's running from the disk image right now. Once it's in Applications you can open it from Launchpad, and updates install themselves." = "It's running from the disk image right now. Once it's in Applications you can open it from Launchpad, and updates install themselves.";
 "Italic" = "Italic";
 "Jump to Playhead" = "Jump to Playhead";
 "Kai picked the voice. Reading Nova's %@ lines now." = "Kai picked the voice. Reading Nova's %@ lines now.";
@@ -839,6 +842,8 @@
 "Project Settings" = "Project Settings";
 "Projects Couldn’t Be Deleted" = "Projects Couldn’t Be Deleted";
 "Prompt" = "Prompt";
+"Put METAG in your Applications folder?" = "Put METAG in your Applications folder?";
+"Put in Applications" = "Put in Applications";
 "Putting a crew together for this one…" = "Putting a crew together for this one…";
 "Quality" = "Quality";
 "Quality %@" = "Quality %@";
