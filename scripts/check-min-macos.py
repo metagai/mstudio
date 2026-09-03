@@ -45,10 +45,28 @@ def main() -> int:
     if not launch.startswith(f"{build}."):
         fails.append(f"Package.swift 要 macOS {build}，而 Info.plist 写着 {launch or '没写'}"
                      " —— 他装上了，双击闪退，我们收不到任何信号")
-    for v in feed:
-        if not v.startswith(f"{build}."):
-            fails.append(f"appcast 里有一条写着 minimumSystemVersion {v}，而 app 要 {build}"
-                         " —— Sparkle 会给他推一个装不上的更新，而且不报错")
+    # **最新那一条必须和今天的构建一致** —— 那是 release.sh 刚写进去的。
+    if feed and not feed[0].startswith(f"{build}."):
+        fails.append(f"appcast 最新那条写着 minimumSystemVersion {feed[0]}，而 app 要 {build}")
+
+    # 旧条目**只查一个方向**：它说的比实际要求**低**。
+    #
+    # 低了是真 bug —— Sparkle 会把那一版推给一台跑不了它的机器，而且不报错
+    # （0.1.7 / 0.1.8 真的写着 14.0 而那两个包要 26.0，2026-09-03 订正）。
+    #
+    # **高了不查。** 哪天我们把最低要求降下来（比如为 macOS 25 加 Liquid Glass
+    # 回退），旧条目停在 26.0 是**正确的历史** —— 那一版确实要 26。
+    # 那时逐条比对今天的数字，就是拿一个对的状态报红。
+    #
+    # 见 docs/lessons.md 第四十二条：**乱红的判据死得比不红的更快** ——
+    # 第一次就被挥手放过，而它被放过的那天正是它报真事的那天。
+    for v in feed[1:]:
+        try:
+            if int(v.split(".")[0]) < build:
+                fails.append(f"appcast 有一条写着 minimumSystemVersion {v}，低于这个包要的 {build}"
+                             " —— Sparkle 会把它推给一台跑不了它的机器，而且不报错")
+        except ValueError:
+            fails.append(f"appcast 里 minimumSystemVersion 读不出来：{v!r}")
 
     if fails:
         print(f"SCOPE {checks} 处最低系统版本")
