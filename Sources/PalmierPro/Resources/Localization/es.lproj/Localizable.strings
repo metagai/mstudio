@@ -1569,3 +1569,5 @@
 "%@ isn't a .cube 3D LUT. METAG reads .cube files exported from most color tools." = "%@ no es un LUT 3D .cube. METAG lee archivos .cube exportados por la mayoría de herramientas de color.";
 "The export finished but produced no file." = "La exportación terminó pero no generó ningún archivo.";
 "The export didn't finish." = "La exportación no se completó.";
+"Product site, e.g. https://your-product.com" = "Sitio del producto, p. ej. https://tu-producto.com";
+"What should it be about?" = "¿De qué quieres que trate?";

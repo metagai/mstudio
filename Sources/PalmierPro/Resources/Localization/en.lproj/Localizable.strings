@@ -19,6 +19,7 @@
 "%@ exported with 1 warning." = "%@ exported with 1 warning.";
 "%@ free credits when you sign in" = "%@ free credits when you sign in";
 "%@ is ready." = "%@ is ready.";
+"%@ isn't a .cube 3D LUT. METAG reads .cube files exported from most color tools." = "%@ isn't a .cube 3D LUT. METAG reads .cube files exported from most color tools.";
 "%@ loaded this clip's source file but couldn't prepare it for playback. The file may be corrupt or in an unsupported format." = "%@ loaded this clip's source file but couldn't prepare it for playback. The file may be corrupt or in an unsupported format.";
 "%@ model not available" = "%@ model not available";
 "%@ shots" = "%@ shots";
@@ -1112,6 +1113,7 @@
 "That engine is temporarily unavailable — pick another" = "That engine is temporarily unavailable — pick another";
 "That file is not a METAG recipe." = "That file is not a METAG recipe.";
 "That file is too large — images up to 8 MB, voice samples up to 16 MB." = "That file is too large — images up to 8 MB, voice samples up to 16 MB.";
+"That file isn't there any more — pick it again." = "That file isn't there any more — pick it again.";
 "That file type is not supported — images as PNG/JPEG/WebP, audio as WAV/MP3/M4A." = "That file type is not supported — images as PNG/JPEG/WebP, audio as WAV/MP3/M4A.";
 "That generation type is not available yet — text-to-video and image-to-video are." = "That generation type is not available yet — text-to-video and image-to-video are.";
 "That is not yours to open." = "That is not yours to open.";
@@ -1125,6 +1127,8 @@
 "The draft is still rendering — wait a moment." = "The draft is still rendering — wait a moment.";
 "The draft is taking too long — try again in a moment." = "The draft is taking too long — try again in a moment.";
 "The export" = "The export";
+"The export didn't finish." = "The export didn't finish.";
+"The export finished but produced no file." = "The export finished but produced no file.";
 "The marker comment changed while you were editing. Review it and try again." = "The marker comment changed while you were editing. Review it and try again.";
 "The network dropped that one. Try again." = "The network dropped that one. Try again.";
 "The network took too long to answer. Try again." = "The network took too long to answer. Try again.";
@@ -1335,7 +1339,3 @@
 "using OpenAI API key" = "using OpenAI API key";
 "~%@s · %@ credits · ~%@ min" = "~%@s · %@ credits · ~%@ min";
 "“.%@” isn’t a subtitle file we can read — use .srt or .vtt." = "“.%@” isn’t a subtitle file we can read — use .srt or .vtt.";
-"That file isn't there any more — pick it again." = "That file isn't there any more — pick it again.";
-"%@ isn't a .cube 3D LUT. METAG reads .cube files exported from most color tools." = "%@ isn't a .cube 3D LUT. METAG reads .cube files exported from most color tools.";
-"The export finished but produced no file." = "The export finished but produced no file.";
-"The export didn't finish." = "The export didn't finish.";

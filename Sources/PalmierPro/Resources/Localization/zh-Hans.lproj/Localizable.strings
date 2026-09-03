@@ -1572,3 +1572,5 @@
 "%@ isn't a .cube 3D LUT. METAG reads .cube files exported from most color tools." = "%@ 不是 .cube 三维 LUT。METAG 读大多数调色工具导出的 .cube 文件。";
 "The export finished but produced no file." = "导出跑完了，但没有生成文件。";
 "The export didn't finish." = "这次导出没能完成。";
+"Product site, e.g. https://your-product.com" = "产品网页，例如 https://your-product.com";
+"What should it be about?" = "想拍点什么？";
