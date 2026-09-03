@@ -189,11 +189,13 @@ final class MetagDraftModel: ObservableObject {
             // **网关收下了才算。** 记在按钮上的话，一次失败的批准会让转化率
             // 凭空变好而钱一分没进来 —— 而我们会照着那个数去排下一步的工。
             // 带上这一单的档位和报价：报价有没有改变他的选择，只能在这里看出来。
-            MetagFunnel.track(.paid, meta: [
-                "engine": engine,
-                "credits": quote?.options.first { $0.engine == engine }?.total_credits ?? 0,
-                "quoted": quote != nil,
-            ])
+            // 报价没拿到就**不报这一格**，而不是报个 0 ——
+            // 0 会被当成"这一单没花钱"混进均价里，而我们要照那个数排下一步的工。
+            var meta: [String: Any] = ["engine": engine, "quoted": quote != nil]
+            if let credits = quote?.options.first(where: { $0.engine == engine })?.total_credits {
+                meta["credits"] = credits
+            }
+            MetagFunnel.track(.paid, meta: meta)
             return job
         } catch {
             note = error.localizedDescription
@@ -340,6 +342,11 @@ struct MetagDraftSheet: View {
     /// 混合路由这一侧客户端**算不出来**（没有逐镜口播标记），
     /// 所以只有两种诚实的结果：网关报了价就印它，没有就不印。
     /// 产品里已经有这个写法（`MetagVoiceSheet.cloneLabel`：问不到价只写「克隆」）。
+    /// 出片按钮上写什么。网关报了价就印它，没有就不印。
+    nonisolated static func produceLabel(credits: Int?) -> String {
+        credits.map { L10n.string("Produce · \($0.formatted()) credits") } ?? L10n.string("Produce")
+    }
+
     private var quote: Int? {
         guard allShots else { return nil }
         return model.quote?.options.first { $0.engine == engine }?.total_credits
@@ -702,8 +709,7 @@ struct MetagDraftSheet: View {
                 // 价钱写在按钮上，不写在按钮旁边。**这是全站一致的规矩** ——
                 // 旁边那行会被换行、被挤走、被读屏跳过，而按钮不会。
                 // 导演台（MetagDirectorSheet）和 Web 端都是这么做的。
-                Button(quote.map { L10n.string("Produce · \($0.formatted()) credits") }
-                       ?? L10n.string("Produce")) {
+                Button(Self.produceLabel(credits: quote)) {
                     Task {
                         if let job = await model.approve(engine: engine, allShots: allShots) {
                             editor.mediaPanelToast = MediaPanelToast(

@@ -279,7 +279,11 @@ struct MetagDirectorSheet: View {
                     .disabled(account.isSignedIn ? !canStart : busy)
             }
             if let run, run.isAwaitingApproval {
-                Button(L10n.string("Approve \((run.artifacts.quote?.cost_credits ?? 0).formatted()) Credits")) {
+                // **不许在授权扣款的那颗按钮上印一个我们没有的价钱。**
+                // 上一版是 `?? 0`：报价还没回来时它写着「Approve 0 Credits」，
+                // 他按下去以为不要钱，然后被扣。
+                // 不知道价钱就只说「Approve」—— 少一个数，好过一个错的数。
+                Button(Self.approveLabel(credits: run.artifacts.quote?.cost_credits)) {
                     act { try await MetagGateway.approveDirectorRun(run.id) }
                 }
                 .buttonStyle(.editorPrimary)
@@ -292,6 +296,15 @@ struct MetagDirectorSheet: View {
                     .focusable(false)
             }
         }
+    }
+
+    /// 批准这一单的按钮上写什么。
+    ///
+    /// 上一版是 `?? 0` —— 报价还没回来时它写着「Approve 0 Credits」，
+    /// 他按下去以为不要钱，然后被扣。
+    /// **少一个数，好过一个错的数。**
+    nonisolated static func approveLabel(credits: Int?) -> String {
+        credits.map { L10n.string("Approve \($0.formatted()) Credits") } ?? L10n.string("Approve")
     }
 
     // MARK: - Actions

@@ -205,8 +205,10 @@ struct MetagVoiceSheet: View {
     }
 
     /// 价钱取不到就**不提数字**。宁可少说一句，也不要说错一个数。
-    private var cloneLabel: String {
-        model.cloneCost.map { L10n.string("Clone · \($0.formatted()) credits") } ?? L10n.key("Clone")
+    private var cloneLabel: String { Self.cloneLabel(credits: model.cloneCost) }
+
+    nonisolated static func cloneLabel(credits: Int?) -> String {
+        credits.map { L10n.string("Clone · \($0.formatted()) credits") } ?? L10n.string("Clone")
     }
 
     private var dubbing: some View {
