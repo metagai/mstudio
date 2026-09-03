@@ -1570,3 +1570,5 @@
 "The timing on line %lld doesn’t look right — fix that line and drop it in again." = "第 %lld 行的时间码不对 —— 改好那一行再拖进来。";
 "That file isn't there any more — pick it again." = "那个文件已经不在了 —— 重新选一个。";
 "%@ isn't a .cube 3D LUT. METAG reads .cube files exported from most color tools." = "%@ 不是 .cube 三维 LUT。METAG 读大多数调色工具导出的 .cube 文件。";
+"The export finished but produced no file." = "导出跑完了，但没有生成文件。";
+"The export didn't finish." = "这次导出没能完成。";

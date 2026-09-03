@@ -82,11 +82,11 @@ struct MetagDirectorSheet: View {
                 ForEach(presets) { presetCard($0) }
             }
             if preset?.needsURL == true {
-                TextField("Product site, e.g. https://your-product.com", text: $siteURL)
+                TextField(L10n.string("Product site, e.g. https://your-product.com"), text: $siteURL)
                     .textFieldStyle(.roundedBorder)
                     .font(.system(size: AppTheme.FontSize.sm))
             }
-            TextField("What should it be about?", text: $topic, axis: .vertical)
+            TextField(L10n.string("What should it be about?"), text: $topic, axis: .vertical)
                 .textFieldStyle(.roundedBorder)
                 .lineLimit(3...3)
                 .font(.system(size: AppTheme.FontSize.sm))

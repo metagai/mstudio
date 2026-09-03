@@ -47,11 +47,24 @@ struct MetagCreditsView: View {
             Text(L10n.string("Credit activity")).font(.system(size: AppTheme.FontSize.mdLg, weight: AppTheme.FontWeight.semibold))
             if model.loading && model.items.isEmpty {
                 Text(L10n.string("Loading…")).font(.system(size: AppTheme.FontSize.sm)).foregroundStyle(AppTheme.Text.secondaryColor)
-            } else if let e = model.error {
+            // **和「我的作品」同一个形状，上一轮我只修了那一边。**
+            //
+            // `error` 排在 `items` 前面：流水已经加载好之后，任何一次失败
+            // 都会把整屏账单顶掉。而账单是"我的钱去哪了" ——
+            // 让它因为一次网络抖动整屏消失，比不报错更吓人。
+            //
+            // 取不到流水才顶替；流水在的时候那句话贴在上面（下面那一支）。
+            } else if let e = model.error, model.items.isEmpty {
                 Text(e).font(.system(size: AppTheme.FontSize.sm)).foregroundStyle(AppTheme.Text.secondaryColor)
             } else if model.items.isEmpty {
                 Text(L10n.string("No credit activity yet")).font(.system(size: AppTheme.FontSize.sm)).foregroundStyle(AppTheme.Text.secondaryColor)
             } else {
+                // 流水在的时候，这一次的失败贴在**上面**，不取代它。
+                if let e = model.error {
+                    Text(e)
+                        .font(.system(size: AppTheme.FontSize.sm))
+                        .foregroundStyle(AppTheme.Status.warningColor)
+                }
                 ScrollView {
                     VStack(alignment: .leading, spacing: AppTheme.Spacing.xs) {
                         ForEach(model.items) { e in row(e) }

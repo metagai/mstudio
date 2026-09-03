@@ -295,7 +295,8 @@ final class ExportQueue {
         } else if service.error != nil {
             status = .failed
         } else {
-            service.error = "Export produced no output."
+            // 裸英文字面量，而它会进系统通知和导出面板 —— 中文用户读不懂。
+            service.error = L10n.string("The export finished but produced no file.")
             status = .failed
         }
         let source = job(id)?.source
@@ -303,16 +304,33 @@ final class ExportQueue {
         let outputURL = job(id)?.outputURL
         finish(id, status: status, service: service)
 
-        guard source == .agent, let filename, let outputURL else { return }
-        if status == .completed {
+        // **失败必须出声，不管是谁发起的。**
+        //
+        // 上一版这里是 `guard source == .agent` —— **人手点的导出不发通知**。
+        // 而标题栏那个唯一的全局指示器只在 `status.isRunning` 时闪一个点，
+        // `.failed` 没有任何呈现；错误文字只活在 `ExportJob.error` 里，
+        // 只有重新打开导出面板才看得见。
+        //
+        // 于是：⌘E → 选保存位置 → 关掉面板去干别的 → 十分钟后那个点停了
+        // （**和导完一模一样**）→ 去 Finder，没有文件，也不知道为什么。
+        //
+        // 导出成功是团队量"他愿不愿意留着它"的唯一那一格，
+        // **而这条路上的失败态此前是全静默的。**
+        guard let filename, let outputURL else { return }
+        if status == .failed {
+            AppNotifications.exportFailed(
+                name: filename,
+                reason: service.error ?? L10n.string("The export didn't finish.")
+            )
+        } else if status == .completed, source == .agent {
+            // 成功那一条仍然只给 agent 发 —— 人手点的时候他就在屏幕前，
+            // 而 Finder 里多一个文件本身就是回执。
             AppNotifications.exportComplete(
                 name: filename,
                 outputURL: outputURL,
                 size: service.lastReport?.outputSize,
                 warningCount: job(id)?.warningCount(service.lastReport) ?? 0
             )
-        } else if status == .failed {
-            AppNotifications.exportFailed(name: filename, reason: service.error ?? "Export failed")
         }
     }
 

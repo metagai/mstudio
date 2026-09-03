@@ -1337,3 +1337,5 @@
 "“.%@” isn’t a subtitle file we can read — use .srt or .vtt." = "“.%@” isn’t a subtitle file we can read — use .srt or .vtt.";
 "That file isn't there any more — pick it again." = "That file isn't there any more — pick it again.";
 "%@ isn't a .cube 3D LUT. METAG reads .cube files exported from most color tools." = "%@ isn't a .cube 3D LUT. METAG reads .cube files exported from most color tools.";
+"The export finished but produced no file." = "The export finished but produced no file.";
+"The export didn't finish." = "The export didn't finish.";

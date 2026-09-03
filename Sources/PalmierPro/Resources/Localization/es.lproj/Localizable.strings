@@ -1567,3 +1567,5 @@
 "The timing on line %lld doesn’t look right — fix that line and drop it in again." = "El tiempo de la línea %lld no parece correcto: corrígela y vuelve a arrastrarla.";
 "That file isn't there any more — pick it again." = "Ese archivo ya no está: vuelve a elegirlo.";
 "%@ isn't a .cube 3D LUT. METAG reads .cube files exported from most color tools." = "%@ no es un LUT 3D .cube. METAG lee archivos .cube exportados por la mayoría de herramientas de color.";
+"The export finished but produced no file." = "La exportación terminó pero no generó ningún archivo.";
+"The export didn't finish." = "La exportación no se completó.";

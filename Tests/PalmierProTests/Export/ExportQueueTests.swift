@@ -42,7 +42,13 @@ struct ExportQueueTests {
         })
         #expect(!firstRan)
         #expect(secondRan)
-        #expect(queue.job(second.jobID)?.error == "Export produced no output.")
+        // **断言的是"他被告诉了原因"，不是那一句的英文字面。**
+        //
+        // 上一版钉的是 `== "Export produced no output."` —— 于是把这句话
+        // 本地化（它会进系统通知和导出面板，中文用户读不懂）时它当场红。
+        // **一条钉着界面文案字面的判据，会在文案变好的时候报警。**
+        #expect(queue.job(second.jobID)?.error == L10n.string("The export finished but produced no file."),
+                "导出没产出文件，而 job 上没有留下能给用户看的原因")
     }
 
     @Test func cancelingWaitingJobDoesNotRunIt() async throws {
