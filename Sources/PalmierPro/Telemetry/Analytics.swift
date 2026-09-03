@@ -161,6 +161,11 @@ enum Analytics {
         #if PRODUCTION_TELEMETRY
         guard canCapture else { return false }
         let properties = cleanedPayload(properties)
+        // 开发期就炸出来。生产里静默丢是有意的（隐私），
+        // 但**忘了往白名单里加**这件事不该等到看报表才发现。
+        assert(properties.keys.allSatisfy { allowedCapturePropertyKeys.contains($0) },
+               "这些属性不在 allowedCapturePropertyKeys 里，会被静默丢掉："
+               + properties.keys.filter { !allowedCapturePropertyKeys.contains($0) }.joined(separator: ", "))
         guard let data = try? JSONSerialization.data(withJSONObject: properties) else { return false }
         captureQueue.async {
             guard let properties = try? JSONSerialization.jsonObject(with: data) as? Payload else { return }
@@ -226,7 +231,14 @@ enum Analytics {
         return out
     }
 
-    private static func allowedProperties(for event: String, properties: Payload) -> Payload {
+    /// **不在白名单里的属性会被静默丢掉。**
+    ///
+    /// 这是隐私上有意的设计（宁可漏发，不可误发），但它的失败样子很坏：
+    /// 加了一个属性、忘了加进这张表，报表上那一格永远是空的 ——
+    /// 而"空"和"没人用这个功能"长得一模一样。
+    ///
+    /// 不再是 `private`：判据要能直接问「我们真发的那些属性活得下来吗」。
+    static func allowedProperties(for event: String, properties: Payload) -> Payload {
         if event == "$identify" {
             return allowedIdentifyProperties(properties)
         }
@@ -273,6 +285,10 @@ enum Analytics {
             "generated_visual_duration_ratio",
             "generation_type",
             "imported_visual_clip_count",
+            // 他是从哪儿启动的：装好了 / 还在磁盘映像里 / 被系统挪去随机目录 / 别处。
+            // **不在这张表里的属性会被静默丢掉** —— 加事件的时候很容易忘了加这里，
+            // 而丢掉的样子和"没人用这个功能"一模一样。
+            "install",
             "interests",
             "mode",
             "model",
