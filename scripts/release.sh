@@ -65,6 +65,19 @@ fi
 
 if git rev-parse "$TAG" >/dev/null 2>&1; then
   echo "error: tag $TAG already exists locally" >&2
+  # 这个仓库是从 palmier-io/palmier-pro fork 出来的，**继承了它 fork 之前的 tag**
+  # （v0.1.0 … v0.1.9，build 8/9/10，离现在 1000 多个提交）。而 METAG 自己的
+  # 版本号又走到了 0.1.x —— 于是名字撞上，脚本第一道门就关着。
+  # 光说"已存在"没用：他不知道是自己发过，还是撞了别人的。
+  if [ "$(git rev-list --count "$TAG"..HEAD 2>/dev/null || echo 0)" -gt 500 ]; then
+    echo "       这是 fork 之前上游留下的旧 tag（离 HEAD $(git rev-list --count "$TAG"..HEAD) 个提交），不是我们发过的版本。" >&2
+  fi
+  NEXT_FREE=""
+  for n in $(seq 1 200); do
+    cand="v0.1.$n"
+    git rev-parse "$cand" >/dev/null 2>&1 || { NEXT_FREE="0.1.$n"; break; }
+  done
+  [ -n "$NEXT_FREE" ] && echo "       下一个不冲突的版本号：$NEXT_FREE" >&2
   exit 1
 fi
 
@@ -151,7 +164,13 @@ b = os.environ["NEW_BUILD"]
 d = os.environ["PUBDATE"]
 l = os.environ["LENGTH"]
 s = os.environ["SIGNATURE"]
-url = f"https://github.com/metag-ai/metag-mac/releases/download/v{v}/METAG.dmg"
+# 下载地址是 **metag.ai**，不是 GitHub。
+# 上一版写的是 https://github.com/metag-ai/metag-mac/releases/... ——
+# 那个仓库不存在（2026-09-03 实测 404），而 origin 是 metagai/mstudio。
+# 也就是说这一行会把一个死链写进 appcast，**每个用户的自动更新当场坏掉**，
+# 而在此之前没人跑完过这个脚本，所以没人撞见。
+# 线上已发布的两条（0.1.7 / 0.1.8）用的都是 metag.ai，跟着它。
+url = f"https://metag.ai/mac/METAG-{v}.dmg"
 
 item = f"""        <item>
             <title>Version {v}</title>
@@ -178,6 +197,40 @@ git add "$APPCAST"
 git commit -m "Add $TAG to appcast"
 git push origin "$DEFAULT_BRANCH"
 
+# ==> 真正的发布
+#
+# **提交到仓库不等于发布。** Sparkle 读的是 `SUFeedURL`，也就是
+# https://metag.ai/mac/appcast.xml —— 那是这台机器上的一个文件，
+# 和仓库里那份是两回事（只是长期靠人手工同步，才看起来一样）。
+# 上一版脚本到上面那行就结束了，于是**每一次"发版"都不会有任何用户收到更新**。
+PUBLISH_HOST="${PUBLISH_HOST:-yons@47.252.113.151}"
+PUBLISH_DIR="${PUBLISH_DIR:-/home/yons/metag/mac}"
+REMOTE_DMG="METAG-$VERSION.dmg"
+
+# **先传 DMG，后传 appcast。** 反过来的话，中间那几十秒里 appcast 已经在
+# 告诉所有人有新版了，而那个包还没上去 —— 他们点更新，拿到 404。
+echo "==> Uploading DMG to $PUBLISH_HOST:$PUBLISH_DIR/$REMOTE_DMG"
+scp "$DMG" "$PUBLISH_HOST:$PUBLISH_DIR/$REMOTE_DMG"
+echo "==> Uploading appcast"
+scp "$APPCAST" "$PUBLISH_HOST:$PUBLISH_DIR/appcast.xml"
+
+# **判据落在用户走的那条路上**：不问"scp 退出码是 0 吗"，
+# 问"从公网取那两个文件，拿到的是不是这一版"。
+echo "==> Verifying what a user's updater would actually see"
+LIVE_LEN="$(curl -sSI --max-time 30 "https://metag.ai/mac/$REMOTE_DMG" \
+  | tr -d '\r' | awk 'tolower($1)=="content-length:"{print $2}' | tail -1)"
+if [ "$LIVE_LEN" != "$LENGTH" ]; then
+  echo "error: https://metag.ai/mac/$REMOTE_DMG 的大小是 ${LIVE_LEN:-取不到}，appcast 里写的是 $LENGTH" >&2
+  echo "       用户点更新会拿到一个对不上签名的包。发布没有完成。" >&2
+  exit 1
+fi
+if ! curl -sS --max-time 30 https://metag.ai/mac/appcast.xml | grep -q "$REMOTE_DMG"; then
+  echo "error: 线上的 appcast 里没有 $REMOTE_DMG —— 没有人会收到这次更新" >&2
+  exit 1
+fi
+
 echo ""
 echo "==> Released $TAG"
-echo "    https://github.com/metag-ai/metag-mac/releases/tag/$TAG"
+echo "    下载：https://metag.ai/mac/$REMOTE_DMG"
+echo "    自动更新：https://metag.ai/mac/appcast.xml（已实测能取到这一版）"
+echo "    归档：$(git remote get-url origin | sed -E 's#git@github.com:#https://github.com/#; s#\.git$##')/releases/tag/$TAG"
