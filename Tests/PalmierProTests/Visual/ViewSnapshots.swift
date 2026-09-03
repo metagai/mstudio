@@ -174,6 +174,26 @@ struct ViewSnapshots {
         try snapshot("showcase-strip", width: 720) { MetagShowcaseStrip(films: films) }
     }
 
+    /// **他等的那九十秒。** 分镜先到、首帧后到，中间他看的是什么。
+    @Test func theWait() throws {
+        let narrations = [
+            "天台的门被推开，风灌进来。",
+            "她没有往下看，只是把手放在栏杆上。",
+            "远处的城市一格一格亮起来。",
+            "楼下有人按了喇叭，她笑了一下。",
+            "最后一盏灯亮起时，她转身下楼。",
+        ]
+        try snapshot("wait-story", width: 560) {
+            MetagFilmStrip(shots: 5, frames: [:], narrations: narrations)
+        }
+        let swatch = NSImage(size: NSSize(width: 160, height: 90), flipped: false) { rect in
+            NSColor.systemIndigo.setFill(); rect.fill(); return true
+        }
+        try snapshot("wait-first-frames", width: 560) {
+            MetagFilmStrip(shots: 5, frames: [0: swatch, 1: swatch], narrations: narrations)
+        }
+    }
+
     @Test func home() throws {
         try snapshot("home-hero", width: 720) { HomeHero() }
         // **侧栏底部那两行。** 创始人 2026-09-02 真机量出来：
