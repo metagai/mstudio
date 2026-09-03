@@ -122,6 +122,14 @@ extension EditorViewModel {
                 if !turns.isEmpty { files.append((asset.id, asset.url, turns)) }
             }
             Log.preview.notice("identify speakers: \(files.count) files with speaker turns")
+            // **按下去、等完、一个字都没有** —— 上一版走到这里 `files` 为空时
+            // 直接把进度清掉收工，按钮变回「Identify」，屏幕上没有任何变化。
+            // 他不知道是没声音、还是没放上时间线、还是我们没听出人来。
+            if files.isEmpty, self?.speakerIdentifyError == nil {
+                self?.speakerIdentifyError = Self.nothingToIdentify(
+                    audioClips: assets.count, onTimeline: rangesByRef.count
+                )
+            }
             self?.speakerIdentifyPhase = L10n.string("Identifying…")
             let registry = await MainActor.run { self?.speakerRegistry ?? [] }
             let result = await SpeakerIdentity.assignments(
@@ -133,6 +141,21 @@ extension EditorViewModel {
                 self.speakerIdentifyPhase = nil
             }
         }
+    }
+
+    /// 一次没认出任何人的 Identify，屏幕上该说哪一句。
+    ///
+    /// **三种"什么都没有"，他要做的事完全不同**：没素材、素材没上时间线
+    /// （只有时间线上的片段会被转写）、以及真的没人说话。
+    /// 说成同一句（或者像上一版那样一句不说）等于把问题原样退还给他。
+    nonisolated static func nothingToIdentify(audioClips: Int, onTimeline: Int) -> String {
+        if audioClips == 0 {
+            return L10n.string("No audio to work with — add a clip with sound first.")
+        }
+        if onTimeline == 0 {
+            return L10n.string("Only clips on the timeline get transcribed — drag these onto the timeline first.")
+        }
+        return L10n.string("No speech found in these clips.")
     }
 
     private func applySpeakerIdentity(files: [(mediaRef: String, url: URL, turns: [SpeakerIdentity.Turn])], result: SpeakerIdentity.Assignments) {

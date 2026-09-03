@@ -79,16 +79,35 @@ enum AgentServiceError: LocalizedError {
         }
     }
 
+    /// 网关**没按约定回错误信封**时，屏幕上写什么。
+    ///
+    /// 上一版写的是 `body.prefix(500)` —— 而不按信封回的那些情况，
+    /// body 恰恰是**最不能给人看的东西**：nginx 的 502 HTML、
+    /// 网关的堆栈、一段截断到一半的 JSON。他在聊天框里读到 500 个字符的源码。
+    ///
+    /// 原始 body 进日志，不进屏幕。状态码留在句子里 —— 它短，而且找我们时有用。
+    nonisolated static func fallbackMessage(status: Int) -> String {
+        switch status {
+        case 408, 504: return L10n.string("The request timed out. Try again.")
+        case 429: return L10n.string("Too many requests right now — give it a moment and try again.")
+        case 500...599: return L10n.string("Something went wrong on our side. Try again in a moment.")
+        default: return L10n.string("That request didn't go through (HTTP \(status)).")
+        }
+    }
+
     static func from(status: Int, body: String) -> AgentServiceError {
         let parsed = parseErrorEnvelope(body)
-        let message = parsed?.message ?? body.prefix(500).description
+        if parsed == nil, !body.isEmpty {
+            Log.agent.error("agent error body not an envelope status=\(status) body=\(body.prefix(500))")
+        }
+        let message = parsed?.message ?? fallbackMessage(status: status)
         switch parsed?.code {
         case "unauthenticated": return .unauthenticated
         case "insufficient_credits": return .insufficientCredits(message)
         default:
             if status == 401 { return .unauthenticated }
             if status == 402 { return .insufficientCredits(message) }
-            return .upstream(message.isEmpty ? "HTTP \(status)" : message)
+            return .upstream(message.isEmpty ? fallbackMessage(status: status) : message)
         }
     }
 

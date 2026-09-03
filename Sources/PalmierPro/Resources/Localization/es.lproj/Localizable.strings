@@ -884,6 +884,7 @@
 "No Tracks" = "No hay pistas";
 "No adjustments yet" = "Aún no hay ajustes";
 "No audio selected." = "No hay audio seleccionado.";
+"No audio to work with — add a clip with sound first." = "No hay audio con el que trabajar: añade primero un clip con sonido.";
 "No audio" = "No hay audio";
 "No beats detected." = "No se detectaron pulsos.";
 "No cloned voices yet." = "Aún no hay voces clonadas.";
@@ -908,6 +909,7 @@
 "No projects found" = "No se encontraron proyectos";
 "No prompt needed" = "No se necesita indicación";
 "No speech detected." = "No se detectó voz.";
+"No speech found in these clips." = "No se detectó voz en estos clips.";
 "No track" = "No hay pista";
 "No video clips" = "No hay clips de vídeo";
 "No video" = "No hay vídeo";
@@ -937,6 +939,7 @@
 "One-off purchase. Credits do not expire." = "Compra única. Los créditos no caducan.";
 "Only %@ images fit — the rest weren't added" = "Solo caben %@ imágenes: las demás no se añadieron";
 "Only available for AI-generated media" = "Solo disponible para contenido multimedia generado con IA";
+"Only clips on the timeline get transcribed — drag these onto the timeline first." = "Solo se transcriben los clips de la línea de tiempo: arrástralos allí primero.";
 "Opacity" = "Opacidad";
 "Open %@" = "Abrir %@";
 "Open Project" = "Abrir proyecto";
@@ -1266,6 +1269,7 @@
 "Smart search" = "Búsqueda inteligente";
 "Smooth" = "Suave";
 "Soft Light" = "Luz suave";
+"Something went wrong on our side. Try again in a moment." = "Algo falló de nuestro lado. Inténtalo de nuevo en un momento.";
 "Sound Effects" = "Efectos de sonido";
 "Source Audio" = "Audio de origen";
 "Source Media" = "Contenido multimedia de origen";
@@ -1351,6 +1355,7 @@
 "That is not yours to open." = "Eso no es tuyo.";
 "That job is gone — jobs are kept for 24 hours, free files for 60 minutes." = "Ese trabajo ya no está: se guardan 24 horas, y los archivos gratuitos 60 minutos.";
 "That one was made with a temporary identity that has since expired. Sign in and your films stay with you." = "Esa se hizo con una identidad temporal que ya caducó. Inicia sesión y tus películas se quedan contigo.";
+"That request didn't go through (HTTP %lld)." = "Esa solicitud no se completó (HTTP %lld).";
 "That's %@ characters over the limit. Trim it, or remove one." = "Son %@ caracteres de más. Recorta un poco o quita uno.";
 "That's the free one for today — your draft is still here. Sign in to keep it and make more." = "Esa era la gratuita de hoy; tu borrador sigue aquí. Inicia sesión para conservarlo y hacer más.";
 "The agent streams through your own Anthropic key." = "El agente transmite a través de tu propia clave de Anthropic.";
@@ -1371,6 +1376,7 @@
 "The re-shoot could not start." = "No se pudo iniciar la repetición.";
 "The re-shoot did not finish. Nothing was charged." = "La repetición no terminó. No se cobró nada.";
 "The re-shoot didn't finish. We're checking the credits — any refund shows up in credit activity." = "La repetición no se completó. Estamos revisando los créditos: cualquier reembolso aparecerá en la actividad de créditos.";
+"The request timed out. Try again." = "La solicitud agotó el tiempo de espera. Inténtalo de nuevo.";
 "The search model didn’t download — tap “Retry” above." = "El modelo de búsqueda no se descargó: toca «Reintentar» arriba.";
 "The selected model refused this request. Revise the prompt and try again." = "El modelo seleccionado rechazó esta solicitud. Revisa la indicación e inténtalo de nuevo.";
 "The selected projects will be moved to the Trash." = "Los proyectos seleccionados se trasladarán a la Papelera.";
@@ -1415,6 +1421,7 @@
 "Today's free drafts are all taken. Sign in to make your own, or come back tomorrow." = "Los borradores gratuitos de hoy se agotaron. Inicia sesión para hacer los tuyos o vuelve mañana.";
 "Toggle Agent Panel" = "Mostrar u ocultar el panel del asistente";
 "Tone" = "Tono";
+"Too many requests right now — give it a moment and try again." = "Demasiadas solicitudes ahora mismo: espera un momento e inténtalo de nuevo.";
 "Too many requests this hour — try again later." = "Demasiadas solicitudes esta hora: inténtalo más tarde.";
 "Too many requests this minute — try again in a moment." = "Demasiadas solicitudes este minuto: inténtalo en un momento.";
 "Tools" = "Herramientas";

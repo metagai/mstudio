@@ -722,6 +722,7 @@
 "No adjustments yet" = "No adjustments yet";
 "No audio" = "No audio";
 "No audio selected." = "No audio selected.";
+"No audio to work with — add a clip with sound first." = "No audio to work with — add a clip with sound first.";
 "No beats detected." = "No beats detected.";
 "No cloned voices yet." = "No cloned voices yet.";
 "No connection. Check your network and try again." = "No connection. Check your network and try again.";
@@ -744,6 +745,7 @@
 "No projects found" = "No projects found";
 "No prompt needed" = "No prompt needed";
 "No speech detected." = "No speech detected.";
+"No speech found in these clips." = "No speech found in these clips.";
 "No track" = "No track";
 "No video" = "No video";
 "No video clips" = "No video clips";
@@ -771,6 +773,7 @@
 "One-off purchase. Credits do not expire." = "One-off purchase. Credits do not expire.";
 "Only %@ images fit — the rest weren't added" = "Only %@ images fit — the rest weren't added";
 "Only available for AI-generated media" = "Only available for AI-generated media";
+"Only clips on the timeline get transcribed — drag these onto the timeline first." = "Only clips on the timeline get transcribed — drag these onto the timeline first.";
 "Opacity" = "Opacity";
 "Open" = "Open";
 "Open %@" = "Open %@";
@@ -1045,6 +1048,7 @@
 "Smart search" = "Smart search";
 "Smooth" = "Smooth";
 "Soft Light" = "Soft Light";
+"Something went wrong on our side. Try again in a moment." = "Something went wrong on our side. Try again in a moment.";
 "Sound Effects" = "Sound Effects";
 "Source" = "Source";
 "Source Audio" = "Source Audio";
@@ -1123,6 +1127,7 @@
 "That is not yours to open." = "That is not yours to open.";
 "That job is gone — jobs are kept for 24 hours, free files for 60 minutes." = "That job is gone — jobs are kept for 24 hours, free files for 60 minutes.";
 "That one was made with a temporary identity that has since expired. Sign in and your films stay with you." = "That one was made with a temporary identity that has since expired. Sign in and your films stay with you.";
+"That request didn't go through (HTTP %lld)." = "That request didn't go through (HTTP %lld).";
 "That's %@ characters over the limit. Trim it, or remove one." = "That's %@ characters over the limit. Trim it, or remove one.";
 "That's the free one for today — your draft is still here. Sign in to keep it and make more." = "That's the free one for today — your draft is still here. Sign in to keep it and make more.";
 "The assistant read your timeline" = "The assistant read your timeline";
@@ -1141,6 +1146,7 @@
 "The provider did not answer — try again in a moment." = "The provider did not answer — try again in a moment.";
 "The re-shoot could not start." = "The re-shoot could not start.";
 "The re-shoot didn't finish. We're checking the credits — any refund shows up in credit activity." = "The re-shoot didn't finish. We're checking the credits — any refund shows up in credit activity.";
+"The request timed out. Try again." = "The request timed out. Try again.";
 "The search model didn’t download — tap “Retry” above." = "The search model didn’t download — tap “Retry” above.";
 "The selected model refused this request. Revise the prompt and try again." = "The selected model refused this request. Revise the prompt and try again.";
 "The selected projects will be moved to the Trash." = "The selected projects will be moved to the Trash.";
@@ -1181,6 +1187,7 @@
 "Title Safe" = "Title Safe";
 "Today's free drafts are all taken. Sign in to make your own, or come back tomorrow." = "Today's free drafts are all taken. Sign in to make your own, or come back tomorrow.";
 "Tone" = "Tone";
+"Too many requests right now — give it a moment and try again." = "Too many requests right now — give it a moment and try again.";
 "Too many requests this hour — try again later." = "Too many requests this hour — try again later.";
 "Too many requests this minute — try again in a moment." = "Too many requests this minute — try again in a moment.";
 "Tools" = "Tools";

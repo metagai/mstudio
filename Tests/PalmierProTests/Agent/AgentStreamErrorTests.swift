@@ -28,12 +28,18 @@ struct AgentServiceErrorTests {
         }
     }
 
-    @Test func unknownStatusFallsBackToStatusText() {
+    /// body 是空的时候也要有一句人话。
+    ///
+    /// 这条原来钉着 `message == "HTTP 503"` —— 那正是当时屏幕上写的东西。
+    /// 一个纯状态码不是给人看的：他读到它既不知道发生了什么，也不知道该干什么。
+    /// 现在钉的是**这句话像话**，不是它逐字长什么样。
+    @Test func anEmptyBodyStillGetsASentence() {
         guard case .upstream(let message) = AgentServiceError.from(status: 503, body: "") else {
             Issue.record("expected upstream")
             return
         }
-        #expect(message == "HTTP 503")
+        #expect(message.count > "HTTP 503".count, "503 之后屏幕上只有一个状态码")
+        #expect(!message.isEmpty)
     }
 
     @Test func hostedAgentStaysOffUntilGatewayEndpointShips() {

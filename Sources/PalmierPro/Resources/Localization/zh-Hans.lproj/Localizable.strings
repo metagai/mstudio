@@ -886,6 +886,7 @@
 "No Tracks" = "没有轨道";
 "No adjustments yet" = "尚未进行调整";
 "No audio selected." = "未选择音频。";
+"No audio to work with — add a clip with sound first." = "没有可用的声音 —— 先添加一段有声音的素材。";
 "No audio" = "没有音频";
 "No beats detected." = "未检测到节拍。";
 "No cloned voices yet." = "还没有复刻的音色。";
@@ -910,6 +911,7 @@
 "No projects found" = "未找到项目";
 "No prompt needed" = "无需提示词";
 "No speech detected." = "未检测到语音。";
+"No speech found in these clips." = "这些片段里没听到人说话。";
 "No track" = "没有轨道";
 "No video clips" = "没有视频片段";
 "No video" = "没有视频";
@@ -939,6 +941,7 @@
 "One-off purchase. Credits do not expire." = "一次性购买。积分永不过期。";
 "Only %@ images fit — the rest weren't added" = "最多放 %@ 张图，多的没加进来";
 "Only available for AI-generated media" = "仅适用于 AI 生成的媒体";
+"Only clips on the timeline get transcribed — drag these onto the timeline first." = "只有时间线上的片段会被转写 —— 先把它们拖到时间线上。";
 "Opacity" = "不透明度";
 "Open %@" = "打开 %@";
 "Open Project" = "打开项目";
@@ -1268,6 +1271,7 @@
 "Smart search" = "智能搜索";
 "Smooth" = "平滑";
 "Soft Light" = "柔光";
+"Something went wrong on our side. Try again in a moment." = "我们这边出了点问题，稍等一下再试。";
 "Sound Effects" = "音效";
 "Source Audio" = "源音频";
 "Source Media" = "源媒体";
@@ -1353,6 +1357,7 @@
 "That is not yours to open." = "这不是你的内容。";
 "That job is gone — jobs are kept for 24 hours, free files for 60 minutes." = "这个任务已经不在了 —— 任务保留 24 小时，免费产物保留 60 分钟。";
 "That one was made with a temporary identity that has since expired. Sign in and your films stay with you." = "那一条是用上一次的临时身份建的，那个身份已经过期了。登录之后作品就一直留在你名下。";
+"That request didn't go through (HTTP %lld)." = "这次请求没成功（HTTP %lld）。";
 "That's %@ characters over the limit. Trim it, or remove one." = "超出上限 %@ 字。删掉一点，或者移走一份。";
 "That's the free one for today — your draft is still here. Sign in to keep it and make more." = "今天这条免费的用完了 —— 你那条草案还在。登录就能留住它，再拍一条。";
 "The agent streams through your own Anthropic key." = "助手通过你自己的 Anthropic 密钥流式输出。";
@@ -1373,6 +1378,7 @@
 "The re-shoot could not start." = "重拍没能开始。";
 "The re-shoot did not finish. Nothing was charged." = "重拍没有完成，没有扣费。";
 "The re-shoot didn't finish. We're checking the credits — any refund shows up in credit activity." = "这次重拍没能完成。额度我们正在核对 —— 退回会出现在额度流水里。";
+"The request timed out. Try again." = "请求超时了，再试一次。";
 "The search model didn’t download — tap “Retry” above." = "搜索模型没下载成功 —— 点上面的「重试」。";
 "The selected model refused this request. Revise the prompt and try again." = "所选模型拒绝了此请求。请修改提示词后重试。";
 "The selected projects will be moved to the Trash." = "所选项目将被移到废纸篓。";
@@ -1417,6 +1423,7 @@
 "Today's free drafts are all taken. Sign in to make your own, or come back tomorrow." = "今天的免费草案已经用完了。登录可以做自己的，或者明天再来。";
 "Toggle Agent Panel" = "显示/隐藏助手面板";
 "Tone" = "色调";
+"Too many requests right now — give it a moment and try again." = "现在请求太多了 —— 缓一下再试。";
 "Too many requests this hour — try again later." = "这一小时的请求次数太多了 —— 稍后再试。";
 "Too many requests this minute — try again in a moment." = "这一分钟的请求次数太多了 —— 稍等一下再试。";
 "Tools" = "工具";
