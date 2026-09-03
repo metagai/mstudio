@@ -187,23 +187,41 @@ s = os.environ["SIGNATURE"]
 # 线上已发布的两条（0.1.7 / 0.1.8）用的都是 metag.ai，跟着它。
 url = f"https://metag.ai/mac/METAG-{v}.dmg"
 
+# **版本号在 `<item>` 里和 `<enclosure>` 上各写一遍。**
+#
+# 看着冗余，但已发布的两条都是这个形状，而 `verify.sh` 的
+# 「已装好的那台 Mac 收得到下一版」读的正是 enclosure 上那个属性。
+# 2026-09-03 发完 0.1.9，只写了元素形式 —— 门读到的还是上一版的 0.1.8，
+# 判据对着一条**已经不是最新的**记录说"三处对不上"。
+# Sparkle 两种都认；不一致的是我们自己。
 item = f"""        <item>
             <title>Version {v}</title>
             <pubDate>{d}</pubDate>
             <sparkle:version>{b}</sparkle:version>
             <sparkle:shortVersionString>{v}</sparkle:shortVersionString>
             <sparkle:minimumSystemVersion>26.0</sparkle:minimumSystemVersion>
-            <enclosure
-                url="{url}"
-                length="{l}"
-                type="application/octet-stream"
-                sparkle:edSignature="{s}"/>
+            <enclosure url="{url}"
+                       sparkle:version="{b}"
+                       sparkle:shortVersionString="{v}"
+                       length="{l}"
+                       type="application/octet-stream"
+                       sparkle:edSignature="{s}" />
         </item>"""
 
+# **新的放最前面。**
+#
+# 上一版是 `content.replace("    </channel>", item + ...)` —— 追加到末尾。
+# Sparkle 自己取版本号最大的那条，所以它不会挑错；
+# 但这个文件的既有约定是新的在前（0.1.8、0.1.7），而
+# `verify.sh` 的「已装好的那台 Mac 收得到下一版」读的正是**第一条**。
+# 于是 2026-09-03 发完 0.1.9，门当场红：「appcast 0.1.8 · Info.plist 0.1.9」。
+#
+# 两个读法不一致，本身就是隐患 —— 统一成「最新的在最前」。
 path = "appcast.xml"
 with open(path) as f:
     content = f.read()
-content = content.replace("    </channel>", item + "\n    </channel>")
+first = content.index("        <item>")
+content = content[:first] + item + "\n" + content[first:]
 with open(path, "w") as f:
     f.write(content)
 PYEOF

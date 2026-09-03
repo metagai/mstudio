@@ -3,8 +3,10 @@
      feed（title 是 Palmier Pro、enclosure 指向 palmier-io/palmier-pro 的 release、
      最新条目 0.6.15）。往它尾巴上追加，等于把我们的版本贴在别人的更新流里。
 
-     release.sh 第 9 步是**追加**到这个文件（replace("</channel>", …)），
+     release.sh 把新条目**插到最前面**（最新的在最上），
      所以这份骨架必须留着 </channel>，且 <item> 从零开始。
+     顺序不是给 Sparkle 看的（它自己取版本号最大的那条），
+     是给 verify.sh 看的 —— 那条判据读第一条。
 
      另：清空之后，release.sh 那道「grep <sparkle:version> 取最大值」的
      build number 保护会失效一次 —— **第一版要人工确认 CFBundleVersion**。 -->
@@ -14,6 +16,19 @@
         <link>https://metag.ai/mac/appcast.xml</link>
         <description>Updates for METAG for Mac</description>
         <language>en</language>
+        <item>
+            <title>Version 0.1.9</title>
+            <pubDate>Thu, 03 Sep 2026 02:55:20 -0700</pubDate>
+            <sparkle:version>86</sparkle:version>
+            <sparkle:shortVersionString>0.1.9</sparkle:shortVersionString>
+            <sparkle:minimumSystemVersion>26.0</sparkle:minimumSystemVersion>
+            <enclosure url="https://metag.ai/mac/METAG-0.1.9.dmg"
+                       sparkle:version="86"
+                       sparkle:shortVersionString="0.1.9"
+                       length="70654605"
+                       type="application/octet-stream"
+                       sparkle:edSignature="EoVee5ceI2vMw8V15KF3uCimqcneekuhjeTJ9pHZorVVu7o08br7gF2vVVymuZRnpD6964rHf6Sw+NpY2otzCA==" />
+        </item>
         <item>
             <title>0.1.8</title>
             <pubDate>Sun, 16 Aug 2026 15:28:39 +0000</pubDate>
@@ -52,18 +67,6 @@
                        length="76970204"
                        type="application/octet-stream"
                        sparkle:edSignature="HSib6UPXS3MxepMyNAuDQ1LJcKJrgGzTnNgJxzLVt0ErBw8Pth9DSXKXt7weEOffUm5NjKCMceERxdt1MZNVDg==" />
-        </item>
-        <item>
-            <title>Version 0.1.9</title>
-            <pubDate>Thu, 03 Sep 2026 02:55:20 -0700</pubDate>
-            <sparkle:version>86</sparkle:version>
-            <sparkle:shortVersionString>0.1.9</sparkle:shortVersionString>
-            <sparkle:minimumSystemVersion>26.0</sparkle:minimumSystemVersion>
-            <enclosure
-                url="https://metag.ai/mac/METAG-0.1.9.dmg"
-                length="70654605"
-                type="application/octet-stream"
-                sparkle:edSignature="EoVee5ceI2vMw8V15KF3uCimqcneekuhjeTJ9pHZorVVu7o08br7gF2vVVymuZRnpD6964rHf6Sw+NpY2otzCA=="/>
         </item>
     </channel>
 </rss>
