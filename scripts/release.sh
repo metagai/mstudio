@@ -10,8 +10,9 @@ set -euo pipefail
 #   4. Run bundle.sh release --dist
 #   5. Commit + push version bump
 #   6. Tag + push tag
-#   7. gh release create with the DMG and notes
-#   8. Update appcast.xml + commit + push
+#   7. Update appcast.xml + commit + push
+#   8. Upload DMG then appcast to metag.ai, verify both from the public net
+#   9. Archive to GitHub (backup; a failure here does not undo the release)
 #
 # Bails out before anything public-visible if a preflight check fails.
 
@@ -21,7 +22,16 @@ if [ $# -ne 1 ]; then
 fi
 
 VERSION="$1"
-TAG="v$VERSION"
+# **我们的 tag 带 `metag-` 前缀。**
+#
+# 这个仓库从 palmier-io/palmier-pro fork 出来，继承了它 fork 之前的全部 tag：
+# `v0.1.2 … v0.1.29`、一直到 `v0.8.1`。而 METAG 自己的版本号走的也是 0.1.x ——
+# **整个命名空间被占着**，挑一个"还没被用的号"是打地鼠，而且以后每跟一次上游
+# 都可能再撞。
+#
+# 加前缀比换号好：用户看到的版本号（关于面板、appcast、下载文件名）**保持连续**，
+# 0.1.8 之后就是 0.1.9；而 tag 永远不会再和上游撞。
+TAG="metag-v$VERSION"
 
 if [[ ! "$VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
   echo "error: version must be X.Y.Z (got: $VERSION)" >&2
@@ -72,10 +82,16 @@ if git rev-parse "$TAG" >/dev/null 2>&1; then
   if [ "$(git rev-list --count "$TAG"..HEAD 2>/dev/null || echo 0)" -gt 500 ]; then
     echo "       这是 fork 之前上游留下的旧 tag（离 HEAD $(git rev-list --count "$TAG"..HEAD) 个提交），不是我们发过的版本。" >&2
   fi
+  # **从当前发布的版本往上找**，不是从 1 开始 ——
+  # 上游的 tag 有空档（0.1.24、0.1.26 没有），从头找会建议一个
+  # 比线上已发布的还低的号，Sparkle 那侧等于降级。
+  CUR="$(/usr/libexec/PlistBuddy -c "Print :CFBundleShortVersionString" "$PLIST" 2>/dev/null || echo 0.0.0)"
+  CUR_MAJOR="${CUR%%.*}"; CUR_REST="${CUR#*.}"
+  CUR_MINOR="${CUR_REST%%.*}"; CUR_PATCH="${CUR_REST#*.}"
   NEXT_FREE=""
-  for n in $(seq 1 200); do
-    cand="v0.1.$n"
-    git rev-parse "$cand" >/dev/null 2>&1 || { NEXT_FREE="0.1.$n"; break; }
+  for n in $(seq $((CUR_PATCH + 1)) $((CUR_PATCH + 200))); do
+    cand="$CUR_MAJOR.$CUR_MINOR.$n"
+    git rev-parse "metag-v$cand" >/dev/null 2>&1 || { NEXT_FREE="$cand"; break; }
   done
   [ -n "$NEXT_FREE" ] && echo "       下一个不冲突的版本号：$NEXT_FREE" >&2
   exit 1
@@ -95,7 +111,9 @@ fi
 echo "==> Generating release notes from commit log"
 NOTES_CLEAN="$(mktemp -t metag-release.XXXXXX).md"
 trap 'rm -f "$NOTES_CLEAN"' EXIT
-LAST_TAG="$(git describe --tags --abbrev=0 2>/dev/null || echo '')"
+# **只认我们自己的 tag。** 不加 --match 的话它会挑到上游那些（离这里一千多个
+# 提交），于是 release notes 从 fork 之前开始列，一千条。
+LAST_TAG="$(git describe --tags --abbrev=0 --match 'metag-v*' 2>/dev/null || echo '')"
 {
   echo "## What's new"
   echo ""
@@ -150,9 +168,6 @@ git push origin "$DEFAULT_BRANCH"
 echo "==> Tagging $TAG"
 git tag "$TAG"
 git push origin "$TAG"
-
-echo "==> Creating GH release"
-gh release create "$TAG" "$DMG" --title "$TAG" --notes-file "$NOTES_CLEAN"
 
 echo "==> Updating appcast.xml"
 PUBDATE="$(date -R)"
@@ -227,6 +242,19 @@ fi
 if ! curl -sS --max-time 30 https://metag.ai/mac/appcast.xml | grep -q "$REMOTE_DMG"; then
   echo "error: 线上的 appcast 里没有 $REMOTE_DMG —— 没有人会收到这次更新" >&2
   exit 1
+fi
+
+# **归档放最后，而且不许它挡路。**
+#
+# 上一版把 `gh release create` 排在 appcast 和上传**之前**：GitHub 抖一下
+# （或者 77MB 传到一半断了），脚本就在 tag 已经推上去、而用户什么都没收到的
+# 状态下退出 —— 而重跑会撞"tag 已存在"，人被卡在中间。
+#
+# 用户拿片子靠 metag.ai，GitHub 这份只是异地备份。**备份失败不该拦住交付。**
+echo "==> Archiving to GitHub (备份，失败不影响已完成的发布)"
+if ! gh release create "$TAG" "$DMG" --title "$TAG" --notes-file "$NOTES_CLEAN"; then
+  echo "!! GitHub 归档没成功 —— **发布本身已经完成**（上面那两条公网校验是绿的）。" >&2
+  echo "   补一次：gh release create $TAG $DMG --title $TAG" >&2
 fi
 
 echo ""
