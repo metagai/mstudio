@@ -164,7 +164,7 @@ enum Analytics {
         // 开发期就炸出来。生产里静默丢是有意的（隐私），
         // 但**忘了往白名单里加**这件事不该等到看报表才发现。
         assert(properties.keys.allSatisfy { allowedCapturePropertyKeys.contains($0) },
-               "这些属性不在 allowedCapturePropertyKeys 里，会被静默丢掉："
+               "properties missing from allowedCapturePropertyKeys will be dropped silently: "
                + properties.keys.filter { !allowedCapturePropertyKeys.contains($0) }.joined(separator: ", "))
         guard let data = try? JSONSerialization.data(withJSONObject: properties) else { return false }
         captureQueue.async {

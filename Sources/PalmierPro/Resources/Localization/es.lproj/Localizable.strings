@@ -1,31 +1,16 @@
 /* Generated from app-owned UI copy. Translate values only in other locales. */
-
-
 /* --- METAG --- */
-
 /* --- METAG --- */
-
 /* --- METAG --- */
-
 /* --- METAG --- */
-
 /* 引导流程（Onboarding，上游 94394bb）*/
-
 // 声音复刻与配音
-
 // 择优 / 改图 / 找亮点
-
 // 常见失败的可行动文案
-
 // 草案 / 额度 / 作品面板
-
 // 草案各阶段
-
 // 频控文案
-
 // 免费试渲一镜 / 档位
-
-
 /* 补齐（2026-09-01）*/
 "$%.2f" = "$%.2f";
 "$%.2f/mo" = "$%.2f/mes";
@@ -112,21 +97,17 @@
 "= %lld credits" = "= %lld créditos";
 "= 1 credit" = "= 1 crédito";
 "A courier bikes through Tokyo rain at night" = "Un mensajero cruza en bici la lluvia de Tokio de noche";
-"A video editor built for AI. Generate, and edit all in one place." = "Un editor de vídeo creado para la IA. Genera y edita en un solo lugar.";
 "A video editor built for AI. Generate, and edit all in one place." = "Un editor de vídeo hecho para la IA: generar y editar, en un mismo sitio.";
 "A woman folds laundry in an empty laundromat, warm afternoon light" = "Una mujer dobla la ropa en una lavandería vacía, luz cálida de la tarde";
 "A woman in a laundromat, warm afternoon light" = "Una mujer en una lavandería, luz cálida de la tarde";
 "AI Audio" = "Audio con IA";
 "AI Chat" = "Chat con IA";
 "AI Edit" = "Edición con IA";
-"AI Edit" = "Edición con IA";
 "AI Enhance" = "Mejora con IA";
 "AI Generated" = "Generado con IA";
 "AI agent" = "Agente de IA";
 "AI is unavailable" = "La IA no está disponible";
-"AI transcription" = "AI transcription";
 "AI transcription" = "Transcripción con IA";
-"AI videos" = "AI videos";
 "AI videos" = "Vídeos con IA";
 "AI" = "IA";
 "About %@" = "Acerca de %@";
@@ -168,15 +149,11 @@
 "Added to %@" = "Añadido a %@";
 "Adjust Range" = "Ajustar intervalo";
 "Adjust" = "Ajustar";
-"Adjust" = "Ajustar";
 "Adobe Premiere Pro" = "Adobe Premiere Pro";
-"Ads and branded content" = "Ads and branded content";
 "Ads and branded content" = "Anuncios y contenido de marca";
 "Agent Mode" = "Modo Agente";
 "Agent Panel" = "Panel del agente";
-"Agent Panel" = "Panel del agente";
 "Agent" = "Agente";
-"Agentic editing" = "Agentic editing";
 "Agentic editing" = "Edición con agentes";
 "Alignment" = "Alineación";
 "All %@ shots are in. Cutting them together." = "Ya están los %@ planos. Los estoy montando.";
@@ -187,13 +164,11 @@
 "Analyzing media so you can search it." = "Analizando el contenido multimedia para que puedas buscarlo.";
 "Angle" = "Ángulo";
 "Animate" = "Animar";
-"Animate" = "Animar";
 "Animation" = "Animación";
 "Another Composition" = "Otra composición";
 "Anthropic API Key" = "Clave de API de Anthropic";
 "Anything specific? e.g. 3 clips, 10 seconds each" = "¿Algo concreto? p. ej. 3 clips de 10 segundos";
 "App version %@ and macOS %@ are included." = "Se incluyen la versión %@ de la app y macOS %@.";
-"Appearance" = "Apariencia";
 "Appearance" = "Apariencia";
 "Applies immediately. Dark is easier on the eyes for long sessions." = "Se aplica al instante. El modo oscuro cansa menos la vista en sesiones largas.";
 "Applies immediately. Untranslated text falls back to English." = "Se aplica de inmediato. El texto sin traducir vuelve al inglés.";
@@ -214,7 +189,6 @@
 "Auto" = "Automático";
 "Available in METAG Studio only" = "Solo disponible en METAG Studio";
 "Available" = "Disponible";
-"Back" = "Atrás";
 "Back" = "Atrás";
 "Background" = "Fondo";
 "Basic Correction" = "Corrección básica";
@@ -265,7 +239,6 @@
 "Caption %@" = "Subtítulo %@";
 "Captions will look like this" = "Los subtítulos tendrán este aspecto";
 "Captions" = "Subtítulos";
-"Captions" = "Subtítulos";
 "Capture Frame to Media" = "Capturar fotograma en Multimedia";
 "Captured %@. The destination folder was removed, so the frame was saved at the top level of Media." = "%@ capturado. La carpeta de destino se eliminó, así que el fotograma se guardó en el nivel superior de Multimedia.";
 "Captured %@." = "%@ capturado.";
@@ -311,7 +284,6 @@
 "Clear cache" = "Borrar caché";
 "Clear index" = "Borrar índice";
 "Clear search" = "Borrar búsqueda";
-"Clearing…" = "Borrando…";
 "Clearing…" = "Limpiando…";
 "Click Generate to open the generation panel." = "Haz clic en Generar para abrir el panel de generación.";
 "Click to install update" = "Haz clic para instalar la actualización";
@@ -345,11 +317,8 @@
 "Connect an agent" = "Conectar un agente";
 "Connect an external agent to inspect and edit the open %@ project. The server listens on this Mac only and requires the access token below." = "Conecta un agente externo para inspeccionar y editar el proyecto de %@ abierto. El servidor solo escucha en este Mac y requiere el token de acceso de abajo.";
 "Connect an external agent to inspect and edit the open Palmier Pro project." = "Conecta un agente externo para inspeccionar y editar el proyecto de Palmier Pro abierto.";
-"Content creator" = "Content creator";
 "Content creator" = "Creador de contenido";
 "Content" = "Contenido";
-"Content" = "Contenido";
-"Continue" = "Continuar";
 "Continue" = "Continuar";
 "Contrast" = "Contraste";
 "Copied" = "Copiado";
@@ -357,7 +326,6 @@
 "Copy message" = "Copiar mensaje";
 "Copy one clip of the same type and try again." = "Copia un clip del mismo tipo e inténtalo de nuevo.";
 "Copy prompt" = "Copiar indicación";
-"Copy" = "Copiar";
 "Copy" = "Copiar";
 "Corner Radius" = "Radio de esquina";
 "Could not install the on-device speech model: %@" = "No se pudo instalar el modelo de voz en el dispositivo: %@";
@@ -396,11 +364,9 @@
 "Custom…" = "Personalizado…";
 "Cut to the beat" = "Cortar al ritmo";
 "Cut" = "Cortar";
-"Cut" = "Cortar";
 "Cutting it together" = "Montando el corte";
 "DaVinci Resolve" = "DaVinci Resolve";
 "Dark appearance" = "Apariencia oscura";
-"Dark" = "Oscuro";
 "Dark" = "Oscuro";
 "Darken" = "Oscurecer";
 "Date Added" = "Fecha de adición";
@@ -422,7 +388,6 @@
 "Delete “%@”" = "Eliminar “%@”";
 "Delete “%@”?" = "¿Eliminar “%@”?";
 "Delete" = "Eliminar";
-"Delete" = "Eliminar";
 "Deliver" = "Entregar";
 "Denoise failed. Playback uses the original audio — adjust Strength to retry." = "No se pudo reducir el ruido. La reproducción usa el audio original. Ajusta la intensidad para volver a intentarlo.";
 "Denoise" = "Reducir ruido";
@@ -440,7 +405,6 @@
 "Descript" = "Descript";
 "Description" = "Descripción";
 "Deselect & Reset Tool" = "Anular selección y restablecer herramienta";
-"Designer" = "Designer";
 "Designer" = "Diseñador";
 "Destination" = "Destino";
 "Detail" = "Detalle";
@@ -500,14 +464,12 @@
 "Edit with a sentence" = "Editar con una frase";
 "Edit with a sentence…" = "Editar con una frase…";
 "Edit · %@ credits" = "Editar · %@ créditos";
-"Edit" = "Edición";
 "Edit" = "Editar";
 "Edited · %@ credits" = "Editada · %@ créditos";
 "Editing" = "Editando";
 "Editor" = "Montaje";
 "Edit… (Paid)" = "Editar… (De pago)";
 "Edit…" = "Editar…";
-"Education and tutorials" = "Educación y tutoriales";
 "Education and tutorials" = "Education and tutorials";
 "Effects" = "Efectos";
 "Email (optional)" = "Correo electrónico (opcional)";
@@ -517,7 +479,6 @@
 "Enhance resolution or frame rate with AI" = "Mejorar la resolución o la frecuencia de fotogramas con IA";
 "Enhance" = "Mejorar";
 "Enhanced with FLUX.3 at 1080p." = "Mejorado con FLUX.3 a 1080p.";
-"Enter Full Screen" = "Entrar en pantalla completa";
 "Enter Full Screen" = "Usar pantalla completa";
 "Estimated cost. Actual billing may differ slightly." = "Coste estimado. La facturación real puede variar ligeramente.";
 "Every paid step quotes first. Nothing is billed until you approve." = "Cada paso de pago se cotiza antes. No se cobra nada hasta que lo apruebes.";
@@ -531,10 +492,8 @@
 "Export complete" = "Exportación completada";
 "Export failed" = "Error de exportación";
 "Export" = "Exportar";
-"Export" = "Exportar";
 "Export, %lld active, %lld waiting" = "Exportación: %lld activas, %lld en espera";
 "Exporting…" = "Exportando…";
-"Export…" = "Exportar…";
 "Export…" = "Exportar…";
 "Exposure" = "Exposición";
 "Extend" = "Extender";
@@ -544,7 +503,6 @@
 "FLUX Enhance" = "FLUX Enhance";
 "Fade In" = "Fundido de entrada";
 "Fade Out" = "Fundido de salida";
-"Failed" = "Error";
 "Failed" = "Fallida";
 "Feather" = "Calado";
 "Featured" = "Destacadas";
@@ -556,13 +514,11 @@
 "File Type" = "Tipo de archivo";
 "File missing" = "Falta el archivo";
 "File" = "Archivo";
-"File" = "Archivo";
 "Files" = "Archivos";
 "Fill prompt" = "Indicación de relleno";
 "Fill" = "Relleno";
 "Film Grain" = "Grano de película";
 "Film" = "Película";
-"Filmmaker" = "Cineasta";
 "Filmmaker" = "Filmmaker";
 "Filter markers by status" = "Filtrar marcadores por estado";
 "Final Cut Pro" = "Final Cut Pro";
@@ -591,7 +547,6 @@
 "For" = "Para";
 "Format References" = "Referencias de formato";
 "Forward" = "Adelante";
-"Founder" = "Founder";
 "Founder" = "Fundador";
 "Frame Rate" = "Frecuencia de fotogramas";
 "Frames are landing, still writing the narration…" = "Van llegando los fotogramas; aún se escribe la narración…";
@@ -650,7 +605,6 @@
 "Hard Light" = "Luz intensa";
 "Height" = "Altura";
 "Help" = "Ayuda";
-"Help" = "Ayuda";
 "Hide Guides" = "Ocultar guías";
 "Hide Info" = "Ocultar información";
 "Hide Timeline Tabs" = "Ocultar pestañas de línea de tiempo";
@@ -660,7 +614,6 @@
 "Highlight Block" = "Bloque resaltado";
 "Highlight" = "Resaltar";
 "Highlights" = "Zonas claras";
-"Hobbyist" = "Aficionado";
 "Hobbyist" = "Hobbyist";
 "Hold" = "Mantener";
 "Hourly limit reached. Try again later." = "Has alcanzado el límite por hora. Inténtalo más tarde.";
@@ -678,7 +631,6 @@
 "Image" = "Imagen";
 "Images and text files only" = "Solo imágenes y archivos de texto";
 "Import Media" = "Importar contenido multimedia";
-"Import Media…" = "Importar contenido multimedia…";
 "Import Media…" = "Importar medios…";
 "Import Recipe…" = "Importar receta…";
 "Import footage" = "Importar material";
@@ -690,9 +642,7 @@
 "Indexing %lld/%lld" = "Indexando %lld/%lld";
 "Input" = "Entrada";
 "Insets" = "Márgenes";
-"Inspector Panel" = "Panel de inspector";
 "Inspector Panel" = "Panel del inspector";
-"Inspector" = "Inspector";
 "Inspector" = "Inspector";
 "Instagram Edits" = "Instagram Edits";
 "Instagram" = "Instagram";
@@ -709,7 +659,6 @@
 "Installed" = "Instalado";
 "Instructions" = "Instrucciones";
 "Instrumental" = "Instrumental";
-"Integration with your own agent" = "Integración con tu propio agente";
 "Integration with your own agent" = "Integration with your own agent";
 "Integrations" = "Integraciones";
 "Intensity" = "Intensidad";
@@ -727,7 +676,6 @@
 "Keeps this much audio before and after detected speech." = "Conserva esta cantidad de audio antes y después de la voz detectada.";
 "Kept in ~/Library/Application Support/METAG/mcp-token, readable only by you. The bundled Claude Desktop connector reads it automatically." = "Se guarda en ~/Library/Application Support/METAG/mcp-token y solo tú puedes leerlo. El conector de Claude Desktop lo lee automáticamente.";
 "Kept the %@ shots that rendered before this one failed." = "Se conservaron las %@ tomas que sí se renderizaron antes del fallo.";
-"Keyboard Shortcuts" = "Atajos de teclado";
 "Keyboard Shortcuts" = "Funciones rápidas de teclado";
 "Keyframes" = "Fotogramas clave";
 "LUTs" = "LUT";
@@ -736,7 +684,6 @@
 "Language" = "Idioma";
 "Large" = "Grande";
 "Last Frame" = "Último fotograma";
-"Layout" = "Disposición";
 "Layout" = "Disposición";
 "Left" = "Izquierda";
 "Length of the generated music. It's placed at the playhead, or at the marked range start." = "Duración de la música generada. Se coloca en el cabezal de reproducción o al inicio del intervalo marcado.";
@@ -749,7 +696,6 @@
 "Library" = "Biblioteca";
 "Lift" = "Realce";
 "Light appearance" = "Apariencia clara";
-"Light" = "Claro";
 "Light" = "Claro";
 "Lighten" = "Aclarar";
 "Line Spacing" = "Interlineado";
@@ -784,8 +730,6 @@
 "Local" = "Local";
 "Log in for 250 free credits" = "Inicia sesión para obtener 250 créditos gratis";
 "Log in for free credits (no number)" = "Inicia sesión y obtén créditos gratis";
-"Log in for free credits (no number)" = "Inicia sesión y obtén créditos gratis";
-"Log in for free credits" = "Inicia sesión y obtén %@ créditos gratis";
 "Log in for free credits" = "Inicia sesión y obtén %@ créditos gratis";
 "Looking for the good parts…" = "Buscando lo mejor…";
 "Low" = "Bajo";
@@ -793,13 +737,13 @@
 "Luminosity" = "Luminosidad";
 "Lyrics (optional). [Verse] and [Chorus] tags supported." = "Letra (opcional). Se admiten las etiquetas [Verse] y [Chorus].";
 "MCP Instructions" = "Instrucciones de MCP";
-"MCP Instructions" = "Instrucciones de MCP";
 "MCP Server" = "Servidor MCP";
 "MCP Setup" = "Configuración de MCP";
 "METAG Project" = "Proyecto METAG";
 "METAG picks how many shots" = "METAG decide cuántas tomas";
 "METAG request failed (%@)." = "La solicitud a METAG falló (%@).";
 "METAG request failed." = "La solicitud a METAG falló.";
+"Made with METAG" = "Hecho con METAG";
 "Main + Sidebar" = "Principal + barra lateral";
 "Make vertical shorts" = "Crear shorts verticales";
 "Manage credits" = "Gestionar créditos";
@@ -814,7 +758,6 @@
 "Marker %lld" = "Marcador %lld";
 "Marker name" = "Nombre del marcador";
 "Markers" = "Marcadores";
-"Marketer" = "Especialista en marketing";
 "Marketer" = "Marketer";
 "Master Audio Meter" = "Medidor de audio maestro";
 "Master — defines the group's clock and transcript." = "Maestro: define el reloj y la transcripción del grupo.";
@@ -826,17 +769,14 @@
 "Max plan" = "Plan Max";
 "Max words" = "Máximo de palabras";
 "Max" = "Máx.";
-"Maximize Focused Panel" = "Maximizar el panel activo";
 "Maximize Focused Panel" = "Maximizar panel seleccionado";
 "Measuring the audio…" = "Analizando el audio…";
 "Media Offline" = "Contenido multimedia sin conexión";
-"Media Panel" = "Panel de medios";
 "Media Panel" = "Panel multimedia";
 "Media indexing" = "Indexación multimedia";
 "Media panel" = "Panel multimedia";
 "Media search" = "Búsqueda multimedia";
 "Media workspace layout" = "Disposición multimedia del espacio de trabajo";
-"Media" = "Medios";
 "Media" = "Multimedia";
 "Medium" = "Mediano";
 "Mic" = "Micrófono";
@@ -859,10 +799,8 @@
 "Move playhead inside the clip" = "Mueve el cabezal de reproducción dentro del clip";
 "Move to Folder" = "Mover a carpeta";
 "Multicam" = "Multicámara";
-"Multicam" = "Multicámara";
 "Multilingual" = "Multilingüe";
 "Multiply" = "Multiplicar";
-"Music" = "Música";
 "Music" = "Música";
 "My Projects" = "Mis proyectos";
 "My films" = "Mis películas";
@@ -871,7 +809,6 @@
 "Narrator voice" = "Voz del narrador";
 "Nest settings discarded. Undo to restore." = "Se descartaron los ajustes de anidamiento. Deshaz la acción para restaurarlos.";
 "New Folder" = "Nueva carpeta";
-"New Folder" = "Nueva carpeta";
 "New Project" = "Nuevo proyecto";
 "New Skill" = "Nueva habilidad";
 "New chat" = "Nuevo chat";
@@ -879,7 +816,6 @@
 "New take is in the timeline." = "La nueva toma ya está en la línea de tiempo.";
 "New timeline" = "Nueva línea de tiempo";
 "New version available" = "Hay una versión nueva disponible";
-"New" = "Nuevo";
 "New" = "Nuevo";
 "Newer timeline format with better support for DaVinci Resolve and Final Cut Pro. Supports basic edits, keyframes, and text, but not color, effects, edge softness, or edge rounding." = "Formato de línea de tiempo más reciente con mayor compatibilidad con DaVinci Resolve y Final Cut Pro. Admite ediciones básicas, fotogramas clave y texto, pero no color, efectos, suavidad de bordes ni redondeo de bordes.";
 "Next" = "Siguiente";
@@ -960,13 +896,10 @@
 "Opening Google…" = "Abriendo Google…";
 "Opening…" = "Abriendo…";
 "Open…" = "Abrir…";
-"Open…" = "Abrir…";
 "Or use your own Anthropic key in Settings." = "O usa tu propia clave de Anthropic en Ajustes.";
 "Organize with Agent" = "Organizar con Agente";
 "Original FPS" = "FPS originales";
 "Original" = "Original";
-"Original" = "Original";
-"Other" = "Other";
 "Other" = "Otro";
 "Our side had trouble making this one — try again in a few minutes." = "Esta no salió por un problema nuestro: inténtalo de nuevo en unos minutos.";
 "Our side had trouble making this one. Nothing was charged — try again in a few minutes." = "El problema fue nuestro. No se cobró nada: inténtalo de nuevo en unos minutos.";
@@ -983,7 +916,6 @@
 "Palmier loaded this clip's source file but couldn't prepare it for playback. The file may be corrupt or in an unsupported format." = "Palmier cargó el archivo de origen de este clip, pero no pudo prepararlo para reproducirlo. Puede que el archivo esté dañado o tenga un formato no compatible.";
 "Paste Clip Settings" = "Pegar ajustes del clip";
 "Paste Settings" = "Pegar ajustes";
-"Paste" = "Pegar";
 "Paste" = "Pegar";
 "Path" = "Ruta";
 "Payment may still be processing — your balance will update on its own. You can check credit activity any time." = "El pago puede seguir procesándose: tu saldo se actualizará solo. Puedes ver la actividad de créditos cuando quieras.";
@@ -1005,7 +937,6 @@
 "Playback previews, waveforms, filmstrip thumbnails, and transcripts. Safe to clear; files rebuild as needed." = "Previsualizaciones de reproducción, formas de onda, miniaturas de tira de película y transcripciones. Se pueden borrar sin riesgo; los archivos se regeneran cuando se necesitan.";
 "Playback" = "Reproducción";
 "Podcast" = "Podcast";
-"Podcast" = "Podcast";
 "Pointer (V)" = "Puntero (V)";
 "Pop In" = "Entrada emergente";
 "Portrait (9:16)" = "Vertical (9:16)";
@@ -1020,7 +951,6 @@
 "Produce · %@ credits" = "Producir · %@ créditos";
 "Produce" = "Producir";
 "Producing this will cost about %@ credits" = "Producir esto costará unos %@ créditos";
-"Product demos" = "Demos de producto";
 "Product demos" = "Product demos";
 "Product site, e.g. https://your-product.com" = "Sitio del producto, p. ej. https://tu-producto.com";
 "Project Activity" = "Actividad del proyecto";
@@ -1058,7 +988,6 @@
 "Redo %@ shots" = "Rehacer %@ tomas";
 "Redo (⇧⌘Z)" = "Rehacer (⇧⌘Z)";
 "Redo the edited shots" = "Rehacer las tomas editadas";
-"Redo" = "Rehacer";
 "Redo" = "Rehacer";
 "Reference Image" = "Imagen de referencia";
 "Reference footage would have to leave this Mac, and METAG doesn't upload your footage. Text and a first frame both work." = "El material de referencia tendría que salir de este Mac, y METAG no sube tu material. Puedes usar texto o un primer fotograma.";
@@ -1130,7 +1059,6 @@
 "Review" = "Revisión";
 "Right" = "Derecha";
 "Ripple Delete Gap" = "Eliminar hueco y desplazar";
-"Ripple Delete" = "Eliminar con arrastre";
 "Ripple Delete" = "Eliminar y cerrar hueco";
 "Ripple Insert" = "Inserción con desplazamiento";
 "Ripple Timeline Markers" = "Desplazar marcadores con la edición";
@@ -1144,20 +1072,17 @@
 "Sample Key Color" = "Muestrear color clave";
 "Sample Project" = "Proyecto de muestra";
 "Sample key color" = "Muestrear color clave";
-"Sample project couldn’t be opened. Try again." = "No se pudo abrir el proyecto de ejemplo. Inténtalo de nuevo.";
 "Sample project couldn’t be opened. Try again." = "No se pudo abrir el proyecto de muestra. Vuelve a intentarlo.";
 "Sample shot is rendering — it appears in the draft when ready." = "Renderizando la muestra: aparecerá en el borrador cuando esté lista.";
 "Sat" = "Sat.";
 "Saturation" = "Saturación";
 "Save As" = "Guardar como";
 "Save As…" = "Guardar como…";
-"Save As…" = "Guardar como…";
 "Save Changes" = "Guardar cambios";
 "Save Range as Media" = "Guardar intervalo como contenido multimedia";
 "Save as Audio" = "Guardar como audio";
 "Save as Media" = "Guardar como contenido multimedia";
 "Save this project to view activity" = "Guarda este proyecto para ver la actividad";
-"Save" = "Guardar";
 "Save" = "Guardar";
 "Saves a copy of this project with all media bundled inside, so it opens on any machine." = "Guarda una copia de este proyecto con todos los archivos multimedia incluidos para que se pueda abrir en cualquier equipo.";
 "Say what you want to film, in one line" = "Di en una línea qué quieres filmar";
@@ -1184,10 +1109,7 @@
 "See your film first" = "Mira tu película primero";
 "Select All Clips on Track" = "Seleccionar todos los clips de la pista";
 "Select All" = "Seleccionar todo";
-"Select All" = "Seleccionar todo";
 "Select Forward on All Tracks" = "Seleccionar hacia delante en todas las pistas";
-"Select Forward on All Tracks" = "Seleccionar hacia delante en todas las pistas";
-"Select Forward on Track" = "Seleccionar hacia delante en la pista";
 "Select Forward on Track" = "Seleccionar hacia delante en la pista";
 "Select Range" = "Seleccionar intervalo";
 "Select compatible clips and paste settings again." = "Selecciona clips compatibles y vuelve a pegar los ajustes.";
@@ -1219,7 +1141,6 @@
 "Share usage data" = "Compartir datos de uso";
 "Share" = "Compartir";
 "Sharpen" = "Nitidez";
-"Short-form and social" = "Formato corto y redes sociales";
 "Short-form and social" = "Short-form and social";
 "Shortcuts" = "Funciones rápidas";
 "Shot %@ narration" = "Narración del plano %@";
@@ -1234,7 +1155,6 @@
 "Show reasoning" = "Mostrar razonamiento";
 "Side by Side" = "Lado a lado";
 "Sign In to Start" = "Inicia sesión para empezar";
-"Sign In" = "Iniciar sesión";
 "Sign In" = "Iniciar sesión";
 "Sign in and your films stay with you" = "Inicia sesión y tus películas te acompañan";
 "Sign in to METAG to generate." = "Inicia sesión en METAG para generar.";
@@ -1252,7 +1172,6 @@
 "Sign in with Google" = "Iniciar sesión con Google";
 "Sign in" = "Iniciar sesión";
 "Sign out" = "Cerrar sesión";
-"Sign-in couldn’t be completed. Try again." = "No se pudo completar el inicio de sesión. Vuelve a intentarlo.";
 "Sign-in couldn’t be completed. Try again." = "No se pudo completar el inicio de sesión.";
 "Sign-in didn't go through — try again" = "No se pudo iniciar sesión: inténtalo de nuevo";
 "Signed in" = "Sesión iniciada";
@@ -1270,7 +1189,6 @@
 "Skip Backward" = "Saltar hacia atrás";
 "Skip Forward" = "Saltar hacia delante";
 "Skip" = "Omitir";
-"Skip" = "Omitir";
 "Slide Up" = "Deslizar hacia arriba";
 "Small" = "Pequeño";
 "Smart search" = "Búsqueda inteligente";
@@ -1286,11 +1204,9 @@
 "Speech Padding" = "Margen de voz";
 "Speech is detected on-device in the background. Dims quiet, speech-free spans on timeline waveforms." = "La voz se detecta en segundo plano en el dispositivo. Atenúa los intervalos silenciosos sin voz en las formas de onda de la línea de tiempo.";
 "Speech" = "Voz";
-"Speech" = "Voz";
 "Speed" = "Velocidad";
 "Spill" = "Derrame";
 "Split at Playhead (⌘K)" = "Dividir en el cabezal de reproducción (⌘K)";
-"Split at Playhead" = "Dividir en el cabezal de reproducción";
 "Split at Playhead" = "Dividir en el cabezal";
 "Spoken" = "Hablado";
 "Square (1:1)" = "Cuadrado (1:1)";
@@ -1314,7 +1230,6 @@
 "Streaming through your Anthropic API key (BYOK)" = "Transmitiendo mediante tu clave de API de Anthropic (BYOK)";
 "Streaming through your OpenAI API key (BYOK)" = "Transmitiendo mediante tu clave de API de OpenAI (BYOK)";
 "Strikethrough" = "Tachado";
-"Student" = "Estudiante";
 "Student" = "Student";
 "Style instructions (optional). e.g., warm and slow, British accent." = "Instrucciones de estilo (opcional). Por ejemplo: cálido y lento, acento británico.";
 "Style" = "Estilo";
@@ -1341,7 +1256,6 @@
 "System" = "Sistema";
 "Take a screenshot of the preview and use it as a reference for generation. Particularly useful for creating AI transitions." = "Captura la previsualización y úsala como referencia para la generación. Resulta especialmente útil para crear transiciones con IA.";
 "Target Language" = "Idioma de destino";
-"Tell us about your work" = "Cuéntanos sobre tu trabajo";
 "Tell us about your work" = "Cuéntanos sobre tu trabajo";
 "Temperature" = "Temperatura";
 "Template" = "Plantilla";
@@ -1422,7 +1336,6 @@
 "Timeline Format" = "Formato de línea de tiempo";
 "Timeline colors" = "Colores de la línea de tiempo";
 "Timeline" = "Línea de tiempo";
-"Timeline" = "Línea de tiempo";
 "Timelines" = "Líneas de tiempo";
 "Tint" = "Tinte";
 "Tints waveforms by speaker. Voices are matched across clips using cloud transcripts." = "Colorea las formas de onda según el hablante. Las voces se comparan entre clips mediante transcripciones en la nube.";
@@ -1455,10 +1368,8 @@
 "Translate" = "Traducir";
 "Trim (T)" = "Recortar (T)";
 "Trim End to Playhead (W)" = "Recortar final hasta el cabezal de reproducción (W)";
-"Trim End to Playhead" = "Recortar el final hasta el cabezal";
 "Trim End to Playhead" = "Recortar final hasta el cabezal de reproducción";
 "Trim Start to Playhead (Q)" = "Recortar inicio hasta el cabezal de reproducción (Q)";
-"Trim Start to Playhead" = "Recortar el inicio hasta el cabezal";
 "Trim Start to Playhead" = "Recortar inicio hasta el cabezal de reproducción";
 "Try Again" = "Volver a intentarlo";
 "Try again" = "Reintentar";
@@ -1466,7 +1377,6 @@
 "Try another search." = "Prueba con otra búsqueda.";
 "Turn off to save %lld%% on generation cost." = "Desactiva esta opción para ahorrar un %lld%% en el coste de generación.";
 "Turn off to skip audio generation." = "Desactiva esta opción para omitir la generación de audio.";
-"Tutorial" = "Tutorial";
 "Tutorial" = "Tutorial";
 "Two friends open a bakery in a small town" = "Dos amigas abren una panadería en un pueblo pequeño";
 "Type" = "Tipo";
@@ -1477,7 +1387,6 @@
 "Unable to save skill" = "No se puede guardar la habilidad";
 "Underline" = "Subrayado";
 "Undo (⌘Z)" = "Deshacer (⌘Z)";
-"Undo" = "Deshacer";
 "Undo" = "Deshacer";
 "Ungroup Multicam" = "Desagrupar multicámara";
 "Unlink" = "Desvincular";
@@ -1513,16 +1422,13 @@
 "Vertical" = "Vertical";
 "Vibrance" = "Vivacidad";
 "Video Ref" = "Ref. de vídeo";
-"Video automation" = "Automatización de vídeo";
 "Video automation" = "Video automation";
-"Video editor" = "Editor de vídeo";
 "Video editor" = "Video editor";
 "Video has no audio track" = "El vídeo no tiene pista de audio";
 "Video to Music" = "Vídeo a música";
 "Video" = "Vídeo";
 "View Skills" = "Ver habilidades";
 "View plans" = "Ver planes";
-"View" = "Visualización";
 "View" = "Visualización";
 "Vignette" = "Viñeta";
 "Visual search isn’t set up yet — tap “Smart search” above to download the on-device model." = "La búsqueda visual aún no está lista: toca «Búsqueda inteligente» arriba para descargar el modelo local.";
@@ -1535,14 +1441,12 @@
 "Voice “%@” is ready — %@ credits" = "La voz «%@» está lista — %@ créditos";
 "Voice “%@” is ready" = "La voz «%@» está lista";
 "Voice" = "Voz";
-"Voice" = "Voz";
 "Voiceover added to your media" = "Locución añadida a tus medios";
 "Voices & Voiceover…" = "Voces y locución…";
 "Volume" = "Volumen";
 "WAV, MP3 or M4A · up to 16 MB" = "WAV, MP3 o M4A · hasta 16 MB";
 "Waiting for you to finish in your browser." = "Termina de iniciar sesión en el navegador.";
 "Warmth" = "Calidez";
-"Watch the tutorial or start creating." = "Mira el tutorial o empieza a crear.";
 "Watch the tutorial or start creating." = "Ve el tutorial o empieza a crear.";
 "We may email you for follow-up questions" = "Podemos enviarte un correo electrónico con preguntas adicionales";
 "We read every message and may reach out at %@." = "Leemos todos los mensajes y podemos ponernos en contacto contigo en %@.";
@@ -1553,13 +1457,9 @@
 "Welcome to METAG" = "Te damos la bienvenida a METAG";
 "Welcome to Palmier Pro" = "Te damos la bienvenida a Palmier Pro";
 "Welcome to Palmier Pro, %@" = "Te damos la bienvenida a Palmier Pro, %@";
-"Welcome" = "Bienvenido";
 "Welcome" = "Te damos la bienvenida";
-"Welcome, %@" = "Hola, %@";
 "Welcome, %@" = "Te damos la bienvenida, %@";
 "What best describes your role?" = "¿Qué describe mejor tu rol?";
-"What best describes your role?" = "¿Qué describe mejor tu rol?";
-"What do you make?" = "¿Qué creas?";
 "What do you make?" = "¿Qué tipo de vídeos haces?";
 "What do you want to film?" = "¿Qué quieres filmar?";
 "What interests you most about METAG?" = "¿Qué te interesa más de METAG?";
@@ -1594,7 +1494,6 @@
 "You've made a lot of drafts this hour — take a break and come back shortly." = "Has hecho muchos borradores esta hora: descansa un momento y vuelve.";
 "You've produced a lot this hour — take a break and come back shortly." = "Has producido mucho esta hora: descansa un momento y vuelve.";
 "You've re-shot a lot this hour. Try again a bit later." = "Has rehecho muchas tomas esta hora. Inténtalo un poco más tarde.";
-"YouTube" = "YouTube";
 "YouTube" = "YouTube";
 "Your Lottie animation is ready." = "Tu animación Lottie está lista.";
 "Your audio clip is ready." = "Tu clip de audio está listo.";

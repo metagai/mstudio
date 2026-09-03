@@ -17,6 +17,7 @@ struct HomeHero: View {
     @FocusState private var focused: Bool
 
     @Bindable private var account = AccountService.shared
+    @Bindable private var showcase = MetagShowcaseStore.shared
 
     /// 这一屏最宽到哪。**不铺满**：一行字横跨 1400 点没法读，
     /// 而且铺满会让它看起来像个搜索框而不是一句问话。
@@ -61,15 +62,30 @@ struct HomeHero: View {
             // 起来的，不是在他读完三个例子之后。
             footnote
 
-            VStack(alignment: .leading, spacing: AppTheme.Spacing.smMd) {
-                ForEach(Self.starters, id: \.self) { starter in
-                    StarterLine(text: starter) { start(starter) }
-                        .disabled(busy)
+            // **先给他看一条真片子。**
+            //
+            // 这个位置原来是三行写死的例句，点一下直接开拍 —— 那条路的 Aha
+            // 隔着九十秒到两分钟，而且要花他的额度。
+            // 而线上早就躺着 12 条完整样片（落地页在用），Mac 端一条没接。
+            //
+            // 取不到就退回那三行例句。**一个视频产品的第一屏可以少几张海报，
+            // 但不能是一片空白。**
+            if showcase.films.isEmpty {
+                VStack(alignment: .leading, spacing: AppTheme.Spacing.smMd) {
+                    ForEach(Self.starters, id: \.self) { starter in
+                        StarterLine(text: starter) { start(starter) }
+                            .disabled(busy)
+                    }
                 }
+            } else {
+                MetagShowcaseStrip(films: showcase.films)
             }
         }
         .frame(maxWidth: maxWidth, alignment: .leading)
-        .onAppear { focused = true }
+        .onAppear {
+            focused = true
+            showcase.loadOnce()
+        }
     }
 
     /// 这一行平时说"不用登录也能看一眼"，登录的时候说登录走到哪了。

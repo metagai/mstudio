@@ -463,6 +463,15 @@ enum AppTheme {
         static let updateOverlayWidth: CGFloat = 640
     }
 
+    /// 首屏那几条真片子。
+    enum Showcase {
+        /// 海报统一这么高，宽度按各自比例走 —— 竖片横片混排，
+        /// 等高才排得齐，而一刀切成同宽会把竖片裁掉半张脸。
+        static let posterHeight: CGFloat = 116
+        /// 展开播放时那块的高度。
+        static let playerHeight: CGFloat = 300
+    }
+
     enum Onboarding {
         static let cardWidth: CGFloat = 520
         static let cardHeight: CGFloat = 420

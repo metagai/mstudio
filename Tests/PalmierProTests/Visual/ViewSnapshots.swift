@@ -154,6 +154,26 @@ struct ViewSnapshots {
     }
 
     /// **首屏。** 除了那句问话，它是常驻的东西 —— 而侧栏底部那两行今天刚重画过。
+    /// **首屏那一排真片子。**
+    ///
+    /// 一个视频产品，第一屏原来一帧画面都没有 —— 三行写死的例句，
+    /// 点一下开拍，而那条路的 Aha 隔着九十秒。
+    @Test func showcase() throws {
+        let root = URL(string: "https://metag.ai")!
+        let films = [
+            MetagShowcase(id: "second-take", line: "第一遍不对，就再来一遍。",
+                          poster: root.appendingPathComponent("media/sc-second-poster.jpg"),
+                          reel: root.appendingPathComponent("media/sc-second.mp4"), aspect: 16.0 / 9),
+            MetagShowcase(id: "cat", line: "一句话，20 秒一镜到底。",
+                          poster: root.appendingPathComponent("media/sc-cat-poster.jpg"),
+                          reel: root.appendingPathComponent("media/sc-cat.mp4"), aspect: 16.0 / 9),
+            MetagShowcase(id: "pizza", line: "最后 3 秒，甲方出现了。",
+                          poster: root.appendingPathComponent("media/sc-pizza-poster.jpg"),
+                          reel: root.appendingPathComponent("media/sc-pizza.mp4"), aspect: 720.0 / 1280),
+        ]
+        try snapshot("showcase-strip", width: 720) { MetagShowcaseStrip(films: films) }
+    }
+
     @Test func home() throws {
         try snapshot("home-hero", width: 720) { HomeHero() }
         // **侧栏底部那两行。** 创始人 2026-09-02 真机量出来：

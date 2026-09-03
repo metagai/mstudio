@@ -1,33 +1,17 @@
 /* Generated from app-owned UI copy. Translate values only in other locales. */
-
-
 /* --- METAG --- */
-
 /* --- METAG --- */
-
 /* --- METAG --- */
-
 /* --- METAG --- */
-
 /* 引导流程（Onboarding，上游 94394bb）*/
-
 // 声音复刻与配音
-
 // 择优 / 改图 / 找亮点
-
 // 常见失败的可行动文案
-
 // 草案 / 额度 / 作品面板
-
 // 草案各阶段
-
 // 频控文案
-
 // 免费试渲一镜 / 档位
-
-
 /* 首屏 · 班底 · 报价 · 匿名先看一眼（2026-09-01） */
-
 /* 补齐（2026-09-01）*/
 "$%.2f" = "$%.2f";
 "$%.2f/mo" = "$%.2f/月";
@@ -114,21 +98,17 @@
 "= %lld credits" = "= %lld 积分";
 "= 1 credit" = "= 1 积分";
 "A courier bikes through Tokyo rain at night" = "夜里的东京雨中，一个快递员骑车穿过街道";
-"A video editor built for AI. Generate, and edit all in one place." = "为 AI 打造的视频编辑器。在一处完成生成和编辑。";
 "A video editor built for AI. Generate, and edit all in one place." = "为 AI 而生的视频编辑器：生成和剪辑，在同一个地方。";
 "A woman folds laundry in an empty laundromat, warm afternoon light" = "空无一人的自助洗衣房，一个女人在叠衣服，午后暖光";
 "A woman in a laundromat, warm afternoon light" = "洗衣店里的女人，午后斜射的光";
 "AI Audio" = "AI 音频";
 "AI Chat" = "AI 对话";
 "AI Edit" = "AI 编辑";
-"AI Edit" = "AI 编辑";
 "AI Enhance" = "AI 增强";
 "AI Generated" = "AI 生成";
 "AI agent" = "AI Agent";
 "AI is unavailable" = "AI 不可用";
-"AI transcription" = "AI 转写";
 "AI transcription" = "AI 转录";
-"AI videos" = "AI 视频";
 "AI videos" = "AI 视频";
 "AI" = "AI";
 "About %@" = "关于 %@";
@@ -170,15 +150,11 @@
 "Added to %@" = "已添加到 %@";
 "Adjust Range" = "调整范围";
 "Adjust" = "调整";
-"Adjust" = "调整";
 "Adobe Premiere Pro" = "Adobe Premiere Pro";
 "Ads and branded content" = "广告与品牌内容";
-"Ads and branded content" = "广告与品牌内容";
 "Agent Mode" = "Agent 模式";
-"Agent Panel" = "Agent 面板";
 "Agent Panel" = "助手面板";
 "Agent" = "助手";
-"Agentic editing" = "Agent 剪辑";
 "Agentic editing" = "智能体剪辑";
 "Alignment" = "对齐";
 "All %@ shots are in. Cutting them together." = "%@ 个镜头都到齐了，正在接成一条。";
@@ -189,13 +165,11 @@
 "Analyzing media so you can search it." = "正在分析媒体以供搜索。";
 "Angle" = "角度";
 "Animate" = "动画";
-"Animate" = "动画";
 "Animation" = "动画";
 "Another Composition" = "换个构图";
 "Anthropic API Key" = "Anthropic API key";
 "Anything specific? e.g. 3 clips, 10 seconds each" = "有具体要求吗？比如：3 段，每段 10 秒";
 "App version %@ and macOS %@ are included." = "将包含 App 版本 %@ 和 macOS %@。";
-"Appearance" = "外观";
 "Appearance" = "外观";
 "Applies immediately. Dark is easier on the eyes for long sessions." = "立即生效。长时间剪辑用暗色更护眼。";
 "Applies immediately. Untranslated text falls back to English." = "立即生效。未翻译的文本回退为英文。";
@@ -216,7 +190,6 @@
 "Auto" = "自动";
 "Available in METAG Studio only" = "只在 METAG Studio 里可用";
 "Available" = "可用";
-"Back" = "上一步";
 "Back" = "返回";
 "Background" = "背景";
 "Basic Correction" = "基本校正";
@@ -267,7 +240,6 @@
 "Caption %@" = "字幕 %@";
 "Captions will look like this" = "字幕将显示为这样";
 "Captions" = "字幕";
-"Captions" = "字幕";
 "Capture Frame to Media" = "截取帧到媒体";
 "Captured %@. The destination folder was removed, so the frame was saved at the top level of Media." = "已截取 %@。目标文件夹已被移除，因此该帧已保存到“媒体”的顶层。";
 "Captured %@." = "已截取 %@。";
@@ -313,7 +285,6 @@
 "Clear cache" = "清除缓存";
 "Clear index" = "清除索引";
 "Clear search" = "清除搜索";
-"Clearing…" = "正在清除…";
 "Clearing…" = "清理中…";
 "Click Generate to open the generation panel." = "点按“生成”以打开生成面板。";
 "Click to install update" = "点按以安装更新";
@@ -348,10 +319,7 @@
 "Connect an external agent to inspect and edit the open %@ project. The server listens on this Mac only and requires the access token below." = "让外部 agent 连进来查看和编辑当前打开的 %@ 工程。服务只在这台 Mac 上监听，并且需要下面这个访问令牌。";
 "Connect an external agent to inspect and edit the open Palmier Pro project." = "连接外部 Agent，以检查和编辑已打开的 Palmier Pro 项目。";
 "Content creator" = "内容创作者";
-"Content creator" = "内容创作者";
 "Content" = "内容";
-"Content" = "内容";
-"Continue" = "继续";
 "Continue" = "继续";
 "Contrast" = "对比度";
 "Copied" = "已复制";
@@ -359,7 +327,6 @@
 "Copy message" = "复制消息";
 "Copy one clip of the same type and try again." = "请复制一个相同类型的片段后重试。";
 "Copy prompt" = "复制提示词";
-"Copy" = "复制";
 "Copy" = "拷贝";
 "Corner Radius" = "圆角半径";
 "Could not install the on-device speech model: %@" = "无法安装设备端语音模型：%@";
@@ -398,11 +365,9 @@
 "Custom…" = "自定义…";
 "Cut to the beat" = "按节拍剪辑";
 "Cut" = "剪切";
-"Cut" = "剪切";
 "Cutting it together" = "正在接成一条";
 "DaVinci Resolve" = "DaVinci Resolve";
 "Dark appearance" = "深色外观";
-"Dark" = "暗色";
 "Dark" = "深色";
 "Darken" = "变暗";
 "Date Added" = "添加日期";
@@ -424,7 +389,6 @@
 "Delete “%@”" = "删除“%@”";
 "Delete “%@”?" = "删除“%@”？";
 "Delete" = "删除";
-"Delete" = "删除";
 "Deliver" = "交付";
 "Denoise failed. Playback uses the original audio — adjust Strength to retry." = "降噪失败。播放将使用原始音频。调整强度后重试。";
 "Denoise" = "降噪";
@@ -442,7 +406,6 @@
 "Descript" = "Descript";
 "Description" = "描述";
 "Deselect & Reset Tool" = "取消选择并重置工具";
-"Designer" = "设计师";
 "Designer" = "设计师";
 "Destination" = "目标位置";
 "Detail" = "细节";
@@ -503,13 +466,11 @@
 "Edit with a sentence…" = "一句话改图…";
 "Edit · %@ credits" = "改图 · %@ credits";
 "Edit" = "编辑";
-"Edit" = "编辑";
 "Edited · %@ credits" = "改后 · %@ credits";
 "Editing" = "正在编辑";
 "Editor" = "剪辑";
 "Edit… (Paid)" = "编辑…（付费）";
 "Edit…" = "编辑…";
-"Education and tutorials" = "教育与教程";
 "Education and tutorials" = "教育与教程";
 "Effects" = "效果";
 "Email (optional)" = "电子邮件（可选）";
@@ -519,7 +480,6 @@
 "Enhance resolution or frame rate with AI" = "使用 AI 提升分辨率或帧率";
 "Enhance" = "增强";
 "Enhanced with FLUX.3 at 1080p." = "已通过 FLUX.3 增强为 1080p。";
-"Enter Full Screen" = "进入全屏幕";
 "Enter Full Screen" = "进入全屏幕";
 "Estimated cost. Actual billing may differ slightly." = "预计费用。实际计费可能略有不同。";
 "Every paid step quotes first. Nothing is billed until you approve." = "每个付费步骤都会先报价。你点头之前不会扣费。";
@@ -533,10 +493,8 @@
 "Export complete" = "导出完成";
 "Export failed" = "导出失败";
 "Export" = "导出";
-"Export" = "导出";
 "Export, %lld active, %lld waiting" = "导出：%lld 个进行中，%lld 个等待中";
 "Exporting…" = "正在导出…";
-"Export…" = "导出…";
 "Export…" = "导出…";
 "Exposure" = "曝光";
 "Extend" = "延长";
@@ -546,7 +504,6 @@
 "FLUX Enhance" = "FLUX Enhance";
 "Fade In" = "淡入";
 "Fade Out" = "淡出";
-"Failed" = "失败";
 "Failed" = "失败";
 "Feather" = "羽化";
 "Featured" = "精选";
@@ -558,13 +515,11 @@
 "File Type" = "文件类型";
 "File missing" = "文件缺失";
 "File" = "文件";
-"File" = "文件";
 "Files" = "文件";
 "Fill prompt" = "填写提示词";
 "Fill" = "填充";
 "Film Grain" = "胶片颗粒";
 "Film" = "出片";
-"Filmmaker" = "影视创作者";
 "Filmmaker" = "影视创作者";
 "Filter markers by status" = "按状态筛选标记";
 "Final Cut Pro" = "Final Cut Pro";
@@ -593,7 +548,6 @@
 "For" = "适用于";
 "Format References" = "格式参考";
 "Forward" = "前进";
-"Founder" = "创业者";
 "Founder" = "创始人";
 "Frame Rate" = "帧率";
 "Frames are landing, still writing the narration…" = "画面陆续出来了，还在写旁白…";
@@ -652,7 +606,6 @@
 "Hard Light" = "强光";
 "Height" = "高度";
 "Help" = "帮助";
-"Help" = "帮助";
 "Hide Guides" = "隐藏参考线";
 "Hide Info" = "隐藏信息";
 "Hide Timeline Tabs" = "隐藏时间线标签页";
@@ -662,7 +615,6 @@
 "Highlight Block" = "高亮色块";
 "Highlight" = "高光";
 "Highlights" = "高光";
-"Hobbyist" = "业余爱好者";
 "Hobbyist" = "爱好者";
 "Hold" = "保持";
 "Hourly limit reached. Try again later." = "这一小时的次数用完了，稍后再试。";
@@ -680,7 +632,6 @@
 "Image" = "图像";
 "Images and text files only" = "只收图片和文本文件";
 "Import Media" = "导入媒体";
-"Import Media…" = "导入媒体…";
 "Import Media…" = "导入素材…";
 "Import Recipe…" = "导入配方…";
 "Import footage" = "导入素材";
@@ -693,8 +644,6 @@
 "Input" = "输入";
 "Insets" = "内边距";
 "Inspector Panel" = "检查器面板";
-"Inspector Panel" = "检查器面板";
-"Inspector" = "检查器";
 "Inspector" = "检查器";
 "Instagram Edits" = "Instagram Edits";
 "Instagram" = "Instagram";
@@ -711,7 +660,6 @@
 "Installed" = "已安装";
 "Instructions" = "说明";
 "Instrumental" = "纯音乐";
-"Integration with your own agent" = "与自有 Agent 集成";
 "Integration with your own agent" = "接入你自己的智能体";
 "Integrations" = "集成";
 "Intensity" = "强度";
@@ -730,7 +678,6 @@
 "Kept in ~/Library/Application Support/METAG/mcp-token, readable only by you. The bundled Claude Desktop connector reads it automatically." = "存在 ~/Library/Application Support/METAG/mcp-token，只有你能读。随附的 Claude Desktop 连接器会自动读取。";
 "Kept the %@ shots that rendered before this one failed." = "这一单失败了，但已渲好的 %@ 镜给你留着。";
 "Keyboard Shortcuts" = "键盘快捷键";
-"Keyboard Shortcuts" = "键盘快捷键";
 "Keyframes" = "关键帧";
 "LUTs" = "LUT";
 "Labels" = "标签";
@@ -738,7 +685,6 @@
 "Language" = "语言";
 "Large" = "大";
 "Last Frame" = "尾帧";
-"Layout" = "布局";
 "Layout" = "布局";
 "Left" = "左";
 "Length of the generated music. It's placed at the playhead, or at the marked range start." = "生成音乐的时长。音乐将放在播放头处，或标记范围的起点。";
@@ -751,7 +697,6 @@
 "Library" = "媒体库";
 "Lift" = "提升";
 "Light appearance" = "浅色外观";
-"Light" = "亮色";
 "Light" = "浅色";
 "Lighten" = "变亮";
 "Line Spacing" = "行间距";
@@ -786,8 +731,6 @@
 "Local" = "本地";
 "Log in for 250 free credits" = "登录即可获得 250 免费积分";
 "Log in for free credits (no number)" = "登录即可获得免费积分";
-"Log in for free credits (no number)" = "登录即可获得免费积分";
-"Log in for free credits" = "登录即可获得 %@ 积分";
 "Log in for free credits" = "登录即可获得 %@ 积分";
 "Looking for the good parts…" = "正在找精彩的部分…";
 "Low" = "低";
@@ -795,13 +738,13 @@
 "Luminosity" = "明度";
 "Lyrics (optional). [Verse] and [Chorus] tags supported." = "歌词（可选）。支持 [Verse] 和 [Chorus] 标签。";
 "MCP Instructions" = "MCP 说明";
-"MCP Instructions" = "MCP 说明";
 "MCP Server" = "MCP 服务器";
 "MCP Setup" = "MCP 设置";
 "METAG Project" = "METAG 工程";
 "METAG picks how many shots" = "镜数由 METAG 定";
 "METAG request failed (%@)." = "METAG 请求失败（%@）。";
 "METAG request failed." = "METAG 请求失败。";
+"Made with METAG" = "METAG 拍的";
 "Main + Sidebar" = "主面板 + 边栏";
 "Make vertical shorts" = "制作竖屏短片";
 "Manage credits" = "管理积分";
@@ -816,7 +759,6 @@
 "Marker %lld" = "标记 %lld";
 "Marker name" = "标记名称";
 "Markers" = "标记";
-"Marketer" = "市场营销";
 "Marketer" = "市场营销人员";
 "Master Audio Meter" = "主音频电平表";
 "Master — defines the group's clock and transcript." = "主机位：定义组的时钟和转录。";
@@ -828,17 +770,14 @@
 "Max plan" = "Max 方案";
 "Max words" = "最多字词数";
 "Max" = "最大";
-"Maximize Focused Panel" = "最大化当前面板";
 "Maximize Focused Panel" = "最大化聚焦面板";
 "Measuring the audio…" = "正在分析音频…";
 "Media Offline" = "媒体离线";
-"Media Panel" = "媒体面板";
 "Media Panel" = "素材面板";
 "Media indexing" = "媒体索引";
 "Media panel" = "媒体面板";
 "Media search" = "媒体搜索";
 "Media workspace layout" = "媒体工作区布局";
-"Media" = "媒体";
 "Media" = "素材";
 "Medium" = "中";
 "Mic" = "麦克风";
@@ -861,10 +800,8 @@
 "Move playhead inside the clip" = "将播放头移到片段内";
 "Move to Folder" = "移到文件夹";
 "Multicam" = "多机位";
-"Multicam" = "多机位";
 "Multilingual" = "多语言";
 "Multiply" = "正片叠底";
-"Music" = "音乐";
 "Music" = "音乐";
 "My Projects" = "我的项目";
 "My films" = "我的作品";
@@ -873,7 +810,6 @@
 "Narrator voice" = "旁白音色";
 "Nest settings discarded. Undo to restore." = "嵌套设置已丢弃。撤销可恢复。";
 "New Folder" = "新建文件夹";
-"New Folder" = "新建文件夹";
 "New Project" = "新建项目";
 "New Skill" = "新建技能";
 "New chat" = "新建对话";
@@ -881,7 +817,6 @@
 "New take is in the timeline." = "新的一条已经在时间轴上了。";
 "New timeline" = "新建时间线";
 "New version available" = "有新版本可用";
-"New" = "新建";
 "New" = "新建";
 "Newer timeline format with better support for DaVinci Resolve and Final Cut Pro. Supports basic edits, keyframes, and text, but not color, effects, edge softness, or edge rounding." = "较新的时间线格式，对 DaVinci Resolve 和 Final Cut Pro 支持更好。支持基本编辑、关键帧和文本，但不支持颜色、效果、边缘柔化或边缘圆角。";
 "Next" = "下一步";
@@ -962,13 +897,10 @@
 "Opening Google…" = "正在打开 Google…";
 "Opening…" = "正在打开…";
 "Open…" = "打开…";
-"Open…" = "打开…";
 "Or use your own Anthropic key in Settings." = "或在设置中使用你自己的 Anthropic 密钥。";
 "Organize with Agent" = "使用 Agent 整理";
 "Original FPS" = "原始帧率";
-"Original" = "原图";
 "Original" = "原始";
-"Other" = "其他";
 "Other" = "其他";
 "Our side had trouble making this one — try again in a few minutes." = "这一条是我们这边没做出来 —— 过几分钟再试一次。";
 "Our side had trouble making this one. Nothing was charged — try again in a few minutes." = "这一条是我们这边出了问题，没有扣费 —— 过几分钟再试。";
@@ -985,7 +917,6 @@
 "Palmier loaded this clip's source file but couldn't prepare it for playback. The file may be corrupt or in an unsupported format." = "Palmier 已载入此片段的源文件，但无法准备播放。文件可能已损坏或格式不受支持。";
 "Paste Clip Settings" = "粘贴片段设置";
 "Paste Settings" = "粘贴设置";
-"Paste" = "粘贴";
 "Paste" = "粘贴";
 "Path" = "路径";
 "Payment may still be processing — your balance will update on its own. You can check credit activity any time." = "付款可能还在处理 —— 余额会自己更新。你随时可以去看额度流水。";
@@ -1007,7 +938,6 @@
 "Playback previews, waveforms, filmstrip thumbnails, and transcripts. Safe to clear; files rebuild as needed." = "播放预览、波形、胶片缩略图和转录。可以安全清除，文件会在需要时重新生成。";
 "Playback" = "播放";
 "Podcast" = "播客";
-"Podcast" = "播客";
 "Pointer (V)" = "指针 (V)";
 "Pop In" = "弹入";
 "Portrait (9:16)" = "竖屏 (9:16)";
@@ -1022,7 +952,6 @@
 "Produce · %@ credits" = "出片 · %@ credits";
 "Produce" = "确认出片";
 "Producing this will cost about %@ credits" = "出片大约需要 %@ 积分";
-"Product demos" = "产品演示";
 "Product demos" = "产品演示";
 "Product site, e.g. https://your-product.com" = "产品网页，例如 https://your-product.com";
 "Project Activity" = "项目活动";
@@ -1060,7 +989,6 @@
 "Redo %@ shots" = "重做这 %@ 镜";
 "Redo (⇧⌘Z)" = "重做 (⇧⌘Z)";
 "Redo the edited shots" = "重做改过的镜头";
-"Redo" = "重做";
 "Redo" = "重做";
 "Reference Image" = "参考图像";
 "Reference footage would have to leave this Mac, and METAG doesn't upload your footage. Text and a first frame both work." = "参考素材得离开这台 Mac，而 METAG 不上传你的素材。用文字或者一张首帧都可以。";
@@ -1133,7 +1061,6 @@
 "Right" = "右";
 "Ripple Delete Gap" = "波纹删除间隙";
 "Ripple Delete" = "波纹删除";
-"Ripple Delete" = "波纹删除";
 "Ripple Insert" = "波纹插入";
 "Ripple Timeline Markers" = "标记随编辑移动";
 "Ripple Trim" = "波纹修剪";
@@ -1146,20 +1073,17 @@
 "Sample Key Color" = "取样键控颜色";
 "Sample Project" = "示例项目";
 "Sample key color" = "取样键控颜色";
-"Sample project couldn’t be opened. Try again." = "无法打开示例项目。请重试。";
 "Sample project couldn’t be opened. Try again." = "示例项目打不开，请重试。";
 "Sample shot is rendering — it appears in the draft when ready." = "试渲中 —— 好了会出现在草案里。";
 "Sat" = "饱和度";
 "Saturation" = "饱和度";
 "Save As" = "保存为";
-"Save As…" = "保存为…";
 "Save As…" = "存储为…";
 "Save Changes" = "保存更改";
 "Save Range as Media" = "将范围保存为媒体";
 "Save as Audio" = "另存为音频";
 "Save as Media" = "保存为媒体";
 "Save this project to view activity" = "保存此项目以查看活动";
-"Save" = "保存";
 "Save" = "存储";
 "Saves a copy of this project with all media bundled inside, so it opens on any machine." = "保存此项目的副本并在其中包含所有媒体，以便在任何设备上打开。";
 "Say what you want to film, in one line" = "一句话说清楚要拍什么";
@@ -1186,10 +1110,7 @@
 "See your film first" = "先看一眼你的片子";
 "Select All Clips on Track" = "选择轨道上的所有片段";
 "Select All" = "全选";
-"Select All" = "全选";
-"Select Forward on All Tracks" = "选择所有轨道上后续片段";
 "Select Forward on All Tracks" = "选择所有轨道上的后续片段";
-"Select Forward on Track" = "选择轨道上后续片段";
 "Select Forward on Track" = "选择轨道上的后续片段";
 "Select Range" = "选择范围";
 "Select compatible clips and paste settings again." = "请选择兼容片段并再次粘贴设置。";
@@ -1221,7 +1142,6 @@
 "Share usage data" = "共享使用数据";
 "Share" = "分享";
 "Sharpen" = "锐化";
-"Short-form and social" = "短视频与社交";
 "Short-form and social" = "短视频与社交媒体";
 "Shortcuts" = "快捷键";
 "Shot %@ narration" = "第 %@ 镜旁白";
@@ -1236,7 +1156,6 @@
 "Show reasoning" = "显示推理";
 "Side by Side" = "并排";
 "Sign In to Start" = "登录后开始";
-"Sign In" = "登录";
 "Sign In" = "登录";
 "Sign in and your films stay with you" = "登录，作品就跟着你走";
 "Sign in to METAG to generate." = "登录 METAG 后即可生成。";
@@ -1254,7 +1173,6 @@
 "Sign in with Google" = "使用 Google 登录";
 "Sign in" = "登录";
 "Sign out" = "退出登录";
-"Sign-in couldn’t be completed. Try again." = "无法完成登录。请重试。";
 "Sign-in couldn’t be completed. Try again." = "登录未完成，请重试。";
 "Sign-in didn't go through — try again" = "没能登录上，再试一次";
 "Signed in" = "已登录";
@@ -1272,7 +1190,6 @@
 "Skip Backward" = "向后跳转";
 "Skip Forward" = "向前跳转";
 "Skip" = "跳过";
-"Skip" = "跳过";
 "Slide Up" = "向上滑入";
 "Small" = "小";
 "Smart search" = "智能搜索";
@@ -1288,11 +1205,9 @@
 "Speech Padding" = "语音留白";
 "Speech is detected on-device in the background. Dims quiet, speech-free spans on timeline waveforms." = "在后台使用设备端检测语音，并在时间线波形上调暗安静且无语音的区段。";
 "Speech" = "语音";
-"Speech" = "语音";
 "Speed" = "速度";
 "Spill" = "溢色";
 "Split at Playhead (⌘K)" = "在播放头处拆分 (⌘K)";
-"Split at Playhead" = "在播放头处分割";
 "Split at Playhead" = "在播放头处拆分";
 "Spoken" = "语音";
 "Square (1:1)" = "方形 (1:1)";
@@ -1316,7 +1231,6 @@
 "Streaming through your Anthropic API key (BYOK)" = "正在通过你的 Anthropic API key 流式传输 (BYOK)";
 "Streaming through your OpenAI API key (BYOK)" = "正在通过你的 OpenAI API key 流式传输 (BYOK)";
 "Strikethrough" = "删除线";
-"Student" = "学生";
 "Student" = "学生";
 "Style instructions (optional). e.g., warm and slow, British accent." = "样式说明（可选），例如温暖舒缓、英式口音。";
 "Style" = "样式";
@@ -1343,7 +1257,6 @@
 "System" = "系统";
 "Take a screenshot of the preview and use it as a reference for generation. Particularly useful for creating AI transitions." = "截取预览画面并将其用作生成参考。这对创建 AI 转场尤其有用。";
 "Target Language" = "目标语言";
-"Tell us about your work" = "介绍一下你的工作";
 "Tell us about your work" = "说说你在做什么";
 "Temperature" = "色温";
 "Template" = "模板";
@@ -1423,7 +1336,6 @@
 "Timecode" = "时间码";
 "Timeline Format" = "时间线格式";
 "Timeline colors" = "时间线颜色";
-"Timeline" = "时间线";
 "Timeline" = "时间轴";
 "Timelines" = "时间线";
 "Tint" = "色调";
@@ -1457,10 +1369,8 @@
 "Translate" = "翻译";
 "Trim (T)" = "修剪 (T)";
 "Trim End to Playhead (W)" = "将结尾修剪到播放头 (W)";
-"Trim End to Playhead" = "将出点修剪至播放头";
 "Trim End to Playhead" = "将结尾修剪到播放头";
 "Trim Start to Playhead (Q)" = "将开头修剪到播放头 (Q)";
-"Trim Start to Playhead" = "将入点修剪至播放头";
 "Trim Start to Playhead" = "将开头修剪到播放头";
 "Try Again" = "再试一次";
 "Try again" = "再试一次";
@@ -1468,7 +1378,6 @@
 "Try another search." = "请尝试其他搜索。";
 "Turn off to save %lld%% on generation cost." = "关闭可节省 %lld%% 的生成费用。";
 "Turn off to skip audio generation." = "关闭以跳过音频生成。";
-"Tutorial" = "使用教程";
 "Tutorial" = "教程";
 "Two friends open a bakery in a small town" = "两个朋友在小镇上开了家面包店";
 "Type" = "类型";
@@ -1479,7 +1388,6 @@
 "Unable to save skill" = "无法保存技能";
 "Underline" = "下划线";
 "Undo (⌘Z)" = "撤销 (⌘Z)";
-"Undo" = "撤销";
 "Undo" = "撤销";
 "Ungroup Multicam" = "取消多机位分组";
 "Unlink" = "取消链接";
@@ -1516,15 +1424,12 @@
 "Vibrance" = "自然饱和度";
 "Video Ref" = "视频参考";
 "Video automation" = "视频自动化";
-"Video automation" = "视频自动化";
-"Video editor" = "剪辑师";
 "Video editor" = "视频剪辑师";
 "Video has no audio track" = "视频没有音频轨道";
 "Video to Music" = "视频生成音乐";
 "Video" = "视频";
 "View Skills" = "查看技能";
 "View plans" = "查看方案";
-"View" = "显示";
 "View" = "显示";
 "Vignette" = "晕影";
 "Visual search isn’t set up yet — tap “Smart search” above to download the on-device model." = "画面搜索还没准备好 —— 点上面的「智能搜索」下载端侧模型。";
@@ -1536,7 +1441,6 @@
 "Voice clone" = "声音复刻";
 "Voice “%@” is ready — %@ credits" = "音色「%@」已就绪 —— 扣除 %@ credits";
 "Voice “%@” is ready" = "音色「%@」已就绪";
-"Voice" = "声音";
 "Voice" = "音色";
 "Voiceover added to your media" = "配音已加入素材面板";
 "Voices & Voiceover…" = "音色与配音…";
@@ -1544,7 +1448,6 @@
 "WAV, MP3 or M4A · up to 16 MB" = "WAV、MP3 或 M4A · 不超过 16 MB";
 "Waiting for you to finish in your browser." = "在浏览器里完成登录。";
 "Warmth" = "色温";
-"Watch the tutorial or start creating." = "看教程，或者直接开始。";
 "Watch the tutorial or start creating." = "观看教程或直接开始创作。";
 "We may email you for follow-up questions" = "我们可能会通过电子邮件向你询问后续问题";
 "We read every message and may reach out at %@." = "我们会阅读每条消息，并可能通过 %@ 与你联系。";
@@ -1556,12 +1459,8 @@
 "Welcome to Palmier Pro" = "欢迎使用 Palmier Pro";
 "Welcome to Palmier Pro, %@" = "欢迎使用 Palmier Pro，%@";
 "Welcome" = "欢迎";
-"Welcome" = "欢迎";
 "Welcome, %@" = "欢迎，%@";
-"Welcome, %@" = "欢迎，%@";
-"What best describes your role?" = "你的角色更接近哪一个？";
 "What best describes your role?" = "哪一项最符合你的角色？";
-"What do you make?" = "你做什么类型的片子？";
 "What do you make?" = "你制作什么内容？";
 "What do you want to film?" = "你想拍什么？";
 "What interests you most about METAG?" = "METAG 最吸引你的是什么？";
@@ -1596,7 +1495,6 @@
 "You've made a lot of drafts this hour — take a break and come back shortly." = "这一小时里你已经起了很多草案 —— 歇一会儿再来。";
 "You've produced a lot this hour — take a break and come back shortly." = "这一小时里你已经出了很多片 —— 歇一会儿再来。";
 "You've re-shot a lot this hour. Try again a bit later." = "这一小时重拍得有点多，稍后再试。";
-"YouTube" = "YouTube";
 "YouTube" = "YouTube";
 "Your Lottie animation is ready." = "你的 Lottie 动画已准备就绪。";
 "Your audio clip is ready." = "你的音频片段已准备就绪。";
