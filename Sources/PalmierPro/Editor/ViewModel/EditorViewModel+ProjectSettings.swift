@@ -24,6 +24,15 @@ extension EditorViewModel {
     }
 
     func applyTimelineSettings(fps: Int, width: Int, height: Int) {
+        // **fps 不能是 0。**
+        //
+        // 首个视频的 `sourceFPS < 0.5`（延时摄影、单帧视频）时
+        // `Int(rate.rounded())` 就是 0，而这里没有下限 ——
+        // 所有时间码同时变成 `00:00:00:00`（看上去像"工程是空的"），
+        // 检视器顶部的工程时长算出 inf，`Int(seconds.rounded())` **直接 trap，app 崩**。
+        //
+        // 一个 0.4fps 的素材不该有能力让整个 app 退出。
+        let fps = max(1, fps)
         let before = projectSettingsSnapshot()
         let prevFPS = timeline.fps
         let prevWidth = timeline.width

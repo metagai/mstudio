@@ -1134,6 +1134,12 @@ struct InspectorView: View {
     }
 
     private func formatDuration(_ seconds: Double) -> String {
+        // **`Int(inf)` 是一次 trap，不是一个大数字。**
+        //
+        // 上游任何一处把 fps 或帧数算成 0/NaN，这里就是 app 退出的地方 ——
+        // 而它只是在画标题栏上那个小小的时长。
+        // **一个显示用的格式化函数不该有能力让 app 崩。**
+        guard seconds.isFinite, seconds >= 0 else { return "0:00" }
         let total = Int(seconds.rounded())
         let hours = total / 3600
         let mins = (total % 3600) / 60

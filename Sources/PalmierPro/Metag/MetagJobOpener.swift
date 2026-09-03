@@ -10,6 +10,15 @@ import Foundation
 /// 客户端察觉不到差别（见 gateway/src/delivery.rs）。
 /// 这正是 2026-08-01 事故的修复：此前本地一清，任务仍"声称 done"而每一镜都 404。
 enum MetagJobOpener {
+    /// 这个错误是不是"东西真的没了"。
+    ///
+    /// **只有 404/410 算。** 断网、超时、5xx、写盘失败都不是 ——
+    /// 把它们说成"已过期"，等于让他为一次网络抖动**再付一次钱**。
+    static func isGone(_ error: Error) -> Bool {
+        if case MetagGateway.Failure.http(let code) = error { return code == 404 || code == 410 }
+        return false
+    }
+
     @MainActor
     static func open(jobId: String, into editor: EditorViewModel) async {
         do {
@@ -60,10 +69,28 @@ enum MetagJobOpener {
             // 撤销会变成 N 步，而他做的只是"打开一条片子"这一件事。
             var shotAssets: [(index: Int, asset: MediaAsset, seconds: Double)] = []
             var narrationAssets: [(index: Int, asset: MediaAsset)] = []
+            // **取件失败分两种，而它们对他的含义完全相反。**
+            //
+            // 上一版两次下载都是 `try?`：断网、5xx、307 跳转失败、磁盘写不进去 ——
+            // 全部吞成 nil，和真正的"产物过期"无法区分。于是断网时屏幕上写的是
+            // 「文件已过期，这一条需要重新生成」——**他等完了九十秒、付了 credits，
+            // 然后去重新生成、再付一次。** 而且这次事故还被记成漏斗里的 `expired`，
+            // 数据也被污染了。
+            //
+            // 404/410 才是真过期（内存盘产物有保留期）；其余都是"这一次没取到"。
+            var sawTransportFailure = false
             for i in wanted {
                 let shot = job.shots[i]
-                if let url = try? await MetagGateway.download(
-                    job: jobId, name: shot.video, to: FileManager.default.temporaryDirectory) {
+                let video: URL?
+                do {
+                    video = try await MetagGateway.download(
+                        job: jobId, name: shot.video, to: FileManager.default.temporaryDirectory)
+                } catch {
+                    video = nil
+                    if !Self.isGone(error) { sawTransportFailure = true }
+                    Log.app.warning("shot \(i) download failed: \(error)")
+                }
+                if let url = video {
                     // addMediaAsset 返回非可选，原来那句 `!= nil` 恒真、每次构建都报警告。
                     // 计数没错过（它本来就总会加），错的是那句判断在假装自己在判断。
                     // **时长在这儿现量。**
@@ -88,10 +115,11 @@ enum MetagJobOpener {
             }
             let added = shotAssets.count
             let narrations = narrationAssets.count
-            // 有镜可取、却一条都没取下来 —— 取件过期。他等完了，手上还是空的。
+            // 有镜可取、却一条都没取下来。**为什么取不到决定了该说哪句话。**
             if added == 0 {
                 MetagFunnel.track(.filmFailed, meta: [
-                    "why": MetagFunnel.FailureReason.expired.rawValue,
+                    "why": (sawTransportFailure ? MetagFunnel.FailureReason.renderFailed
+                                                : MetagFunnel.FailureReason.expired).rawValue,
                     "shots": job.shots.count,
                 ])
             }

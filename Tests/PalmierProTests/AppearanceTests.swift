@@ -182,8 +182,19 @@ struct OnboardingAdaptationTests {
             let path = FileManager.default.currentDirectoryPath
                 + "/Sources/PalmierPro/Resources/Localization/\(lang).lproj/Localizable.strings"
             let table = (try? String(contentsOfFile: path, encoding: .utf8)) ?? ""
-            for key in ["Welcome to METAG", "What best describes your role?",
-                        "Sign in to start generating."] {
+            // **断言的必须是源码里真的用着的那个 key。**
+            //
+            // 上一版这里写的是 `"Welcome to METAG"` 和
+            // `"Sign in to start generating."`：前者的真实 key 是
+            // `"Welcome to %@"`（那句带插值），后者**源码里根本没人用** ——
+            // 一句死字符串。
+            //
+            // 这条判据一直绿，靠的是词典里躺着的陈旧条目；
+            // 合伙人跑了一次 `sync.sh` 把它们清掉，它当场红。
+            // **判据的第一件事不是"它对不对"，是"它是不是这一次的"**
+            // （docs/lessons.md 第三十五条）。
+            for key in ["Welcome to %@", "What best describes your role?",
+                        "Write one line and see your film. No account needed for the first look."] {
                 #expect(table.contains("\"\(key)\""), "\(lang) 缺文案：\(key)")
             }
         }

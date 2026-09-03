@@ -573,7 +573,21 @@ extension InspectorView {
 
     private func setLUTPath(_ path: String, clips: [Clip]) {
         // Copy into project storage so the LUT survives saves/moves (project packages drop unknown files).
-        guard let stored = try? LUTLoader.store(path: path, projectId: editor.projectId) else { return }
+        //
+        // **失败要说出来。** 上一版是 `try?` —— 他选完文件、点开、
+        // 面板关掉、画面一点没变、那一栏还是空的，没有任何提示。
+        // 他会以为自己没选中，再点一次，再次什么都没发生。
+        // **"点了没反应"是最伤信任的一种，而这里连原因都是现成的。**
+        let stored: String
+        do {
+            stored = try LUTLoader.store(path: path, projectId: editor.projectId)
+        } catch let error as LUTStoreError {
+            editor.mediaPanelToast = MediaPanelToast(message: error.userMessage, kind: .warning)
+            return
+        } catch {
+            editor.mediaPanelToast = MediaPanelToast(message: error.localizedDescription, kind: .warning)
+            return
+        }
         commitEffects(clips, actionName: "Apply LUT") { effects in
             if let i = effects.firstIndex(where: { $0.type == "color.lut" }) {
                 effects[i].params["path"] = EffectParam(string: stored)

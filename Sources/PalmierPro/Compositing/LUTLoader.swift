@@ -2,10 +2,31 @@ import Foundation
 
 enum LUTStoreError: LocalizedError {
     case noFile(String), invalid(String)
+
+    /// **给机器看的那一份。** Agent / MCP 的返回读它 ——
+    /// 那是一份契约，本地化它就是在破坏它（AGENTS.md：
+    /// 「不许本地化 Agent 或 MCP 契约」）。带上路径和文件名，便于排查。
     var errorDescription: String? {
         switch self {
         case .noFile(let path): "No file at path: \(path)"
         case .invalid(let name): "Not a valid .cube 3D LUT: \(name)"
+        }
+    }
+
+    /// **给人看的那一份。**
+    ///
+    /// 同一个失败，两个受众。上一版只有一份，而界面那条路
+    /// 干脆 `try?` 把它整个吞掉了 —— 他选完 .cube 文件、点开、
+    /// 面板关掉、画面一点没变、那一栏还是空的，**没有任何提示**。
+    /// 他会以为自己没选中，再点一次，再次什么都没发生。
+    ///
+    /// 每一句"做不到"后面都要有一条"你可以"。
+    var userMessage: String {
+        switch self {
+        case .noFile:
+            L10n.string("That file isn't there any more — pick it again.")
+        case .invalid(let name):
+            L10n.string("\(name) isn't a .cube 3D LUT. METAG reads .cube files exported from most color tools.")
         }
     }
 }
