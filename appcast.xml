@@ -53,5 +53,17 @@
                        type="application/octet-stream"
                        sparkle:edSignature="HSib6UPXS3MxepMyNAuDQ1LJcKJrgGzTnNgJxzLVt0ErBw8Pth9DSXKXt7weEOffUm5NjKCMceERxdt1MZNVDg==" />
         </item>
+        <item>
+            <title>Version 0.1.9</title>
+            <pubDate>Thu, 03 Sep 2026 02:55:20 -0700</pubDate>
+            <sparkle:version>86</sparkle:version>
+            <sparkle:shortVersionString>0.1.9</sparkle:shortVersionString>
+            <sparkle:minimumSystemVersion>26.0</sparkle:minimumSystemVersion>
+            <enclosure
+                url="https://metag.ai/mac/METAG-0.1.9.dmg"
+                length="70654605"
+                type="application/octet-stream"
+                sparkle:edSignature="EoVee5ceI2vMw8V15KF3uCimqcneekuhjeTJ9pHZorVVu7o08br7gF2vVVymuZRnpD6964rHf6Sw+NpY2otzCA=="/>
+        </item>
     </channel>
 </rss>
