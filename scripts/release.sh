@@ -270,9 +270,14 @@ fi
 #
 # 用户拿片子靠 metag.ai，GitHub 这份只是异地备份。**备份失败不该拦住交付。**
 echo "==> Archiving to GitHub (备份，失败不影响已完成的发布)"
-if ! gh release create "$TAG" "$DMG" --title "$TAG" --notes-file "$NOTES_CLEAN"; then
+# **`--repo` 不能省。** `gh` 自己挑远端，而这个仓库还留着 `upstream`
+# （palmier-io/palmier-pro）—— 2026-09-03 它就挑了那个，报
+# 「tag exists locally but has not been pushed to palmier-io/palmier-pro」。
+# 幸好这一步排在交付之后，只是没归档成。
+GH_REPO_SLUG="$(git remote get-url origin | sed -E 's#.*github\.com[:/]##; s#\.git$##')"
+if ! gh release create "$TAG" "$DMG" --repo "$GH_REPO_SLUG" --title "$TAG" --notes-file "$NOTES_CLEAN"; then
   echo "!! GitHub 归档没成功 —— **发布本身已经完成**（上面那两条公网校验是绿的）。" >&2
-  echo "   补一次：gh release create $TAG $DMG --title $TAG" >&2
+  echo "   补一次：gh release create $TAG $DMG --repo $GH_REPO_SLUG --title $TAG" >&2
 fi
 
 echo ""
