@@ -579,7 +579,7 @@ final class EditorViewModel {
             && (asset.type == .video || asset.type == .sequence)
         let linkGroupId: String? = shouldLink ? UUID().uuidString : nil
         let trimStart = sourceSegment.map { secondsToFrame(seconds: $0.lowerBound, fps: timeline.fps) } ?? 0
-        let totalSourceFrames = secondsToFrame(seconds: asset.duration, fps: timeline.fps)
+        let totalSourceFrames = secondsToFrame(seconds: asset.resolvedDuration, fps: timeline.fps)
 
         // sourceSegment (source seconds) and explicit trim frames are mutually exclusive; callers pass one.
         let applyTrim: (inout Clip) -> Void = { clip in
@@ -662,9 +662,24 @@ final class EditorViewModel {
         max(0, secondsToFrame(seconds: seconds, fps: max(1, timeline.fps)))
     }
 
+    /// 一段素材铺到时间线上有多长。
+    ///
+    /// ## 为什么不能直接读 `asset.duration`
+    ///
+    /// **所有类型的时长都由异步的 `loadMetadata` 填** —— 图片也是
+    /// （它在那里被赋成 `Defaults.imageDurationSeconds`）。在它跑完之前
+    /// `duration` 一律是 0，而上一版 `max(1, ...)` 会把它变成**一帧**。
+    ///
+    /// 一帧宽的片段和"什么都没发生"在屏幕上分不出来 ——
+    /// 他把素材拖进时间线，看到的是落点上一条几乎没有宽度的东西，
+    /// 或者几段全叠在一起。**而因为 duration 是被并发 Task 填的，
+    /// 实际会是"有几段正常、有几段一帧"的随机组合，比全错更难被当成 bug 上报。**
+    ///
+    /// 拿不到就给一个**看得见、抓得住**的长度，而不是一帧。
     func clipDurationFrames(for asset: MediaAsset, segment: ClosedRange<Double>?) -> Int {
-        let seconds = segment.map { $0.upperBound - $0.lowerBound } ?? asset.duration
-        return max(1, secondsToFrame(seconds: seconds, fps: timeline.fps))
+        let seconds = segment.map { $0.upperBound - $0.lowerBound } ?? asset.resolvedDuration
+        let usable = seconds > 0 ? seconds : Defaults.imageDurationSeconds
+        return max(1, secondsToFrame(seconds: usable, fps: timeline.fps))
     }
 
     func findClip(id: String) -> ClipLocation? {

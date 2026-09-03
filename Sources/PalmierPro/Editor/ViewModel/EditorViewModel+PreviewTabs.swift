@@ -22,7 +22,10 @@ extension EditorViewModel {
             return timeline.totalFrames
         case .mediaAsset(let id, _, _):
             guard let asset = mediaAssets.first(where: { $0.id == id }) else { return 0 }
-            return secondsToFrame(seconds: asset.duration, fps: timeline.fps)
+            // `duration` 是异步填的 —— 元数据还没到时它是 0，
+            // 于是传输条读 `00:00:00:00 / 00:00:00:00`、拖进度条无效，
+            // **而画面其实在播**。
+            return secondsToFrame(seconds: asset.resolvedDuration, fps: timeline.fps)
         }
     }
 

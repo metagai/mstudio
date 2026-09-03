@@ -7,27 +7,51 @@ struct LocalizationTests {
 
     private static let languages = ["en", "zh-Hans", "es"]
 
+    /// 读**源码目录里那份词典**，不是构建产物。
+    ///
+    /// ## 这三条判据一直绿，靠的是 `.build` 里一个陈旧目录
+    ///
+    /// 上一版在 bundle 里找一个 `Localization/` 子目录 —— 而
+    /// `Package.swift` 用的是 `.process("Resources/Localization")`，
+    /// 它把 `.lproj` **摊到 bundle 根上**：那个子目录从来就不该存在。
+    ///
+    /// 它能被找到，是因为构建缓存里躺着更早一次 `.copy` 留下的副本。
+    /// 2026-09-02 我为了腾磁盘删掉 `.build/arm64-apple-macosx` 做全量重编，
+    /// 三条判据当场红 —— **它们此前一直在读一份旧词典。**
+    ///
+    /// > 判据的第一件事不是"它对不对"，是"它是不是这一次的"
+    /// > （docs/lessons.md 第三十五条）。
+    ///
+    /// 源码目录是唯一真源：`check-l10n.py` 和 `AppearanceTests` 读的也是它。
     private func table(_ language: String) throws -> [String: String] {
-        let root = try #require(
-            [
-                Bundle.main.resourceURL?.appendingPathComponent("Localization"),
-                Bundle.main.resourceURL?.appendingPathComponent("PalmierPro_PalmierPro.bundle/Localization"),
-                Bundle.module.resourceURL?.appendingPathComponent("Localization"),
-            ]
-            .compactMap { $0 }
-            .first { FileManager.default.fileExists(atPath: $0.path) }
-        )
+        let root = URL(fileURLWithPath: #filePath)
+            .deletingLastPathComponent()   // Utilities
+            .deletingLastPathComponent()   // PalmierProTests
+            .deletingLastPathComponent()   // Tests
+            .deletingLastPathComponent()   // 仓库根
+            .appendingPathComponent("Sources/PalmierPro/Resources/Localization")
+        #expect(FileManager.default.fileExists(atPath: root.path),
+                "词典目录找不着了：\(root.path)")
         let url = root.appendingPathComponent("\(language).lproj/Localizable.strings")
         return try #require(NSDictionary(contentsOf: url) as? [String: String])
     }
 
-    /// The three maintained packs must expose the same keys — a missing key silently
-    /// degrades to English and is easy to ship without noticing.
-    @Test func maintainedLanguagesShareOneKeySet() throws {
+    /// **每一句英文都要有译文** —— 缺一句就静默回落成英文，
+    /// 而中文界面里冒出一句英文没有任何地方会红。
+    ///
+    /// 断言的是**包含**，不是相等：
+    /// zh/es 里还留着 157 条上游遗留的条目（源码里已经没人用了）。
+    /// 那个方向是**死重**，这个方向是**用户看到英文** ——
+    /// 拿相等去判，会让一堆无害的陈旧条目盖住那 40 句真的缺翻译。
+    /// （2026-09-02：这条判据此前一直在读 `.build` 里一个陈旧目录，
+    /// 换成读源码之后当场翻出那 40 句。）
+    @Test func everyEnglishStringHasATranslation() throws {
         let english = Set(try table("en").keys)
         #expect(!english.isEmpty)
         for language in Self.languages.dropFirst() {
-            #expect(Set(try table(language).keys) == english, "\(language) key set differs from en")
+            let missing = english.subtracting(try table(language).keys).sorted()
+            #expect(missing.isEmpty,
+                    "\(language) 少 \(missing.count) 句 —— 界面上那几处会是英文：\(missing.prefix(5))")
         }
     }
 
