@@ -134,6 +134,10 @@ final class EditorViewModel {
     }
     var activeFrame: Int { playheadState.timelineFrame }
     var isPlaying: Bool = false
+
+    /// 首映：他的片子刚落地。见 `MetagPremiere`。
+    /// **不为 nil 的那几十秒，这个编辑器是一间放映厅，不是一份工程。**
+    var premiere: MetagPremiere?
     private(set) var playbackRate: PreviewPlaybackRate = .normal
     var selectedClipIds: Set<String> = []
     var isMarqueeSelecting: Bool = false

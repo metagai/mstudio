@@ -22,6 +22,7 @@
 "%@ isn't a .cube 3D LUT. METAG reads .cube files exported from most color tools." = "%@ isn't a .cube 3D LUT. METAG reads .cube files exported from most color tools.";
 "%@ loaded this clip's source file but couldn't prepare it for playback. The file may be corrupt or in an unsupported format." = "%@ loaded this clip's source file but couldn't prepare it for playback. The file may be corrupt or in an unsupported format.";
 "%@ model not available" = "%@ model not available";
+"%@ of %@ shots are in" = "%@ of %@ shots are in";
 "%@ shots" = "%@ shots";
 "%@ shots · %@ credits" = "%@ shots · %@ credits";
 "%@ shots · refunded" = "%@ shots · refunded";
@@ -107,10 +108,12 @@
 "Added to %@" = "Added to %@";
 "Adjust" = "Adjust";
 "Adjust Range" = "Adjust Range";
+"Again" = "Again";
 "Agent Mode" = "Agent Mode";
 "Agent Panel" = "Agent Panel";
 "Alignment" = "Alignment";
 "All" = "All";
+"All %@ shots are in" = "All %@ shots are in";
 "All %@ shots are in. Cutting them together." = "All %@ shots are in. Cutting them together.";
 "All Statuses" = "All Statuses";
 "All fonts" = "All fonts";
@@ -528,6 +531,7 @@
 "Hard Light" = "Hard Light";
 "Height" = "Height";
 "Help" = "Help";
+"Here's what we could save — %@ shots" = "Here's what we could save — %@ shots";
 "Hide Guides" = "Hide Guides";
 "Hide Info" = "Hide Info";
 "Hide Timeline Tabs" = "Hide Timeline Tabs";
@@ -542,6 +546,7 @@
 "Hue" = "Hue";
 "Hue Curves" = "Hue Curves";
 "I'll choose" = "I'll choose";
+"I'll edit it" = "I'll edit it";
 "Identify" = "Identify";
 "Identifying…" = "Identifying…";
 "Ignores speech-free pauses shorter than this." = "Ignores speech-free pauses shorter than this.";
@@ -586,6 +591,7 @@
 "Keep Current" = "Keep Current";
 "Keep Editing" = "Keep Editing";
 "Keep Skill" = "Keep Skill";
+"Keep it" = "Keep it";
 "Keep the best takes" = "Keep the best takes";
 "Keeps this much audio before and after detected speech." = "Keeps this much audio before and after detected speech.";
 "Kept in ~/Library/Application Support/METAG/mcp-token, readable only by you. The bundled Claude Desktop connector reads it automatically." = "Kept in ~/Library/Application Support/METAG/mcp-token, readable only by you. The bundled Claude Desktop connector reads it automatically.";
@@ -1327,6 +1333,7 @@
 "You've re-shot a lot this hour. Try again a bit later." = "You've re-shot a lot this hour. Try again a bit later.";
 "Your Lottie animation is ready." = "Your Lottie animation is ready.";
 "Your audio clip is ready." = "Your audio clip is ready.";
+"Your film · %@ shots" = "Your film · %@ shots";
 "Your image is ready." = "Your image is ready.";
 "Your inspector for the selected clip — transform, adjust, audio, and more." = "Your inspector for the selected clip — transform, adjust, audio, and more.";
 "Your subscription has ended." = "Your subscription has ended.";

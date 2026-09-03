@@ -222,6 +222,21 @@ enum MetagJobOpener {
                 }
             }
 
+            // **首映。** 落地即播，从头播，预览上浮起那层幕。
+            //
+            // 在这之前，他等了两分钟、付了 credits，然后画面里出现的是
+            // 十一个片段、三条轨，和侧边栏里一句「已载入 5 镜」——
+            // **那是机器在报工，不是产品在交付**，而他不是剪辑师。
+            //
+            // 只在真拿到画面时升幕：一格都没有的时候没有什么可首映的。
+            if added > 0 {
+                editor.currentFrame = 0
+                editor.play()
+                editor.premiere = MetagPremiere(
+                    jobId: job.job_id, shots: added, salvaged: job.status == "failed"
+                )
+            }
+
             editor.mediaPanelToast = MediaPanelToast(
                 message: message(added: added, narrations: narrations, captioned: captioned,
                                  score: score, salvaged: job.status == "failed",

@@ -41,6 +41,7 @@
 "%@ isn't a .cube 3D LUT. METAG reads .cube files exported from most color tools." = "%@ no es un LUT 3D .cube. METAG lee archivos .cube exportados por la mayoría de herramientas de color.";
 "%@ loaded this clip's source file but couldn't prepare it for playback. The file may be corrupt or in an unsupported format." = "%@ leyó el archivo de origen de este clip pero no pudo prepararlo para reproducirlo. Puede estar dañado o en un formato no compatible.";
 "%@ model not available" = "El modelo %@ no está disponible";
+"%@ of %@ shots are in" = "%@ de %@ tomas ya están";
 "%@ shots · %@ credits" = "%@ tomas · %@ créditos";
 "%@ shots · refunded" = "%@ tomas · reembolsado";
 "%@ shots" = "%@ planos";
@@ -151,11 +152,13 @@
 "Adjust" = "Ajustar";
 "Adobe Premiere Pro" = "Adobe Premiere Pro";
 "Ads and branded content" = "Anuncios y contenido de marca";
+"Again" = "Otra vez";
 "Agent Mode" = "Modo Agente";
 "Agent Panel" = "Panel del agente";
 "Agent" = "Agente";
 "Agentic editing" = "Edición con agentes";
 "Alignment" = "Alineación";
+"All %@ shots are in" = "Las %@ tomas ya están";
 "All %@ shots are in. Cutting them together." = "Ya están los %@ planos. Los estoy montando.";
 "All Statuses" = "Todos los estados";
 "All fonts" = "Todas las fuentes";
@@ -605,6 +608,7 @@
 "Hard Light" = "Luz intensa";
 "Height" = "Altura";
 "Help" = "Ayuda";
+"Here's what we could save — %@ shots" = "Esto es lo que pudimos salvar: %@ tomas";
 "Hide Guides" = "Ocultar guías";
 "Hide Info" = "Ocultar información";
 "Hide Timeline Tabs" = "Ocultar pestañas de línea de tiempo";
@@ -622,6 +626,7 @@
 "Hue Curves" = "Curvas de tono";
 "Hue" = "Matiz";
 "I'll choose" = "Yo elijo";
+"I'll edit it" = "La edito yo";
 "Identify" = "Identificar";
 "Identifying…" = "Identificando…";
 "Ignores speech-free pauses shorter than this." = "Ignora las pausas sin voz más cortas que este valor.";
@@ -672,6 +677,7 @@
 "Keep Current" = "Conservar actual";
 "Keep Editing" = "Seguir editando";
 "Keep Skill" = "Conservar habilidad";
+"Keep it" = "Quédatela";
 "Keep the best takes" = "Quedarme con las mejores tomas";
 "Keeps this much audio before and after detected speech." = "Conserva esta cantidad de audio antes y después de la voz detectada.";
 "Kept in ~/Library/Application Support/METAG/mcp-token, readable only by you. The bundled Claude Desktop connector reads it automatically." = "Se guarda en ~/Library/Application Support/METAG/mcp-token y solo tú puedes leerlo. El conector de Claude Desktop lo lee automáticamente.";
@@ -1498,6 +1504,7 @@
 "YouTube" = "YouTube";
 "Your Lottie animation is ready." = "Tu animación Lottie está lista.";
 "Your audio clip is ready." = "Tu clip de audio está listo.";
+"Your film · %@ shots" = "Tu película · %@ tomas";
 "Your image is ready." = "Tu imagen está lista.";
 "Your inspector for the selected clip — transform, adjust, audio, and more." = "El inspector del clip seleccionado: transformar, ajustar, audio y más.";
 "Your subscription has ended." = "Tu suscripción ha terminado.";

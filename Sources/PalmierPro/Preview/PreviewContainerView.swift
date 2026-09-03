@@ -52,6 +52,25 @@ struct PreviewContainerView: View {
                         SlipTwoUpView(state: slip)
                     }
                 }
+                // **首映的幕。** 他的片子刚落地，画面正在从头播。
+                // 挂在预览上，不是挂在侧边栏 —— 那一刻他看的是画面。
+                .overlay(alignment: .bottom) {
+                    if let premiere = editor.premiere {
+                        MetagPremiereBar(
+                            premiere: premiere,
+                            onKeep: {
+                                editor.premiere = nil
+                                editor.showExportDialog = true
+                            },
+                            onAgain: {
+                                editor.premiere = nil
+                                AppState.shared.createProjectInteractively()
+                            },
+                            onDismiss: { editor.premiere = nil }
+                        )
+                    }
+                }
+                .animation(.easeOut(duration: AppTheme.Anim.transition), value: editor.premiere)
                 .frame(width: scaledWidth, height: scaledHeight)
                 .simultaneousGesture(
                     SpatialTapGesture()
