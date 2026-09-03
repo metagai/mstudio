@@ -32,6 +32,39 @@ struct PaymentReturnTests {
                 "一共只等 \(total) 秒 —— 那个窗口盖不住 webhook，他还是会看到旧余额")
     }
 
+    /// **窗口从"他回来"那一刻开始数，不是从"他点了充值"那一刻。**
+    ///
+    /// 我第一版直接 `waitUntilAppIsFrontmost()` —— 而他点"充值"那一刻
+    /// app 本来就是前台的。浏览器没抢走焦点（另一个显示器、另一个 Space、
+    /// 浏览器已经开在别处）时它**立刻返回**，整个窗口在他还没付款时就烧完了。
+    ///
+    /// 而我当时写的三条判据只验了间隔表本身 ——
+    /// **它们绿着，而他回来看到的还是旧余额**（清单第 3 条）。
+    ///
+    /// 这一条盯着那一对：先等他走，再等他回来。
+    @Test func theWindowStartsWhenHeComesBackNotWhenHeLeaves() throws {
+        let src = try String(
+            contentsOf: URL(fileURLWithPath: #filePath)
+                .deletingLastPathComponent().deletingLastPathComponent()
+                .deletingLastPathComponent().deletingLastPathComponent()
+                .appendingPathComponent("Sources/PalmierPro/Account/AccountService.swift"),
+            encoding: .utf8)
+        guard let leave = src.range(of: "waitUntilAppResignsActive("),
+              let back = src.range(of: "await waitUntilAppIsFrontmost()", range: leave.upperBound..<src.endIndex)
+        else {
+            Issue.record("付款回来那一段找不着了 —— 或者又变成只等一次前台")
+            return
+        }
+        #expect(leave.upperBound < back.lowerBound,
+                "先等前台再等离开 —— 那等于没等：他点充值时 app 就是前台的")
+    }
+
+    /// **等不到"他离开"也不许卡死。** 浏览器可能开在另一个显示器上，
+    /// 焦点根本不动 —— 那时照常去问余额，而不是永远等下去。
+    @Test @MainActor func notLeavingIsNotAFailure() async {
+        await waitUntilAppResignsActive(timeout: .milliseconds(50))
+    }
+
     /// 间隔要**越等越久**，不是死循环轮询：前面密、后面疏。
     @Test func theIntervalsBackOff() {
         let d = AccountService.paymentPollDelays

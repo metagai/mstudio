@@ -1340,3 +1340,4 @@
 "using OpenAI API key" = "using OpenAI API key";
 "~%@s · %@ credits · ~%@ min" = "~%@s · %@ credits · ~%@ min";
 "“.%@” isn’t a subtitle file we can read — use .srt or .vtt." = "“.%@” isn’t a subtitle file we can read — use .srt or .vtt.";
+"Open the tutorial project" = "Open the tutorial project";

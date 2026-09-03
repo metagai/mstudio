@@ -288,6 +288,18 @@ final class AccountService {
     /// 而不是沉默，也不是说"失败了"（钱很可能已经收了）。
     private func watchForPayment() {
         Task { @MainActor in
+            // **先等他离开，再等他回来。**
+            //
+            // 上一版直接 `waitUntilAppIsFrontmost()` —— 而他点"充值"那一刻
+            // app 本来就是前台的。浏览器没抢走焦点（另一个显示器、另一个 Space、
+            // 浏览器已经开在别处）时它**立刻返回**，于是整个 `[0,3,6,12]`
+            // 的窗口在他还没付款时就烧完了。
+            //
+            // 我写的判据只验了间隔表，没验**它从什么时候开始数** ——
+            // 判据绿着，而他回来看到的还是旧余额。
+            //
+            // 等不到"他离开"也不卡死：多半是浏览器开在别处，那就照常去问。
+            await waitUntilAppResignsActive(timeout: .seconds(20))
             await waitUntilAppIsFrontmost()
             let before = metagCredits
             for delay in Self.paymentPollDelays {
@@ -367,6 +379,22 @@ extension AccountService {
 ///
 /// **`NSApp` 会是 nil**（单测里就没有 NSApplication，隐式解包当场崩）。
 /// 没有 app 就没有"前台"可等，直接返回。
+/// 等他**离开**这个 app。
+///
+/// 和 `waitUntilAppIsFrontmost` 成一对：只有先等到"他走了"，
+/// 后面那个"他回来了"才是真的回来 —— 否则它在原地立刻返回。
+///
+/// 等不到就返回（浏览器可能开在另一个显示器上，焦点根本没动）——
+/// **等不到"他离开"不是失败，只是这一次没法用它当起点。**
+@MainActor
+func waitUntilAppResignsActive(timeout: Duration) async {
+    guard let app: NSApplication = NSApp else { return }
+    let deadline = ContinuousClock.now.advanced(by: timeout)
+    while app.isActive, ContinuousClock.now < deadline, !Task.isCancelled {
+        try? await Task.sleep(for: .milliseconds(250))
+    }
+}
+
 @MainActor
 func waitUntilAppIsFrontmost(timeout: Duration = .seconds(120)) async {
     guard let app: NSApplication = NSApp else { return }   // 没有 app 就没有"前台"可等

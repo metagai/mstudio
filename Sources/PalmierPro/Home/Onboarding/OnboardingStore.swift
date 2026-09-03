@@ -54,6 +54,17 @@ final class OnboardingStore {
         advance()
     }
 
+    /// 这一屏上有没有那条"以后再说"的出路。
+    ///
+    /// **一登录它就消失了** —— 上一版的条件带着 `!isSignedIn`。
+    /// 于是登录之后主按钮只剩"教程"，而示例工程下载失败时
+    /// `complete()` 不会被调用：**他被锁在一张关不掉的卡里，而网络抖一下就会发生。**
+    ///
+    /// 抽出来是为了让判据能直接问它 —— 那个条件长在 View 里，判据够不着。
+    nonisolated static func showsSkip(step: OnboardingStep, signedIn: Bool, misconfigured: Bool) -> Bool {
+        step == .account
+    }
+
     func complete() {
         defaults.set(true, forKey: Self.completionKey)
         isComplete = true

@@ -15,7 +15,16 @@ struct CaptionTab: View {
     @State private var center = AppTheme.Caption.defaultCenter
     @State private var selectedTrackId: String?
     @State private var selectedClipTargets: [String] = []
-    @State private var provider: TranscriptionProvider = .local
+    /// **这一屏永远是端侧，没有第二档可选。**
+    ///
+    /// 上一版这是个 `@State`，界面上有个二选一的单选框，
+    /// 而"云端"那一档标着 25 credits/小时、带登录门和额度门 ——
+    /// 实现却原样调本地那一份（`CloudTranscription` 文件开头自己写着
+    /// 「云端转写在 METAG 版本里不存在：音频不出用户设备是产品前提」）。
+    ///
+    /// 删掉那个 `@State` 而不只是删掉选择器：**让那个状态不可表达，
+    /// 比加一条判据去守它结实。** 判据能被绕过，类型不能。
+    private let provider: TranscriptionProvider = .local
     @State private var animationPreset: TextAnimation.Preset = .none
     @State private var animationHighlight: TextStyle.RGBA = TextAnimation.defaultHighlight
     @State private var censorProfanity = false

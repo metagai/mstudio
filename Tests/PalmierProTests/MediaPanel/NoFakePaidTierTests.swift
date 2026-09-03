@@ -32,6 +32,19 @@ struct NoFakePaidTierTests {
         #expect(!src.contains("URLSession"), "它真的开始联网了")
     }
 
+    /// **那个状态现在不可表达。**
+    ///
+    /// 上一版这几条全是比源码字符串 —— 4/4，而它们守的是今天最重的一处。
+    /// 判据能被绕过（换个写法、换个常量名），类型不能：
+    /// 把 `@State var provider` 改成 `let provider = .local` 之后，
+    /// **界面上没有任何一条路能选到那个不存在的档**。
+    @Test func theUICannotEvenExpressTheFakeTier() throws {
+        let src = try source("MediaPanel/CaptionsTab/CaptionTab.swift")
+        #expect(src.contains("private let provider: TranscriptionProvider = .local"),
+                "转写档位又变回可变状态了 —— 那意味着界面上又能选到别的档")
+        #expect(!src.contains("@State private var provider"))
+    }
+
     /// 界面上不许再有那个档、那个价、那两道门。
     @Test func theCaptionPanelNeitherChargesNorGates() throws {
         let src = try source("MediaPanel/CaptionsTab/CaptionTab.swift")

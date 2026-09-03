@@ -131,7 +131,10 @@ struct OnboardingOverlay: View {
             //
             // **它是次要的、小的、在最下面**：这一屏的主角是"先看一眼"，
             // 而一颗和主按钮一样重的"跳过"会把两条路变成一道选择题。
-            if onboarding.step == .account, !account.isSignedIn, !account.isMisconfigured {
+            // **出路不该因为他登录了就消失。**
+            if OnboardingStore.showsSkip(step: onboarding.step,
+                                         signedIn: account.isSignedIn,
+                                         misconfigured: account.isMisconfigured) {
                 HStack {
                     Spacer()
                     Button(L10n.string("Not now"), action: onboarding.advance)
@@ -161,17 +164,29 @@ struct OnboardingOverlay: View {
             // 它仍然在，只是不再是他见到的第一件事。
             primaryButton(L10n.string("See your film first"), action: startDraft)
         } else if account.isSignedIn || account.isMisconfigured {
-            primaryButton(
-                onboarding.sampleState == .loading ? L10n.string("Loading…") : L10n.string("Tutorial"),
-                action: onboarding.openSampleProject
-            )
+            // **他刚交出了今天最大的一笔成本（自己的身份）。**
+            // 上一版换给他的是一颗"下载教程"的按钮 —— 代价付了，价值一点没拿到，
+            // 而下载失败还会把他锁在这张卡里。
+            // 主按钮对所有人都是同一句：先看一眼你自己的片子。
+            primaryButton(L10n.string("See your film first"), action: startDraft)
         }
     }
 
     /// 登录那一块：一句话 + 四颗按钮。**次要，所以在下面、小一号。**
     @ViewBuilder
     private var accountSignIn: some View {
-        if !account.isSignedIn && !account.isMisconfigured {
+        if account.isSignedIn || account.isMisconfigured {
+            // 已经登录的人：主按钮是"先看一眼你的片子"，
+            // **教程降成一条安静的次要入口** —— 想要的人有，不想要的人不挡路。
+            // （上一版它是登录之后唯一的按钮，而它失败时会把人锁在这张卡里。）
+            Button(onboarding.sampleState == .loading
+                   ? L10n.string("Loading…") : L10n.string("Open the tutorial project"),
+                   action: onboarding.openSampleProject)
+                .buttonStyle(.plain)
+                .font(.system(size: AppTheme.FontSize.xs))
+                .foregroundStyle(AppTheme.Accent.brand)
+                .disabled(isBusy)
+        } else if !account.isSignedIn && !account.isMisconfigured {
             VStack(alignment: .leading, spacing: AppTheme.Spacing.xs) {
                 // 赠额是**登录的理由**，不是打开 app 的理由，所以它领着这一块，
                 // 不再吊在按钮右边。数字取自网关的 signup_free_credits；
