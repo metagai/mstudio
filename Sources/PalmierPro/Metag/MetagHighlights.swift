@@ -50,7 +50,11 @@ final class MetagHighlightsModel: ObservableObject {
         } catch is CancellationError {
             stage = .idle
         } catch {
-            self.error = error.localizedDescription
+            // 端侧转写/抽音轨失败时，`localizedDescription` 是
+            // 「操作无法完成。(kAFAssistantErrorDomain 错误 1101。)」这种系统串 ——
+            // 他读不懂，也没有下一步。真实原因进日志。
+            Log.app.warning("highlights failed: \(error)")
+            self.error = L10n.string("This audio couldn’t be transcribed — try a different clip.")
             stage = .idle
         }
     }

@@ -589,7 +589,10 @@ struct MetagDraftSheet: View {
                     set: { n in Task { await model.swapNarrator(n) } }
                 )) {
                     ForEach(MetagNarrator.allCases, id: \.self) { n in
-                        Text(n.displayName(for: "zh")).tag(n)
+                        // 写死 "zh"：英文/西语界面的旁白音色下拉全是中文
+                        // （「电影感 · 沉稳男声」）。同一文件 615 行的引擎名
+                        // 刚从写死 "zh" 改成 uiLang，这一处漏了。
+                        Text(n.displayName(for: uiLang)).tag(n)
                     }
                 }
                 .font(.system(size: AppTheme.FontSize.sm))

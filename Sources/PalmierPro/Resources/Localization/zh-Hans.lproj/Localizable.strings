@@ -1574,3 +1574,4 @@
 "The export didn't finish." = "这次导出没能完成。";
 "Product site, e.g. https://your-product.com" = "产品网页，例如 https://your-product.com";
 "What should it be about?" = "想拍点什么？";
+"This audio couldn’t be transcribed — try a different clip." = "这段音频没能转成文字 —— 换一段试试。";

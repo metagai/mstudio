@@ -167,6 +167,10 @@ struct MetagDirectorSheet: View {
                 quoteCard(quote)
             }
             if let error = run.error {
+                // 这一句来自网关的 `run.error`。2026-09-02 之前它可能是
+                // 「分镜流 HTTP 500：{上游响应体前 200 字}」—— 状态码和上游报错
+                // 正文原样红字给用户。**已在源头改掉**（gateway/src/director.rs）：
+                // 那几句现在都说清是谁的问题、他能做什么，原文只进网关日志。
                 Text(error)
                     .font(.system(size: AppTheme.FontSize.xs))
                     .foregroundStyle(AppTheme.Status.errorColor)
