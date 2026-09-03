@@ -373,6 +373,7 @@
 "Couldn't open the payment page — try again in a moment" = "支付页面打不开，过一会儿再试";
 "Couldn't reach METAG — check your connection and try again." = "连不上 METAG —— 检查一下网络再试。";
 "Couldn't reach the store just now — check your connection and try again." = "暂时连不上商店 —— 检查一下网络再试。";
+"Couldn't reach us just now — check your connection and try again." = "暂时连不上我们 —— 检查一下网络再试。";
 "Couldn't read that file" = "这个文件读不了";
 "Couldn't switch angle." = "无法切换角度。";
 "Couldn’t move %@ to the Trash." = "无法将 %@ 移到废纸篓。";
@@ -1358,6 +1359,7 @@
 "That job is gone — jobs are kept for 24 hours, free files for 60 minutes." = "这个任务已经不在了 —— 任务保留 24 小时，免费产物保留 60 分钟。";
 "That one was made with a temporary identity that has since expired. Sign in and your films stay with you." = "那一条是用上一次的临时身份建的，那个身份已经过期了。登录之后作品就一直留在你名下。";
 "That request didn't go through (HTTP %lld)." = "这次请求没成功（HTTP %lld）。";
+"That shot is busy right now — wait for it to land and try again." = "这一镜正忙 —— 等它落地之后再试。";
 "That's %@ characters over the limit. Trim it, or remove one." = "超出上限 %@ 字。删掉一点，或者移走一份。";
 "That's the free one for today — your draft is still here. Sign in to keep it and make more." = "今天这条免费的用完了 —— 你那条草案还在。登录就能留住它，再拍一条。";
 "The agent streams through your own Anthropic key." = "助手通过你自己的 Anthropic 密钥流式输出。";
@@ -1391,6 +1393,7 @@
 "This Mac" = "这台 Mac";
 "This audio couldn’t be transcribed — try a different clip." = "这段音频没能转成文字 —— 换一段试试。";
 "This film has no usable shots." = "这部片子没有可用的镜头。";
+"This film isn't on this account." = "这部片子不在当前账号下。";
 "This is where all your footage and assets live." = "你的所有素材和资源都位于此处。";
 "This is your preview panel to play a selected media or the whole timeline." = "这是预览面板，用于播放所选媒体或整个时间线。";
 "This model cannot cap the output at 60 FPS." = "此模型无法将输出限制为 60 FPS。";
@@ -1586,6 +1589,7 @@
 "You've already used your free preview shot." = "你的免费试渲已经用过了。";
 "You've made a lot of drafts this hour — take a break and come back shortly." = "这一小时里你已经起了很多草案 —— 歇一会儿再来。";
 "You've produced a lot this hour — take a break and come back shortly." = "这一小时里你已经出了很多片 —— 歇一会儿再来。";
+"You've re-shot a lot this hour. Try again a bit later." = "这一小时重拍得有点多，稍后再试。";
 "YouTube" = "YouTube";
 "YouTube" = "YouTube";
 "Your Lottie animation is ready." = "你的 Lottie 动画已准备就绪。";

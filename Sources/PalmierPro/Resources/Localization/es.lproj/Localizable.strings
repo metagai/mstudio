@@ -371,6 +371,7 @@
 "Couldn't open the payment page — try again in a moment" = "No se pudo abrir la página de pago: inténtalo en un momento";
 "Couldn't reach METAG — check your connection and try again." = "No se pudo conectar con METAG. Revisa tu conexión e inténtalo de nuevo.";
 "Couldn't reach the store just now — check your connection and try again." = "No se pudo conectar con la tienda — revisa tu conexión e inténtalo de nuevo.";
+"Couldn't reach us just now — check your connection and try again." = "No pudimos conectar ahora mismo: revisa tu conexión e inténtalo de nuevo.";
 "Couldn't read that file" = "No se pudo leer ese archivo";
 "Couldn't switch angle." = "No se pudo cambiar de ángulo.";
 "Couldn’t move %@ to the Trash." = "No se pudo trasladar %@ a la Papelera.";
@@ -1356,6 +1357,7 @@
 "That job is gone — jobs are kept for 24 hours, free files for 60 minutes." = "Ese trabajo ya no está: se guardan 24 horas, y los archivos gratuitos 60 minutos.";
 "That one was made with a temporary identity that has since expired. Sign in and your films stay with you." = "Esa se hizo con una identidad temporal que ya caducó. Inicia sesión y tus películas se quedan contigo.";
 "That request didn't go through (HTTP %lld)." = "Esa solicitud no se completó (HTTP %lld).";
+"That shot is busy right now — wait for it to land and try again." = "Esa toma está ocupada ahora mismo: espera a que termine e inténtalo de nuevo.";
 "That's %@ characters over the limit. Trim it, or remove one." = "Son %@ caracteres de más. Recorta un poco o quita uno.";
 "That's the free one for today — your draft is still here. Sign in to keep it and make more." = "Esa era la gratuita de hoy; tu borrador sigue aquí. Inicia sesión para conservarlo y hacer más.";
 "The agent streams through your own Anthropic key." = "El agente transmite a través de tu propia clave de Anthropic.";
@@ -1389,6 +1391,7 @@
 "This Mac" = "Este Mac";
 "This audio couldn’t be transcribed — try a different clip." = "No se pudo transcribir este audio: prueba con otro clip.";
 "This film has no usable shots." = "Esta película no tiene planos utilizables.";
+"This film isn't on this account." = "Esta película no está en esta cuenta.";
 "This is where all your footage and assets live." = "Aquí se encuentran todo tu material y tus recursos.";
 "This is your preview panel to play a selected media or the whole timeline." = "Este es el panel de previsualización, donde puedes reproducir el contenido seleccionado o toda la línea de tiempo.";
 "This model cannot cap the output at 60 FPS." = "Este modelo no puede limitar la salida a 60 FPS.";
@@ -1584,6 +1587,7 @@
 "You've already used your free preview shot." = "Ya usaste tu toma de vista previa gratuita.";
 "You've made a lot of drafts this hour — take a break and come back shortly." = "Has hecho muchos borradores esta hora: descansa un momento y vuelve.";
 "You've produced a lot this hour — take a break and come back shortly." = "Has producido mucho esta hora: descansa un momento y vuelve.";
+"You've re-shot a lot this hour. Try again a bit later." = "Has rehecho muchas tomas esta hora. Inténtalo un poco más tarde.";
 "YouTube" = "YouTube";
 "YouTube" = "YouTube";
 "Your Lottie animation is ready." = "Tu animación Lottie está lista.";

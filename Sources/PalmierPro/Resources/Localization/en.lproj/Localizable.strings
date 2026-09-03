@@ -278,6 +278,7 @@
 "Couldn't open the payment page — try again in a moment" = "Couldn't open the payment page — try again in a moment";
 "Couldn't reach METAG — check your connection and try again." = "Couldn't reach METAG — check your connection and try again.";
 "Couldn't reach the store just now — check your connection and try again." = "Couldn't reach the store just now — check your connection and try again.";
+"Couldn't reach us just now — check your connection and try again." = "Couldn't reach us just now — check your connection and try again.";
 "Couldn't read that file" = "Couldn't read that file";
 "Couldn't switch angle." = "Couldn't switch angle.";
 "Couldn’t move %@ to the Trash." = "Couldn’t move %@ to the Trash.";
@@ -534,7 +535,6 @@
 "Highlight Block" = "Highlight Block";
 "Highlights" = "Highlights";
 "Hold" = "Hold";
-"Hourly limit reached. Try again later." = "Hourly limit reached. Try again later.";
 "How did you find METAG?" = "How did you find METAG?";
 "Hue" = "Hue";
 "Hue Curves" = "Hue Curves";
@@ -1128,6 +1128,7 @@
 "That job is gone — jobs are kept for 24 hours, free files for 60 minutes." = "That job is gone — jobs are kept for 24 hours, free files for 60 minutes.";
 "That one was made with a temporary identity that has since expired. Sign in and your films stay with you." = "That one was made with a temporary identity that has since expired. Sign in and your films stay with you.";
 "That request didn't go through (HTTP %lld)." = "That request didn't go through (HTTP %lld).";
+"That shot is busy right now — wait for it to land and try again." = "That shot is busy right now — wait for it to land and try again.";
 "That's %@ characters over the limit. Trim it, or remove one." = "That's %@ characters over the limit. Trim it, or remove one.";
 "That's the free one for today — your draft is still here. Sign in to keep it and make more." = "That's the free one for today — your draft is still here. Sign in to keep it and make more.";
 "The assistant read your timeline" = "The assistant read your timeline";
@@ -1158,6 +1159,7 @@
 "This .vtt file is missing its WEBVTT header — re-export it, or try the .srt version." = "This .vtt file is missing its WEBVTT header — re-export it, or try the .srt version.";
 "This Mac" = "This Mac";
 "This audio couldn’t be transcribed — try a different clip." = "This audio couldn’t be transcribed — try a different clip.";
+"This film isn't on this account." = "This film isn't on this account.";
 "This is where all your footage and assets live." = "This is where all your footage and assets live.";
 "This is your preview panel to play a selected media or the whole timeline." = "This is your preview panel to play a selected media or the whole timeline.";
 "This model cannot cap the output at 60 FPS." = "This model cannot cap the output at 60 FPS.";
@@ -1315,6 +1317,7 @@
 "You've already used your free preview shot." = "You've already used your free preview shot.";
 "You've made a lot of drafts this hour — take a break and come back shortly." = "You've made a lot of drafts this hour — take a break and come back shortly.";
 "You've produced a lot this hour — take a break and come back shortly." = "You've produced a lot this hour — take a break and come back shortly.";
+"You've re-shot a lot this hour. Try again a bit later." = "You've re-shot a lot this hour. Try again a bit later.";
 "Your Lottie animation is ready." = "Your Lottie animation is ready.";
 "Your audio clip is ready." = "Your audio clip is ready.";
 "Your image is ready." = "Your image is ready.";

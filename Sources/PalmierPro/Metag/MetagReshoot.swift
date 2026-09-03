@@ -166,13 +166,37 @@ enum MetagReshoot {
         return nil
     }
 
-    private static func message(for error: Error) -> String {
-        if case MetagGateway.Failure.http(402) = error {
-            return L10n.key("Re-shooting needs a subscription, and works only on shots made with our own engine.")
+    /// 重拍没起来时说哪一句。
+    ///
+    /// ## 上一版这里有两个永远走不到的分支
+    ///
+    /// 它匹配 `Failure.http(402)` 和 `Failure.http(429)` —— 而 `MetagGateway.send()`
+    /// **从不抛这两个**：402 被它翻成 `.insufficientCredits`，
+    /// 429 被翻成 `.rejected(429, reason)`。于是这两句话一次都没出现过，
+    /// 真实的 402 和 429 全都掉进最后那句「重拍起不来」——
+    /// 而对 402 来说那句话是**错的**：它起得来，他订阅一下就行。
+    ///
+    /// 判据从前也照着这两个死分支写，**跟着一起绿**。
+    ///
+    /// ## 网关这个口真正会回的
+    ///
+    /// `reshoot_core`：403 不是你的、409 片子还没出完 / 这一镜已经在重拍、
+    /// 400 镜号越界、402 付费引擎或没订阅、429 自研引擎的小时配额。
+    /// 每一条他要做的事都不一样，所以**每一条都得有自己的话**。
+    static func message(for error: Error) -> String {
+        switch error {
+        case MetagGateway.Failure.insufficientCredits:
+            return L10n.string("Re-shooting needs a subscription, and works only on shots made with our own engine.")
+        case MetagGateway.Failure.rejected(429, _):
+            return L10n.string("You've re-shot a lot this hour. Try again a bit later.")
+        case MetagGateway.Failure.http(409):
+            return L10n.string("That shot is busy right now — wait for it to land and try again.")
+        case MetagGateway.Failure.http(403):
+            return L10n.string("This film isn't on this account.")
+        case MetagGateway.Failure.offline:
+            return L10n.string("Couldn't reach us just now — check your connection and try again.")
+        default:
+            return L10n.string("The re-shoot could not start.")
         }
-        if case MetagGateway.Failure.http(429) = error {
-            return L10n.key("Hourly limit reached. Try again later.")
-        }
-        return L10n.key("The re-shoot could not start.")
     }
 }
