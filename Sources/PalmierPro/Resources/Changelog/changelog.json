@@ -2,6 +2,41 @@
   "changelogURL": "https://metag.ai/docs",
   "entries": [
     {
+      "version": "0.1.13",
+      "date": "2026-09-03",
+      "sections": [
+        {
+          "heading": "New",
+          "items": [
+            "Your film plays the moment it lands. A quiet bar over it asks what you want to do — keep it, make another, or edit it yourself. Before this you got eleven clips on three tracks and a line in a side panel.",
+            "Three real films on the first screen. Click one and it plays right there — no sign-up, no wait, no credits.",
+            "Your films are a wall of posters. Hover one and it starts playing, so you know which one it is without opening it.",
+            "Opened from the disk image, METAG asks once and moves itself into Applications. Running from the image means updates can never install, and the app disappears when you eject.",
+            "The installer window shows where to drag it.",
+            "While a film is being shot, each empty slot holds that shot's line from the storyboard, large enough to read, and a count of how many have landed."
+          ]
+        },
+        {
+          "heading": "Fixes",
+          "items": [
+            "Buttons that spend money no longer print a price we do not have yet. One of them used to say “Approve 0 Credits” while the quote was still loading.",
+            "We no longer claim nothing was charged unless we have confirmed the refund. When we do not know, we say we are checking.",
+            "A failed balance check no longer shows a red zero, and a failed price list no longer makes the buy button disappear for the rest of the session.",
+            "Re-shoot failures say what actually happened — needs a subscription, hourly limit, shot still busy, wrong account — instead of one sentence for all of them.",
+            "Errors from the server no longer reach the screen as raw HTML or a stack trace."
+          ]
+        },
+        {
+          "heading": "Known limits",
+          "items": [
+            "Requires macOS 26. Earlier systems cannot run it.",
+            "Crash reporting is not connected yet. If METAG crashes on your Mac we will not know — please tell us.",
+            "0.1.9 through 0.1.12 were withdrawn the day they shipped: they were signed with a certificate the embedded profile did not list, so macOS killed them at launch. If you have one of those, download this build. Every release is now started once before it ships."
+          ]
+        }
+      ]
+    },
+    {
       "version": "0.1.8",
       "date": "2026-08-16",
       "sections": [
