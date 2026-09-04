@@ -2,6 +2,35 @@
   "changelogURL": "https://metag.ai/docs",
   "entries": [
     {
+      "version": "0.1.15",
+      "date": "2026-09-04",
+      "sections": [
+        {
+          "heading": "New",
+          "items": [
+            "Keep it now keeps it. Press the button under your finished film and the film lands in your Movies folder, then Finder opens with it selected. Before this, that button opened an export panel with six dropdowns — destination, codec, resolution, timeline format, and two more you had never heard of. If you want those, the Export button in the title bar still has them.",
+            "While your film is being written, you can read it. Each empty frame now carries the line of narration for that shot, arriving one at a time as they are written — instead of thirty seconds of blank slots."
+          ]
+        },
+        {
+          "heading": "Fixes",
+          "items": [
+            "The Chinese progress line was backwards. It said \"0 of 5 shots are in\" with the numbers swapped, which read as \"out of 0 shots, 5 have arrived.\"",
+            "Credits had four different names in Chinese. Now it has one.",
+            "A film whose name is a long sentence saves correctly. Long non-Latin names were being cut past the filesystem's limit and failing to save at all.",
+            "Saving two films with the same name no longer overwrites the first one."
+          ]
+        },
+        {
+          "heading": "Known limits",
+          "items": [
+            "Requires macOS 26. Earlier systems cannot run it.",
+            "Crash reporting is still not connected. If METAG crashes on your Mac we will not know — please tell us."
+          ]
+        }
+      ]
+    },
+    {
       "version": "0.1.14",
       "date": "2026-09-04",
       "sections": [
