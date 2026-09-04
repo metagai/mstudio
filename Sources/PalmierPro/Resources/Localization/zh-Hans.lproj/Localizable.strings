@@ -7,7 +7,7 @@
 // 声音复刻与配音
 // 择优 / 改图 / 找亮点
 // 常见失败的可行动文案
-// 草案 / 额度 / 作品面板
+// 草案 / credits / 作品面板
 // 草案各阶段
 // 频控文案
 // 免费试渲一镜 / 档位
@@ -16,27 +16,27 @@
 "$%.2f" = "$%.2f";
 "$%.2f/mo" = "$%.2f/月";
 "$%lld/mo" = "$%lld/月";
-"$%lld–$%lld · Credits expire at renewal." = "$%lld–$%lld · 积分将在续订时到期。";
+"$%lld–$%lld · Credits expire at renewal." = "$%lld–$%lld · credits 将在续订时到期。";
 "%@ (Paid)" = "%@（付费）";
-"%@ / %@ credits" = "%@ / %@ 积分";
+"%@ / %@ credits" = "%@ / %@ credits";
 "%@ characters" = "%@ 字";
-"%@ costs %@ credits — %@, %@ shots. Billed only after you approve." = "%@ 需要 %@ 积分 —— %@，%@ 个镜头。只有你批准后才会扣费。";
+"%@ costs %@ credits — %@, %@ shots. Billed only after you approve." = "%@ 需要 %@ credits —— %@，%@ 个镜头。只有你批准后才会扣费。";
 "%@ could not be exported." = "无法导出 %@。";
 "%@ couldn't load this clip's source file. It may be missing, on an ejected drive, or unreadable." = "%@ 打不开这一段的源文件。它可能被移动了、在已弹出的磁盘上，或者读不出来。";
 "%@ couldn't load this source file. It may be missing, on an ejected drive, or unreadable." = "%@ 打不开这个源文件。它可能被移动了、在已弹出的磁盘上，或者读不出来。";
-"%@ credit" = "%@ 积分";
-"%@ credits / month" = "每月 %@ 积分";
+"%@ credit" = "%@ credits";
+"%@ credits / month" = "每月 %@ credits";
 "%@ credits / shot" = "%@ credits / 镜";
-"%@ credits estimated. Actual billing may differ." = "预估 %@ 积分。实际扣费可能有出入。";
-"%@ credits needed. Only %@ remaining." = "需要 %@ 积分，但只剩 %@。";
-"%@ credits remaining" = "剩余 %@ 积分";
-"%@ credits" = "%@ 积分";
-"%@ credits. %@ credits remaining after this generation." = "%@ 积分。本次生成后还剩 %@ 积分。";
+"%@ credits estimated. Actual billing may differ." = "预估 %@ credits。实际扣费可能有出入。";
+"%@ credits needed. Only %@ remaining." = "需要 %@ credits，但只剩 %@。";
+"%@ credits remaining" = "剩余 %@ credits";
+"%@ credits" = "%@ credits";
+"%@ credits. %@ credits remaining after this generation." = "%@ credits。本次生成后还剩 %@ credits。";
 "%@ does not accept this media" = "%@ 不接受此媒体";
 "%@ does not support this media type." = "%@ 不支持此媒体类型。";
 "%@ exported with %lld warnings." = "%@ 已导出，有 %lld 条警告。";
 "%@ exported with 1 warning." = "%@ 已导出，有 1 条警告。";
-"%@ free credits when you sign in" = "登录送 %@ 积分";
+"%@ free credits when you sign in" = "登录送 %@ credits";
 "%@ generates from text only and ignores an attached image — pick a tier that takes a reference image." = "%@ 只按文字生成，会忽略你附的图 —— 请选一档收参考图的模型。";
 "%@ is ready." = "%@ 已就绪。";
 "%@ isn't a .cube 3D LUT. METAG reads .cube files exported from most color tools." = "%@ 不是 .cube 三维 LUT。METAG 读大多数调色工具导出的 .cube 文件。";
@@ -52,8 +52,8 @@
 "%@ – %@  %@" = "%@ – %@  %@";
 "%@, %lld skills" = "%@，%lld 个技能";
 "%@: %@." = "%@：%@。";
-"%@k credits" = "%@k 积分";
-"%lld / %lld credits" = "%lld / %lld 积分";
+"%@k credits" = "%@k credits";
+"%lld / %lld credits" = "%lld / %lld credits";
 "%lld Lottie animations are ready in %@." = "%lld 个 Lottie 动画已经进了 %@。";
 "%lld Lottie animations are ready in Palmier Pro." = "%lld 个 Lottie 动画已在 Palmier Pro 中准备就绪。";
 "%lld audio clips are ready in %@." = "%lld 段音频已经进了 %@。";
@@ -61,18 +61,18 @@
 "%lld by timecode, %lld by audio" = "%lld 个按时间码，%lld 个按音频";
 "%lld clips" = "%lld 个片段";
 "%lld couldn't align" = "%lld 个无法对齐";
-"%lld credits / month" = "%lld 积分/月";
-"%lld credits estimated. Actual billing may differ." = "预计 %lld 积分。实际计费可能有所不同。";
-"%lld credits needed. Only %lld remaining." = "需要 %lld 积分。仅剩 %lld。";
-"%lld credits refunded" = "已退还 %lld 积分";
-"%lld credits used" = "已使用 %lld 积分";
-"%lld credits" = "%lld 积分";
-"%lld credits. %lld remaining after this generation." = "%lld 积分。本次生成后剩余 %lld 积分。";
+"%lld credits / month" = "%lld credits/月";
+"%lld credits estimated. Actual billing may differ." = "预计 %lld credits。实际计费可能有所不同。";
+"%lld credits needed. Only %lld remaining." = "需要 %lld credits。仅剩 %lld。";
+"%lld credits refunded" = "已退还 %lld credits";
+"%lld credits used" = "已使用 %lld credits";
+"%lld credits" = "%lld credits";
+"%lld credits. %lld remaining after this generation." = "%lld credits。本次生成后剩余 %lld credits。";
 "%lld images are ready in %@." = "%lld 张图片已经进了 %@。";
 "%lld images are ready in Palmier Pro." = "%lld 张图像已在 Palmier Pro 中准备就绪。";
 "%lld items" = "%lld 个项目";
 "%lld media files are missing and will be skipped." = "%lld 个媒体文件缺失，将被跳过。";
-"%lld of %lld credits remaining this period" = "本周期剩余 %lld，共 %lld 积分";
+"%lld of %lld credits remaining this period" = "本周期剩余 %lld，共 %lld credits";
 "%lld selected" = "已选择 %lld 个";
 "%lld subtitle files are ready in %@." = "%lld 个字幕文件已经进了 %@。";
 "%lld subtitle files are ready in Palmier Pro." = "%lld 个字幕文件已在 Palmier Pro 中准备就绪。";
@@ -82,22 +82,22 @@
 "%lld videos are ready in Palmier Pro." = "%lld 个视频已在 Palmier Pro 中准备就绪。";
 "%lld" = "%lld";
 "%lld. %@" = "%lld. %@";
-"%lldk credits" = "%lldk 积分";
+"%lldk credits" = "%lldk credits";
 "(image payload)" = "（图像载荷）";
 "+%lld" = "+%lld";
 "/ month" = "/ 月";
-"0 credits used" = "已使用 0 积分";
-"0 credits" = "0 积分";
+"0 credits used" = "已使用 0 credits";
+"0 credits" = "0 credits";
 "1 clip" = "1 个片段";
-"1 credit estimated. Actual billing may differ." = "预计 1 积分。实际计费可能有所不同。";
-"1 credit needed. Only %lld remaining." = "需要 1 积分。仅剩 %lld。";
-"1 credit used" = "已使用 1 积分";
-"1 credit" = "1 积分";
-"1 credit. %lld remaining after this generation." = "1 积分。本次生成后剩余 %lld 积分。";
+"1 credit estimated. Actual billing may differ." = "预计 1 credit。实际计费可能有所不同。";
+"1 credit needed. Only %lld remaining." = "需要 1 credit。仅剩 %lld。";
+"1 credit used" = "已使用 1 credit";
+"1 credit" = "1 credit";
+"1 credit. %lld remaining after this generation." = "1 credit。本次生成后剩余 %lld credits。";
 "1 item" = "1 个项目";
 "1 media file is missing and will be skipped." = "1 个媒体文件缺失，将被跳过。";
-"= %lld credits" = "= %lld 积分";
-"= 1 credit" = "= 1 积分";
+"= %lld credits" = "= %lld credits";
+"= 1 credit" = "= 1 credit";
 "A courier bikes through Tokyo rain at night" = "夜里的东京雨中，一个快递员骑车穿过街道";
 "A video editor built for AI. Generate, and edit all in one place." = "为 AI 而生的视频编辑器：生成和剪辑，在同一个地方。";
 "A woman folds laundry in an empty laundromat, warm afternoon light" = "空无一人的自助洗衣房，一个女人在叠衣服，午后暖光";
@@ -125,13 +125,13 @@
 "Add Range to Chat" = "将范围添加到对话";
 "Add Text" = "添加文本";
 "Add a comment" = "添加注释";
-"Add an Anthropic API key or credits to use this model." = "添加 Anthropic API key 或积分以使用此模型。";
+"Add an Anthropic API key or credits to use this model." = "添加 Anthropic API key 或 credits 以使用此模型。";
 "Add an Anthropic API key" = "添加 Anthropic API 密钥";
-"Add an OpenAI API key or credits to use this model." = "添加 OpenAI API key 或积分以使用此模型。";
+"Add an OpenAI API key or credits to use this model." = "添加 OpenAI API key 或 credits 以使用此模型。";
 "Add an email above to enable a reply" = "在上方添加电子邮件以接收回复";
 "Add captions" = "添加字幕";
-"Add credits to use Cloud." = "添加积分以使用云端。";
-"Add credits" = "添加积分";
+"Add credits to use Cloud." = "添加 credits 以使用云端。";
+"Add credits" = "添加 credits";
 "Add emoji" = "添加表情符号";
 "Add generated audio to an audio track at this clip's start." = "在此片段开头将生成的音频添加到音频轨道。";
 "Add keyframe" = "添加关键帧";
@@ -178,7 +178,7 @@
 "Applies immediately. Untranslated text falls back to English." = "立即生效。未翻译的文本回退为英文。";
 "Apply to Existing Captions" = "应用到现有字幕";
 "Apply" = "应用";
-"Approve %@ Credits" = "批准扣除 %@ 积分";
+"Approve %@ Credits" = "批准扣除 %@ credits";
 "Approve" = "批准";
 "Ask anything, or start with:" = "询问任何问题，或从这里开始：";
 "Ask, or type @ to reference media" = "提问，或输入 @ 引用媒体";
@@ -210,13 +210,13 @@
 "Budget" = "预算";
 "Built-in (free)" = "内置音色（免费）";
 "Buy $%lld" = "购买 $%lld";
-"Buy %@ credits · $%@" = "购买 %@ 积分 · $%@";
-"Buy credits" = "购买额度";
+"Buy %@ credits · $%@" = "购买 %@ credits · $%@";
+"Buy credits" = "购买 credits";
 "Buy more" = "购买更多";
 "Buy" = "购买";
 "By default only lip-sync shots use it; the rest stay on the standard tier" = "默认只有需要对口型的镜头用它，其余走标准档";
 "Cache" = "缓存";
-"Cached — no credits used." = "已缓存，未使用积分。";
+"Cached — no credits used." = "已缓存，未使用 credits。";
 "Can't add captions from \"%@\" — %@" = "无法从“%@”添加字幕 — %@";
 "Can't add captions — \"%@\" is offline." = "无法添加字幕 — “%@”已离线。";
 "Can't delete every timeline — the project needs at least one." = "无法删除所有时间线。项目至少需要一条时间线。";
@@ -302,7 +302,7 @@
 "Close Tab" = "关闭标签页";
 "Close gaps" = "填补间隙";
 "Close" = "关闭";
-"Cloud auto-detects languages, produces more accurate transcripts, can identify speakers, and uses 25 credits/hr when a transcript is not cached." = "云端可自动检测语言、生成更准确的转录并识别说话人。转录未缓存时，每小时使用 25 积分。";
+"Cloud auto-detects languages, produces more accurate transcripts, can identify speakers, and uses 25 credits/hr when a transcript is not cached." = "云端可自动检测语言、生成更准确的转录并识别说话人。转录未缓存时，每小时使用 25 credits。";
 "Cloud" = "云端";
 "Codec" = "编解码器";
 "Collapse" = "折叠";
@@ -358,9 +358,9 @@
 "Create a skill or browse the Community collection." = "创建技能或浏览社区合集。";
 "Create matching sound for the video" = "为视频创建匹配的声音";
 "Creating…" = "正在创建…";
-"Credit activity" = "额度流水";
-"Credits cover AI generation and chat." = "积分可用于 AI 生成和对话。";
-"Credits" = "积分";
+"Credit activity" = "credits 流水";
+"Credits cover AI generation and chat." = "credits 可用于 AI 生成和对话。";
+"Credits" = "credits";
 "Crop applies to one clip at a time" = "每次只能裁剪一个片段";
 "Crop" = "裁剪";
 "Curves" = "曲线";
@@ -578,8 +578,8 @@
 "Generate music for the timeline" = "为时间线生成音乐";
 "Generate music that fits the video" = "生成与视频匹配的音乐";
 "Generate video, image, or audio with different models and settings. Drag assets from the media panel above into the reference frame." = "使用不同模型和设置生成视频、图像或音频。将素材从上方媒体面板拖入参考框。";
-"Generate · %lld credits" = "生成 · %lld 积分";
-"Generate · 1 credit" = "生成 · 1 积分";
+"Generate · %lld credits" = "生成 · %lld credits";
+"Generate · 1 credit" = "生成 · 1 credit";
 "Generate" = "生成";
 "Generated audio lands in your media panel — drag it onto the timeline." = "生成的音频会出现在素材面板，拖到时间线上即可。";
 "Generating — shots will land as they finish." = "正在出片 —— 每一镜渲好就会自己落到时间轴上。";
@@ -732,12 +732,12 @@
 "Loading…" = "正在载入…";
 "Local generation failed:" = "本地出图失败：";
 "Local generation is not set up yet, missing:" = "本地出图还没准备好，缺：";
-"Local runs with Apple's SpeechAnalyzer. Cloud uses credits and a more accurate model with more capabilities." = "本地转录使用 Apple SpeechAnalyzer。云端会使用积分，并提供更准确、功能更多的模型。";
+"Local runs with Apple's SpeechAnalyzer. Cloud uses credits and a more accurate model with more capabilities." = "本地转录使用 Apple SpeechAnalyzer。云端会使用 credits，并提供更准确、功能更多的模型。";
 "Local runs with Apple's SpeechAnalyzer." = "本地转录使用 Apple SpeechAnalyzer。";
 "Local" = "本地";
-"Log in for 250 free credits" = "登录即可获得 250 免费积分";
-"Log in for free credits (no number)" = "登录即可获得免费积分";
-"Log in for free credits" = "登录即可获得 %@ 积分";
+"Log in for 250 free credits" = "登录即可获得 250 免费 credits";
+"Log in for free credits (no number)" = "登录即可获得免费 credits";
+"Log in for free credits" = "登录即可获得 %@ credits";
 "Looking for the good parts…" = "正在找精彩的部分…";
 "Low" = "低";
 "Luma" = "亮度";
@@ -753,7 +753,7 @@
 "Made with METAG" = "METAG 拍的";
 "Main + Sidebar" = "主面板 + 边栏";
 "Make vertical shorts" = "制作竖屏短片";
-"Manage credits" = "管理积分";
+"Manage credits" = "管理 credits";
 "Manage subscription" = "管理订阅";
 "Manage" = "管理";
 "Manual setup" = "手动设置";
@@ -771,7 +771,7 @@
 "Match System" = "跟随系统";
 "Match Timeline" = "匹配时间线";
 "Match mouth movement to replacement audio" = "让嘴部动作与替换音频匹配";
-"Matches voices across clips, transcribing untranscribed timeline clips first (uses credits). Transcripts and voice fingerprints are cached, so re-runs are fast." = "匹配不同片段中的声音，并先转录时间线上尚未转录的片段（使用积分）。转录和声音指纹会被缓存，因此再次运行速度很快。";
+"Matches voices across clips, transcribing untranscribed timeline clips first (uses credits). Transcripts and voice fingerprints are cached, so re-runs are fast." = "匹配不同片段中的声音，并先转录时间线上尚未转录的片段（使用 credits）。转录和声音指纹会被缓存，因此再次运行速度很快。";
 "Max characters" = "最多字符数";
 "Max plan" = "Max 方案";
 "Max words" = "最多字词数";
@@ -838,7 +838,7 @@
 "No cloned voices yet." = "还没有复刻的音色。";
 "No connection. Check your network and try again." = "连不上网络。检查一下连接再试。";
 "No conversations yet" = "尚无对话";
-"No credit activity yet" = "还没有额度变动";
+"No credit activity yet" = "还没有 credits 变动";
 "No exports yet" = "尚无导出任务";
 "No films yet — generate one and it shows up here" = "还没有作品 —— 生成一条就会出现在这里";
 "No generations yet" = "尚无生成内容";
@@ -866,8 +866,8 @@
 "None of the shots came back usable. Change a line or pick another tier, then try again." = "这一条一镜都没渲出来。改一句话，或者换一档，再试一次。";
 "None" = "无";
 "Normal" = "正常";
-"Not enough credits — top up or subscribe in Settings › Account." = "额度不够了 —— 在「设置 › 账户」里加油或订阅。";
-"Not enough credits." = "积分不足。";
+"Not enough credits — top up or subscribe in Settings › Account." = "credits 不够了 —— 在「设置 › 账户」里加油或订阅。";
+"Not enough credits." = "credits 不足。";
 "Not now" = "以后再说";
 "Not ready — the draft is still rendering, or this one was already produced." = "还不能出片 —— 草案还在生成，或者这一份已经出过了。";
 "Not selected" = "未选择";
@@ -885,7 +885,7 @@
 "Older interchange format, best when Premiere Pro is the destination. Supports basic edits and keyframes, but not text, color, effects, edge softness, or edge rounding." = "较旧的交换格式，最适合导入 Premiere Pro。支持基本编辑和关键帧，但不支持文本、颜色、效果、边缘柔化或边缘圆角。";
 "On-device transcription is not available for %@." = "%@ 不支持设备端转录。";
 "On-device · Z-Image Turbo" = "本地 · Z-Image Turbo";
-"One-off purchase. Credits do not expire." = "一次性购买。积分永不过期。";
+"One-off purchase. Credits do not expire." = "一次性购买。credits 永不过期。";
 "Only %@ images fit — the rest weren't added" = "最多放 %@ 张图，多的没加进来";
 "Only available for AI-generated media" = "仅适用于 AI 生成的媒体";
 "Only clips on the timeline get transcribed — drag these onto the timeline first." = "只有时间线上的片段会被转写 —— 先把它们拖到时间线上。";
@@ -928,7 +928,7 @@
 "Paste Settings" = "粘贴设置";
 "Paste" = "粘贴";
 "Path" = "路径";
-"Payment may still be processing — your balance will update on its own. You can check credit activity any time." = "付款可能还在处理 —— 余额会自己更新。你随时可以去看额度流水。";
+"Payment may still be processing — your balance will update on its own. You can check credit activity any time." = "付款可能还在处理 —— 余额会自己更新。你随时可以去看 credits 流水。";
 "Per line" = "每行";
 "Per word" = "每个字词";
 "PiP Bottom Left" = "画中画左下";
@@ -960,7 +960,7 @@
 "Pro plan" = "Pro 方案";
 "Produce · %@ credits" = "出片 · %@ credits";
 "Produce" = "确认出片";
-"Producing this will cost about %@ credits" = "出片大约需要 %@ 积分";
+"Producing this will cost about %@ credits" = "出片大约需要 %@ credits";
 "Product demos" = "产品演示";
 "Product site, e.g. https://your-product.com" = "产品网页，例如 https://your-product.com";
 "Project Activity" = "项目活动";
@@ -1173,7 +1173,7 @@
 "Sign in to METAG" = "登录 METAG";
 "Sign in to generate" = "登录以生成";
 "Sign in to receive %@ free credits for AI chat and generation." = "登录即送 %@ credits，可用于 AI 对话与生成。";
-"Sign in to receive 250 free credits for AI chat and generation." = "登录即可获得 250 个免费积分，用于 AI 聊天和生成。";
+"Sign in to receive 250 free credits for AI chat and generation." = "登录即可获得 250 个免费 credits，用于 AI 聊天和生成。";
 "Sign in to start generating." = "登录即可开始生成。";
 "Sign in to subscribe and use AI generation." = "登录以订阅并使用 AI 生成。";
 "Sign in to use AI chat." = "登录以使用 AI 聊天。";
@@ -1190,7 +1190,7 @@
 "Signed out" = "已退出登录";
 "Signing in keeps this draft and lets you produce it." = "登录之后这条草案留给你，而且可以出片。";
 "Signing you in…" = "正在登录…";
-"Signup credits" = "新手额度";
+"Signup credits" = "新手 credits";
 "Silence Detection" = "静音检测";
 "Size" = "大小";
 "Skill actions" = "技能操作";
@@ -1295,7 +1295,7 @@
 "The agent streams through your own Anthropic key." = "助手通过你自己的 Anthropic 密钥流式输出。";
 "The assistant read your timeline" = "助手读了你的时间轴";
 "The clip you're adding has different settings than the current project." = "要添加的片段与当前项目的设置不同。";
-"The credits are back in your balance." = "额度已经退回你的余额。";
+"The credits are back in your balance." = "credits 已经退回你的余额。";
 "The cut is locked. Writing something to carry it." = "剪辑定了，正在写一段能托住它的曲子。";
 "The draft is still rendering — wait a moment." = "草案还在生成 —— 稍等一下。";
 "The draft is taking too long — try again in a moment." = "草案等太久了，稍后再试一次。";
@@ -1309,7 +1309,7 @@
 "The provider did not answer — try again in a moment." = "上游服务没有响应 —— 稍后再试一次。";
 "The re-shoot could not start." = "重拍没能开始。";
 "The re-shoot did not finish. Nothing was charged." = "重拍没有完成，没有扣费。";
-"The re-shoot didn't finish. We're checking the credits — any refund shows up in credit activity." = "这次重拍没能完成。额度我们正在核对 —— 退回会出现在额度流水里。";
+"The re-shoot didn't finish. We're checking the credits — any refund shows up in credit activity." = "这次重拍没能完成。credits 我们正在核对 —— 退回会出现在 credits 流水里。";
 "The request timed out. Try again." = "请求超时了，再试一次。";
 "The search model didn’t download — tap “Retry” above." = "搜索模型没下载成功 —— 点上面的「重试」。";
 "The selected model refused this request. Revise the prompt and try again." = "所选模型拒绝了此请求。请修改提示词后重试。";
@@ -1365,11 +1365,11 @@
 "Top-up" = "充值";
 "Track Name" = "轨道名称";
 "Tracking" = "字距";
-"Transcribe · %lld credits" = "转录 · %lld 积分";
-"Transcribe · 1 credit" = "转录 · 1 积分";
+"Transcribe · %lld credits" = "转录 · %lld credits";
+"Transcribe · 1 credit" = "转录 · 1 credit";
 "Transcribe" = "转录";
 "Transcribed on this Mac with Apple's SpeechAnalyzer. Free — your audio never leaves the device." = "在这台 Mac 上用 Apple SpeechAnalyzer 转写。免费 —— 音频不会离开你的设备。";
-"Transcribed on this Mac — your audio never leaves it, and it costs no credits." = "在这台 Mac 上转写 —— 音频不出这台机器，也不花额度。";
+"Transcribed on this Mac — your audio never leaves it, and it costs no credits." = "在这台 Mac 上转写 —— 音频不出这台机器，也不花 credits。";
 "Transcribing on this Mac…" = "正在本机转写…";
 "Transcribing…" = "正在转录…";
 "Transcript" = "转录";
@@ -1410,7 +1410,7 @@
 "Upgrade to %@" = "升级到 %@";
 "Upgrade to Max" = "升级到 Max";
 "Upgrade to Pro" = "升级到 Pro";
-"Upgrade to add credits" = "升级以添加积分";
+"Upgrade to add credits" = "升级以添加 credits";
 "Upgrade" = "升级";
 "Uploading…" = "正在上传…";
 "Upscale only works on video or images" = "放大仅适用于视频或图像";
@@ -1465,7 +1465,7 @@
 "We read every message and may reach out at %@." = "我们会阅读每条消息，并可能通过 %@ 与你联系。";
 "We read every message. Add an email next time if you'd like a reply." = "我们会阅读每条消息。如果希望收到回复，请下次添加电子邮件。";
 "We read every message. We won't email you, as requested." = "我们会阅读每条消息，并会按你的要求不发送电子邮件。";
-"We're checking the credits for this one — any refund shows up in credit activity." = "这一单的额度我们正在核对 —— 退回会出现在额度流水里。";
+"We're checking the credits for this one — any refund shows up in credit activity." = "这一单的 credits 我们正在核对 —— 退回会出现在 credits 流水里。";
 "Welcome to %@" = "欢迎使用 %@";
 "Welcome to METAG" = "欢迎使用 METAG";
 "Welcome to Palmier Pro" = "欢迎使用 Palmier Pro";
@@ -1527,8 +1527,8 @@
 "args" = "参数";
 "by audio" = "按音频";
 "by timecode" = "按时间码";
-"credit" = "积分";
-"credits" = "积分";
+"credit" = "credits";
+"credits" = "credits";
 "declined this request." = "拒绝了这次请求。";
 "drift correction skipped — it would overwrite an adjacent clip" = "已跳过漂移校正，否则会覆盖相邻片段";
 "drift-corrected" = "已校正漂移";
@@ -1547,5 +1547,5 @@
 "using Anthropic API key" = "使用 Anthropic API key";
 "using OpenAI API key" = "使用 OpenAI API key";
 "you@example.com — so we can reply" = "you@example.com，以便我们回复";
-"~%@s · %@ credits · ~%@ min" = "约 %@ 秒 · %@ 积分 · 约 %@ 分钟";
+"~%@s · %@ credits · ~%@ min" = "约 %@ 秒 · %@ credits · 约 %@ 分钟";
 "“.%@” isn’t a subtitle file we can read — use .srt or .vtt." = "「.%@」不是我们能读的字幕文件 —— 用 .srt 或 .vtt。";

@@ -98,6 +98,27 @@ def check_argument_order(catalogs: list[Path]) -> list[str]:
     return fails
 
 
+# 同一样东西在中文界面里曾经有四个名字：
+# credits / 积分 / 额度（Mac 端）、点数（studio）。用户一次会话里能看到两个。
+# 2026-09-04 统一成 credits 不译：价目表、API 字段（cost_credits）、客服
+# 对话说的是同一个词；繁中本来就已经全用 credits。
+# 「积分」像超市攒的、「额度」读起来是限制而不是可花的东西、「点数」偏游戏。
+# **真正的缺陷是"有四个"，不是"选了哪个"。**
+CREDIT_ALIASES = ("积分", "额度", "点数")
+
+
+def check_credits_wording(catalogs: list[Path]) -> list[str]:
+    fails: list[str] = []
+    for path in catalogs:
+        if not path.parent.name.startswith("zh"):
+            continue
+        hits = [w for w in CREDIT_ALIASES if w in path.read_text()]
+        if hits:
+            fails.append(f"{path.parent.name}：credits 又有了别的叫法 —— "
+                         f"{'、'.join(hits)}。中文界面里它只叫 credits。")
+    return fails
+
+
 def main() -> int:
     catalogs = sorted((ROOT / "Sources/PalmierPro/Resources/Localization").glob("*.lproj/Localizable.strings"))
     fails, keys = [], 0
@@ -123,6 +144,7 @@ def main() -> int:
                 fails.append(f"    {d}")
 
     fails += check_argument_order(catalogs)
+    fails += check_credits_wording(catalogs)
 
     print(f"SCOPE {keys} 条词条 × {len(catalogs)} 张表")
     if fails:
