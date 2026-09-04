@@ -81,7 +81,7 @@ struct ShortcutsPane: View {
         Grid(
             alignment: .leading,
             horizontalSpacing: AppTheme.Spacing.mdLg,
-            verticalSpacing: AppTheme.Spacing.sm
+            verticalSpacing: AppTheme.Spacing.smMd
         ) {
             ForEach(Array(groups.enumerated()), id: \.element.title) { index, group in
                 if index > 0 {

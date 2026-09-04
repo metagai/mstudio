@@ -69,7 +69,7 @@ struct MyProjectsSection: View {
             }
         }
         .padding(.horizontal, AppTheme.Spacing.xlXxl)
-        .padding(.bottom, AppTheme.Spacing.sm)
+        .padding(.bottom, AppTheme.Spacing.smMd)
         .animation(.easeInOut(duration: AppTheme.Anim.transition), value: isSearchExpanded)
         .alert(deletionTitle, isPresented: Binding(
             get: { !projectsPendingDeletion.isEmpty },
@@ -95,7 +95,7 @@ struct MyProjectsSection: View {
     }
 
     private var searchField: some View {
-        HStack(spacing: AppTheme.Spacing.sm) {
+        HStack(spacing: AppTheme.Spacing.smMd) {
             Image(systemName: "magnifyingglass")
                 .font(.system(size: AppTheme.FontSize.sm))
                 .foregroundStyle(AppTheme.Text.mutedColor)

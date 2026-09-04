@@ -75,7 +75,7 @@ struct ModelsPane: View {
     ///   而他压根没搜过。
     @ViewBuilder
     private var emptyState: some View {
-        VStack(alignment: .leading, spacing: AppTheme.Spacing.sm) {
+        VStack(alignment: .leading, spacing: AppTheme.Spacing.smMd) {
             if let error = catalog.lastError {
                 Text(L10n.string("Couldn't load the model list."))
                     .foregroundStyle(AppTheme.Text.secondaryColor)
@@ -116,7 +116,7 @@ struct ModelsPane: View {
     }
 
     private var searchBar: some View {
-        HStack(spacing: AppTheme.Spacing.sm) {
+        HStack(spacing: AppTheme.Spacing.smMd) {
             Image(systemName: "magnifyingglass")
                 .font(.system(size: AppTheme.FontSize.sm))
                 .foregroundStyle(AppTheme.Text.mutedColor)

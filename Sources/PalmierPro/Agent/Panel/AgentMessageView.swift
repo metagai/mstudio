@@ -197,11 +197,11 @@ private struct ToolRunRow: View {
     }
 
     var body: some View {
-        VStack(alignment: .leading, spacing: AppTheme.Spacing.sm) {
+        VStack(alignment: .leading, spacing: AppTheme.Spacing.smMd) {
             Button {
                 withAnimation(.easeOut(duration: 0.15)) { expanded.toggle() }
             } label: {
-                HStack(spacing: AppTheme.Spacing.sm) {
+                HStack(spacing: AppTheme.Spacing.smMd) {
                     if isRunning {
                         ProgressView()
                             .controlSize(.mini)

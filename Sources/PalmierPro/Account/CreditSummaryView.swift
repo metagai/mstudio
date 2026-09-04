@@ -82,7 +82,7 @@ struct CreditSummaryView: View {
                 .monospacedDigit()
                 .foregroundStyle(tint)
         }
-        .padding(.horizontal, AppTheme.Spacing.sm)
+        .padding(.horizontal, AppTheme.Spacing.smMd)
         .padding(.vertical, AppTheme.Spacing.xs)
         .background(Capsule().fill(.ultraThinMaterial))
         .overlay(

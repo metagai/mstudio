@@ -93,7 +93,7 @@ extension View {
         // 解除 darkAqua 后它变成亮玻璃，白字当场不可读。
         // 改成固定的深色遮罩 + 浅色字 —— 这样与主题、与素材亮度都无关。
         foregroundStyle(AppTheme.Text.onDarkColor)
-            .padding(.horizontal, AppTheme.Spacing.sm)
+            .padding(.horizontal, AppTheme.Spacing.smMd)
             .padding(.vertical, AppTheme.Spacing.xs)
             .background(Color.black.opacity(AppTheme.Opacity.strong), in: .capsule)
             .padding(AppTheme.Spacing.xs)

@@ -377,7 +377,9 @@ enum AppTheme {
         /// **4。** `xxs = 2` 并进来了 —— 2pt 和 4pt 摆在一起谁也看不出，
         /// 而两档并存意味着每处都要选一次。2026-09-03 落到 4pt 网格上。
         static let xs: CGFloat = 4
-        static let sm: CGFloat = 6
+        /// **8。** `sm = 6` 并进来了 —— 这是最后一档离网格的。
+        /// 收完之后间距**整档落在 Apple HIG 的 4pt 网格上**：
+        /// 0 · 4 · 8 · 12 · 16 · 20 · 24 · 28 · 44。
         static let smMd: CGFloat = 8
         /// **12。** `md = 10` 并进来了 —— 10 和 12 摆在一起谁也看不出，
         /// 而两档并存意味着每处都要选一次。落到 Apple HIG 的 4pt 网格上。
@@ -528,7 +530,7 @@ enum AppTheme {
         static let textEditorMinHeight: CGFloat = 96
         static let contentInsets = EdgeInsets(
             top: Spacing.smMd,
-            leading: Spacing.smMd + IconSize.xs + Spacing.sm,
+            leading: Spacing.smMd + IconSize.xs + Spacing.smMd,
             bottom: Spacing.smMd,
             trailing: Spacing.smMd
         )
@@ -543,7 +545,7 @@ enum AppTheme {
         )
         /// 三个面板按钮 + 组间距。窗口标题栏的宿主视图是定宽的，短了会裁掉按钮。
         static let projectTitlebarLeadingWidth: CGFloat =
-            IconSize.lg * 3 + Spacing.smMd + Spacing.xs + Spacing.sm
+            IconSize.lg * 3 + Spacing.smMd + Spacing.xs + Spacing.smMd
         static let projectTitlebarTrailingWidth: CGFloat = 280
         static let settingsDefault = NSSize(width: 1200, height: 800)
         static let settingsMin = NSSize(width: 860, height: 640)

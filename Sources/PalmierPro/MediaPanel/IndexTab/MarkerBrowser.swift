@@ -89,7 +89,7 @@ struct MarkerBrowser: View {
                 statusFilterMenu
             }
         }
-        .padding(.horizontal, AppTheme.Spacing.sm)
+        .padding(.horizontal, AppTheme.Spacing.smMd)
         .padding(.vertical, AppTheme.Spacing.xs)
         .fixedSize(horizontal: false, vertical: true)
         .background(AppTheme.Background.surfaceColor)
@@ -122,7 +122,7 @@ struct MarkerBrowser: View {
     }
 
     private var emptyState: some View {
-        VStack(spacing: AppTheme.Spacing.sm) {
+        VStack(spacing: AppTheme.Spacing.smMd) {
             Spacer()
             TimelineMarkerShape().fill(AppTheme.Text.mutedColor)
                 .frame(width: AppTheme.IconSize.sm, height: AppTheme.IconSize.smMd)
@@ -161,11 +161,11 @@ private struct MarkerBrowserRow: View {
     }
 
     var body: some View {
-        HStack(alignment: .top, spacing: AppTheme.Spacing.sm) {
+        HStack(alignment: .top, spacing: AppTheme.Spacing.smMd) {
             MarkerThumbnailView(
                 timelineId: timelineId, frame: marker.startFrame, size: thumbnailSize)
             VStack(alignment: .leading, spacing: AppTheme.Spacing.xs) {
-                HStack(spacing: AppTheme.Spacing.sm) {
+                HStack(spacing: AppTheme.Spacing.smMd) {
                     HStack(spacing: AppTheme.Spacing.xs) {
                         markerColorButton
                         Text(verbatim: marker.name)
@@ -186,7 +186,7 @@ private struct MarkerBrowserRow: View {
             }
             .frame(maxWidth: .infinity, alignment: .leading)
         }
-        .padding(AppTheme.Spacing.sm).frame(maxWidth: .infinity, alignment: .leading)
+        .padding(AppTheme.Spacing.smMd).frame(maxWidth: .infinity, alignment: .leading)
         .contentShape(Rectangle()).onTapGesture { select() }
         .hoverHighlight(
             cornerRadius: AppTheme.Radius.xs,
@@ -303,7 +303,7 @@ private struct MarkerBrowserRow: View {
             .textFieldStyle(.plain).font(.system(size: AppTheme.FontSize.smMd))
             .foregroundStyle(AppTheme.Text.primaryColor)
             .lineLimit(2, reservesSpace: true).frame(height: AppTheme.MediaPanel.markerIndexCommentHeight)
-            .padding(.horizontal, AppTheme.Spacing.sm)
+            .padding(.horizontal, AppTheme.Spacing.smMd)
             .editorValueField(minHeight: AppTheme.MediaPanel.markerIndexCommentHeight,
                               fill: AppTheme.Background.raisedColor)
             .focused($commentFocused).accessibilityLabel(L10n.string("Comments")).help(comment)

@@ -104,7 +104,7 @@ struct MetagMyFilmsView: View {
     @State private var posters = MetagPosterCache.shared
 
     var body: some View {
-        VStack(alignment: .leading, spacing: AppTheme.Spacing.sm) {
+        VStack(alignment: .leading, spacing: AppTheme.Spacing.smMd) {
             HStack {
                 Text(L10n.string("My films")).font(.system(size: AppTheme.FontSize.mdLg, weight: AppTheme.FontWeight.semibold))
                 Spacer()

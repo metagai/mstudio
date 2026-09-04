@@ -61,7 +61,7 @@ struct MetagFilmStrip: View {
     }
 
     var body: some View {
-        VStack(alignment: .leading, spacing: AppTheme.Spacing.sm) {
+        VStack(alignment: .leading, spacing: AppTheme.Spacing.smMd) {
             grid
             if let line = Self.arrivedLine(arrived: frames.count, total: slots) {
                 Text(verbatim: line)
@@ -112,7 +112,7 @@ struct MetagFilmStrip: View {
                         .foregroundStyle(AppTheme.Text.primaryColor)
                         .lineLimit(4)
                         .multilineTextAlignment(.center)
-                        .padding(.horizontal, AppTheme.Spacing.sm)
+                        .padding(.horizontal, AppTheme.Spacing.smMd)
                 } else {
                     Text(verbatim: "\(index + 1)")
                         .font(.system(size: AppTheme.FontSize.xs, weight: AppTheme.FontWeight.medium))

@@ -83,7 +83,7 @@ struct MetagHighlightsSheet: View {
                 .disabled(model.busy)
 
             if model.busy {
-                HStack(spacing: AppTheme.Spacing.sm) {
+                HStack(spacing: AppTheme.Spacing.smMd) {
                     ProgressView().controlSize(.small)
                     Text(model.stageLabel)
                         .font(.system(size: AppTheme.FontSize.xs))

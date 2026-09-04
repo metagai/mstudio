@@ -18,7 +18,7 @@ struct MulticamTab: View {
     }
 
     private func memberRow(_ member: MulticamSource.Member, group: MulticamSource) -> some View {
-        HStack(spacing: AppTheme.Spacing.sm) {
+        HStack(spacing: AppTheme.Spacing.smMd) {
             Text(localizedKind(member.kind))
                 .font(.system(size: AppTheme.FontSize.xxs, weight: AppTheme.FontWeight.semibold))
                 .foregroundStyle(Color(AppTheme.TrackColor.readableForeground(on: kindColor(member.kind))).opacity(AppTheme.Opacity.prominent))
@@ -37,7 +37,7 @@ struct MulticamTab: View {
                     .help(L10n.string("Master — defines the group's clock and transcript."))
             }
 
-            Spacer(minLength: AppTheme.Spacing.sm)
+            Spacer(minLength: AppTheme.Spacing.smMd)
 
             if member.usable {
                 Text(verbatim: String(format: "%+.2fs · %.0f%%", member.sync.offsetSeconds, member.sync.confidence * 100))

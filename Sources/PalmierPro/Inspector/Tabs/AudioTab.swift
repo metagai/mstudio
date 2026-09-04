@@ -62,7 +62,7 @@ extension InspectorView {
                         )
                     }
                 ) {
-                    HStack(spacing: AppTheme.Spacing.sm) {
+                    HStack(spacing: AppTheme.Spacing.smMd) {
                         if allOn {
                             ScrubbableNumberField(
                                 value: sharedClipValue(audios) { $0.denoiseAmount * 100 },

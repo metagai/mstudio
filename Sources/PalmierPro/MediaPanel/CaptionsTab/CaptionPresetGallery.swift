@@ -6,7 +6,7 @@ struct CaptionPresetGallery: View {
     @Binding var selection: TextAnimation.Preset
     var highlight: TextStyle.RGBA? = nil
 
-    private let columns = [GridItem(.adaptive(minimum: 84), spacing: AppTheme.Spacing.sm)]
+    private let columns = [GridItem(.adaptive(minimum: 84), spacing: AppTheme.Spacing.smMd)]
 
     var body: some View {
         VStack(alignment: .leading, spacing: AppTheme.Spacing.lg) {
@@ -17,11 +17,11 @@ struct CaptionPresetGallery: View {
 
     @ViewBuilder
     private func section(_ title: String, _ presets: [TextAnimation.Preset]) -> some View {
-        VStack(alignment: .leading, spacing: AppTheme.Spacing.sm) {
+        VStack(alignment: .leading, spacing: AppTheme.Spacing.smMd) {
             Text(title)
                 .font(.system(size: AppTheme.FontSize.xxs, weight: AppTheme.FontWeight.semibold))
                 .foregroundStyle(AppTheme.Text.tertiaryColor)
-            LazyVGrid(columns: columns, alignment: .leading, spacing: AppTheme.Spacing.sm) {
+            LazyVGrid(columns: columns, alignment: .leading, spacing: AppTheme.Spacing.smMd) {
                 ForEach(presets, id: \.self) { preset in
                     CaptionPresetCell(preset: preset, selected: selection == preset, highlight: highlight)
                         .onTapGesture { selection = preset }

@@ -9,7 +9,7 @@ struct KeyframeControlStrip: View {
     let unavailableKeyframeHelp: String
 
     static var width: CGFloat {
-        AppTheme.EditorPanel.fieldMinHeight + AppTheme.Spacing.sm * 2
+        AppTheme.EditorPanel.fieldMinHeight + AppTheme.Spacing.smMd * 2
     }
 
     private var keyframeColor: Color {
@@ -57,7 +57,7 @@ struct KeyframeControlStrip: View {
             Image(systemName: systemName)
                 .font(.system(size: AppTheme.FontSize.xxs, weight: AppTheme.FontWeight.semibold))
                 .foregroundStyle(AppTheme.Text.tertiaryColor)
-                .frame(width: AppTheme.Spacing.sm, height: AppTheme.EditorPanel.fieldMinHeight)
+                .frame(width: AppTheme.Spacing.smMd, height: AppTheme.EditorPanel.fieldMinHeight)
                 .contentShape(Rectangle())
         }
         .buttonStyle(.plain)

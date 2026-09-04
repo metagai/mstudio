@@ -67,7 +67,7 @@ struct ToolbarView: View {
             }
         }
         .padding(.horizontal, AppTheme.Spacing.mdLg)
-        .padding(.vertical, AppTheme.Spacing.sm)
+        .padding(.vertical, AppTheme.Spacing.smMd)
         .frame(maxWidth: .infinity)
     }
 

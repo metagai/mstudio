@@ -63,7 +63,7 @@ struct MetagTakePicker: View {
                 .foregroundStyle(AppTheme.Text.primaryColor)
 
             if model.loading {
-                HStack(spacing: AppTheme.Spacing.sm) {
+                HStack(spacing: AppTheme.Spacing.smMd) {
                     ProgressView().controlSize(.small)
                     Text(L10n.string("Fetching takes…"))
                         .font(.system(size: AppTheme.FontSize.xs))

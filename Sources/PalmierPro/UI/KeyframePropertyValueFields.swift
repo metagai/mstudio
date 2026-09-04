@@ -16,7 +16,7 @@ struct KeyframePropertyValueFields: View {
             fieldHeight: AppTheme.EditorPanel.fieldMinHeight,
             valueFontSize: AppTheme.FontSize.sm,
             positionLabelFontSize: AppTheme.FontSize.xs,
-            positionSpacing: AppTheme.Spacing.sm,
+            positionSpacing: AppTheme.Spacing.smMd,
             volumeSuffix: " dB"
         )
         static let timeline = Style(
@@ -122,7 +122,7 @@ struct KeyframePropertyValueFields: View {
                 .foregroundStyle(AppTheme.Accent.primary)
                 .lineLimit(1)
                 .frame(width: style.scalarWidth, alignment: .trailing)
-                .padding(.horizontal, AppTheme.Spacing.sm)
+                .padding(.horizontal, AppTheme.Spacing.smMd)
                 .padding(.vertical, AppTheme.Spacing.xs)
                 .editorValueField(
                     active: detailPresented,
@@ -140,7 +140,7 @@ struct KeyframePropertyValueFields: View {
     private var cropEditor: some View {
         if let clip = clips.first {
             let crop = clip.cropAt(frame: editor.activeFrame)
-            VStack(alignment: .leading, spacing: AppTheme.Spacing.sm) {
+            VStack(alignment: .leading, spacing: AppTheme.Spacing.smMd) {
                 if editor.cropAspectLock == .free {
                     cropField(L10n.string("Left"), crop: crop, edge: .left)
                     cropField(L10n.string("Top"), crop: crop, edge: .top)
@@ -165,7 +165,7 @@ struct KeyframePropertyValueFields: View {
         crop: Crop,
         edge: Crop.Edge
     ) -> some View {
-        HStack(spacing: AppTheme.Spacing.sm) {
+        HStack(spacing: AppTheme.Spacing.smMd) {
             Text(label)
                 .font(.system(size: AppTheme.FontSize.xs))
                 .foregroundStyle(AppTheme.Text.secondaryColor)

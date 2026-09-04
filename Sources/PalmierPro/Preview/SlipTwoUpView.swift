@@ -83,10 +83,10 @@ struct SlipTwoUpView: View {
                     .font(.system(size: AppTheme.FontSize.xs).monospacedDigit())
                     .foregroundStyle(AppTheme.MediaOverlay.secondaryColor)
             }
-            .padding(.horizontal, AppTheme.Spacing.sm)
+            .padding(.horizontal, AppTheme.Spacing.smMd)
             .padding(.vertical, AppTheme.Spacing.xs)
             .background(AppTheme.MediaOverlay.backgroundColor.opacity(AppTheme.Opacity.strong), in: RoundedRectangle(cornerRadius: AppTheme.Radius.xs))
-            .padding(AppTheme.Spacing.sm)
+            .padding(AppTheme.Spacing.smMd)
         }
         .clipped()
     }

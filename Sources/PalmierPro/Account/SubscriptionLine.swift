@@ -15,7 +15,7 @@ struct SubscriptionLine: View {
 
     var body: some View {
         if let text {
-            HStack(spacing: AppTheme.Spacing.sm) {
+            HStack(spacing: AppTheme.Spacing.smMd) {
                 Text(verbatim: text)
                     .font(.system(size: AppTheme.FontSize.sm))
                     .foregroundStyle(tint)

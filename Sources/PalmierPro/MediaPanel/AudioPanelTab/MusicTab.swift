@@ -283,7 +283,7 @@ struct MusicSection: View {
     }
 
     private var musicActions: some View {
-        VStack(alignment: .leading, spacing: AppTheme.Spacing.sm) {
+        VStack(alignment: .leading, spacing: AppTheme.Spacing.smMd) {
             // `note` 是真跑失败之后那句，一定是红的；
             // `validationNote` 分两档 —— 引导用灰，过不去才用红。
             if let message = note.map(Note.blocked) ?? validationNote {
@@ -307,7 +307,7 @@ struct MusicSection: View {
                     .pointerStyle(.link)
                 }
             }
-            HStack(spacing: AppTheme.Spacing.sm) {
+            HStack(spacing: AppTheme.Spacing.smMd) {
                 Spacer(minLength: AppTheme.Spacing.zero)
                 Button(action: generate) {
                     Text(generateLabel)

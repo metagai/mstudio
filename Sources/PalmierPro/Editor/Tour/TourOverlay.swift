@@ -70,7 +70,7 @@ struct TourOverlay: View {
 
     private func callout(_ step: TourStep) -> some View {
         let index = tour.stepIndex ?? 0
-        return VStack(alignment: .leading, spacing: AppTheme.Spacing.sm) {
+        return VStack(alignment: .leading, spacing: AppTheme.Spacing.smMd) {
             Text(L10n.string("Step \(index) of \(tour.spotlightCount)"))
                 .font(.system(size: AppTheme.FontSize.xs, weight: .medium))
                 .foregroundStyle(AppTheme.Text.tertiaryColor)
@@ -82,7 +82,7 @@ struct TourOverlay: View {
                 .foregroundStyle(AppTheme.Text.secondaryColor)
                 .fixedSize(horizontal: false, vertical: true)
 
-            HStack(spacing: AppTheme.Spacing.sm) {
+            HStack(spacing: AppTheme.Spacing.smMd) {
                 Button(L10n.string("Skip")) { tour.end() }
                     .buttonStyle(.capsule)
                     .keyboardShortcut(.cancelAction)
@@ -103,7 +103,7 @@ struct TourOverlay: View {
 
     private func introCard(_ step: TourStep) -> some View {
         VStack(alignment: .leading, spacing: AppTheme.Spacing.lg) {
-            VStack(alignment: .leading, spacing: AppTheme.Spacing.sm) {
+            VStack(alignment: .leading, spacing: AppTheme.Spacing.smMd) {
                 Text(step.title)
                     .font(.system(size: AppTheme.FontSize.title2, weight: .light))
                     .tracking(AppTheme.Tracking.tight)
@@ -145,7 +145,7 @@ struct TourOverlay: View {
 
     private func outroCard(_ step: TourStep) -> some View {
         VStack(alignment: .leading, spacing: AppTheme.Spacing.lg) {
-            VStack(alignment: .leading, spacing: AppTheme.Spacing.sm) {
+            VStack(alignment: .leading, spacing: AppTheme.Spacing.smMd) {
                 Text(step.title)
                     .font(.system(size: AppTheme.FontSize.title1, weight: .semibold))
                     .foregroundStyle(AppTheme.Text.primaryColor)

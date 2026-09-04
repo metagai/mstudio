@@ -91,7 +91,7 @@ struct AgentPanelView: View {
                 historyButton
                 ViewSkillsButton()
             }
-            .padding(.horizontal, AppTheme.Spacing.sm)
+            .padding(.horizontal, AppTheme.Spacing.smMd)
             .frame(maxWidth: .infinity)
             .frame(height: Layout.panelHeaderHeight)
             .glassEffect(.regular, in: .rect(cornerRadius: AppTheme.Radius.lg))
@@ -275,7 +275,7 @@ struct AgentPanelView: View {
                         ThinkingDots().id("streaming-indicator")
                     }
                     errorBanner
-                        .padding(.top, AppTheme.Spacing.sm)
+                        .padding(.top, AppTheme.Spacing.smMd)
                 }
                 .padding(.horizontal, AppTheme.Spacing.lg)
                 .padding(.top, AppTheme.Spacing.mdLg)
@@ -323,7 +323,7 @@ struct AgentPanelView: View {
     @ViewBuilder
     private var errorBanner: some View {
         if let err = service.streamError {
-            HStack(alignment: .firstTextBaseline, spacing: AppTheme.Spacing.sm) {
+            HStack(alignment: .firstTextBaseline, spacing: AppTheme.Spacing.smMd) {
                 Text(verbatim: errorMessage(err))
                     .font(.system(size: AppTheme.FontSize.xs))
                     .foregroundStyle(AppTheme.Status.errorColor)
@@ -458,7 +458,7 @@ struct AgentPanelView: View {
                 Text(missingKeyLinkLabel)
                     .underline()
                     .foregroundStyle(AppTheme.Text.secondaryColor)
-                    .padding(.horizontal, AppTheme.Spacing.sm)
+                    .padding(.horizontal, AppTheme.Spacing.smMd)
                     .padding(.vertical, AppTheme.Spacing.xs)
             }
             .buttonStyle(.plain)
@@ -472,7 +472,7 @@ struct AgentPanelView: View {
     }
 
     private func missingKeyPrimaryLabelView(account: AccountService) -> some View {
-        HStack(spacing: AppTheme.Spacing.sm) {
+        HStack(spacing: AppTheme.Spacing.smMd) {
             if let icon = missingKeyPrimaryIcon(account: account) {
                 Image(systemName: icon)
             }
@@ -507,7 +507,7 @@ struct AgentPanelView: View {
 
     private var footer: some View {
         @Bindable var service = editor.agentService
-        return VStack(spacing: AppTheme.Spacing.sm) {
+        return VStack(spacing: AppTheme.Spacing.smMd) {
             if !service.canStream && !service.messages.isEmpty {
                 missingKeyState
             }
@@ -586,7 +586,7 @@ private struct AgentStarterPromptButton: View {
 
     var body: some View {
         Button(action: action) {
-            HStack(spacing: AppTheme.Spacing.sm) {
+            HStack(spacing: AppTheme.Spacing.smMd) {
                 Image(systemName: starterPrompt.systemImage)
                     .font(.system(size: AppTheme.FontSize.smMd, weight: AppTheme.FontWeight.medium))
                     .foregroundStyle(AppTheme.Text.tertiaryColor)

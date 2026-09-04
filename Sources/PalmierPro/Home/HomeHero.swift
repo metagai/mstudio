@@ -95,7 +95,7 @@ struct HomeHero: View {
     /// 换在这一行说，是因为**他的眼睛本来就在这里** —— 不必为一句状态新开一块地方。
     @ViewBuilder
     private var footnote: some View {
-        HStack(spacing: AppTheme.Spacing.sm) {
+        HStack(spacing: AppTheme.Spacing.smMd) {
             switch account.signInPhase {
             case .idle:
                 // **和草案面板上那句同一个长相。** 那边是 `checkmark.seal` + 成功绿，
@@ -245,7 +245,7 @@ private struct StarterLine: View {
                 Spacer(minLength: 0)
             }
             .padding(.horizontal, AppTheme.Spacing.mdLg)
-            .padding(.vertical, AppTheme.Spacing.sm)
+            .padding(.vertical, AppTheme.Spacing.smMd)
             .background(
                 RoundedRectangle(cornerRadius: AppTheme.Radius.md, style: .continuous)
                     .fill(AppTheme.Text.primaryColor.opacity(hovered ? AppTheme.Opacity.subtle : 0))

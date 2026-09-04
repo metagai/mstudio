@@ -44,7 +44,7 @@ struct SpeechAnalysisSections: View {
                     .font(.system(size: AppTheme.FontSize.sm, weight: AppTheme.FontWeight.regular))
                     .foregroundStyle(AppTheme.Text.secondaryColor)
                     .padding(.top, AppTheme.Spacing.xs)
-                LazyVGrid(columns: speakerColumns, alignment: .leading, spacing: AppTheme.Spacing.sm) {
+                LazyVGrid(columns: speakerColumns, alignment: .leading, spacing: AppTheme.Spacing.smMd) {
                     ForEach(editor.projectSpeakers) { speaker in
                         speakerLabel(speaker)
                     }
@@ -68,8 +68,8 @@ struct SpeechAnalysisSections: View {
 
     private var speakerColumns: [GridItem] {
         [
-            GridItem(.flexible(minimum: AppTheme.Spacing.zero), spacing: AppTheme.Spacing.sm),
-            GridItem(.flexible(minimum: AppTheme.Spacing.zero), spacing: AppTheme.Spacing.sm),
+            GridItem(.flexible(minimum: AppTheme.Spacing.zero), spacing: AppTheme.Spacing.smMd),
+            GridItem(.flexible(minimum: AppTheme.Spacing.zero), spacing: AppTheme.Spacing.smMd),
         ]
     }
 
@@ -201,7 +201,7 @@ struct SpeechAnalysisSections: View {
 
     private var silenceActions: some View {
         let count = editor.allDeadAir().reduce(0) { $0 + $1.ranges.count }
-        return HStack(spacing: AppTheme.Spacing.sm) {
+        return HStack(spacing: AppTheme.Spacing.smMd) {
             Spacer(minLength: AppTheme.Spacing.zero)
             if count > 0 {
                 Text(verbatim: "\(count)")

@@ -114,7 +114,7 @@ struct OnboardingOverlay: View {
 
 
 
-            HStack(spacing: AppTheme.Spacing.sm) {
+            HStack(spacing: AppTheme.Spacing.smMd) {
                 // 第一步没有"上一步"。**按序号判，不按某一步的名字判** ——
                 // 名字会被删掉（`welcome` 就是），而"第一步"这个概念不会。
                 if onboarding.step.rawValue > 0 {

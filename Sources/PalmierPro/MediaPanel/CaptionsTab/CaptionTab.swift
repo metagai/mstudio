@@ -268,7 +268,7 @@ struct CaptionTab: View {
     }
 
     private var captionPreviewToggle: some View {
-        HStack(spacing: AppTheme.Spacing.sm) {
+        HStack(spacing: AppTheme.Spacing.smMd) {
             Text(L10n.string("Preview"))
                 .font(.system(size: AppTheme.FontSize.xs, weight: AppTheme.FontWeight.medium))
                 .foregroundStyle(AppTheme.Text.secondaryColor)
@@ -456,7 +456,7 @@ struct CaptionTab: View {
             label: L10n.string("Position"),
             onReset: { center = AppTheme.Caption.defaultCenter }
         ) {
-            HStack(spacing: AppTheme.Spacing.sm) {
+            HStack(spacing: AppTheme.Spacing.smMd) {
                 captionPositionField(
                     value: center.x,
                     canvasLength: max(1, editor.timeline.width),
@@ -562,7 +562,7 @@ struct CaptionTab: View {
 
     private var generateBar: some View {
         EditorActionFooter(message: note) {
-            HStack(spacing: AppTheme.Spacing.sm) {
+            HStack(spacing: AppTheme.Spacing.smMd) {
                 Spacer(minLength: AppTheme.Spacing.zero)
                 Button(action: generate) {
                     Text(generateLabel)

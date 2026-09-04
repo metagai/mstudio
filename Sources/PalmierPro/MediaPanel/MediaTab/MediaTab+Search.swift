@@ -27,10 +27,10 @@ extension MediaTab {
                 if !spokenHits.isEmpty {
                     momentHeader(L10n.key("Spoken"), icon: "waveform", count: spokenHits.count, collapsible: true)
                     if !collapsedSearchSections.contains(L10n.key("Spoken")) {
-                        VStack(spacing: AppTheme.Spacing.sm) {
+                        VStack(spacing: AppTheme.Spacing.smMd) {
                             ForEach(spokenHits.indices, id: \.self) { spokenRow(spokenHits[$0]) }
                         }
-                        .padding(.bottom, AppTheme.Spacing.sm)
+                        .padding(.bottom, AppTheme.Spacing.smMd)
                     }
                 }
                 if !timelineMatches.isEmpty {
@@ -63,7 +63,7 @@ extension MediaTab {
                         .padding(.top, AppTheme.Spacing.xl)
                 }
             }
-            .padding(.top, AppTheme.Spacing.sm)
+            .padding(.top, AppTheme.Spacing.smMd)
             .frame(maxWidth: .infinity, alignment: .leading)
         }
         .onAppear { publishGridState(orderedIds: orderedItemIds, columnCount: 1) }
@@ -89,7 +89,7 @@ extension MediaTab {
 
     private func resultsGrid<Content: View>(@ViewBuilder _ content: () -> Content) -> some View {
         LazyVGrid(
-            columns: [GridItem(.adaptive(minimum: CGFloat(thumbnailSize) * 1.4), spacing: AppTheme.Spacing.sm)],
+            columns: [GridItem(.adaptive(minimum: CGFloat(thumbnailSize) * 1.4), spacing: AppTheme.Spacing.smMd)],
             alignment: .leading,
             spacing: AppTheme.Spacing.mdLg,
             content: content
@@ -124,7 +124,7 @@ extension MediaTab {
             }
             .foregroundStyle(AppTheme.Text.secondaryColor)
             .padding(.horizontal, AppTheme.Spacing.mdLg)
-            .padding(.vertical, AppTheme.Spacing.sm)
+            .padding(.vertical, AppTheme.Spacing.smMd)
             .contentShape(Rectangle())
         }
         .buttonStyle(.plain)
@@ -208,7 +208,7 @@ extension MediaTab {
         let asset = editor.mediaAssets.first { $0.id == hit.assetID }
         let range = hit.start...max(hit.end, hit.start + 0.1)
         let thumbW = CGFloat(thumbnailSize) * 1.4
-        return HStack(alignment: .top, spacing: AppTheme.Spacing.sm) {
+        return HStack(alignment: .top, spacing: AppTheme.Spacing.smMd) {
             MomentThumbnail(url: asset?.url, time: hit.start)
                 .frame(width: thumbW, height: thumbW * 9 / 16)
                 .clipShape(RoundedRectangle(cornerRadius: AppTheme.Radius.sm))

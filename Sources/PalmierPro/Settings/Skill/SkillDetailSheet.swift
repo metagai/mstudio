@@ -269,7 +269,7 @@ struct SkillDetailSheet: View {
                 .foregroundStyle(AppTheme.Text.primaryColor)
                 .accessibilityLabel(L10n.string("Skill name"))
                 .focused($titleFocused)
-                .padding(.horizontal, AppTheme.Spacing.sm)
+                .padding(.horizontal, AppTheme.Spacing.smMd)
                 .padding(.vertical, AppTheme.Spacing.xs)
                 .cardSurface(
                     AppTheme.Background.raisedColor,
@@ -462,7 +462,7 @@ struct SkillDetailSheet: View {
                 MarkdownText(
                     text: store.body(for: skill.id) ?? "",
                     proseFont: .system(size: AppTheme.FontSize.smMd),
-                    blockSpacing: AppTheme.Spacing.sm
+                    blockSpacing: AppTheme.Spacing.smMd
                 )
             }
         }
@@ -484,7 +484,7 @@ struct SkillDetailSheet: View {
     }
 
     private func copyToastBanner(_ toast: CopyToast) -> some View {
-        HStack(spacing: AppTheme.Spacing.sm) {
+        HStack(spacing: AppTheme.Spacing.smMd) {
             Image(systemName: "checkmark.circle.fill")
                 .font(.system(size: AppTheme.FontSize.smMd, weight: AppTheme.FontWeight.semibold))
                 .foregroundStyle(AppTheme.Status.successColor)

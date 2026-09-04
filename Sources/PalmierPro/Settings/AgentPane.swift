@@ -41,7 +41,7 @@ struct AgentPane: View {
                 .font(.system(size: AppTheme.FontSize.md, weight: AppTheme.FontWeight.medium))
                 .foregroundStyle(AppTheme.Text.primaryColor)
 
-            HStack(alignment: .firstTextBaseline, spacing: AppTheme.Spacing.sm) {
+            HStack(alignment: .firstTextBaseline, spacing: AppTheme.Spacing.smMd) {
                 Text(L10n.string("Lets external clients like Cursor, Claude Desktop, Claude Code, and Codex edit your timeline."))
                     .font(.system(size: AppTheme.FontSize.sm))
                     .foregroundStyle(AppTheme.Text.tertiaryColor)
@@ -64,8 +64,8 @@ struct AgentPane: View {
     }
 
     private var mcpStatusRow: some View {
-        HStack(spacing: AppTheme.Spacing.sm) {
-            HStack(spacing: AppTheme.Spacing.sm) {
+        HStack(spacing: AppTheme.Spacing.smMd) {
+            HStack(spacing: AppTheme.Spacing.smMd) {
                 Circle()
                     .fill((appState.mcpService?.isRunning ?? false) ? AppTheme.Status.successColor : AppTheme.Text.mutedColor)
                     .frame(width: AppTheme.Spacing.smMd, height: AppTheme.Spacing.smMd)
@@ -118,7 +118,7 @@ private struct APIKeySettingRow: View {
     var body: some View {
         VStack(alignment: .leading, spacing: AppTheme.Spacing.smMd) {
             header
-            HStack(spacing: AppTheme.Spacing.sm) {
+            HStack(spacing: AppTheme.Spacing.smMd) {
                 field
                 trailingControl
             }
@@ -127,7 +127,7 @@ private struct APIKeySettingRow: View {
     }
 
     private var header: some View {
-        HStack(alignment: .firstTextBaseline, spacing: AppTheme.Spacing.sm) {
+        HStack(alignment: .firstTextBaseline, spacing: AppTheme.Spacing.smMd) {
             Text(provider.apiKeyPresentation.title)
                 .font(.system(size: AppTheme.FontSize.md, weight: AppTheme.FontWeight.medium))
                 .foregroundStyle(AppTheme.Text.primaryColor)

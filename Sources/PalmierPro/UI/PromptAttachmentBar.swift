@@ -46,7 +46,7 @@ struct PromptAttachmentBar: View {
     }
 
     private func card(_ attachment: PromptAttachment) -> some View {
-        HStack(spacing: AppTheme.Spacing.sm) {
+        HStack(spacing: AppTheme.Spacing.smMd) {
             // 图片摆真的缩略图 —— **他贴的是哪一张，一眼就该认得出来**；
             // 一个通用的相机图标等于让他自己回想。
             thumbnail(attachment)
@@ -89,7 +89,7 @@ struct PromptAttachmentBar: View {
             .accessibilityLabel(Text(L10n.string("Remove")))
         }
         .padding(.horizontal, AppTheme.Spacing.smMd)
-        .padding(.vertical, AppTheme.Spacing.sm)
+        .padding(.vertical, AppTheme.Spacing.smMd)
         .cardSurface(
             AppTheme.Text.primaryColor.opacity(AppTheme.Opacity.subtle), cornerRadius: AppTheme.Radius.md, border: AppTheme.Border.subtleColor, borderWidth: AppTheme.BorderWidth.hairline
         )

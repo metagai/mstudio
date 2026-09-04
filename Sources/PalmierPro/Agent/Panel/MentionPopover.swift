@@ -132,7 +132,7 @@ struct MentionPopover: View {
     }
 
     private func mentionRow(asset: MediaAsset, isHighlighted: Bool) -> some View {
-        HStack(spacing: AppTheme.Spacing.sm) {
+        HStack(spacing: AppTheme.Spacing.smMd) {
             Group {
                 if let thumb = asset.thumbnail {
                     Image(nsImage: thumb).resizable().aspectRatio(contentMode: .fill)
@@ -159,7 +159,7 @@ struct MentionPopover: View {
             }
             Spacer()
         }
-        .padding(.horizontal, AppTheme.Spacing.sm)
+        .padding(.horizontal, AppTheme.Spacing.smMd)
         .padding(.vertical, 4)
         .background(isHighlighted ? AppTheme.Accent.primary.opacity(0.15) : .clear)
     }

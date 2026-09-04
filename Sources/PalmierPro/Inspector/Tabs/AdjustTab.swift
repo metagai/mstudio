@@ -501,7 +501,7 @@ extension InspectorView {
     }
 
     private func lutFileRow(path: String?, clips: [Clip]) -> some View {
-        HStack(spacing: AppTheme.Spacing.sm) {
+        HStack(spacing: AppTheme.Spacing.smMd) {
             adjustRowLabel(L10n.string("File"), inset: adjustSectionChildLabelInset)
             Button { chooseLUT(clips: clips) } label: {
                 HStack(spacing: AppTheme.Spacing.xs) {
@@ -533,7 +533,7 @@ extension InspectorView {
         let spec = EffectRegistry.descriptor(id: "color.lut")?.params.first { $0.key == "intensity" }
         let range = spec?.range ?? 0...1
         let value = lutIntensity(in: clips)
-        return HStack(spacing: AppTheme.Spacing.sm) {
+        return HStack(spacing: AppTheme.Spacing.smMd) {
             adjustRowLabel(L10n.string("Intensity"), inset: adjustSectionChildLabelInset)
             AdjustSlider(
                 value: value, range: range, defaultValue: spec?.defaultValue ?? 1,
@@ -618,7 +618,7 @@ extension InspectorView {
         if let descriptor = EffectRegistry.descriptor(id: control.effectId),
            let spec = descriptor.params.first(where: { $0.key == control.paramKey }) {
             let label = control.label ?? spec.label
-            HStack(spacing: AppTheme.Spacing.sm) {
+            HStack(spacing: AppTheme.Spacing.smMd) {
                 adjustRowLabel(label, inset: adjustSubgroupChildLabelInset)
                 if control.effectId == Effect.gaussianBlurType,
                    control.paramKey == Effect.gaussianBlurRadiusKey {

@@ -171,7 +171,7 @@ struct InspectorView: View {
     var projectSettingsContent: some View {
         EditorPanelGroup(
             L10n.string("Canvas"),
-            contentSpacing: AppTheme.Spacing.sm
+            contentSpacing: AppTheme.Spacing.smMd
         ) {
             menuMetadataRow(label: L10n.string("Resolution"), value: "\(editor.timeline.width) × \(editor.timeline.height)") { qualityMenuItems }
             menuMetadataRow(label: L10n.string("Frame Rate"), value: "\(editor.timeline.fps) fps") { fpsMenuItems }
@@ -181,7 +181,7 @@ struct InspectorView: View {
     }
 
     private var projectInspectorHeader: some View {
-        HStack(spacing: AppTheme.Spacing.sm) {
+        HStack(spacing: AppTheme.Spacing.smMd) {
             Image(systemName: "movieclapper")
                 .font(.system(size: AppTheme.FontSize.smMd, weight: AppTheme.FontWeight.medium))
                 .foregroundStyle(AppTheme.Text.tertiaryColor)
@@ -212,7 +212,7 @@ struct InspectorView: View {
         valueHelp: String? = nil,
         truncate: Text.TruncationMode = .tail
     ) -> some View {
-        HStack(spacing: AppTheme.Spacing.sm) {
+        HStack(spacing: AppTheme.Spacing.smMd) {
             Text(L10n.string(key: label))
                 .font(.system(size: AppTheme.FontSize.xs))
                 .foregroundStyle(AppTheme.Text.tertiaryColor)
@@ -236,7 +236,7 @@ struct InspectorView: View {
         value: String,
         @ViewBuilder menu: @escaping () -> MenuContent
     ) -> some View {
-        HStack(spacing: AppTheme.Spacing.sm) {
+        HStack(spacing: AppTheme.Spacing.smMd) {
             Text(L10n.string(key: label))
                 .font(.system(size: AppTheme.FontSize.xs))
                 .foregroundStyle(AppTheme.Text.tertiaryColor)
@@ -669,7 +669,7 @@ struct InspectorView: View {
     ) -> some View {
         InspectorRow(label: label, onReset: onReset) {
             if reservesKeyframeControls {
-                HStack(spacing: AppTheme.Spacing.sm) {
+                HStack(spacing: AppTheme.Spacing.smMd) {
                     trailing()
                     Color.clear.frame(width: KeyframeControlStrip.width)
                 }
@@ -798,7 +798,7 @@ struct InspectorView: View {
                 }
             }
         ) {
-            HStack(spacing: AppTheme.Spacing.sm) {
+            HStack(spacing: AppTheme.Spacing.smMd) {
                 iconToggleButton(
                     systemName: "crop",
                     isOn: editing,
@@ -852,7 +852,7 @@ struct InspectorView: View {
                         .font(.system(size: AppTheme.FontSize.xxs, weight: .semibold))
                         .foregroundStyle(AppTheme.Text.tertiaryColor)
                 }
-                .padding(.horizontal, AppTheme.Spacing.sm)
+                .padding(.horizontal, AppTheme.Spacing.smMd)
                 .padding(.vertical, AppTheme.Spacing.xs)
                 .contentShape(Rectangle())
             }
@@ -914,7 +914,7 @@ struct InspectorView: View {
 
     private func assetInspectorHeader(_ asset: MediaAsset) -> some View {
         let infoLabel = assetInfoPresented ? L10n.string("Hide Info") : L10n.string("Show Info")
-        return HStack(spacing: AppTheme.Spacing.sm) {
+        return HStack(spacing: AppTheme.Spacing.smMd) {
             Image(systemName: asset.type.sfSymbolName)
                 .font(.system(size: AppTheme.FontSize.smMd, weight: AppTheme.FontWeight.medium))
                 .foregroundStyle(AppTheme.Text.tertiaryColor)
@@ -1005,7 +1005,7 @@ struct InspectorView: View {
                 GenerationReferencesStrip(generationInput: gen)
             }
             if !gen.prompt.isEmpty || !metadata.isEmpty {
-                VStack(alignment: .leading, spacing: AppTheme.Spacing.sm) {
+                VStack(alignment: .leading, spacing: AppTheme.Spacing.smMd) {
                     if !gen.prompt.isEmpty {
                         promptSection(prompt: gen.prompt)
                     }
@@ -1019,7 +1019,7 @@ struct InspectorView: View {
                     }
                 }
                 .padding(.horizontal, AppTheme.Spacing.smMd)
-                .padding(.vertical, AppTheme.Spacing.sm)
+                .padding(.vertical, AppTheme.Spacing.smMd)
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .cardSurface(
                     AppTheme.Background.raisedColor,
@@ -1036,7 +1036,7 @@ struct InspectorView: View {
             .font(.system(size: AppTheme.FontSize.xxs, weight: .bold))
             .tracking(AppTheme.Tracking.wide)
             .foregroundStyle(AppTheme.aiGradient)
-            .padding(.horizontal, AppTheme.Spacing.sm)
+            .padding(.horizontal, AppTheme.Spacing.smMd)
             .padding(.vertical, AppTheme.Spacing.xs)
             .overlay(
                 RoundedRectangle(cornerRadius: AppTheme.Radius.sm)
@@ -1046,7 +1046,7 @@ struct InspectorView: View {
 
     private func promptSection(prompt: String) -> some View {
         VStack(alignment: .leading, spacing: AppTheme.Spacing.xs) {
-            HStack(spacing: AppTheme.Spacing.sm) {
+            HStack(spacing: AppTheme.Spacing.smMd) {
                 Text(L10n.string("Prompt"))
                     .font(.system(size: AppTheme.FontSize.xs, weight: AppTheme.FontWeight.medium))
                     .foregroundStyle(AppTheme.Text.tertiaryColor)
@@ -1061,7 +1061,7 @@ struct InspectorView: View {
     }
 
     private func generationMetadataRow(_ gen: GenerationInput, metadata: String) -> some View {
-        HStack(spacing: AppTheme.Spacing.sm) {
+        HStack(spacing: AppTheme.Spacing.smMd) {
             if let iconKey = ModelRegistry.providerIconKey(for: gen.model) {
                 ProviderLogo(iconKey: iconKey, size: AppTheme.IconSize.xs)
             } else {

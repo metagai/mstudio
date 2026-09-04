@@ -29,7 +29,7 @@ struct StoragePane: View {
                     .font(.system(size: AppTheme.FontSize.sm))
                     .foregroundStyle(AppTheme.Text.tertiaryColor)
                     .fixedSize(horizontal: false, vertical: true)
-                HStack(spacing: AppTheme.Spacing.sm) {
+                HStack(spacing: AppTheme.Spacing.smMd) {
                     Text(displayPath)
                         .font(.system(size: AppTheme.FontSize.xs).monospaced())
                         .foregroundStyle(AppTheme.Text.tertiaryColor)
@@ -76,7 +76,7 @@ struct StoragePane: View {
                     }
             }
 
-            HStack(spacing: AppTheme.Spacing.sm) {
+            HStack(spacing: AppTheme.Spacing.smMd) {
                 Text(L10n.string("Index"))
                     .font(.system(size: AppTheme.FontSize.xs))
                     .foregroundStyle(AppTheme.Text.tertiaryColor)
@@ -91,7 +91,7 @@ struct StoragePane: View {
             .padding(.top, AppTheme.Spacing.xs)
 
             if modelBytes > 0 {
-                HStack(spacing: AppTheme.Spacing.sm) {
+                HStack(spacing: AppTheme.Spacing.smMd) {
                     Text(L10n.string("Model"))
                         .font(.system(size: AppTheme.FontSize.xs))
                         .foregroundStyle(AppTheme.Text.tertiaryColor)

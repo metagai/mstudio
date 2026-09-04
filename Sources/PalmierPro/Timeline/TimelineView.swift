@@ -1123,7 +1123,7 @@ final class TimelineView: NSView, NSPopoverDelegate {
         ctx.addLine(to: CGPoint(x: x, y: bottom))
         ctx.strokePath()
 
-        let arrowW = AppTheme.Spacing.sm
+        let arrowW = AppTheme.Spacing.smMd
         let arrowH = AppTheme.Spacing.mdLg
         ctx.move(to: CGPoint(x: x, y: top))
         ctx.addLine(to: CGPoint(x: x + arrowW, y: top + Double(arrowH) / 2))

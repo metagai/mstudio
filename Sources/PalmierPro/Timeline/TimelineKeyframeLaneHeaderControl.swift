@@ -27,7 +27,7 @@ struct TimelineKeyframeLaneHeaderControl: View {
             keyframeControls(for: clip)
         }
         .padding(.leading, AppTheme.ComponentSize.timelineTrackHeaderReorderLeadingInset)
-        .padding(.trailing, AppTheme.Spacing.sm)
+        .padding(.trailing, AppTheme.Spacing.smMd)
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .background(AppTheme.Background.baseColor)
         .overlay(alignment: .bottom) {

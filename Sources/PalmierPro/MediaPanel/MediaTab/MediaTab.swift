@@ -99,8 +99,8 @@ struct MediaTab: View {
             MetagMyFilmsView { film in
                 Task { await MetagJobOpener.open(jobId: film.job_id, into: editor) }
             }
-            .padding(.horizontal, AppTheme.Spacing.sm)
-            .padding(.bottom, AppTheme.Spacing.sm)
+            .padding(.horizontal, AppTheme.Spacing.smMd)
+            .padding(.bottom, AppTheme.Spacing.smMd)
 
             if editor.pendingSwapClipId != nil {
                 swapBanner
@@ -210,7 +210,7 @@ struct MediaTab: View {
 
     private var swapBanner: some View {
         let tint = Color(nsColor: (editor.pendingSwapClip?.mediaType ?? .video).themeColor)
-        return HStack(spacing: AppTheme.Spacing.sm) {
+        return HStack(spacing: AppTheme.Spacing.smMd) {
             Image(systemName: "arrow.left.arrow.right")
                 .font(.system(size: AppTheme.FontSize.smMd, weight: .semibold))
                 .foregroundStyle(tint)
@@ -219,14 +219,14 @@ struct MediaTab: View {
                 .foregroundStyle(AppTheme.Text.primaryColor)
                 .lineLimit(1)
                 .truncationMode(.middle)
-            Spacer(minLength: AppTheme.Spacing.sm)
+            Spacer(minLength: AppTheme.Spacing.smMd)
             Button(L10n.string("Cancel")) { editor.cancelMediaSwap() }
                 .buttonStyle(.plain)
                 .font(.system(size: AppTheme.FontSize.xs, weight: .medium))
                 .foregroundStyle(AppTheme.Text.secondaryColor)
         }
         .padding(.horizontal, AppTheme.Spacing.mdLg)
-        .padding(.vertical, AppTheme.Spacing.sm)
+        .padding(.vertical, AppTheme.Spacing.smMd)
         .background(tint.opacity(AppTheme.Opacity.faint))
         .overlay(alignment: .bottom) {
             Rectangle()
@@ -236,7 +236,7 @@ struct MediaTab: View {
     }
 
     private func toastBanner(_ toast: MediaPanelToast) -> some View {
-        HStack(spacing: AppTheme.Spacing.sm) {
+        HStack(spacing: AppTheme.Spacing.smMd) {
             switch toast.kind {
             case .progress:
                 ProgressView()
@@ -325,12 +325,12 @@ struct MediaTab: View {
     // MARK: - Toolbar
 
     private var toolbar: some View {
-        VStack(spacing: AppTheme.Spacing.sm) {
+        VStack(spacing: AppTheme.Spacing.smMd) {
             actionsRow
             contextBar
         }
-        .padding(.horizontal, AppTheme.Spacing.sm)
-        .padding(.bottom, AppTheme.Spacing.sm)
+        .padding(.horizontal, AppTheme.Spacing.smMd)
+        .padding(.bottom, AppTheme.Spacing.smMd)
         .background(AppTheme.Background.surfaceColor)
         .animation(.easeInOut(duration: AppTheme.Anim.transition), value: editor.isMediaPanelSearchExpanded)
     }
@@ -488,7 +488,7 @@ struct MediaTab: View {
                 .font(.system(size: AppTheme.FontSize.xs, weight: isLeaf ? .semibold : .regular))
                 .foregroundStyle(textColor)
                 .lineLimit(1)
-                .padding(.horizontal, AppTheme.Spacing.sm)
+                .padding(.horizontal, AppTheme.Spacing.smMd)
                 .padding(.vertical, AppTheme.Spacing.xs)
                 .hoverHighlight(cornerRadius: AppTheme.Radius.xsSm)
         }

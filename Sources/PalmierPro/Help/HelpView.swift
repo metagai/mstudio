@@ -67,7 +67,7 @@ struct HelpView: View {
             }
             .foregroundStyle(isActive ? AppTheme.Text.primaryColor : AppTheme.Text.secondaryColor)
             .padding(.horizontal, AppTheme.Spacing.mdLg)
-            .padding(.vertical, AppTheme.Spacing.sm)
+            .padding(.vertical, AppTheme.Spacing.smMd)
             .contentShape(Rectangle())
             .hoverHighlight(isActive: isActive)
         }

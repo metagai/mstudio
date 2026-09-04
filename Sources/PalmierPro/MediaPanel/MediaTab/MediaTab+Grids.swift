@@ -254,7 +254,7 @@ extension MediaTab {
             get: { dropTargetGroupedKey == sectionKey },
             set: { dropTargetGroupedKey = $0 ? sectionKey : nil }
         )
-        VStack(alignment: .leading, spacing: AppTheme.Spacing.sm) {
+        VStack(alignment: .leading, spacing: AppTheme.Spacing.smMd) {
             HStack(spacing: AppTheme.Spacing.xs) {
                 Button {
                     withAnimation(.easeInOut(duration: 0.18)) {
@@ -318,7 +318,7 @@ extension MediaTab {
                     Text(L10n.string("Empty"))
                         .font(.system(size: AppTheme.FontSize.xs))
                         .foregroundStyle(AppTheme.Text.mutedColor)
-                        .padding(.vertical, AppTheme.Spacing.sm)
+                        .padding(.vertical, AppTheme.Spacing.smMd)
                 } else {
                     let columns = [GridItem(.adaptive(minimum: thumbnailSize), spacing: spacing)]
                     LazyVGrid(columns: columns, alignment: .leading, spacing: spacing) {
@@ -543,7 +543,7 @@ private struct TileDragPreview: View {
                 .lineLimit(1)
         }
         .padding(.horizontal, AppTheme.Spacing.smMd)
-        .padding(.vertical, AppTheme.Spacing.sm)
+        .padding(.vertical, AppTheme.Spacing.smMd)
         .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: AppTheme.Radius.sm))
         .shadow(color: AppTheme.MediaOverlay.backgroundColor.opacity(AppTheme.Opacity.medium), radius: 4, y: 2)
     }

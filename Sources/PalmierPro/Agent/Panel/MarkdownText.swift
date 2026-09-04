@@ -41,7 +41,7 @@ struct MarkdownText: View {
                     }
 
                 case .table(let header, let rows, let alignments):
-                    Grid(alignment: .topLeading, horizontalSpacing: AppTheme.Spacing.mdLg, verticalSpacing: AppTheme.Spacing.sm) {
+                    Grid(alignment: .topLeading, horizontalSpacing: AppTheme.Spacing.mdLg, verticalSpacing: AppTheme.Spacing.smMd) {
                         GridRow {
                             ForEach(Array(header.enumerated()), id: \.offset) { idx, cell in
                                 Text(cell)

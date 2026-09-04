@@ -20,7 +20,7 @@ struct HueCurveEditorView: View {
     ]
 
     var body: some View {
-        VStack(alignment: .leading, spacing: AppTheme.Spacing.sm) {
+        VStack(alignment: .leading, spacing: AppTheme.Spacing.smMd) {
             Picker(String(), selection: $channel) {
                 ForEach(HueCurves.Channel.allCases) { Text(channelTitle($0)).tag($0) }
             }

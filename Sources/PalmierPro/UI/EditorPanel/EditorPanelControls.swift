@@ -38,7 +38,7 @@ struct EditorMenuValue: View {
     var expanded = false
 
     var body: some View {
-        HStack(spacing: AppTheme.Spacing.sm) {
+        HStack(spacing: AppTheme.Spacing.smMd) {
             Text(text)
                 .lineLimit(1)
                 .truncationMode(.middle)

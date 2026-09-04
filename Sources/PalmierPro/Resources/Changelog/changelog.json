@@ -2,6 +2,39 @@
   "changelogURL": "https://metag.ai/docs",
   "entries": [
     {
+      "version": "0.1.14",
+      "date": "2026-09-04",
+      "sections": [
+        {
+          "heading": "New",
+          "items": [
+            "Films come alive when you look at them. Hover a poster on the first screen and it starts playing — silent, looping, no click. The same gesture works on your own films.",
+            "When your film lands, it plays itself from the top. A quiet bar asks what you want to do: keep it, make another, or edit it yourself. Before this you got eleven clips on three tracks and a line in a side panel.",
+            "Sign-in that stalls now says so. If the browser hand-off is slow we stop pretending and offer to open it again — we never claim it failed, because we don't know that.",
+            "The first screen is the product now, not a welcome card in front of it.",
+            "While a film is being shot, each empty slot holds that shot's line from the storyboard, large enough to read, plus a count of how many have landed."
+          ]
+        },
+        {
+          "heading": "Fixes",
+          "items": [
+            "The sign-in row in the account popover lines up with the rest of the menu.",
+            "\"No music model\" is no longer a red dead end — it is a calm line with a door to Settings.",
+            "The export panel no longer gives half the window to an empty queue.",
+            "Every gap in the interface now sits on a 4pt grid. Nothing moved much; everything moved a little.",
+            "The four sign-in buttons always carry a line explaining them, even when we can't reach the server for the free-credit number."
+          ]
+        },
+        {
+          "heading": "Known limits",
+          "items": [
+            "Requires macOS 26. Earlier systems cannot run it.",
+            "Crash reporting is still not connected. If METAG crashes on your Mac we will not know — please tell us."
+          ]
+        }
+      ]
+    },
+    {
       "version": "0.1.13",
       "date": "2026-09-03",
       "sections": [

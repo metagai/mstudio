@@ -45,7 +45,7 @@ struct ClipRulerBlock: View {
                         Text(editor.clipDisplayLabel(for: clip))
                             .font(.system(size: AppTheme.FontSize.xxs, weight: .medium))
                             .foregroundStyle(AppTheme.Text.primaryColor.opacity(0.95))
-                            .padding(.horizontal, AppTheme.Spacing.sm)
+                            .padding(.horizontal, AppTheme.Spacing.smMd)
                             .lineLimit(1)
                     }
                     .frame(height: KeyframesMetrics.stripHeight)

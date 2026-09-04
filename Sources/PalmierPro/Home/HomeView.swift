@@ -95,7 +95,7 @@ private struct HomeSidebar: View {
 
             UpdateSidebarCard()
                 .padding(.horizontal, AppTheme.Spacing.smMd)
-                .padding(.bottom, AppTheme.Spacing.sm)
+                .padding(.bottom, AppTheme.Spacing.smMd)
                 .animation(.easeInOut(duration: AppTheme.Anim.transition), value: updater.updateAvailable)
 
             footer

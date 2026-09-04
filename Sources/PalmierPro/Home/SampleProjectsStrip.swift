@@ -15,7 +15,7 @@ struct SampleProjectsStrip: View {
     }
 
     private var strip: some View {
-        VStack(alignment: .leading, spacing: AppTheme.Spacing.sm) {
+        VStack(alignment: .leading, spacing: AppTheme.Spacing.smMd) {
             Button {
                 withAnimation(.easeInOut(duration: AppTheme.Anim.transition)) { isExpanded.toggle() }
             } label: {

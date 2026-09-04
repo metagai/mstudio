@@ -55,7 +55,7 @@ struct MetagPremiereBar: View {
                 .font(.system(size: AppTheme.FontSize.mdLg, weight: AppTheme.FontWeight.medium))
                 .foregroundStyle(AppTheme.Text.primaryColor)
 
-            HStack(spacing: AppTheme.Spacing.sm) {
+            HStack(spacing: AppTheme.Spacing.smMd) {
                 // **留下它排第一。** 「愿不愿意把它留下来」就是我们量的那个
                 // 内容质量指标，而在此之前它只在菜单栏第二层里。
                 Button(L10n.string("Keep it")) { onKeep() }

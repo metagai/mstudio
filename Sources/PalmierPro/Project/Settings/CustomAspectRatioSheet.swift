@@ -50,7 +50,7 @@ struct CustomAspectRatioSheet: View {
                 Text(verbatim: ":")
                     .font(.system(size: AppTheme.FontSize.md, weight: AppTheme.FontWeight.medium))
                     .foregroundStyle(AppTheme.Text.secondaryColor)
-                    .padding(.bottom, AppTheme.Spacing.sm)
+                    .padding(.bottom, AppTheme.Spacing.smMd)
                 ratioField("Height", text: $verticalText)
             }
 

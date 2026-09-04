@@ -14,7 +14,7 @@ struct PreviewContainerView: View {
     var body: some View {
         VStack(spacing: 0) {
             tabBar
-                .padding(.horizontal, AppTheme.Spacing.sm)
+                .padding(.horizontal, AppTheme.Spacing.smMd)
                 .panelHeaderBar()
 
             GeometryReader { geo in
@@ -195,7 +195,7 @@ struct PreviewContainerView: View {
         let fps = editor.timeline.fps
         let durationTimecode = formatTimecode(frame: durationFrames, fps: fps)
 
-        return HStack(spacing: AppTheme.Spacing.sm) {
+        return HStack(spacing: AppTheme.Spacing.smMd) {
             PreviewTimecodeText(
                 isTimeline: isTimeline,
                 fps: fps,
@@ -209,7 +209,7 @@ struct PreviewContainerView: View {
             }
             .frame(minWidth: 0, maxWidth: .infinity)
         }
-        .padding(.horizontal, AppTheme.Spacing.sm)
+        .padding(.horizontal, AppTheme.Spacing.smMd)
         .frame(height: Layout.toolbarHeight)
     }
 
@@ -265,7 +265,7 @@ struct PreviewContainerView: View {
     // MARK: - Image settings bar
 
     private var imageSettingsBar: some View {
-        HStack(spacing: AppTheme.Spacing.sm) {
+        HStack(spacing: AppTheme.Spacing.smMd) {
             Spacer()
             guidesMenuButton
             settingsMenuButton(
@@ -276,7 +276,7 @@ struct PreviewContainerView: View {
                 zoomMenuItems
             }
         }
-        .padding(.horizontal, AppTheme.Spacing.sm)
+        .padding(.horizontal, AppTheme.Spacing.smMd)
         .frame(height: Layout.toolbarHeight)
     }
 
@@ -490,7 +490,7 @@ struct PreviewContainerView: View {
                 ))
         }
         .foregroundStyle(AppTheme.Text.secondaryColor)
-        .padding(.horizontal, AppTheme.Spacing.sm)
+        .padding(.horizontal, AppTheme.Spacing.smMd)
         .frame(height: AppTheme.IconSize.mdLg)
     }
 
@@ -699,7 +699,7 @@ struct PreviewContainerView: View {
                     .buttonStyle(.capsule(.prominent, size: .regular))
                     .padding(.top, AppTheme.Spacing.xs)
                 } else {
-                    HStack(spacing: AppTheme.Spacing.sm) {
+                    HStack(spacing: AppTheme.Spacing.smMd) {
                         if let assetId {
                             Button(L10n.string("Relink…")) { relinkFile(assetId: assetId) }
                                 .buttonStyle(.capsule(.prominent, size: .regular))
@@ -755,7 +755,7 @@ struct PreviewContainerView: View {
                         .font(.system(size: AppTheme.FontSize.sm, weight: .medium))
                         .foregroundStyle(AppTheme.MediaOverlay.primaryColor)
                         .padding(.horizontal, AppTheme.Spacing.mdLg)
-                        .padding(.vertical, AppTheme.Spacing.sm)
+                        .padding(.vertical, AppTheme.Spacing.smMd)
                     }
                     .buttonStyle(.plain)
                     .background(AppTheme.Text.onDarkColor.opacity(AppTheme.Opacity.soft), in: .capsule)

@@ -118,7 +118,7 @@ struct IndexTab: View {
                     ExpandablePanelSearch(text: $emptySearchQuery, focus: $isSearchFocused)
                 }
             }
-            .padding(.horizontal, AppTheme.Spacing.sm)
+            .padding(.horizontal, AppTheme.Spacing.smMd)
             .padding(.vertical, AppTheme.Spacing.xs)
 
             Rectangle()

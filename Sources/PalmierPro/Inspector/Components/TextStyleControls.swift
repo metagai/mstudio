@@ -522,7 +522,7 @@ struct TextStyleControls<AfterAlignment: View, AfterColor: View>: View {
                 }
             }
         ) {
-            HStack(spacing: AppTheme.Spacing.sm) {
+            HStack(spacing: AppTheme.Spacing.smMd) {
                 axisField(value: selection.value(xKeyPath), label: "X", range: range) { value, commit in
                     updateNumber(value, keyPath: xKeyPath, fitToContent: fitToContent, commit: commit)
                 }

@@ -38,7 +38,7 @@ extension GenerationView {
                     .padding(AppTheme.Spacing.mdLg)
             } else {
                 ForEach(Array(tags.enumerated()), id: \.element.id) { index, tag in
-                    HStack(spacing: AppTheme.Spacing.sm) {
+                    HStack(spacing: AppTheme.Spacing.smMd) {
                         Text(verbatim: "@\(tag.label)")
                             .font(.system(size: AppTheme.FontSize.xs, weight: .medium))
                             .foregroundStyle(AppTheme.Text.primaryColor)
@@ -47,7 +47,7 @@ extension GenerationView {
                             .foregroundStyle(AppTheme.Text.tertiaryColor)
                         Spacer(minLength: 0)
                     }
-                    .padding(.horizontal, AppTheme.Spacing.sm)
+                    .padding(.horizontal, AppTheme.Spacing.smMd)
                     .padding(.vertical, AppTheme.Spacing.xs)
                     .frame(minWidth: 160, alignment: .leading)
                     .background(

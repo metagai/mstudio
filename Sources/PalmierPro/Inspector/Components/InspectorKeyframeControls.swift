@@ -5,7 +5,7 @@ struct InspectorKeyframePropertyControl: View {
     let property: AnimatableProperty
 
     var body: some View {
-        HStack(spacing: AppTheme.Spacing.sm) {
+        HStack(spacing: AppTheme.Spacing.smMd) {
             KeyframePropertyValueFields(
                 clips: clips,
                 property: property,

@@ -29,7 +29,7 @@ struct CurveEditorView: View {
     }
 
     var body: some View {
-        VStack(alignment: .leading, spacing: AppTheme.Spacing.sm) {
+        VStack(alignment: .leading, spacing: AppTheme.Spacing.smMd) {
             Picker(String(), selection: $channel) {
                 ForEach(Channel.allCases) { Text($0.rawValue).tag($0) }
             }

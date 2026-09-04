@@ -89,7 +89,7 @@ struct GenerationView: View {
     private var maxPromptExtra: Double {
         guard measuredPanelHeight > 0, maxPanelHeight > 0 else { return 0 }
         let available = maxPanelHeight
-            - Double(AppTheme.Spacing.sm * 2)
+            - Double(AppTheme.Spacing.smMd * 2)
             - Double(chromeHeight)
             - Double(AppTheme.GenerationPanel.promptMinHeight)
         return max(0, available)
@@ -188,14 +188,14 @@ struct GenerationView: View {
                 )
                 .allowsHitTesting(false)
         }
-        .padding(.horizontal, AppTheme.Spacing.sm)
-        .padding(.bottom, AppTheme.Spacing.sm)
+        .padding(.horizontal, AppTheme.Spacing.smMd)
+        .padding(.bottom, AppTheme.Spacing.smMd)
     }
 
     private var bodyContent: some View {
-        VStack(alignment: .leading, spacing: AppTheme.Spacing.sm) {
+        VStack(alignment: .leading, spacing: AppTheme.Spacing.smMd) {
             // Type tabs (left) · credits · activity · close (right)
-            HStack(spacing: AppTheme.Spacing.sm) {
+            HStack(spacing: AppTheme.Spacing.smMd) {
                 typeTabs
                 Spacer()
                 CreditSummaryView(style: .compact)
@@ -213,7 +213,7 @@ struct GenerationView: View {
             }
             .padding(.horizontal, AppTheme.Spacing.mdLg)
 
-            VStack(spacing: AppTheme.Spacing.sm) {
+            VStack(spacing: AppTheme.Spacing.smMd) {
                 referencesContent
                     .layoutPriority(1)
                     .frame(maxWidth: .infinity, alignment: .leading)
@@ -284,8 +284,8 @@ struct GenerationView: View {
                 .allowsHitTesting(false)
         }
         .animation(.easeOut(duration: 0.15), value: isPromptFocused)
-        .padding(.horizontal, AppTheme.Spacing.sm)
-        .padding(.bottom, AppTheme.Spacing.sm)
+        .padding(.horizontal, AppTheme.Spacing.smMd)
+        .padding(.bottom, AppTheme.Spacing.smMd)
         .frame(maxHeight: max(0, CGFloat(maxPanelHeight)), alignment: .top)
         .onAppear {
             let hadSeed = editor.pendingPanelSeed != nil
@@ -353,7 +353,7 @@ struct GenerationView: View {
         } else if selectedType == .video && usesSourceVideoInput {
             editVideoStrip
         } else if selectedType == .video {
-            VStack(alignment: .leading, spacing: AppTheme.Spacing.sm) {
+            VStack(alignment: .leading, spacing: AppTheme.Spacing.smMd) {
                 if showsFrameStrip { videoFrameStrip }
                 if showsRefSections { referenceSections }
             }
@@ -412,8 +412,8 @@ struct GenerationView: View {
                 .font(.system(size: AppTheme.FontSize.sm))
                 .scrollContentBackground(.hidden)
                 .scrollIndicators(.automatic)
-                .padding(.horizontal, AppTheme.Spacing.sm)
-                .padding(.top, AppTheme.Spacing.sm)
+                .padding(.horizontal, AppTheme.Spacing.smMd)
+                .padding(.top, AppTheme.Spacing.smMd)
                 .padding(.bottom, AppTheme.Spacing.xs)
                 .focused($isPromptFocused)
                 .onChange(of: prompt) { _, new in updateRefMentionQuery(from: new) }
@@ -455,7 +455,7 @@ struct GenerationView: View {
                 .font(.system(size: AppTheme.FontSize.sm))
                 .scrollContentBackground(.hidden)
                 .scrollIndicators(.automatic)
-                .padding(.horizontal, AppTheme.Spacing.sm)
+                .padding(.horizontal, AppTheme.Spacing.smMd)
                 .padding(.vertical, AppTheme.Spacing.xs)
 
             if text.wrappedValue.isEmpty {
@@ -463,7 +463,7 @@ struct GenerationView: View {
                     .font(.system(size: AppTheme.FontSize.sm))
                     .foregroundStyle(AppTheme.Text.mutedColor)
                     .padding(.horizontal, AppTheme.Spacing.mdLg)
-                    .padding(.top, AppTheme.Spacing.sm)
+                    .padding(.top, AppTheme.Spacing.smMd)
                     .allowsHitTesting(false)
             }
         }
@@ -473,7 +473,7 @@ struct GenerationView: View {
     // MARK: - Input toolbar (bottom of input box)
 
     private var inputToolbar: some View {
-        HStack(spacing: AppTheme.Spacing.sm) {
+        HStack(spacing: AppTheme.Spacing.smMd) {
             modelPicker
             if showsVideoInputModePicker { videoInputModePicker }
             if selectedType == .audio, audioModel.voices != nil {
@@ -492,6 +492,6 @@ struct GenerationView: View {
         }
         .frame(maxWidth: .infinity)
         .padding(.horizontal, AppTheme.Spacing.mdLg)
-        .padding(.vertical, AppTheme.Spacing.sm)
+        .padding(.vertical, AppTheme.Spacing.smMd)
     }
 }

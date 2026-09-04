@@ -90,7 +90,7 @@ struct TranscriptBrowser: View {
                 )
             }
         }
-        .padding(.horizontal, AppTheme.Spacing.sm)
+        .padding(.horizontal, AppTheme.Spacing.smMd)
         .padding(.vertical, AppTheme.Spacing.xs)
         .fixedSize(horizontal: false, vertical: true)
         .background(AppTheme.Background.surfaceColor)
@@ -201,7 +201,7 @@ private struct TranscriptBrowserRow: View {
         )
 
         Button(action: select) {
-            HStack(alignment: .firstTextBaseline, spacing: AppTheme.Spacing.sm) {
+            HStack(alignment: .firstTextBaseline, spacing: AppTheme.Spacing.smMd) {
                 HStack(spacing: AppTheme.Spacing.xs) {
                     Text(verbatim: startTimecode)
                         .foregroundStyle(AppTheme.Text.tertiaryColor)
@@ -235,8 +235,8 @@ private struct TranscriptBrowserRow: View {
                 .fixedSize(horizontal: false, vertical: true)
                 .frame(maxWidth: .infinity, alignment: .leading)
             }
-            .padding(.horizontal, AppTheme.Spacing.sm)
-            .padding(.vertical, AppTheme.Spacing.sm)
+            .padding(.horizontal, AppTheme.Spacing.smMd)
+            .padding(.vertical, AppTheme.Spacing.smMd)
             .frame(maxWidth: .infinity, alignment: .leading)
             .contentShape(Rectangle())
         }

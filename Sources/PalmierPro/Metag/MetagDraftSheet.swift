@@ -398,7 +398,7 @@ struct MetagDraftSheet: View {
             } else if model.ready {
                 draftStage
             } else {
-                VStack(alignment: .leading, spacing: AppTheme.Spacing.sm) {
+                VStack(alignment: .leading, spacing: AppTheme.Spacing.smMd) {
                     // 说的是**谁在干什么**，而不是干到百分之几。
                     // 原来这里是一个转圈加一句"正在起草"；那句话曾经写着"约 40 秒"，
                     // 而实测 53–97 秒 —— 被告知 40 秒却等了 90 秒的人会觉得产品坏了。
@@ -455,7 +455,7 @@ struct MetagDraftSheet: View {
     /// 想自己定的人仍然能定：点一下就变成旋钮。**能力没少，默认变对了。**
     @ViewBuilder
     private var shotCountControl: some View {
-        HStack(spacing: AppTheme.Spacing.sm) {
+        HStack(spacing: AppTheme.Spacing.smMd) {
             if let chosen = model.chosenShots {
                 Stepper(
                     L10n.string("\(chosen.formatted()) shots"),
@@ -500,7 +500,7 @@ struct MetagDraftSheet: View {
     }
 
     private var promptStage: some View {
-        VStack(alignment: .leading, spacing: AppTheme.Spacing.sm) {
+        VStack(alignment: .leading, spacing: AppTheme.Spacing.smMd) {
             TextField(L10n.string("Say what you want to film, in one line"), text: $model.prompt, axis: .vertical)
                 .lineLimit(2...4)
                 // 一键成片这一屏最可能被粘进来的就是一份大纲。收成卡片，
@@ -555,7 +555,7 @@ struct MetagDraftSheet: View {
     }
 
     private var draftStage: some View {
-        VStack(alignment: .leading, spacing: AppTheme.Spacing.sm) {
+        VStack(alignment: .leading, spacing: AppTheme.Spacing.smMd) {
             // **幕布真正拉开的那一刻。**
             //
             // 等待时它是一格格填满的场记板；片子好了，它就该换成片子本身。

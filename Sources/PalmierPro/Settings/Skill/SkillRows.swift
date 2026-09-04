@@ -42,7 +42,7 @@ struct SkillCollectionButton: View {
 
     var body: some View {
         Button(action: action) {
-            HStack(spacing: AppTheme.Spacing.sm) {
+            HStack(spacing: AppTheme.Spacing.smMd) {
                 Text(title)
                 Text(count.formatted())
                     .foregroundStyle(AppTheme.Text.tertiaryColor)
@@ -50,7 +50,7 @@ struct SkillCollectionButton: View {
             .font(.system(size: AppTheme.FontSize.md, weight: AppTheme.FontWeight.regular))
             .foregroundStyle(isSelected ? AppTheme.Text.primaryColor : AppTheme.Text.tertiaryColor)
             .padding(.horizontal, AppTheme.Spacing.mdLg)
-            .padding(.vertical, AppTheme.Spacing.sm)
+            .padding(.vertical, AppTheme.Spacing.smMd)
             .hoverHighlight(
                 cornerRadius: AppTheme.Radius.xl,
                 isActive: isSelected,

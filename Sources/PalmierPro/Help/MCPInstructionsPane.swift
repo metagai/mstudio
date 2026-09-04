@@ -363,7 +363,7 @@ private struct ManualFallback: View {
     var body: some View {
         VStack(alignment: .leading, spacing: AppTheme.Spacing.smMd) {
             Button(action: toggle) {
-                HStack(spacing: AppTheme.Spacing.sm) {
+                HStack(spacing: AppTheme.Spacing.smMd) {
                     Image(systemName: "chevron.right")
                         .font(.system(size: AppTheme.FontSize.xxs, weight: AppTheme.FontWeight.regular))
                         .rotationEffect(.degrees(expanded ? 90 : 0))
@@ -376,7 +376,7 @@ private struct ManualFallback: View {
             .buttonStyle(.plain)
 
             if expanded {
-                VStack(alignment: .leading, spacing: AppTheme.Spacing.sm) {
+                VStack(alignment: .leading, spacing: AppTheme.Spacing.smMd) {
                     Text(intro)
                         .font(.system(size: AppTheme.FontSize.sm, weight: AppTheme.FontWeight.regular))
                         .foregroundStyle(AppTheme.Text.tertiaryColor)

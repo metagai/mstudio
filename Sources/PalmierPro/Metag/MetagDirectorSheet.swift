@@ -54,7 +54,7 @@ struct MetagDirectorSheet: View {
     // MARK: - Header
 
     private var header: some View {
-        HStack(spacing: AppTheme.Spacing.sm) {
+        HStack(spacing: AppTheme.Spacing.smMd) {
             Image(systemName: "film.stack")
                 .font(.system(size: AppTheme.FontSize.md, weight: AppTheme.FontWeight.semibold))
                 .foregroundStyle(AppTheme.Accent.primary)
@@ -76,8 +76,8 @@ struct MetagDirectorSheet: View {
     private var setupBody: some View {
         VStack(alignment: .leading, spacing: AppTheme.Spacing.mdLg) {
             LazyVGrid(
-                columns: [GridItem(.flexible(), spacing: AppTheme.Spacing.sm), GridItem(.flexible(), spacing: AppTheme.Spacing.sm)],
-                spacing: AppTheme.Spacing.sm
+                columns: [GridItem(.flexible(), spacing: AppTheme.Spacing.smMd), GridItem(.flexible(), spacing: AppTheme.Spacing.smMd)],
+                spacing: AppTheme.Spacing.smMd
             ) {
                 ForEach(presets) { presetCard($0) }
             }
@@ -115,7 +115,7 @@ struct MetagDirectorSheet: View {
                     .foregroundStyle(AppTheme.Accent.primary)
             }
             .frame(maxWidth: .infinity, alignment: .leading)
-            .padding(AppTheme.Spacing.sm)
+            .padding(AppTheme.Spacing.smMd)
             .cardSurface(
                 selected ? AppTheme.Accent.primary.opacity(AppTheme.Opacity.faint) : AppTheme.Background.raisedColor,
                 cornerRadius: AppTheme.Radius.sm,
@@ -155,7 +155,7 @@ struct MetagDirectorSheet: View {
                                 .frame(maxWidth: .infinity, alignment: .leading)
                         }
                     }
-                    .padding(AppTheme.Spacing.sm)
+                    .padding(AppTheme.Spacing.smMd)
                 }
                 .frame(maxHeight: AppTheme.Director.storyboardMaxHeight)
                 .background(
@@ -250,7 +250,7 @@ struct MetagDirectorSheet: View {
                 .fixedSize(horizontal: false, vertical: true)
         }
         .frame(maxWidth: .infinity, alignment: .leading)
-        .padding(AppTheme.Spacing.sm)
+        .padding(AppTheme.Spacing.smMd)
         .cardSurface(
             AppTheme.Accent.primary.opacity(AppTheme.Opacity.faint),
             cornerRadius: AppTheme.Radius.sm,
@@ -261,7 +261,7 @@ struct MetagDirectorSheet: View {
     // MARK: - Footer
 
     private var footer: some View {
-        HStack(spacing: AppTheme.Spacing.sm) {
+        HStack(spacing: AppTheme.Spacing.smMd) {
             if let run, !run.isTerminal {
                 Button(L10n.string("Stop")) { act { try await MetagGateway.cancelDirectorRun(run.id) } }
                     .buttonStyle(.plain)

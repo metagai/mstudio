@@ -9,7 +9,7 @@ struct AccountPopoverCard: View {
     private static let cardWidth: CGFloat = 280
 
     var body: some View {
-        VStack(alignment: .leading, spacing: AppTheme.Spacing.sm) {
+        VStack(alignment: .leading, spacing: AppTheme.Spacing.smMd) {
             identityBlock
 
             if account.isSignedIn {
@@ -53,7 +53,7 @@ struct AccountPopoverCard: View {
     // MARK: - Plan + credit info
 
     private var planBlock: some View {
-        VStack(alignment: .leading, spacing: AppTheme.Spacing.sm) {
+        VStack(alignment: .leading, spacing: AppTheme.Spacing.smMd) {
             HStack {
                 Text(account.planLabel)
                     .font(.system(size: AppTheme.FontSize.md, weight: .semibold))
@@ -97,7 +97,7 @@ struct AccountPopoverCard: View {
     }
 
     private func planRow(_ plan: MetagGateway.Pricing.Plan) -> some View {
-        HStack(spacing: AppTheme.Spacing.sm) {
+        HStack(spacing: AppTheme.Spacing.smMd) {
             Text("$\(plan.price_usd, specifier: "%.2f")/mo")
                 .font(.system(size: AppTheme.FontSize.sm, weight: .semibold))
                 .foregroundStyle(AppTheme.Text.primaryColor)
@@ -181,7 +181,7 @@ struct AccountPopoverCard: View {
             Spacer(minLength: 0)
         }
         .foregroundStyle(AppTheme.Text.secondaryColor)
-        .padding(.horizontal, AppTheme.Spacing.sm)
+        .padding(.horizontal, AppTheme.Spacing.smMd)
         .padding(.vertical, AppTheme.Spacing.xs)
         .contentShape(Rectangle())
     }

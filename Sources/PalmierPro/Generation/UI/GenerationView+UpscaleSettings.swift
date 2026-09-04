@@ -133,11 +133,11 @@ extension GenerationView {
         let setValue: (Double) -> Void = {
             upscaleSettings.numbers[setting.id] = snappedUpscaleValue($0, setting: setting)
         }
-        return HStack(spacing: AppTheme.Spacing.sm) {
+        return HStack(spacing: AppTheme.Spacing.smMd) {
             Text(verbatim: setting.label)
                 .font(.system(size: AppTheme.FontSize.xs, weight: .medium))
                 .foregroundStyle(AppTheme.Text.tertiaryColor)
-            Spacer(minLength: AppTheme.Spacing.sm)
+            Spacer(minLength: AppTheme.Spacing.smMd)
             ScrubbableNumberField(
                 value: storedValue ?? setting.minimum,
                 range: range,

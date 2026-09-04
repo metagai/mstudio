@@ -55,8 +55,8 @@ struct EditorPanelGroup<Content: View, HeaderAccessory: View>: View {
             .focusable(false)
             .accessibilityLabel(Text(verbatim: "\(expanded ? L10n.string("Collapse") : L10n.string("Expand")) \(title)"))
 
-            HStack(spacing: AppTheme.Spacing.sm) {
-                HStack(spacing: AppTheme.Spacing.sm) {
+            HStack(spacing: AppTheme.Spacing.smMd) {
+                HStack(spacing: AppTheme.Spacing.smMd) {
                     Image(systemName: expanded ? "chevron.down" : "chevron.right")
                         .font(.system(size: AppTheme.FontSize.xxs, weight: AppTheme.FontWeight.semibold))
                         .foregroundStyle(AppTheme.Text.tertiaryColor)
@@ -65,7 +65,7 @@ struct EditorPanelGroup<Content: View, HeaderAccessory: View>: View {
                 }
                 .allowsHitTesting(false)
 
-                Spacer(minLength: AppTheme.Spacing.sm)
+                Spacer(minLength: AppTheme.Spacing.smMd)
 
                 headerAccessory()
 

@@ -852,7 +852,7 @@ enum ClipRenderer {
         let text = content.isEmpty ? (displayName ?? "") : content
         guard !text.isEmpty else { return }
 
-        let drawRect = rect.insetBy(dx: AppTheme.Spacing.sm, dy: AppTheme.Spacing.xs)
+        let drawRect = rect.insetBy(dx: AppTheme.Spacing.smMd, dy: AppTheme.Spacing.xs)
         guard !drawRect.isEmpty else { return }
 
         NSAttributedString(string: text, attributes: [
@@ -876,7 +876,7 @@ enum ClipRenderer {
                 context: context
             ) {
                 labelRect.origin.x = chipRect.maxX + AppTheme.Spacing.xs
-                labelRect.size.width -= chipRect.width + AppTheme.Spacing.sm
+                labelRect.size.width -= chipRect.width + AppTheme.Spacing.smMd
             }
         }
 
@@ -891,7 +891,7 @@ enum ClipRenderer {
         ]
         let attributed = NSAttributedString(string: text, attributes: baseAttrs)
         let size = attributed.size()
-        let inset = AppTheme.Spacing.sm
+        let inset = AppTheme.Spacing.smMd
         let origin = NSPoint(
             x: labelRect.minX + inset,
             y: labelRect.minY + (labelRect.height - size.height) / 2
@@ -922,7 +922,7 @@ enum ClipRenderer {
             .font: NSFont.systemFont(ofSize: AppTheme.FontSize.xs, weight: .semibold),
         ]).size().width + padH * 2
         let x = rect.maxX - Trim.handleWidth - width - AppTheme.Spacing.xs
-        guard x > rect.minX + AppTheme.Spacing.sm else { return }
+        guard x > rect.minX + AppTheme.Spacing.smMd else { return }
         drawPill(text, textColor: AppTheme.Text.onDark, fill: offsetBadgeColor, fontSize: AppTheme.FontSize.xs,
                  at: NSPoint(x: x, y: rect.minY + AppTheme.Spacing.xs), maxWidth: width, context: context)
     }

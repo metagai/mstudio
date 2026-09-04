@@ -87,13 +87,13 @@ struct AIEditTab: View {
 
     private var actionGridColumns: [GridItem] {
         [
-            GridItem(.flexible(), spacing: AppTheme.Spacing.sm),
-            GridItem(.flexible(), spacing: AppTheme.Spacing.sm),
+            GridItem(.flexible(), spacing: AppTheme.Spacing.smMd),
+            GridItem(.flexible(), spacing: AppTheme.Spacing.smMd),
         ]
     }
 
     private var visualActionGrid: some View {
-        LazyVGrid(columns: actionGridColumns, spacing: AppTheme.Spacing.sm) {
+        LazyVGrid(columns: actionGridColumns, spacing: AppTheme.Spacing.smMd) {
             actionTile(
                 action: .upscale,
                 icon: "sparkles.rectangle.stack",
@@ -149,7 +149,7 @@ struct AIEditTab: View {
     }
 
     private var audioActionGrid: some View {
-        LazyVGrid(columns: actionGridColumns, spacing: AppTheme.Spacing.sm) {
+        LazyVGrid(columns: actionGridColumns, spacing: AppTheme.Spacing.smMd) {
             if asset.type == .audio {
                 actionTile(
                     action: .rerun,
@@ -208,7 +208,7 @@ struct AIEditTab: View {
         help: String,
         isOn: Binding<Bool>
     ) -> some View {
-        HStack(spacing: AppTheme.Spacing.sm) {
+        HStack(spacing: AppTheme.Spacing.smMd) {
             Image(systemName: icon)
                 .font(.system(size: AppTheme.FontSize.sm))
                 .foregroundStyle(isOn.wrappedValue ? AppTheme.Accent.primary : AppTheme.Text.tertiaryColor)
@@ -365,7 +365,7 @@ struct AIEditTab: View {
         perform: @escaping () -> Void
     ) -> some View {
         Button(action: perform) {
-            HStack(spacing: AppTheme.Spacing.sm) {
+            HStack(spacing: AppTheme.Spacing.smMd) {
                 Image(systemName: icon)
                     .font(.system(size: AppTheme.FontSize.smMd, weight: AppTheme.FontWeight.medium))
                     .foregroundStyle(isEnabled ? AppTheme.Text.secondaryColor : AppTheme.Text.mutedColor)
@@ -392,7 +392,7 @@ struct AIEditTab: View {
                 }
             }
             .padding(.horizontal, AppTheme.Spacing.smMd)
-            .padding(.vertical, AppTheme.Spacing.sm)
+            .padding(.vertical, AppTheme.Spacing.smMd)
             .frame(maxWidth: .infinity, alignment: .leading)
             .contentShape(
                 RoundedRectangle(cornerRadius: AppTheme.Radius.sm, style: .continuous)
@@ -432,7 +432,7 @@ struct AIEditTab: View {
                 .foregroundStyle(AppTheme.Text.primaryColor)
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .padding(.horizontal, AppTheme.Spacing.mdLg)
-                .padding(.vertical, AppTheme.Spacing.sm)
+                .padding(.vertical, AppTheme.Spacing.smMd)
                 .contentShape(Rectangle())
         }
         .buttonStyle(.plain)

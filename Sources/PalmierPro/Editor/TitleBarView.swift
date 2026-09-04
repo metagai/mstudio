@@ -40,7 +40,7 @@ struct TitleBarTrailingView: View {
         let activeCount = jobs.count { $0.status.isRunning }
         let waitingCount = jobs.count { $0.status == .waiting }
 
-        HStack(spacing: AppTheme.Spacing.sm) {
+        HStack(spacing: AppTheme.Spacing.smMd) {
             Spacer(minLength: AppTheme.Spacing.zero)
 
             UpdateProjectBadge()

@@ -43,7 +43,7 @@ struct MetagCreditsView: View {
     }
 
     var body: some View {
-        VStack(alignment: .leading, spacing: AppTheme.Spacing.sm) {
+        VStack(alignment: .leading, spacing: AppTheme.Spacing.smMd) {
             Text(L10n.string("Credit activity")).font(.system(size: AppTheme.FontSize.mdLg, weight: AppTheme.FontWeight.semibold))
             if model.loading && model.items.isEmpty {
                 Text(L10n.string("Loading…")).font(.system(size: AppTheme.FontSize.sm)).foregroundStyle(AppTheme.Text.secondaryColor)
@@ -80,7 +80,7 @@ struct MetagCreditsView: View {
 
     private func row(_ e: MetagGateway.CreditEntry) -> some View {
         let d = Self.describe(e)
-        return HStack(alignment: .top, spacing: AppTheme.Spacing.sm) {
+        return HStack(alignment: .top, spacing: AppTheme.Spacing.smMd) {
             VStack(alignment: .leading, spacing: 1) {
                 Text(d.label)
                     .font(.system(size: AppTheme.FontSize.sm))

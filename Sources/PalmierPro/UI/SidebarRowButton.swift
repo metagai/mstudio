@@ -38,7 +38,7 @@ struct SidebarRowLabel: View {
             Spacer(minLength: 0)
         }
         .padding(.horizontal, AppTheme.Spacing.mdLg)
-        .padding(.vertical, AppTheme.Spacing.sm)
+        .padding(.vertical, AppTheme.Spacing.smMd)
         .foregroundStyle(AppTheme.Text.primaryColor)
     }
 }

@@ -13,7 +13,7 @@ struct ColorWheelControl: View {
     let onMasterCommit: (Double) -> Void
 
     var body: some View {
-        VStack(spacing: AppTheme.Spacing.sm) {
+        VStack(spacing: AppTheme.Spacing.smMd) {
             Text(L10n.string(key: title))
                 .font(.system(size: AppTheme.FontSize.sm, weight: AppTheme.FontWeight.medium))
                 .foregroundStyle(AppTheme.Text.secondaryColor)

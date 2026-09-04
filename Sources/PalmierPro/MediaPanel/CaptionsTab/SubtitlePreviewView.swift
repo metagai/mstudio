@@ -49,7 +49,7 @@ struct SubtitlePreviewView: View {
 
     private func cueRow(index: Int, cue: SubtitleCue) -> some View {
         VStack(alignment: .leading, spacing: AppTheme.Spacing.xs) {
-            HStack(spacing: AppTheme.Spacing.sm) {
+            HStack(spacing: AppTheme.Spacing.smMd) {
                 Text(verbatim: "\(index)")
                     .foregroundStyle(AppTheme.Text.tertiaryColor)
                 Text(verbatim: "\(timestamp(cue.startSeconds)) --> \(timestamp(cue.endSeconds))")
@@ -64,7 +64,7 @@ struct SubtitlePreviewView: View {
     }
 
     private func unavailable(message: String) -> some View {
-        VStack(spacing: AppTheme.Spacing.sm) {
+        VStack(spacing: AppTheme.Spacing.smMd) {
             Image(systemName: "captions.bubble")
                 .font(.system(size: AppTheme.IconSize.lg))
                 .foregroundStyle(AppTheme.Text.tertiaryColor)

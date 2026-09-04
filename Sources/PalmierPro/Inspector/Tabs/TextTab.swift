@@ -149,7 +149,7 @@ struct TextTab: View {
                 }
             }
         ) {
-            HStack(spacing: AppTheme.Spacing.sm) {
+            HStack(spacing: AppTheme.Spacing.smMd) {
                 tiltField("X", keyPath: \.rotationX)
                 tiltField("Y", keyPath: \.rotationY)
             }

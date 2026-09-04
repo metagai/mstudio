@@ -32,10 +32,10 @@ struct SkillExternalAgentMenu: View {
                             Text(L10n.string("Add to \(agent.label)"))
                                 .font(.system(size: AppTheme.FontSize.sm))
                                 .foregroundStyle(AppTheme.Text.primaryColor)
-                            Spacer(minLength: AppTheme.Spacing.sm)
+                            Spacer(minLength: AppTheme.Spacing.smMd)
                         }
                         .padding(.horizontal, AppTheme.Spacing.mdLg)
-                        .padding(.vertical, AppTheme.Spacing.sm)
+                        .padding(.vertical, AppTheme.Spacing.smMd)
                         .hoverHighlight(cornerRadius: AppTheme.Radius.sm)
                     }
                     .buttonStyle(.plain)

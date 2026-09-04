@@ -70,7 +70,7 @@ struct UpdateOverlay: View {
 
     @ViewBuilder
     private func section(_ section: ChangelogSection) -> some View {
-        VStack(alignment: .leading, spacing: AppTheme.Spacing.sm) {
+        VStack(alignment: .leading, spacing: AppTheme.Spacing.smMd) {
             if let heading = section.heading, !heading.isEmpty {
                 Text(verbatim: heading)
                     .font(.system(size: AppTheme.FontSize.xl, weight: .light))
@@ -78,7 +78,7 @@ struct UpdateOverlay: View {
                     .foregroundStyle(AppTheme.Text.primaryColor)
             }
             ForEach(section.items, id: \.self) { item in
-                HStack(alignment: .firstTextBaseline, spacing: AppTheme.Spacing.sm) {
+                HStack(alignment: .firstTextBaseline, spacing: AppTheme.Spacing.smMd) {
                     Text(verbatim: "•")
                         .foregroundStyle(AppTheme.Text.tertiaryColor)
                     Text(verbatim: item)

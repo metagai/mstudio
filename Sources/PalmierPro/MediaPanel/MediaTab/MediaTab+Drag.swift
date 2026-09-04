@@ -91,7 +91,7 @@ extension MediaTab {
                 Text(verbatim: "\(count)")
                     .font(.system(size: AppTheme.FontSize.sm, weight: .bold))
                     .foregroundStyle(AppTheme.Background.baseColor)
-                    .padding(.horizontal, AppTheme.Spacing.sm)
+                    .padding(.horizontal, AppTheme.Spacing.smMd)
                     .padding(.vertical, AppTheme.Spacing.xs)
                     .background(Capsule().fill(AppTheme.Accent.primary))
                     .offset(x: AppTheme.Spacing.xs, y: -AppTheme.Spacing.xs)

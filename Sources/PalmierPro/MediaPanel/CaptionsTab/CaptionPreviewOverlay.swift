@@ -139,12 +139,12 @@ struct CaptionPreviewOverlay: View {
         }
         .font(.system(size: AppTheme.FontSize.xs, weight: AppTheme.FontWeight.medium))
         .foregroundStyle(AppTheme.Text.primaryColor)
-        .padding(.horizontal, AppTheme.Spacing.sm)
+        .padding(.horizontal, AppTheme.Spacing.smMd)
         .frame(height: AppTheme.IconSize.mdLg)
         .cardSurface(
             AppTheme.Background.surfaceColor.opacity(AppTheme.Opacity.prominent), cornerRadius: AppTheme.Radius.sm, border: AppTheme.Border.primaryColor, borderWidth: AppTheme.BorderWidth.hairline
         )
-        .padding(AppTheme.Spacing.sm)
+        .padding(AppTheme.Spacing.smMd)
         .allowsHitTesting(false)
     }
 

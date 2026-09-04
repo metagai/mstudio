@@ -977,7 +977,7 @@ final class TimelineInputController {
             let bracket = NSBezierPath()
             let bracketTop = midY + AppTheme.Spacing.smMd
             let bracketBottom = midY - AppTheme.Spacing.smMd
-            let capX = midX + direction * AppTheme.Spacing.sm
+            let capX = midX + direction * AppTheme.Spacing.smMd
             bracket.move(to: NSPoint(x: midX, y: bracketBottom))
             bracket.line(to: NSPoint(x: midX, y: bracketTop))
             bracket.move(to: NSPoint(x: midX, y: bracketTop))
@@ -997,8 +997,8 @@ final class TimelineInputController {
             let arrowBaseX = midX + direction * AppTheme.Spacing.xs
             let arrow = NSBezierPath()
             arrow.move(to: NSPoint(x: arrowTipX, y: midY))
-            arrow.line(to: NSPoint(x: arrowBaseX, y: midY + AppTheme.Spacing.sm))
-            arrow.line(to: NSPoint(x: arrowBaseX, y: midY - AppTheme.Spacing.sm))
+            arrow.line(to: NSPoint(x: arrowBaseX, y: midY + AppTheme.Spacing.smMd))
+            arrow.line(to: NSPoint(x: arrowBaseX, y: midY - AppTheme.Spacing.smMd))
             arrow.close()
             arrow.lineJoinStyle = .round
             arrow.lineWidth = AppTheme.BorderWidth.thick
@@ -1034,11 +1034,11 @@ final class TimelineInputController {
             ticks.stroke()
 
             let arrow = NSBezierPath()
-            arrow.move(to: NSPoint(x: midX - AppTheme.Spacing.sm, y: midY))
+            arrow.move(to: NSPoint(x: midX - AppTheme.Spacing.smMd, y: midY))
             arrow.line(to: NSPoint(x: midX - AppTheme.Spacing.xs, y: midY + AppTheme.Spacing.xs))
             arrow.line(to: NSPoint(x: midX - AppTheme.Spacing.xs, y: midY - AppTheme.Spacing.xs))
             arrow.close()
-            arrow.move(to: NSPoint(x: midX + AppTheme.Spacing.sm, y: midY))
+            arrow.move(to: NSPoint(x: midX + AppTheme.Spacing.smMd, y: midY))
             arrow.line(to: NSPoint(x: midX + AppTheme.Spacing.xs, y: midY + AppTheme.Spacing.xs))
             arrow.line(to: NSPoint(x: midX + AppTheme.Spacing.xs, y: midY - AppTheme.Spacing.xs))
             arrow.close()

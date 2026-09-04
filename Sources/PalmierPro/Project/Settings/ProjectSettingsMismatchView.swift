@@ -15,7 +15,7 @@ struct ProjectSettingsMismatchView: View {
                 .foregroundStyle(AppTheme.Text.secondaryColor)
                 .multilineTextAlignment(.center)
 
-            Grid(alignment: .leading, horizontalSpacing: AppTheme.Spacing.xl, verticalSpacing: AppTheme.Spacing.sm) {
+            Grid(alignment: .leading, horizontalSpacing: AppTheme.Spacing.xl, verticalSpacing: AppTheme.Spacing.smMd) {
                 GridRow {
                     Text(verbatim: "")
                     Text(L10n.string("Project"))

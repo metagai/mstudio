@@ -21,7 +21,7 @@ struct MarkerEditorPopover: View {
     }
     var body: some View {
         VStack(alignment: .leading, spacing: AppTheme.Spacing.mdLg) {
-            Grid(alignment: .topLeading, horizontalSpacing: AppTheme.Spacing.sm, verticalSpacing: AppTheme.Spacing.mdLg) {
+            Grid(alignment: .topLeading, horizontalSpacing: AppTheme.Spacing.smMd, verticalSpacing: AppTheme.Spacing.mdLg) {
                 GridRow {
                     fieldLabel(L10n.string("Time"))
                     timeField(\.startFrame)
@@ -32,7 +32,7 @@ struct MarkerEditorPopover: View {
                     fieldLabel(L10n.string("Name"))
                     TextField(L10n.string("Marker name"), text: $draft.name)
                         .textFieldStyle(.plain)
-                        .padding(.horizontal, AppTheme.Spacing.sm)
+                        .padding(.horizontal, AppTheme.Spacing.smMd)
                         .editorValueField(fill: AppTheme.Background.raisedColor)
                         .gridCellColumns(3)
                 }
@@ -44,7 +44,7 @@ struct MarkerEditorPopover: View {
                         .font(.system(size: AppTheme.FontSize.sm))
                         .lineLimit(3, reservesSpace: true)
                         .frame(height: AppTheme.TimelineMarker.commentsHeight)
-                        .padding(.horizontal, AppTheme.Spacing.sm)
+                        .padding(.horizontal, AppTheme.Spacing.smMd)
                         .editorValueField(
                             minHeight: AppTheme.TimelineMarker.commentsHeight,
                             fill: AppTheme.Background.raisedColor
@@ -57,7 +57,7 @@ struct MarkerEditorPopover: View {
                     .gridCellColumns(3)
                 }
             }
-            HStack(spacing: AppTheme.Spacing.sm) {
+            HStack(spacing: AppTheme.Spacing.smMd) {
                 Button(L10n.string("Remove Marker"), role: .destructive) {
                     editor.deleteSelectedTimelineMarker()
                     onDismiss()

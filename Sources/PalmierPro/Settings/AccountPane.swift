@@ -41,9 +41,9 @@ struct AccountPane: View {
             HStack(alignment: .top, spacing: AppTheme.Spacing.mdLg) {
                 card {
                     cardCaption("Remaining")
-                    Spacer(minLength: AppTheme.Spacing.sm)
+                    Spacer(minLength: AppTheme.Spacing.smMd)
                     CreditSummaryView(style: .full)
-                    Spacer(minLength: AppTheme.Spacing.sm)
+                    Spacer(minLength: AppTheme.Spacing.smMd)
                 }
                 card {
                     cardCaption("Buy more")
@@ -63,7 +63,7 @@ struct AccountPane: View {
     @ViewBuilder
     private var subscriptionSection: some View {
         SettingsGroup(title: L10n.key("Subscription")) {
-            HStack(alignment: .center, spacing: AppTheme.Spacing.sm) {
+            HStack(alignment: .center, spacing: AppTheme.Spacing.smMd) {
                 Text(account.planLabel)
                     .font(.system(size: AppTheme.FontSize.md))
                     .foregroundStyle(AppTheme.Text.primaryColor)
@@ -128,7 +128,7 @@ struct AccountPane: View {
 
     @ViewBuilder
     private func card<Content: View>(@ViewBuilder content: () -> Content) -> some View {
-        VStack(alignment: .leading, spacing: AppTheme.Spacing.sm) {
+        VStack(alignment: .leading, spacing: AppTheme.Spacing.smMd) {
             content()
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)

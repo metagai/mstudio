@@ -19,7 +19,7 @@ struct MetagCrewView: View {
     private var current: MetagCrew.Member? { MetagCrew.current(stage: stage) }
 
     var body: some View {
-        VStack(alignment: .leading, spacing: AppTheme.Spacing.sm) {
+        VStack(alignment: .leading, spacing: AppTheme.Spacing.smMd) {
             callSheet
             headline
         }
@@ -94,7 +94,7 @@ struct MetagCrewView: View {
         let passed = MetagCrew.standing(of: member, stage: stage) == .done
         return Rectangle()
             .fill(passed ? member.tint : AppTheme.Border.subtleColor)
-            .frame(width: AppTheme.Spacing.sm, height: AppTheme.BorderWidth.hairline)
+            .frame(width: AppTheme.Spacing.smMd, height: AppTheme.BorderWidth.hairline)
             .animation(.easeOut(duration: AppTheme.Anim.transition), value: passed)
     }
 

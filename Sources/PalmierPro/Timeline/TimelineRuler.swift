@@ -42,7 +42,7 @@ enum TimelineRuler {
                     if localX >= 0 && localX <= Double(rect.width) {
                         let x = Double(rect.minX) + localX
                         let isMidpoint = minorCount % 2 == 0 && minorFrame % (framesPerMajor / 2) == 0
-                        let tickHeight: Double = isMidpoint ? AppTheme.Spacing.sm : AppTheme.Spacing.xs
+                        let tickHeight: Double = isMidpoint ? AppTheme.Spacing.smMd : AppTheme.Spacing.xs
                         context.move(to: CGPoint(x: x, y: Double(rect.minY)))
                         context.addLine(to: CGPoint(x: x, y: Double(rect.minY) + tickHeight))
                         context.strokePath()
@@ -88,7 +88,7 @@ enum TimelineRuler {
     private static func minorSubdivisions(framesPerMajor: Int, pixelsPerFrame: Double, fps: Int) -> Int {
         let majorPixels = Double(framesPerMajor) * pixelsPerFrame
         for divisions in [20, 10, 5, 4, 2] {
-            if majorPixels / Double(divisions) >= AppTheme.Spacing.sm {
+            if majorPixels / Double(divisions) >= AppTheme.Spacing.smMd {
                 return divisions
             }
         }

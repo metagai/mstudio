@@ -139,11 +139,11 @@ final class TimelineHeaderView: NSView {
             dragHandleRects[i] = gripRect.insetBy(dx: -4, dy: -4)
 
             let iconY = y + (h - iconSize) / 2
-            let rightmostX = headerWidth - iconSize - AppTheme.Spacing.sm
+            let rightmostX = headerWidth - iconSize - AppTheme.Spacing.smMd
             let syncX = rightmostX - iconSize - AppTheme.Spacing.xs
             let keyframeX = syncX - iconSize - AppTheme.Spacing.xs
 
-            let labelX = gripX + iconSize + AppTheme.Spacing.sm
+            let labelX = gripX + iconSize + AppTheme.Spacing.smMd
             let labelHeight = min(
                 max(0, h - AppTheme.Spacing.xs * 2),
                 AppTheme.EditorPanel.fieldMinHeight

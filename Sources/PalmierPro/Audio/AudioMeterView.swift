@@ -36,7 +36,7 @@ struct AudioMeterView: View {
         .frame(width: Self.contentWidth)
         .frame(maxHeight: .infinity)
         .padding(.horizontal, AppTheme.Spacing.xs)
-        .padding(.vertical, AppTheme.Spacing.sm)
+        .padding(.vertical, AppTheme.Spacing.smMd)
         .contentShape(Rectangle())
         .onTapGesture { editor.audioMeter.resetClipping() }
         .help(L10n.string("Reset Clipping Indicators"))

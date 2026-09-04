@@ -127,7 +127,7 @@ struct SkillsPane: View {
     }
 
     private var searchField: some View {
-        HStack(spacing: AppTheme.Spacing.sm) {
+        HStack(spacing: AppTheme.Spacing.smMd) {
             Image(systemName: "magnifyingglass")
                 .font(.system(size: AppTheme.FontSize.sm))
                 .foregroundStyle(AppTheme.Text.mutedColor)
@@ -158,7 +158,7 @@ struct SkillsPane: View {
     }
 
     private var skillList: some View {
-        VStack(spacing: AppTheme.Spacing.sm) {
+        VStack(spacing: AppTheme.Spacing.smMd) {
             switch collection {
             case .installed:
                 installedList

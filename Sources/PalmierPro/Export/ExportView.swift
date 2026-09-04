@@ -174,7 +174,7 @@ struct ExportView: View {
                     Text(submissionError)
                         .font(.system(size: AppTheme.FontSize.xs))
                         .foregroundStyle(AppTheme.Status.errorColor)
-                        .padding(.top, AppTheme.Spacing.sm)
+                        .padding(.top, AppTheme.Spacing.smMd)
                 }
 
                 Spacer()
@@ -185,7 +185,7 @@ struct ExportView: View {
     }
 
     private var destinationPicker: some View {
-        VStack(alignment: .leading, spacing: AppTheme.Spacing.sm) {
+        VStack(alignment: .leading, spacing: AppTheme.Spacing.smMd) {
             Text(L10n.string("Destination"))
                 .font(.system(size: AppTheme.FontSize.md))
                 .foregroundStyle(AppTheme.Text.secondaryColor)
@@ -196,7 +196,7 @@ struct ExportView: View {
                 }
             }
         }
-        .padding(.vertical, AppTheme.Spacing.sm)
+        .padding(.vertical, AppTheme.Spacing.smMd)
         .frame(maxWidth: .infinity, alignment: .leading)
     }
 
@@ -245,7 +245,7 @@ struct ExportView: View {
                 .foregroundStyle(AppTheme.Text.secondaryColor)
                 .padding(.top, AppTheme.Spacing.mdLg)
 
-            VStack(spacing: AppTheme.Spacing.sm) {
+            VStack(spacing: AppTheme.Spacing.smMd) {
                 ForEach(TimelineExportFormat.allCases) { format in
                     timelineFormatButton(format)
                 }
@@ -257,7 +257,7 @@ struct ExportView: View {
     @ViewBuilder
     private var fcpxmlVersionRow: some View {
         Divider().opacity(AppTheme.Opacity.moderate)
-        HStack(spacing: AppTheme.Spacing.sm) {
+        HStack(spacing: AppTheme.Spacing.smMd) {
             Text(L10n.string("For"))
                 .font(.system(size: AppTheme.FontSize.xs))
                 .foregroundStyle(AppTheme.Text.tertiaryColor)
@@ -306,7 +306,7 @@ struct ExportView: View {
             }
         }
         .frame(maxWidth: .infinity, alignment: .leading)
-        .padding(.vertical, AppTheme.Spacing.sm)
+        .padding(.vertical, AppTheme.Spacing.smMd)
     }
 
     // MARK: - Export queue
@@ -321,7 +321,7 @@ struct ExportView: View {
 
     private var logHeader: some View {
         let pendingCount = projectJobs.count { $0.status.isPending }
-        return HStack(spacing: AppTheme.Spacing.sm) {
+        return HStack(spacing: AppTheme.Spacing.smMd) {
             Text(L10n.string("Export Queue"))
                 .font(.system(size: AppTheme.FontSize.md, weight: AppTheme.FontWeight.semibold))
                 .foregroundStyle(AppTheme.Text.primaryColor)
@@ -366,7 +366,7 @@ struct ExportView: View {
     }
 
     private func exportLogRow(_ job: ExportJob) -> some View {
-        HStack(spacing: AppTheme.Spacing.sm) {
+        HStack(spacing: AppTheme.Spacing.smMd) {
             Text(job.createdAt.formatted(date: .omitted, time: .shortened))
                 .font(.system(size: AppTheme.FontSize.xxs))
                 .foregroundStyle(AppTheme.Text.mutedColor)
@@ -417,7 +417,7 @@ struct ExportView: View {
                 .frame(width: AppTheme.IconSize.sm, height: AppTheme.IconSize.sm)
         }
         .padding(.horizontal, AppTheme.Spacing.lg)
-        .padding(.vertical, AppTheme.Spacing.sm)
+        .padding(.vertical, AppTheme.Spacing.smMd)
         .help(job.error ?? job.outputURL.path)
         .overlay(alignment: .bottom) {
             Divider().opacity(AppTheme.Opacity.moderate)
@@ -556,7 +556,7 @@ struct ExportView: View {
             Spacer()
             control()
         }
-        .padding(.vertical, AppTheme.Spacing.sm)
+        .padding(.vertical, AppTheme.Spacing.smMd)
     }
 
     private func destinationButton(_ option: ExportDestination) -> some View {
@@ -564,7 +564,7 @@ struct ExportView: View {
         return Button {
             destination = option
         } label: {
-            HStack(spacing: AppTheme.Spacing.sm) {
+            HStack(spacing: AppTheme.Spacing.smMd) {
                 RadioIndicator(selected: selected)
 
                 Text(L10n.string(key: option.title))
@@ -590,7 +590,7 @@ struct ExportView: View {
                     .foregroundStyle(selected ? AppTheme.Accent.primary : AppTheme.Text.mutedColor)
                     .frame(width: AppTheme.IconSize.sm, height: AppTheme.IconSize.sm)
 
-                VStack(alignment: .leading, spacing: AppTheme.Spacing.sm) {
+                VStack(alignment: .leading, spacing: AppTheme.Spacing.smMd) {
                     HStack(spacing: AppTheme.Spacing.xs) {
                         Text(verbatim: format.rawValue)
                             .font(.system(size: AppTheme.FontSize.md, weight: AppTheme.FontWeight.semibold))

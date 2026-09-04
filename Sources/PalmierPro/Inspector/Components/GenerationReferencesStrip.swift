@@ -8,7 +8,7 @@ struct GenerationReferencesStrip: View {
         let slots = Self.slots(for: generationInput, in: editor.mediaAssets)
         if !slots.isEmpty {
             ScrollView(.horizontal, showsIndicators: false) {
-                HStack(alignment: .top, spacing: AppTheme.Spacing.sm) {
+                HStack(alignment: .top, spacing: AppTheme.Spacing.smMd) {
                     ForEach(slots.indices, id: \.self) { i in
                         thumbnail(label: slots[i].0, asset: slots[i].1)
                     }
