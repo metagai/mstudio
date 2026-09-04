@@ -105,7 +105,7 @@ private struct SettingsSidebar: View {
     }
 
     private var tabList: some View {
-        VStack(alignment: .leading, spacing: AppTheme.Spacing.xxs) {
+        VStack(alignment: .leading, spacing: AppTheme.Spacing.xs) {
             ForEach(visibleTabs) { tab in
                 SidebarRowButton(
                     label: L10n.string(key: tab.label),

@@ -489,7 +489,7 @@ struct MediaTab: View {
                 .foregroundStyle(textColor)
                 .lineLimit(1)
                 .padding(.horizontal, AppTheme.Spacing.sm)
-                .padding(.vertical, AppTheme.Spacing.xxs)
+                .padding(.vertical, AppTheme.Spacing.xs)
                 .hoverHighlight(cornerRadius: AppTheme.Radius.xsSm)
         }
         .buttonStyle(.plain)

@@ -11,12 +11,12 @@ struct TimelineKeyframeLaneHeaderControl: View {
 
     var body: some View {
         let clip = target
-        HStack(spacing: AppTheme.Spacing.xxs) {
+        HStack(spacing: AppTheme.Spacing.xs) {
             Text(L10n.string(key: property.displayName))
                 .font(.system(size: AppTheme.FontSize.xxs, weight: AppTheme.FontWeight.medium))
                 .foregroundStyle(AppTheme.Text.secondaryColor)
                 .lineLimit(1)
-            Spacer(minLength: AppTheme.Spacing.xxs)
+            Spacer(minLength: AppTheme.Spacing.xs)
             KeyframePropertyValueFields(
                 clips: clip.map { [$0] } ?? [],
                 property: property,

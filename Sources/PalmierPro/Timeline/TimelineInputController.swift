@@ -1035,12 +1035,12 @@ final class TimelineInputController {
 
             let arrow = NSBezierPath()
             arrow.move(to: NSPoint(x: midX - AppTheme.Spacing.sm, y: midY))
-            arrow.line(to: NSPoint(x: midX - AppTheme.Spacing.xxs, y: midY + AppTheme.Spacing.xs))
-            arrow.line(to: NSPoint(x: midX - AppTheme.Spacing.xxs, y: midY - AppTheme.Spacing.xs))
+            arrow.line(to: NSPoint(x: midX - AppTheme.Spacing.xs, y: midY + AppTheme.Spacing.xs))
+            arrow.line(to: NSPoint(x: midX - AppTheme.Spacing.xs, y: midY - AppTheme.Spacing.xs))
             arrow.close()
             arrow.move(to: NSPoint(x: midX + AppTheme.Spacing.sm, y: midY))
-            arrow.line(to: NSPoint(x: midX + AppTheme.Spacing.xxs, y: midY + AppTheme.Spacing.xs))
-            arrow.line(to: NSPoint(x: midX + AppTheme.Spacing.xxs, y: midY - AppTheme.Spacing.xs))
+            arrow.line(to: NSPoint(x: midX + AppTheme.Spacing.xs, y: midY + AppTheme.Spacing.xs))
+            arrow.line(to: NSPoint(x: midX + AppTheme.Spacing.xs, y: midY - AppTheme.Spacing.xs))
             arrow.close()
             arrow.lineJoinStyle = .round
             arrow.lineWidth = AppTheme.BorderWidth.thick

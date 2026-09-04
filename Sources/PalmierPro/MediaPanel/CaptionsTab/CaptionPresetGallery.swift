@@ -46,7 +46,7 @@ private struct CaptionPresetCell: View {
     private var loopFrames: Int { CaptionPreviewRender.loopFrames(preset) }
 
     var body: some View {
-        VStack(spacing: AppTheme.Spacing.xxs) {
+        VStack(spacing: AppTheme.Spacing.xs) {
             ZStack {
                 RoundedRectangle(cornerRadius: AppTheme.Radius.sm)
                     .fill(AppTheme.Background.previewCanvasColor)

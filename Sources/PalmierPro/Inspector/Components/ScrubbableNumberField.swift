@@ -81,7 +81,7 @@ struct ScrubbableNumberField: View {
             }
             .frame(width: fieldWidth, alignment: .trailing)
             .padding(.horizontal, AppTheme.Spacing.sm)
-            .padding(.vertical, AppTheme.Spacing.xxs)
+            .padding(.vertical, AppTheme.Spacing.xs)
             .editorValueField(
                 active: isEditing || isDragging,
                 minHeight: fieldHeight,

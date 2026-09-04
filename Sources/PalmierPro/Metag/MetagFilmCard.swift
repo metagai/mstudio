@@ -85,7 +85,7 @@ struct MetagFilmCard: View {
             Text(verbatim: statusText)
                 .font(.system(size: AppTheme.FontSize.xxs, weight: AppTheme.FontWeight.medium))
                 .padding(.horizontal, AppTheme.Spacing.xs)
-                .padding(.vertical, AppTheme.Spacing.xxs)
+                .padding(.vertical, AppTheme.Spacing.xs)
                 .background(Capsule().fill(.ultraThinMaterial))
                 .foregroundStyle(AppTheme.Status.warningColor)
                 .padding(AppTheme.Spacing.xs)
@@ -97,7 +97,7 @@ struct MetagFilmCard: View {
     @ViewBuilder
     private var actions: some View {
         if hovered {
-            HStack(spacing: AppTheme.Spacing.xxs) {
+            HStack(spacing: AppTheme.Spacing.xs) {
                 iconButton("square.and.arrow.up", L10n.string("Share"), action: onShare)
                 iconButton("xmark", L10n.string("Delete"), action: onDelete)
             }

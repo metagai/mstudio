@@ -21,7 +21,7 @@ struct CropAspectFields: View {
     }
 
     var body: some View {
-        HStack(spacing: AppTheme.Spacing.xxs) {
+        HStack(spacing: AppTheme.Spacing.xs) {
             ratioField("Width", value: $horizontal, field: .horizontal, alignment: .trailing)
             Text(verbatim: ":")
                 .font(.system(size: AppTheme.FontSize.sm, weight: AppTheme.FontWeight.medium))

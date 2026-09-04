@@ -6,7 +6,7 @@ import Testing
 /// 按钮从一个加到三个时踩过这个坑，所以把"装得下"钉住。
 struct TitleBarPanelToggleTests {
     @Test func leadingTitlebarFitsThreePanelButtons() {
-        let needed = AppTheme.IconSize.lg * 3 + AppTheme.Spacing.smMd + AppTheme.Spacing.xxs
+        let needed = AppTheme.IconSize.lg * 3 + AppTheme.Spacing.smMd + AppTheme.Spacing.xs
         #expect(AppTheme.Window.projectTitlebarLeadingWidth >= needed)
     }
 }

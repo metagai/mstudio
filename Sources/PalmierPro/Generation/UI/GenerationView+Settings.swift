@@ -20,7 +20,7 @@ extension GenerationView {
                 Button {
                     withAnimation(.easeInOut(duration: AppTheme.Anim.hover)) { selectedType = type }
                 } label: {
-                    VStack(spacing: AppTheme.Spacing.xxs) {
+                    VStack(spacing: AppTheme.Spacing.xs) {
                         Image(systemName: type.icon)
                             .font(.system(
                                 size: AppTheme.FontSize.smMd,
@@ -36,13 +36,13 @@ extension GenerationView {
                     .background(
                         RoundedRectangle(cornerRadius: AppTheme.Radius.concentric(
                             outer: AppTheme.Radius.sm,
-                            padding: AppTheme.Spacing.xxs
+                            padding: AppTheme.Spacing.xs
                         ))
                             .fill(selectedType == type ? AppTheme.Text.primaryColor.opacity(AppTheme.Opacity.faint) : .clear)
                     )
                     .hoverHighlight(cornerRadius: AppTheme.Radius.concentric(
                         outer: AppTheme.Radius.sm,
-                        padding: AppTheme.Spacing.xxs
+                        padding: AppTheme.Spacing.xs
                     ))
                 }
                 .buttonStyle(.plain)
@@ -50,7 +50,7 @@ extension GenerationView {
                 .accessibilityLabel(L10n.string(key: type.title))
             }
         }
-        .padding(AppTheme.Spacing.xxs)
+        .padding(AppTheme.Spacing.xs)
         .cardSurface(
             AppTheme.Text.primaryColor.opacity(AppTheme.Opacity.subtle), cornerRadius: AppTheme.Radius.sm, border: AppTheme.Border.primaryColor, borderWidth: AppTheme.BorderWidth.thin
         )
@@ -133,7 +133,7 @@ extension GenerationView {
                     .foregroundStyle(AppTheme.Text.tertiaryColor)
             }
             .padding(.horizontal, AppTheme.Spacing.xs)
-            .padding(.vertical, AppTheme.Spacing.xxs)
+            .padding(.vertical, AppTheme.Spacing.xs)
         }
         .menuStyle(.borderlessButton)
         .menuIndicator(.hidden)
@@ -302,7 +302,7 @@ extension GenerationView {
                 }
             }
             .padding(.horizontal, AppTheme.Spacing.xs)
-            .padding(.vertical, AppTheme.Spacing.xxs)
+            .padding(.vertical, AppTheme.Spacing.xs)
             .hoverHighlight()
         }
         .buttonStyle(.plain)

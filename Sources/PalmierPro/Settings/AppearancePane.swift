@@ -195,8 +195,8 @@ private struct LayoutPanelPreview: View {
                 switch kind {
                 case .media:
                     LazyVGrid(
-                        columns: Array(repeating: GridItem(.flexible(), spacing: AppTheme.Spacing.xxs), count: 2),
-                        spacing: AppTheme.Spacing.xxs
+                        columns: Array(repeating: GridItem(.flexible(), spacing: AppTheme.Spacing.xs), count: 2),
+                        spacing: AppTheme.Spacing.xs
                     ) {
                         ForEach(0..<6, id: \.self) { _ in
                             RoundedRectangle(cornerRadius: AppTheme.Radius.xs)
@@ -211,7 +211,7 @@ private struct LayoutPanelPreview: View {
                         .aspectRatio(16 / 9, contentMode: .fit)
                         .padding(max(geometry.size.width * 0.08, AppTheme.Spacing.xs))
                 case .inspector:
-                    VStack(alignment: .leading, spacing: max(geometry.size.height * 0.10, AppTheme.Spacing.xxs)) {
+                    VStack(alignment: .leading, spacing: max(geometry.size.height * 0.10, AppTheme.Spacing.xs)) {
                         ForEach(0..<4, id: \.self) { row in
                             Capsule()
                                 .fill(row == 0 ? AppTheme.Text.mutedColor : AppTheme.Border.dividerColor)
@@ -233,12 +233,12 @@ private struct LayoutPanelPreview: View {
                             }
                         }
                         .padding(.horizontal, max(geometry.size.width * 0.05, AppTheme.Spacing.xs))
-                        .padding(.vertical, max(geometry.size.height * 0.16, AppTheme.Spacing.xxs))
+                        .padding(.vertical, max(geometry.size.height * 0.16, AppTheme.Spacing.xs))
 
                         Rectangle()
                             .fill(Color(nsColor: Playhead.color))
                             .frame(width: AppTheme.BorderWidth.thin)
-                            .padding(.vertical, AppTheme.Spacing.xxs)
+                            .padding(.vertical, AppTheme.Spacing.xs)
                     }
                 }
             }

@@ -143,7 +143,7 @@ private struct SkillRowSummary: View {
     var body: some View {
         HStack(spacing: AppTheme.Spacing.md) {
             SkillRowIcon()
-            VStack(alignment: .leading, spacing: AppTheme.Spacing.xxs) {
+            VStack(alignment: .leading, spacing: AppTheme.Spacing.xs) {
                 Text(name)
                     .font(.system(size: AppTheme.FontSize.mdLg, weight: AppTheme.FontWeight.regular))
                     .foregroundStyle(AppTheme.Text.primaryColor)

@@ -387,7 +387,7 @@ struct ExportView: View {
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .layoutPriority(1)
 
-            HStack(spacing: AppTheme.Spacing.xxs) {
+            HStack(spacing: AppTheme.Spacing.xs) {
                 Group {
                     if job.status == .exporting {
                         ProgressView(value: job.progress)

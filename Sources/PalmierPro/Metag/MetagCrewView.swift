@@ -101,9 +101,9 @@ struct MetagCrewView: View {
     // MARK: - 他此刻说的那句话
 
     private var headline: some View {
-        VStack(alignment: .leading, spacing: AppTheme.Spacing.xxs) {
+        VStack(alignment: .leading, spacing: AppTheme.Spacing.xs) {
             if let member = current {
-                HStack(spacing: AppTheme.Spacing.xxs) {
+                HStack(spacing: AppTheme.Spacing.xs) {
                     Text(verbatim: member.name)
                         .font(.system(size: AppTheme.FontSize.smMd, weight: AppTheme.FontWeight.semibold))
                     Text(verbatim: "·")

@@ -6,7 +6,7 @@ enum ClipRenderer {
 
     static let volumeKeyframeSize: CGFloat = 7
     static let volumeKeyframeHitSize: CGFloat = 14
-    static let volumeFadeHandleEdgeInset: CGFloat = Trim.handleWidth + volumeKeyframeHitSize / 2 + AppTheme.Spacing.xxs
+    static let volumeFadeHandleEdgeInset: CGFloat = Trim.handleWidth + volumeKeyframeHitSize / 2 + AppTheme.Spacing.xs
     static let volumeRubberBandTopDb: Double = 6
     static let volumeRubberBandBottomDb: Double = -60
     static let fadeKneeTopInset: CGFloat = 4
@@ -202,7 +202,7 @@ enum ClipRenderer {
                          displayName: displayName, badge: multicamAngleLabel, fps: fps)
         } else if multicamAngleLabel != nil, rect.width >= AppTheme.ComponentSize.timelineClipBorderMinWidth {
             let d = AppTheme.ComponentSize.timelineDotSize
-            let inset = AppTheme.Spacing.xxs
+            let inset = AppTheme.Spacing.xs
             context.setFillColor(AppTheme.TrackColor.multicam.cgColor)
             context.fillEllipse(in: CGRect(x: rect.minX + inset, y: rect.minY + inset, width: d, height: d))
         }
@@ -852,7 +852,7 @@ enum ClipRenderer {
         let text = content.isEmpty ? (displayName ?? "") : content
         guard !text.isEmpty else { return }
 
-        let drawRect = rect.insetBy(dx: AppTheme.Spacing.sm, dy: AppTheme.Spacing.xxs)
+        let drawRect = rect.insetBy(dx: AppTheme.Spacing.sm, dy: AppTheme.Spacing.xs)
         guard !drawRect.isEmpty else { return }
 
         NSAttributedString(string: text, attributes: [
@@ -871,11 +871,11 @@ enum ClipRenderer {
                 textColor: textColor.withAlphaComponent(AppTheme.Opacity.prominent),
                 fill: fill,
                 fontSize: AppTheme.FontSize.xxs,
-                at: NSPoint(x: labelRect.minX + AppTheme.Spacing.xs, y: labelRect.minY + AppTheme.Spacing.xxs),
+                at: NSPoint(x: labelRect.minX + AppTheme.Spacing.xs, y: labelRect.minY + AppTheme.Spacing.xs),
                 maxWidth: labelRect.width - AppTheme.Spacing.smMd,
                 context: context
             ) {
-                labelRect.origin.x = chipRect.maxX + AppTheme.Spacing.xxs
+                labelRect.origin.x = chipRect.maxX + AppTheme.Spacing.xs
                 labelRect.size.width -= chipRect.width + AppTheme.Spacing.sm
             }
         }
@@ -921,10 +921,10 @@ enum ClipRenderer {
         let width = NSAttributedString(string: text, attributes: [
             .font: NSFont.systemFont(ofSize: AppTheme.FontSize.xs, weight: .semibold),
         ]).size().width + padH * 2
-        let x = rect.maxX - Trim.handleWidth - width - AppTheme.Spacing.xxs
+        let x = rect.maxX - Trim.handleWidth - width - AppTheme.Spacing.xs
         guard x > rect.minX + AppTheme.Spacing.sm else { return }
         drawPill(text, textColor: AppTheme.Text.onDark, fill: offsetBadgeColor, fontSize: AppTheme.FontSize.xs,
-                 at: NSPoint(x: x, y: rect.minY + AppTheme.Spacing.xxs), maxWidth: width, context: context)
+                 at: NSPoint(x: x, y: rect.minY + AppTheme.Spacing.xs), maxWidth: width, context: context)
     }
 
 }

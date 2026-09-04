@@ -284,7 +284,7 @@ extension MediaTab {
                             groupedSectionTitle(title)
                         }
                         .padding(.horizontal, AppTheme.Spacing.xs)
-                        .padding(.vertical, AppTheme.Spacing.xxs)
+                        .padding(.vertical, AppTheme.Spacing.xs)
                         .hoverHighlight(cornerRadius: AppTheme.Radius.xsSm)
                     }
                     .buttonStyle(.plain)

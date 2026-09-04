@@ -72,7 +72,7 @@ struct SkillsPane: View {
 
     private var controls: some View {
         HStack(spacing: AppTheme.Spacing.smMd) {
-            HStack(spacing: AppTheme.Spacing.xxs) {
+            HStack(spacing: AppTheme.Spacing.xs) {
                 SkillCollectionButton(
                     title: L10n.string(key: SkillCollection.installed.title),
                     count: store.skills.count,

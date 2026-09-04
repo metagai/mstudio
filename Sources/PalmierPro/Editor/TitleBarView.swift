@@ -4,7 +4,7 @@ struct TitleBarLeadingView: View {
     @Environment(EditorViewModel.self) var editor
 
     var body: some View {
-        HStack(spacing: AppTheme.Spacing.xxs) {
+        HStack(spacing: AppTheme.Spacing.xs) {
             PanelVisibilityButton(
                 systemName: "bubble.left",
                 filledSystemName: "bubble.left.fill",

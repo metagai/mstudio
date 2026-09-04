@@ -89,7 +89,7 @@ struct SidebarFooterTests {
         #expect(src.contains("SidebarRowLabel("), "登录那一行又自己画了")
         #expect(src.contains("SidebarRowButton("))
         // 同一处 padding，不是每行各写一遍。
-        #expect(!src.contains("AppTheme.Spacing.mdLg)\n                .padding(.bottom, AppTheme.Spacing.xxs)"),
+        #expect(!src.contains("AppTheme.Spacing.mdLg)\n                .padding(.bottom, AppTheme.Spacing.xs)"),
                 "登录那一行又有了自己的边距")
     }
 

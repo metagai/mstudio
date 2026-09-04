@@ -55,7 +55,7 @@ struct AIEditTab: View {
                     if clipId != nil { replaceToggle }
                     visualActionGrid
                 }
-                .padding(.top, AppTheme.Spacing.xxs)
+                .padding(.top, AppTheme.Spacing.xs)
             }
 
             if asset.type == .video || asset.type == .audio {
@@ -70,7 +70,7 @@ struct AIEditTab: View {
                     }
                     audioActionGrid
                 }
-                .padding(.top, AppTheme.Spacing.xxs)
+                .padding(.top, AppTheme.Spacing.xs)
             }
         }
         .frame(maxWidth: .infinity, alignment: .leading)
@@ -78,7 +78,7 @@ struct AIEditTab: View {
 
     private var actionGroupInsets: EdgeInsets {
         EdgeInsets(
-            top: AppTheme.Spacing.xxs,
+            top: AppTheme.Spacing.xs,
             leading: AppTheme.Spacing.smMd,
             bottom: AppTheme.Spacing.md,
             trailing: AppTheme.Spacing.smMd

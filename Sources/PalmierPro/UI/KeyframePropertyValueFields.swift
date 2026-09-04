@@ -123,7 +123,7 @@ struct KeyframePropertyValueFields: View {
                 .lineLimit(1)
                 .frame(width: style.scalarWidth, alignment: .trailing)
                 .padding(.horizontal, AppTheme.Spacing.sm)
-                .padding(.vertical, AppTheme.Spacing.xxs)
+                .padding(.vertical, AppTheme.Spacing.xs)
                 .editorValueField(
                     active: detailPresented,
                     minHeight: style.fieldHeight

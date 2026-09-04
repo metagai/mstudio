@@ -42,7 +42,7 @@ struct MediaSearchIndexStatus: View {
 
     private func statusButton(icon: String, label: String, action: @escaping () -> Void) -> some View {
         Button(action: action) {
-            HStack(spacing: AppTheme.Spacing.xxs) {
+            HStack(spacing: AppTheme.Spacing.xs) {
                 Image(systemName: icon)
                 Text(label)
             }

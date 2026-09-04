@@ -70,7 +70,7 @@ enum TimelineRuler {
             let size = str.size()
             str.draw(at: NSPoint(
                 x: x + AppTheme.Spacing.xs,
-                y: Double(rect.maxY) - size.height - AppTheme.Spacing.xxs
+                y: Double(rect.maxY) - size.height - AppTheme.Spacing.xs
             ))
 
             frame += framesPerMajor

@@ -43,7 +43,7 @@ struct HelpView: View {
     }
 
     private var sidebar: some View {
-        VStack(alignment: .leading, spacing: AppTheme.Spacing.xxs) {
+        VStack(alignment: .leading, spacing: AppTheme.Spacing.xs) {
             ForEach(HelpTab.allCases) { tab in
                 sidebarRow(for: tab)
             }

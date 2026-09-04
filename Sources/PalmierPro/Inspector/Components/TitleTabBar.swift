@@ -28,7 +28,7 @@ struct TitleTabBar: View {
         let button = Button {
             onSelect(item.id)
         } label: {
-            VStack(spacing: AppTheme.Spacing.xxs) {
+            VStack(spacing: AppTheme.Spacing.xs) {
                 Image(systemName: item.systemImage)
                     .font(.system(
                         size: AppTheme.FontSize.xs,

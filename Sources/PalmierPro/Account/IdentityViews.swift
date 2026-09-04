@@ -106,7 +106,7 @@ struct IdentityStrip: View {
                 AccountPopoverCard()
             }
 
-            VStack(alignment: .leading, spacing: AppTheme.Spacing.xxs) {
+            VStack(alignment: .leading, spacing: AppTheme.Spacing.xs) {
                 Text(account.displayPrimaryText)
                     .font(.system(size: AppTheme.FontSize.md, weight: .medium))
                     .foregroundStyle(AppTheme.Text.primaryColor)

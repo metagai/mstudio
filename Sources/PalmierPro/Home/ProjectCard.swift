@@ -60,7 +60,7 @@ struct ProjectCard: View {
             .frame(height: 60)
             .allowsHitTesting(false)
 
-            VStack(alignment: .leading, spacing: AppTheme.Spacing.xxs) {
+            VStack(alignment: .leading, spacing: AppTheme.Spacing.xs) {
                 Text(entry.name)
                     .font(.system(size: AppTheme.FontSize.smMd, weight: .regular))
                     .foregroundStyle(entry.isAccessible ? AppTheme.Text.primaryColor : AppTheme.Text.mutedColor)

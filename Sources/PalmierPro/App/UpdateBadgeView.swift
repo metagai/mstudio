@@ -10,7 +10,7 @@ struct UpdateSidebarCard: View {
                 updater.checkForUpdates(nil)
             } label: {
                 HStack(spacing: AppTheme.Spacing.sm) {
-                    VStack(alignment: .leading, spacing: AppTheme.Spacing.xxs) {
+                    VStack(alignment: .leading, spacing: AppTheme.Spacing.xs) {
                         Text(L10n.string("Click to install update"))
                             .font(.system(size: AppTheme.FontSize.smMd, weight: .medium))
                             .foregroundStyle(AppTheme.Text.primaryColor)

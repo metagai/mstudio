@@ -5,7 +5,7 @@ struct MarkerColorPicker: View {
     let onSelect: (TextStyle.RGBA) -> Void
 
     var body: some View {
-        HStack(spacing: AppTheme.Spacing.xxs) {
+        HStack(spacing: AppTheme.Spacing.xs) {
             ForEach(AppTheme.TimelineMarker.presetColors, id: \.self) { preset in
                 Button { onSelect(preset) } label: {
                     ZStack {
@@ -18,7 +18,7 @@ struct MarkerColorPicker: View {
                             )
                         TimelineMarkerShape()
                             .fill(preset.swiftUIColor)
-                            .padding(AppTheme.Spacing.xxs)
+                            .padding(AppTheme.Spacing.xs)
                     }
                     .frame(width: AppTheme.IconSize.xs, height: AppTheme.IconSize.xs)
                 }

@@ -284,7 +284,7 @@ struct MCPInstructionsPane: View {
 
     private func externalAction(_ label: String, action: @escaping () -> Void) -> some View {
         Button(action: action) {
-            HStack(spacing: AppTheme.Spacing.xxs) {
+            HStack(spacing: AppTheme.Spacing.xs) {
                 Text(label)
                 Image(systemName: "arrow.up.right")
                     .font(.system(size: AppTheme.FontSize.xs, weight: AppTheme.FontWeight.regular))

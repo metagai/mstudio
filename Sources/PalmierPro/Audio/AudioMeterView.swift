@@ -4,7 +4,7 @@ struct AudioMeterView: View {
     @Environment(EditorViewModel.self) private var editor
 
     private static let barsWidth = AppTheme.AudioMeter.barWidth * 2
-    private static let contentWidth = barsWidth + AppTheme.Spacing.xxs + AppTheme.Spacing.xs
+    private static let contentWidth = barsWidth + AppTheme.Spacing.xs + AppTheme.Spacing.xs
     private static let rulerMarks = stride(
         from: AudioMeterChannelState.ceilingDb,
         through: AudioMeterChannelState.floorDb,
@@ -63,7 +63,7 @@ struct AudioMeterView: View {
         context.fill(background, with: .color(AppTheme.Background.previewCanvasColor))
 
         var ruler = Path()
-        let rulerX = Self.barsWidth + AppTheme.Spacing.xxs
+        let rulerX = Self.barsWidth + AppTheme.Spacing.xs
         for db in Self.rulerMarks {
             let major = db.truncatingRemainder(dividingBy: AppTheme.AudioMeter.rulerMajorStepDb) == 0
             ruler.addRect(

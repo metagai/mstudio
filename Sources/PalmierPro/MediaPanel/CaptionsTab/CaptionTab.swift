@@ -212,7 +212,7 @@ struct CaptionTab: View {
         return Button {
             apply(template)
         } label: {
-            VStack(alignment: .leading, spacing: AppTheme.Spacing.xxs) {
+            VStack(alignment: .leading, spacing: AppTheme.Spacing.xs) {
                 Text(template.name)
                     .font(.system(size: AppTheme.FontSize.xs, weight: AppTheme.FontWeight.semibold))
                     .foregroundStyle(AppTheme.Text.primaryColor)

@@ -90,7 +90,7 @@ struct MarkerBrowser: View {
             }
         }
         .padding(.horizontal, AppTheme.Spacing.sm)
-        .padding(.vertical, AppTheme.Spacing.xxs)
+        .padding(.vertical, AppTheme.Spacing.xs)
         .fixedSize(horizontal: false, vertical: true)
         .background(AppTheme.Background.surfaceColor)
         .animation(.easeInOut(duration: AppTheme.Anim.transition),
@@ -166,7 +166,7 @@ private struct MarkerBrowserRow: View {
                 timelineId: timelineId, frame: marker.startFrame, size: thumbnailSize)
             VStack(alignment: .leading, spacing: AppTheme.Spacing.xs) {
                 HStack(spacing: AppTheme.Spacing.sm) {
-                    HStack(spacing: AppTheme.Spacing.xxs) {
+                    HStack(spacing: AppTheme.Spacing.xs) {
                         markerColorButton
                         Text(verbatim: marker.name)
                             .font(.system(size: AppTheme.FontSize.sm)).italic()
@@ -174,7 +174,7 @@ private struct MarkerBrowserRow: View {
                             .frame(maxWidth: .infinity, alignment: .leading)
                     }
                     .frame(maxWidth: .infinity, alignment: .leading)
-                    HStack(spacing: AppTheme.Spacing.xxs) {
+                    HStack(spacing: AppTheme.Spacing.xs) {
                         timingField(.time)
                         timingField(.duration)
                         statusButton
@@ -192,7 +192,7 @@ private struct MarkerBrowserRow: View {
             cornerRadius: AppTheme.Radius.xs,
             isActive: editor.selectedTimelineMarkerIds.contains(marker.id)
         )
-        .padding(.horizontal, AppTheme.Spacing.xxs)
+        .padding(.horizontal, AppTheme.Spacing.xs)
         .onChange(of: marker) { _, updated in
             guard !commentFocused else { return }
             comment = updated.comment

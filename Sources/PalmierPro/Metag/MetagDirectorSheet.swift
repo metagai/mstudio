@@ -102,7 +102,7 @@ struct MetagDirectorSheet: View {
             guard item.isSupported else { return }
             presetId = item.id
         } label: {
-            VStack(alignment: .leading, spacing: AppTheme.Spacing.xxs) {
+            VStack(alignment: .leading, spacing: AppTheme.Spacing.xs) {
                 Text(item.name)
                     .font(.system(size: AppTheme.FontSize.sm, weight: AppTheme.FontWeight.semibold))
                     .foregroundStyle(AppTheme.Text.primaryColor)
@@ -187,7 +187,7 @@ struct MetagDirectorSheet: View {
     private func stageBar(_ run: MetagDirector.Run) -> some View {
         let stages = MetagDirector.stages(for: run.pipeline)
         let current = stages.firstIndex { $0.id == run.stage } ?? 0
-        return HStack(spacing: AppTheme.Spacing.xxs) {
+        return HStack(spacing: AppTheme.Spacing.xs) {
             ForEach(Array(stages.enumerated()), id: \.element.id) { index, stage in
                 let done = run.status == "done" || index < current
                 Text(stage.label)
@@ -211,7 +211,7 @@ struct MetagDirectorSheet: View {
     }
 
     private func budgetBar(_ run: MetagDirector.Run) -> some View {
-        VStack(alignment: .leading, spacing: AppTheme.Spacing.xxs) {
+        VStack(alignment: .leading, spacing: AppTheme.Spacing.xs) {
             HStack {
                 Text(L10n.string("Budget"))
                 Spacer(minLength: 0)
@@ -237,7 +237,7 @@ struct MetagDirectorSheet: View {
     }
 
     private func quoteCard(_ quote: MetagDirector.Run.Quote) -> some View {
-        VStack(alignment: .leading, spacing: AppTheme.Spacing.xxs) {
+        VStack(alignment: .leading, spacing: AppTheme.Spacing.xs) {
             if let reason = quote.reason {
                 Text(reason)
                     .font(.system(size: AppTheme.FontSize.xs))

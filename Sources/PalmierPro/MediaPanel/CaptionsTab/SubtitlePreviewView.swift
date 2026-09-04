@@ -48,7 +48,7 @@ struct SubtitlePreviewView: View {
     }
 
     private func cueRow(index: Int, cue: SubtitleCue) -> some View {
-        VStack(alignment: .leading, spacing: AppTheme.Spacing.xxs) {
+        VStack(alignment: .leading, spacing: AppTheme.Spacing.xs) {
             HStack(spacing: AppTheme.Spacing.sm) {
                 Text(verbatim: "\(index)")
                     .foregroundStyle(AppTheme.Text.tertiaryColor)

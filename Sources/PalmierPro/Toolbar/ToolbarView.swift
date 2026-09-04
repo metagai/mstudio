@@ -96,7 +96,7 @@ struct ToolbarView: View {
     }
 
     private var markerButton: some View {
-        HStack(spacing: AppTheme.Spacing.xxs) {
+        HStack(spacing: AppTheme.Spacing.xs) {
             Button { _ = editor.addTimelineMarkerAtSelection() } label: {
                 TimelineMarkerShape()
                     .fill(AppTheme.Text.secondaryColor)
@@ -127,7 +127,7 @@ struct ToolbarView: View {
             .menuIndicator(.hidden)
             .accessibilityLabel(L10n.string("Ripple Timeline Markers"))
         }
-        .padding(.trailing, AppTheme.Spacing.xxs)
+        .padding(.trailing, AppTheme.Spacing.xs)
         .hoverHighlight()
         .hoverTooltip(L10n.string("Add Marker (M)"))
     }

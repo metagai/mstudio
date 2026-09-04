@@ -31,7 +31,7 @@ struct UpdateOverlay: View {
             HStack {
                 if let changelogURL {
                     Link(destination: changelogURL) {
-                        HStack(spacing: AppTheme.Spacing.xxs) {
+                        HStack(spacing: AppTheme.Spacing.xs) {
                             Text(L10n.string("Full changelog"))
                             Image(systemName: "arrow.up.right")
                         }

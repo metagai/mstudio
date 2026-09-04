@@ -810,7 +810,7 @@ struct InspectorView: View {
                 }
                 .disabled(disabled)
                 if editing, let clip = single, let ratio = editor.displayedCropAspectRatio(for: clip) {
-                    HStack(spacing: AppTheme.Spacing.xxs) {
+                    HStack(spacing: AppTheme.Spacing.xs) {
                         CropAspectFields(ratio: ratio) {
                             applyCropPreset(.locked(to: $0), on: clip)
                         }
@@ -853,7 +853,7 @@ struct InspectorView: View {
                         .foregroundStyle(AppTheme.Text.tertiaryColor)
                 }
                 .padding(.horizontal, AppTheme.Spacing.sm)
-                .padding(.vertical, AppTheme.Spacing.xxs)
+                .padding(.vertical, AppTheme.Spacing.xs)
                 .contentShape(Rectangle())
             }
         }
@@ -960,7 +960,7 @@ struct InspectorView: View {
     }
 
     private func fileSection(_ asset: MediaAsset) -> some View {
-        VStack(alignment: .leading, spacing: AppTheme.Spacing.xxs) {
+        VStack(alignment: .leading, spacing: AppTheme.Spacing.xs) {
             plainMetadataRow(label: L10n.string("Type"), value: asset.type.localizedTrackLabel)
             if asset.type != .audio, let width = asset.sourceWidth, let height = asset.sourceHeight {
                 plainMetadataRow(label: L10n.string("Dimensions"), value: "\(width) × \(height)")
@@ -995,7 +995,7 @@ struct InspectorView: View {
             L10n.string("Generation Input"),
             contentSpacing: AppTheme.Spacing.zero,
             contentInsets: EdgeInsets(
-                top: AppTheme.Spacing.xxs,
+                top: AppTheme.Spacing.xs,
                 leading: AppTheme.Spacing.smMd,
                 bottom: AppTheme.Spacing.md,
                 trailing: AppTheme.Spacing.smMd
@@ -1037,7 +1037,7 @@ struct InspectorView: View {
             .tracking(AppTheme.Tracking.wide)
             .foregroundStyle(AppTheme.aiGradient)
             .padding(.horizontal, AppTheme.Spacing.sm)
-            .padding(.vertical, AppTheme.Spacing.xxs)
+            .padding(.vertical, AppTheme.Spacing.xs)
             .overlay(
                 RoundedRectangle(cornerRadius: AppTheme.Radius.sm)
                     .strokeBorder(AppTheme.Text.primaryColor.opacity(AppTheme.Opacity.muted), lineWidth: AppTheme.BorderWidth.hairline)
@@ -1080,7 +1080,7 @@ struct InspectorView: View {
                 .help(Text(verbatim: metadata))
             Spacer(minLength: AppTheme.Spacing.xs)
             if let cost = gen.costCredits {
-                HStack(spacing: AppTheme.Spacing.xxs) {
+                HStack(spacing: AppTheme.Spacing.xs) {
                     Image(systemName: "dollarsign.circle.fill")
                     Text(verbatim: cost.formatted())
                 }

@@ -459,7 +459,7 @@ struct AgentPanelView: View {
                     .underline()
                     .foregroundStyle(AppTheme.Text.secondaryColor)
                     .padding(.horizontal, AppTheme.Spacing.sm)
-                    .padding(.vertical, AppTheme.Spacing.xxs)
+                    .padding(.vertical, AppTheme.Spacing.xs)
             }
             .buttonStyle(.plain)
             .font(.system(size: AppTheme.FontSize.smMd, weight: .medium))

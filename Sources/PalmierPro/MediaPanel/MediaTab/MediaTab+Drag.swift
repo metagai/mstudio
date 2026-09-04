@@ -92,7 +92,7 @@ extension MediaTab {
                     .font(.system(size: AppTheme.FontSize.sm, weight: .bold))
                     .foregroundStyle(AppTheme.Background.baseColor)
                     .padding(.horizontal, AppTheme.Spacing.sm)
-                    .padding(.vertical, AppTheme.Spacing.xxs)
+                    .padding(.vertical, AppTheme.Spacing.xs)
                     .background(Capsule().fill(AppTheme.Accent.primary))
                     .offset(x: AppTheme.Spacing.xs, y: -AppTheme.Spacing.xs)
             }

@@ -28,7 +28,7 @@ struct MediaTileScaffold<Artwork: View, MenuItems: View>: View {
 
             nameRow
                 .padding(.horizontal, AppTheme.Spacing.xs)
-                .padding(.vertical, AppTheme.Spacing.xxs)
+                .padding(.vertical, AppTheme.Spacing.xs)
                 .background(
                     RoundedRectangle(cornerRadius: AppTheme.Radius.sm)
                         .fill(isRenaming ? AppTheme.Text.primaryColor.opacity(AppTheme.Opacity.faint) : .clear)
@@ -94,7 +94,7 @@ extension View {
         // 改成固定的深色遮罩 + 浅色字 —— 这样与主题、与素材亮度都无关。
         foregroundStyle(AppTheme.Text.onDarkColor)
             .padding(.horizontal, AppTheme.Spacing.sm)
-            .padding(.vertical, AppTheme.Spacing.xxs)
+            .padding(.vertical, AppTheme.Spacing.xs)
             .background(Color.black.opacity(AppTheme.Opacity.strong), in: .capsule)
             .padding(AppTheme.Spacing.xs)
     }

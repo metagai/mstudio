@@ -21,7 +21,7 @@ struct SlipTwoUpView: View {
     var body: some View {
         ZStack {
             AppTheme.MediaOverlay.backgroundColor
-            HStack(spacing: AppTheme.Spacing.xxs) {
+            HStack(spacing: AppTheme.Spacing.xs) {
                 pane(image: inImage, label: "Start", frame: state.inSourceFrame)
                 pane(image: outImage, label: "End", frame: state.outSourceFrame)
             }
@@ -84,7 +84,7 @@ struct SlipTwoUpView: View {
                     .foregroundStyle(AppTheme.MediaOverlay.secondaryColor)
             }
             .padding(.horizontal, AppTheme.Spacing.sm)
-            .padding(.vertical, AppTheme.Spacing.xxs)
+            .padding(.vertical, AppTheme.Spacing.xs)
             .background(AppTheme.MediaOverlay.backgroundColor.opacity(AppTheme.Opacity.strong), in: RoundedRectangle(cornerRadius: AppTheme.Radius.xs))
             .padding(AppTheme.Spacing.sm)
         }

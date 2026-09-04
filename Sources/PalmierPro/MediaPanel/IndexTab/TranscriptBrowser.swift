@@ -91,7 +91,7 @@ struct TranscriptBrowser: View {
             }
         }
         .padding(.horizontal, AppTheme.Spacing.sm)
-        .padding(.vertical, AppTheme.Spacing.xxs)
+        .padding(.vertical, AppTheme.Spacing.xs)
         .fixedSize(horizontal: false, vertical: true)
         .background(AppTheme.Background.surfaceColor)
         .animation(
@@ -202,7 +202,7 @@ private struct TranscriptBrowserRow: View {
 
         Button(action: select) {
             HStack(alignment: .firstTextBaseline, spacing: AppTheme.Spacing.sm) {
-                HStack(spacing: AppTheme.Spacing.xxs) {
+                HStack(spacing: AppTheme.Spacing.xs) {
                     Text(verbatim: startTimecode)
                         .foregroundStyle(AppTheme.Text.tertiaryColor)
                         .monospacedDigit()
@@ -245,7 +245,7 @@ private struct TranscriptBrowserRow: View {
             cornerRadius: AppTheme.Radius.xs,
             isActive: editor.selectedClipIds.contains(row.clipId)
         )
-        .padding(.horizontal, AppTheme.Spacing.xxs)
+        .padding(.horizontal, AppTheme.Spacing.xs)
         .accessibilityLabel(Text(verbatim: row.text))
         .accessibilityValue(Text(verbatim: accessibilityValue(
             startTimecode: startTimecode,

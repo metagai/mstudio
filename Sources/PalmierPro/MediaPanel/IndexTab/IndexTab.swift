@@ -119,7 +119,7 @@ struct IndexTab: View {
                 }
             }
             .padding(.horizontal, AppTheme.Spacing.sm)
-            .padding(.vertical, AppTheme.Spacing.xxs)
+            .padding(.vertical, AppTheme.Spacing.xs)
 
             Rectangle()
                 .fill(AppTheme.Border.primaryColor)

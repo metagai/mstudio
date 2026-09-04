@@ -31,10 +31,10 @@ struct CollapsingProse: View {
     }
 
     var body: some View {
-        VStack(alignment: .leading, spacing: AppTheme.Spacing.xxs) {
+        VStack(alignment: .leading, spacing: AppTheme.Spacing.xs) {
             Text(verbatim: text)
                 .font(.system(size: AppTheme.FontSize.sm))
-                .lineSpacing(AppTheme.Spacing.xxs)
+                .lineSpacing(AppTheme.Spacing.xs)
                 .foregroundStyle(AppTheme.Text.secondaryColor)
                 .textSelection(.enabled)
                 .lineLimit(expanded ? nil : collapsedLines)

@@ -141,7 +141,7 @@ extension MediaTab {
         let payload = isImage
             ? MediaTab.assetDragString(forAssetId: hit.assetID)
             : MediaTab.assetDragString(forAssetId: hit.assetID, segment: range)
-        return VStack(alignment: .leading, spacing: AppTheme.Spacing.xxs) {
+        return VStack(alignment: .leading, spacing: AppTheme.Spacing.xs) {
             momentThumb(asset, time: hit.time)
                 .aspectRatio(16.0 / 9.0, contentMode: .fit)
                 .frame(maxWidth: .infinity)
@@ -212,7 +212,7 @@ extension MediaTab {
             MomentThumbnail(url: asset?.url, time: hit.start)
                 .frame(width: thumbW, height: thumbW * 9 / 16)
                 .clipShape(RoundedRectangle(cornerRadius: AppTheme.Radius.sm))
-            VStack(alignment: .leading, spacing: AppTheme.Spacing.xxs) {
+            VStack(alignment: .leading, spacing: AppTheme.Spacing.xs) {
                 Text(hit.text)
                     .font(.system(size: AppTheme.FontSize.xs))
                     .foregroundStyle(AppTheme.Text.primaryColor)
@@ -236,7 +236,7 @@ extension MediaTab {
     }
 
     private func fileCard(_ asset: MediaAsset) -> some View {
-        VStack(alignment: .leading, spacing: AppTheme.Spacing.xxs) {
+        VStack(alignment: .leading, spacing: AppTheme.Spacing.xs) {
             ZStack {
                 Rectangle().fill(AppTheme.MediaOverlay.backgroundColor)
                 if let thumb = asset.thumbnail {

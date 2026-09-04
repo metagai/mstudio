@@ -48,7 +48,7 @@ struct AgentPane: View {
                     .fixedSize(horizontal: false, vertical: true)
 
                 Button(action: openInstructions) {
-                    HStack(spacing: AppTheme.Spacing.xxs) {
+                    HStack(spacing: AppTheme.Spacing.xs) {
                         Text(L10n.string("Setup instructions"))
                         Image(systemName: "arrow.up.right")
                             .font(.system(size: AppTheme.FontSize.xs, weight: AppTheme.FontWeight.semibold))
@@ -71,7 +71,7 @@ struct AgentPane: View {
                     .frame(width: AppTheme.Spacing.smMd, height: AppTheme.Spacing.smMd)
 
                 if appState.mcpService?.isRunning ?? false {
-                    HStack(alignment: .firstTextBaseline, spacing: AppTheme.Spacing.xxs) {
+                    HStack(alignment: .firstTextBaseline, spacing: AppTheme.Spacing.xs) {
                         Text(L10n.string("Running on"))
                             .foregroundStyle(AppTheme.Text.secondaryColor)
                         Text(verbatim: "127.0.0.1:\(String(MCPService.port))")
@@ -133,7 +133,7 @@ private struct APIKeySettingRow: View {
                 .foregroundStyle(AppTheme.Text.primaryColor)
 
             Button(action: openConsole) {
-                HStack(spacing: AppTheme.Spacing.xxs) {
+                HStack(spacing: AppTheme.Spacing.xs) {
                     Text(provider.apiKeyPresentation.getKeyTitle)
                     Image(systemName: "arrow.up.right")
                         .font(.system(

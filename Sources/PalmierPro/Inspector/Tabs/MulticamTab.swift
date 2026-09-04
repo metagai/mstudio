@@ -23,7 +23,7 @@ struct MulticamTab: View {
                 .font(.system(size: AppTheme.FontSize.xxs, weight: AppTheme.FontWeight.semibold))
                 .foregroundStyle(Color(AppTheme.TrackColor.readableForeground(on: kindColor(member.kind))).opacity(AppTheme.Opacity.prominent))
                 .padding(.horizontal, AppTheme.Spacing.xs)
-                .padding(.vertical, AppTheme.Spacing.xxs)
+                .padding(.vertical, AppTheme.Spacing.xs)
                 .background(Color(kindColor(member.kind)), in: RoundedRectangle(cornerRadius: AppTheme.Radius.xs))
 
             Text(member.angleLabel)

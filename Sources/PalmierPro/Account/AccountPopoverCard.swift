@@ -39,7 +39,7 @@ struct AccountPopoverCard: View {
                 diameter: AppTheme.IconSize.xl,
                 fontSize: AppTheme.FontSize.mdLg
             )
-            VStack(alignment: .leading, spacing: AppTheme.Spacing.xxs) {
+            VStack(alignment: .leading, spacing: AppTheme.Spacing.xs) {
                 Text(account.displayPrimaryText)
                     .font(.system(size: AppTheme.FontSize.md, weight: .medium))
                     .foregroundStyle(AppTheme.Text.primaryColor)
@@ -130,7 +130,7 @@ struct AccountPopoverCard: View {
     // MARK: - Footer (Settings + Sign in / Sign out)
 
     private var footerRow: some View {
-        VStack(spacing: AppTheme.Spacing.xxs) {
+        VStack(spacing: AppTheme.Spacing.xs) {
             footerButton(label: L10n.string("Settings"), systemImage: "gearshape") {
                 SettingsWindowController.shared.show()
                 dismiss()

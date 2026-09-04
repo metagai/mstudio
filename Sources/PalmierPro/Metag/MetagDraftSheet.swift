@@ -363,8 +363,8 @@ struct MetagDraftSheet: View {
     /// 而他此刻连片子长什么样都还没看到。想比价的人到批准那一步有完整列表。
     @ViewBuilder
     private func quotePreview(_ rec: MetagGateway.Quote.Option, why: String?) -> some View {
-        VStack(alignment: .leading, spacing: AppTheme.Spacing.xxs) {
-            HStack(spacing: AppTheme.Spacing.xxs) {
+        VStack(alignment: .leading, spacing: AppTheme.Spacing.xs) {
+            HStack(spacing: AppTheme.Spacing.xs) {
                 Image(systemName: "sparkles")
                     .font(.system(size: AppTheme.FontSize.xs))
                     .foregroundStyle(AppTheme.Accent.brand)
@@ -378,7 +378,7 @@ struct MetagDraftSheet: View {
                     .fixedSize(horizontal: false, vertical: true)
             }
         }
-        .padding(.top, AppTheme.Spacing.xxs)
+        .padding(.top, AppTheme.Spacing.xs)
     }
 
     private var blocked: String? {
@@ -515,7 +515,7 @@ struct MetagDraftSheet: View {
             )
             shotCountControl
             // 把代价说在前面：草案免费。不说清楚的话，用户不敢点。
-            HStack(spacing: AppTheme.Spacing.xxs) {
+            HStack(spacing: AppTheme.Spacing.xs) {
                 Image(systemName: "checkmark.seal")
                     .font(.system(size: AppTheme.FontSize.xs))
                 Text(L10n.string("Drafts are free — no credits charged"))
@@ -571,7 +571,7 @@ struct MetagDraftSheet: View {
             }
 
             ForEach(Array(model.narrations.enumerated()), id: \.offset) { i, text in
-                VStack(alignment: .leading, spacing: AppTheme.Spacing.xxs) {
+                VStack(alignment: .leading, spacing: AppTheme.Spacing.xs) {
                     TextField(L10n.string("Shot \((i + 1).formatted()) narration"), text: Binding(
                         get: { model.edits[i] ?? text },
                         set: { model.edits[i] = $0 }

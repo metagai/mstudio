@@ -154,7 +154,7 @@ struct ModelsPane: View {
                 ProviderLogo(iconKey: iconKey, size: AppTheme.IconSize.md)
                     .opacity(locked ? AppTheme.Opacity.medium : AppTheme.Opacity.opaque)
             }
-            VStack(alignment: .leading, spacing: AppTheme.Spacing.xxs) {
+            VStack(alignment: .leading, spacing: AppTheme.Spacing.xs) {
                 Text(row.displayName)
                     .font(.system(size: AppTheme.FontSize.md))
                     .foregroundStyle(locked ? AppTheme.Text.tertiaryColor : AppTheme.Text.primaryColor)

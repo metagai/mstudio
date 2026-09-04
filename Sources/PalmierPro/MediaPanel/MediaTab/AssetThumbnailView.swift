@@ -55,7 +55,7 @@ struct AssetThumbnailView: View {
                 }
             }
             .padding(.horizontal, AppTheme.Spacing.xs)
-            .padding(.vertical, AppTheme.Spacing.xxs)
+            .padding(.vertical, AppTheme.Spacing.xs)
             .background(
                 RoundedRectangle(cornerRadius: AppTheme.Radius.sm)
                     .fill(isRenaming ? AppTheme.Interaction.fill(AppTheme.Opacity.faint) : .clear)
@@ -243,7 +243,7 @@ struct AssetThumbnailView: View {
             .font(.system(size: AppTheme.FontSize.xxs, weight: .semibold))
             .foregroundStyle(AppTheme.MediaOverlay.primaryColor)
             .padding(.horizontal, AppTheme.Spacing.sm)
-            .padding(.vertical, AppTheme.Spacing.xxs)
+            .padding(.vertical, AppTheme.Spacing.xs)
             .background(AppTheme.MediaOverlay.backgroundColor.opacity(AppTheme.Opacity.prominent), in: .capsule)
     }
 
@@ -255,7 +255,7 @@ struct AssetThumbnailView: View {
     }
 
     private func failedThumbnail(error: String) -> some View {
-        VStack(spacing: AppTheme.Spacing.xxs) {
+        VStack(spacing: AppTheme.Spacing.xs) {
             Image(systemName: "exclamationmark.triangle.fill")
                 .font(.system(size: AppTheme.FontSize.mdLg))
                 .foregroundStyle(AppTheme.Status.errorColor.opacity(AppTheme.Opacity.prominent))
@@ -274,7 +274,7 @@ struct AssetThumbnailView: View {
     }
 
     private var missingThumbnail: some View {
-        VStack(spacing: AppTheme.Spacing.xxs) {
+        VStack(spacing: AppTheme.Spacing.xs) {
             Image(systemName: "exclamationmark.triangle.fill")
                 .font(.system(size: AppTheme.FontSize.mdLg))
                 .foregroundStyle(AppTheme.MediaOverlay.errorColor)

@@ -1092,7 +1092,7 @@ final class TimelineView: NSView, NSPopoverDelegate {
             guard maxX > minX else { return }
             let rect = NSRect(
                 x: minX,
-                y: y + AppTheme.Spacing.xxs,
+                y: y + AppTheme.Spacing.xs,
                 width: maxX - minX,
                 height: max(CGFloat.zero, height - AppTheme.Spacing.xs)
             )
@@ -1248,7 +1248,7 @@ final class TimelineView: NSView, NSPopoverDelegate {
                           laneRect.intersects(dirtyRect) else { continue }
                     let segment = NSRect(
                         x: segmentX,
-                        y: laneRect.minY + AppTheme.Spacing.xxs,
+                        y: laneRect.minY + AppTheme.Spacing.xs,
                         width: segmentWidth,
                         height: laneRect.height - AppTheme.Spacing.xs
                     )

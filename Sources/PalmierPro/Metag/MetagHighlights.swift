@@ -125,7 +125,7 @@ struct MetagHighlightsSheet: View {
 
     private func row(_ h: MetagGateway.Highlight) -> some View {
         HStack(alignment: .top, spacing: AppTheme.Spacing.smMd) {
-            VStack(alignment: .leading, spacing: AppTheme.Spacing.xxs) {
+            VStack(alignment: .leading, spacing: AppTheme.Spacing.xs) {
                 Text("\(timecode(h.start)) – \(timecode(h.end))  \(h.title)")
                     .font(.system(size: AppTheme.FontSize.sm, weight: AppTheme.FontWeight.medium))
                     .foregroundStyle(AppTheme.Text.primaryColor)

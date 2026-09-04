@@ -32,7 +32,7 @@ struct ChatHistoryList: View {
     private func row(session: ChatSession) -> some View {
         let isCurrent = session.id == currentId
         return HStack(spacing: AppTheme.Spacing.smMd) {
-            VStack(alignment: .leading, spacing: AppTheme.Spacing.xxs) {
+            VStack(alignment: .leading, spacing: AppTheme.Spacing.xs) {
                 HStack(spacing: AppTheme.Spacing.xs) {
                     Text(session.title)
                         .font(.system(size: AppTheme.FontSize.xs, weight: isCurrent ? .semibold : .regular))

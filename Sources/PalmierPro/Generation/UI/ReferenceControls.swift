@@ -44,7 +44,7 @@ struct RefCard: View {
                         .monospacedDigit()
                         .foregroundStyle(AppTheme.MediaOverlay.primaryColor)
                         .padding(.horizontal, AppTheme.Spacing.xs)
-                        .padding(.vertical, AppTheme.Spacing.xxs)
+                        .padding(.vertical, AppTheme.Spacing.xs)
                         .background(AppTheme.MediaOverlay.backgroundColor.opacity(AppTheme.Opacity.strong), in: Capsule())
                         .padding(AppTheme.Spacing.xs)
                 }
