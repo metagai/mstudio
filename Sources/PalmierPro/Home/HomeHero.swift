@@ -35,7 +35,7 @@ struct HomeHero: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: AppTheme.Spacing.xl) {
-            VStack(alignment: .leading, spacing: AppTheme.Spacing.md) {
+            VStack(alignment: .leading, spacing: AppTheme.Spacing.mdLg) {
                 Text(L10n.string("What do you want to film?"))
                     .font(.system(size: AppTheme.FontSize.display, weight: .light))
                     .tracking(AppTheme.Tracking.tight)
@@ -156,7 +156,7 @@ struct HomeHero: View {
     }
 
     private var field: some View {
-        HStack(spacing: AppTheme.Spacing.md) {
+        HStack(spacing: AppTheme.Spacing.mdLg) {
             TextField(L10n.string("Describe a scene…"), text: $line)
                 .textFieldStyle(.plain)
                 .font(.system(size: AppTheme.FontSize.xl, weight: .light))
@@ -234,7 +234,7 @@ private struct StarterLine: View {
 
     var body: some View {
         Button(action: action) {
-            HStack(spacing: AppTheme.Spacing.md) {
+            HStack(spacing: AppTheme.Spacing.mdLg) {
                 Image(systemName: "play.circle")
                     .font(.system(size: AppTheme.FontSize.mdLg))
                     .foregroundStyle(hovered ? AppTheme.Accent.brand : AppTheme.Text.mutedColor)
@@ -244,7 +244,7 @@ private struct StarterLine: View {
                     .lineLimit(1)
                 Spacer(minLength: 0)
             }
-            .padding(.horizontal, AppTheme.Spacing.md)
+            .padding(.horizontal, AppTheme.Spacing.mdLg)
             .padding(.vertical, AppTheme.Spacing.sm)
             .background(
                 RoundedRectangle(cornerRadius: AppTheme.Radius.md, style: .continuous)

@@ -26,7 +26,7 @@ struct AccountPopoverCard: View {
                     .foregroundStyle(AppTheme.Status.errorColor)
             }
         }
-        .padding(AppTheme.Spacing.md)
+        .padding(AppTheme.Spacing.mdLg)
         .frame(width: Self.cardWidth)
         .focusEffectDisabled()
     }
@@ -34,7 +34,7 @@ struct AccountPopoverCard: View {
     // MARK: - Identity (mirrors IdentityStrip layout)
 
     private var identityBlock: some View {
-        HStack(spacing: AppTheme.Spacing.md) {
+        HStack(spacing: AppTheme.Spacing.mdLg) {
             UserAvatar(
                 diameter: AppTheme.IconSize.xl,
                 fontSize: AppTheme.FontSize.mdLg

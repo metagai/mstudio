@@ -73,7 +73,7 @@ struct MetagCreditsView: View {
                 .frame(maxHeight: 320)
             }
         }
-        .padding(AppTheme.Spacing.md)
+        .padding(AppTheme.Spacing.mdLg)
         .frame(width: 360)
         .task { await model.load() }
     }

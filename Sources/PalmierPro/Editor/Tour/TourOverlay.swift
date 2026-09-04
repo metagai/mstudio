@@ -174,7 +174,7 @@ struct TourOverlay: View {
 
     private func linkRow(_ title: String, _ icon: String, action: @escaping () -> Void) -> some View {
         Button(action: action) {
-            HStack(spacing: AppTheme.Spacing.md) {
+            HStack(spacing: AppTheme.Spacing.mdLg) {
                 Image(systemName: icon)
                     .font(.system(size: AppTheme.FontSize.smMd))
                     .foregroundStyle(AppTheme.Accent.primary)

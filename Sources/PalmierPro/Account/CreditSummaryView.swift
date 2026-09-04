@@ -135,7 +135,7 @@ private struct CreditActionsPopover: View {
                     .fixedSize(horizontal: false, vertical: true)
             }
         }
-        .padding(AppTheme.Spacing.md)
+        .padding(AppTheme.Spacing.mdLg)
         .frame(width: Self.popoverWidth)
     }
 }

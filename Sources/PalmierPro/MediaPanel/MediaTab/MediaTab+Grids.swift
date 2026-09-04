@@ -40,8 +40,8 @@ extension MediaTab {
 
 extension MediaTab {
     func gridDimensions(width: CGFloat) -> GridDimensions {
-        let spacing = AppTheme.Spacing.md
-        let outerPadding: CGFloat = AppTheme.Spacing.md * 2
+        let spacing = AppTheme.Spacing.mdLg
+        let outerPadding: CGFloat = AppTheme.Spacing.mdLg * 2
         let usable = max(0, width - outerPadding)
         let cols = max(1, Int(floor((usable + spacing) / (thumbnailSize + spacing))))
         let tileWidth = max(thumbnailSize, (usable - CGFloat(cols - 1) * spacing) / CGFloat(cols))
@@ -102,8 +102,8 @@ extension MediaTab {
                             .id(cell.id)
                     }
                 }
-                .padding(.horizontal, AppTheme.Spacing.md)
-                .padding(.bottom, AppTheme.Spacing.md)
+                .padding(.horizontal, AppTheme.Spacing.mdLg)
+                .padding(.bottom, AppTheme.Spacing.mdLg)
                 .frame(maxWidth: .infinity, alignment: .leading)
             }
             .coordinateSpace(name: "mediaGrid")
@@ -193,7 +193,7 @@ extension MediaTab {
             let dims = gridDimensions(width: geo.size.width)
             ScrollViewReader { proxy in
                 ScrollView(showsIndicators: false) {
-                    LazyVStack(alignment: .leading, spacing: AppTheme.Spacing.md) {
+                    LazyVStack(alignment: .leading, spacing: AppTheme.Spacing.mdLg) {
                         let rootTimelines = filteredTimelines(in: nil)
                         if !rootAssets.isEmpty || !rootTimelines.isEmpty {
                             groupedSection(
@@ -216,7 +216,7 @@ extension MediaTab {
                             )
                         }
                     }
-                    .padding(AppTheme.Spacing.md)
+                    .padding(AppTheme.Spacing.mdLg)
                 }
                 .coordinateSpace(name: "mediaGrid")
                 .onPreferenceChange(AssetFramePreferenceKey.self) { frames in

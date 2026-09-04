@@ -160,7 +160,7 @@ struct OnboardingOverlay: View {
     private var contentBottomPadding: CGFloat {
         switch onboarding.step {
         case .profile, .discovery:
-            AppTheme.Spacing.md
+            AppTheme.Spacing.mdLg
         case .account:
             AppTheme.Spacing.xxl
         }

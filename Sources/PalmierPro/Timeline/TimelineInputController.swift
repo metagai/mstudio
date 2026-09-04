@@ -993,7 +993,7 @@ final class TimelineInputController {
             bracket.lineWidth = AppTheme.BorderWidth.thick
             bracket.stroke()
 
-            let arrowTipX = midX + direction * AppTheme.Spacing.md
+            let arrowTipX = midX + direction * AppTheme.Spacing.mdLg
             let arrowBaseX = midX + direction * AppTheme.Spacing.xs
             let arrow = NSBezierPath()
             arrow.move(to: NSPoint(x: arrowTipX, y: midY))
@@ -1020,7 +1020,7 @@ final class TimelineInputController {
             let midY = rect.midY
             let ticks = NSBezierPath()
             for direction: CGFloat in [-1, 1] {
-                let x = midX + direction * AppTheme.Spacing.md
+                let x = midX + direction * AppTheme.Spacing.mdLg
                 ticks.move(to: NSPoint(x: x, y: midY - AppTheme.Spacing.smMd))
                 ticks.line(to: NSPoint(x: x, y: midY + AppTheme.Spacing.smMd))
             }

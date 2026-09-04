@@ -12,7 +12,7 @@ struct ChatHistoryList: View {
                 Text(L10n.string("No conversations yet"))
                     .font(.system(size: AppTheme.FontSize.xs))
                     .foregroundStyle(AppTheme.Text.mutedColor)
-                    .padding(AppTheme.Spacing.md)
+                    .padding(AppTheme.Spacing.mdLg)
             } else {
                 ScrollView {
                     LazyVStack(alignment: .leading, spacing: 0) {
@@ -55,7 +55,7 @@ struct ChatHistoryList: View {
                 .help(L10n.string("Delete from history"))
             }
         }
-        .padding(.horizontal, AppTheme.Spacing.md)
+        .padding(.horizontal, AppTheme.Spacing.mdLg)
         .padding(.vertical, 6)
         .background(isCurrent ? AppTheme.Accent.primary.opacity(0.15) : .clear)
         .contentShape(Rectangle())

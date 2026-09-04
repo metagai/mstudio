@@ -24,8 +24,8 @@ struct UpdateSidebarCard: View {
                         .font(.system(size: AppTheme.FontSize.xs, weight: .semibold))
                         .foregroundStyle(AppTheme.Text.tertiaryColor)
                 }
-                .padding(.horizontal, AppTheme.Spacing.md)
-                .padding(.vertical, AppTheme.Spacing.md)
+                .padding(.horizontal, AppTheme.Spacing.mdLg)
+                .padding(.vertical, AppTheme.Spacing.mdLg)
             }
             .buttonStyle(.plain)
             .cardSurface(

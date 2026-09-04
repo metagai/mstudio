@@ -35,7 +35,7 @@ extension GenerationView {
                 Text(L10n.string("No matches"))
                     .font(.system(size: AppTheme.FontSize.xs))
                     .foregroundStyle(AppTheme.Text.mutedColor)
-                    .padding(AppTheme.Spacing.md)
+                    .padding(AppTheme.Spacing.mdLg)
             } else {
                 ForEach(Array(tags.enumerated()), id: \.element.id) { index, tag in
                     HStack(spacing: AppTheme.Spacing.sm) {

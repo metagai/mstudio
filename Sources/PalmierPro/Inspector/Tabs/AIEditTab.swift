@@ -80,7 +80,7 @@ struct AIEditTab: View {
         EdgeInsets(
             top: AppTheme.Spacing.xs,
             leading: AppTheme.Spacing.smMd,
-            bottom: AppTheme.Spacing.md,
+            bottom: AppTheme.Spacing.mdLg,
             trailing: AppTheme.Spacing.smMd
         )
     }
@@ -431,7 +431,7 @@ struct AIEditTab: View {
                 .font(.system(size: AppTheme.FontSize.sm))
                 .foregroundStyle(AppTheme.Text.primaryColor)
                 .frame(maxWidth: .infinity, alignment: .leading)
-                .padding(.horizontal, AppTheme.Spacing.md)
+                .padding(.horizontal, AppTheme.Spacing.mdLg)
                 .padding(.vertical, AppTheme.Spacing.sm)
                 .contentShape(Rectangle())
         }

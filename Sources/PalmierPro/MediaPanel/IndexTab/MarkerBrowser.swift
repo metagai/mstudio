@@ -229,7 +229,7 @@ private struct MarkerBrowserRow: View {
                 change(actionName: "Change Marker Color") { $0.color = color }
                 isColorPickerPresented = false
             }
-            .padding(AppTheme.Spacing.md)
+            .padding(AppTheme.Spacing.mdLg)
         }
     }
 

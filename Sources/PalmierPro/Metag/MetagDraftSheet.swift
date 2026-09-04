@@ -389,7 +389,7 @@ struct MetagDraftSheet: View {
     }
 
     var body: some View {
-        VStack(alignment: .leading, spacing: AppTheme.Spacing.md) {
+        VStack(alignment: .leading, spacing: AppTheme.Spacing.mdLg) {
             Text(L10n.string("See the draft first, then decide"))
                 .font(.system(size: AppTheme.FontSize.xl, weight: AppTheme.FontWeight.medium))
                 .foregroundStyle(AppTheme.Text.primaryColor)

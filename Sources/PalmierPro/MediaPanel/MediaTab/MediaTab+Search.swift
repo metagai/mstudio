@@ -91,11 +91,11 @@ extension MediaTab {
         LazyVGrid(
             columns: [GridItem(.adaptive(minimum: CGFloat(thumbnailSize) * 1.4), spacing: AppTheme.Spacing.sm)],
             alignment: .leading,
-            spacing: AppTheme.Spacing.md,
+            spacing: AppTheme.Spacing.mdLg,
             content: content
         )
-        .padding(.horizontal, AppTheme.Spacing.md)
-        .padding(.bottom, AppTheme.Spacing.md)
+        .padding(.horizontal, AppTheme.Spacing.mdLg)
+        .padding(.bottom, AppTheme.Spacing.mdLg)
     }
 
     private func momentHeader(_ title: String, icon: String, count: Int, collapsible: Bool = false) -> some View {
@@ -224,7 +224,7 @@ extension MediaTab {
             }
             Spacer(minLength: 0)
         }
-        .padding(.horizontal, AppTheme.Spacing.md)
+        .padding(.horizontal, AppTheme.Spacing.mdLg)
         .contentShape(Rectangle())
         .draggable(MediaTab.assetDragString(forAssetId: hit.assetID, segment: range)) {
             MomentThumbnail(url: asset?.url, time: hit.start)

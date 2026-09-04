@@ -76,7 +76,7 @@ struct SkillRow: View {
     let action: () -> Void
 
     var body: some View {
-        HStack(spacing: AppTheme.Spacing.md) {
+        HStack(spacing: AppTheme.Spacing.mdLg) {
             summary
                 .frame(maxWidth: .infinity)
 
@@ -141,7 +141,7 @@ private struct SkillRowSummary: View {
     let description: String
 
     var body: some View {
-        HStack(spacing: AppTheme.Spacing.md) {
+        HStack(spacing: AppTheme.Spacing.mdLg) {
             SkillRowIcon()
             VStack(alignment: .leading, spacing: AppTheme.Spacing.xs) {
                 Text(name)
@@ -153,7 +153,7 @@ private struct SkillRowSummary: View {
                     .foregroundStyle(AppTheme.Text.tertiaryColor)
                     .lineLimit(1)
             }
-            Spacer(minLength: AppTheme.Spacing.md)
+            Spacer(minLength: AppTheme.Spacing.mdLg)
         }
     }
 }

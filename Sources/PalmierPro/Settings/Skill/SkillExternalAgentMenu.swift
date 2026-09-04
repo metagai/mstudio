@@ -34,7 +34,7 @@ struct SkillExternalAgentMenu: View {
                                 .foregroundStyle(AppTheme.Text.primaryColor)
                             Spacer(minLength: AppTheme.Spacing.sm)
                         }
-                        .padding(.horizontal, AppTheme.Spacing.md)
+                        .padding(.horizontal, AppTheme.Spacing.mdLg)
                         .padding(.vertical, AppTheme.Spacing.sm)
                         .hoverHighlight(cornerRadius: AppTheme.Radius.sm)
                     }

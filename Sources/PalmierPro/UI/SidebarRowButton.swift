@@ -37,7 +37,7 @@ struct SidebarRowLabel: View {
                 .font(.system(size: AppTheme.FontSize.mdLg, weight: AppTheme.FontWeight.regular))
             Spacer(minLength: 0)
         }
-        .padding(.horizontal, AppTheme.Spacing.md)
+        .padding(.horizontal, AppTheme.Spacing.mdLg)
         .padding(.vertical, AppTheme.Spacing.sm)
         .foregroundStyle(AppTheme.Text.primaryColor)
     }

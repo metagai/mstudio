@@ -36,7 +36,7 @@ private struct TimelineTabBarContent: View, Equatable {
     }
 
     var body: some View {
-        HStack(spacing: AppTheme.Spacing.md) {
+        HStack(spacing: AppTheme.Spacing.mdLg) {
             overflowMenu
             TabStrip(
                 items: tabs,
@@ -57,7 +57,7 @@ private struct TimelineTabBarContent: View, Equatable {
 
             Spacer(minLength: 0)
         }
-        .padding(.horizontal, AppTheme.Spacing.md)
+        .padding(.horizontal, AppTheme.Spacing.mdLg)
         .frame(maxWidth: .infinity)
         .frame(height: Layout.panelHeaderHeight)
         .background(AppTheme.Background.surfaceColor)

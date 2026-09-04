@@ -127,7 +127,7 @@ struct AgentInputBox<LeadingTools: View>: View {
     }
 
     private var bottomBar: some View {
-        HStack(spacing: AppTheme.Spacing.md) {
+        HStack(spacing: AppTheme.Spacing.mdLg) {
             leadingTools
             Spacer(minLength: 0)
             GlassEffectContainer(spacing: AppTheme.Spacing.xs) {

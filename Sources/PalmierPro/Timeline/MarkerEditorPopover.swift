@@ -20,8 +20,8 @@ struct MarkerEditorPopover: View {
         _draft = State(initialValue: marker)
     }
     var body: some View {
-        VStack(alignment: .leading, spacing: AppTheme.Spacing.md) {
-            Grid(alignment: .topLeading, horizontalSpacing: AppTheme.Spacing.sm, verticalSpacing: AppTheme.Spacing.md) {
+        VStack(alignment: .leading, spacing: AppTheme.Spacing.mdLg) {
+            Grid(alignment: .topLeading, horizontalSpacing: AppTheme.Spacing.sm, verticalSpacing: AppTheme.Spacing.mdLg) {
                 GridRow {
                     fieldLabel(L10n.string("Time"))
                     timeField(\.startFrame)
@@ -69,7 +69,7 @@ struct MarkerEditorPopover: View {
                     .keyboardShortcut(.return, modifiers: .command)
             }
         }
-        .padding(AppTheme.Spacing.md)
+        .padding(AppTheme.Spacing.mdLg)
         .frame(width: AppTheme.TimelineMarker.editorWidth)
         .task { commentsFocused = true }
     }

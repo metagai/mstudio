@@ -156,10 +156,10 @@ struct MetagMyFilmsView: View {
                 LazyVGrid(
                     columns: [GridItem(
                         .adaptive(minimum: AppTheme.FilmWall.cardMinWidth),
-                        spacing: AppTheme.Spacing.md, alignment: .top
+                        spacing: AppTheme.Spacing.mdLg, alignment: .top
                     )],
                     alignment: .leading,
-                    spacing: AppTheme.Spacing.md
+                    spacing: AppTheme.Spacing.mdLg
                 ) {
                     ForEach(model.films) { f in
                         MetagFilmCard(

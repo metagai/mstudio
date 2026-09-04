@@ -5,19 +5,19 @@ struct ToolbarView: View {
     @Environment(EditorViewModel.self) var editor
 
     var body: some View {
-        HStack(spacing: AppTheme.Spacing.md) {
+        HStack(spacing: AppTheme.Spacing.mdLg) {
             timelineTabsButton
 
             toolbarDivider
 
-            HStack(spacing: AppTheme.Spacing.md) {
+            HStack(spacing: AppTheme.Spacing.mdLg) {
                 toolbarButton("arrow.uturn.backward", help: L10n.string("Undo (⌘Z)"), action: undo)
                 toolbarButton("arrow.uturn.forward", help: L10n.string("Redo (⇧⌘Z)"), action: redo)
             }
 
             toolbarDivider
 
-            HStack(spacing: AppTheme.Spacing.md) {
+            HStack(spacing: AppTheme.Spacing.mdLg) {
                 toolModeButton("cursorarrow", mode: .pointer, help: L10n.string("Pointer (V)"))
                 toolModeButton("scissors", mode: .razor, help: L10n.string("Razor (C)"))
                 toolModeButton("arrow.left.and.right", mode: .trim, help: L10n.string("Trim (T)"))
@@ -25,7 +25,7 @@ struct ToolbarView: View {
 
             toolbarDivider
 
-            HStack(spacing: AppTheme.Spacing.md) {
+            HStack(spacing: AppTheme.Spacing.mdLg) {
                 toolbarButton("square.split.2x1", help: L10n.string("Split at Playhead (⌘K)"), action: editor.splitAtPlayhead)
                 bracketButton("[", help: L10n.string("Trim Start to Playhead (Q)"), action: editor.trimStartToPlayhead)
                 bracketButton("]", help: L10n.string("Trim End to Playhead (W)"), action: editor.trimEndToPlayhead)
@@ -33,7 +33,7 @@ struct ToolbarView: View {
 
             toolbarDivider
 
-            HStack(spacing: AppTheme.Spacing.md) {
+            HStack(spacing: AppTheme.Spacing.mdLg) {
                 textGlyphButton("T", help: L10n.string("Add Text"), action: { _ = editor.addTextClip() })
                 markerButton
             }
@@ -66,7 +66,7 @@ struct ToolbarView: View {
                 )
             }
         }
-        .padding(.horizontal, AppTheme.Spacing.md)
+        .padding(.horizontal, AppTheme.Spacing.mdLg)
         .padding(.vertical, AppTheme.Spacing.sm)
         .frame(maxWidth: .infinity)
     }
@@ -119,7 +119,7 @@ struct ToolbarView: View {
                 Image(systemName: "chevron.down")
                     .font(.system(size: AppTheme.FontSize.micro, weight: AppTheme.FontWeight.semibold))
                     .foregroundStyle(AppTheme.Text.secondaryColor)
-                    .frame(width: AppTheme.Spacing.md, height: AppTheme.IconSize.mdLg)
+                    .frame(width: AppTheme.Spacing.mdLg, height: AppTheme.IconSize.mdLg)
                     .contentShape(Rectangle())
             }
             .menuStyle(.button)

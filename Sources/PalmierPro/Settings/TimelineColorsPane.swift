@@ -4,7 +4,7 @@ struct TimelineColorsPane: View {
     @Bindable private var colors = TimelineClipColorStore.shared
 
     var body: some View {
-        VStack(alignment: .leading, spacing: AppTheme.Spacing.md) {
+        VStack(alignment: .leading, spacing: AppTheme.Spacing.mdLg) {
             VStack(spacing: 0) {
                 ForEach(Array(TimelineClipColor.allCases.enumerated()), id: \.element) { index, kind in
                     colorRow(kind)
@@ -29,12 +29,12 @@ struct TimelineColorsPane: View {
     }
 
     private func colorRow(_ kind: TimelineClipColor) -> some View {
-        HStack(spacing: AppTheme.Spacing.md) {
+        HStack(spacing: AppTheme.Spacing.mdLg) {
             Text(L10n.string(key: kind.label))
                 .font(.system(size: AppTheme.FontSize.md))
                 .foregroundStyle(AppTheme.Text.primaryColor)
 
-            Spacer(minLength: AppTheme.Spacing.md)
+            Spacer(minLength: AppTheme.Spacing.mdLg)
 
             Text(colors.hex(for: kind))
                 .font(.system(size: AppTheme.FontSize.sm, design: .monospaced))

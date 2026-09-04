@@ -70,7 +70,7 @@ struct ProjectCard: View {
                     .font(.system(size: AppTheme.FontSize.xs))
                     .foregroundStyle(AppTheme.Text.secondaryColor)
             }
-            .padding(.horizontal, AppTheme.Spacing.md)
+            .padding(.horizontal, AppTheme.Spacing.mdLg)
             .padding(.bottom, AppTheme.Spacing.smMd)
         }
         .contentShape(Rectangle())

@@ -133,7 +133,7 @@ struct ExportView: View {
             .foregroundStyle(AppTheme.Text.primaryColor)
             .frame(maxWidth: .infinity, alignment: .leading)
             .padding(.horizontal, AppTheme.Spacing.xl)
-            .padding(.vertical, AppTheme.Spacing.md)
+            .padding(.vertical, AppTheme.Spacing.mdLg)
     }
 
     // MARK: - Settings
@@ -239,11 +239,11 @@ struct ExportView: View {
     }
 
     private var timelineSettings: some View {
-        VStack(alignment: .leading, spacing: AppTheme.Spacing.md) {
+        VStack(alignment: .leading, spacing: AppTheme.Spacing.mdLg) {
             Text(L10n.string("Timeline Format"))
                 .font(.system(size: AppTheme.FontSize.md, weight: AppTheme.FontWeight.medium))
                 .foregroundStyle(AppTheme.Text.secondaryColor)
-                .padding(.top, AppTheme.Spacing.md)
+                .padding(.top, AppTheme.Spacing.mdLg)
 
             VStack(spacing: AppTheme.Spacing.sm) {
                 ForEach(TimelineExportFormat.allCases) { format in
@@ -288,7 +288,7 @@ struct ExportView: View {
                 .lineLimit(1)
             Spacer(minLength: AppTheme.Spacing.zero)
         }
-        .padding(.leading, AppTheme.IconSize.sm + AppTheme.Spacing.md)
+        .padding(.leading, AppTheme.IconSize.sm + AppTheme.Spacing.mdLg)
     }
 
     private var palmierProjectSettings: some View {
@@ -340,7 +340,7 @@ struct ExportView: View {
             .disabled(!projectJobs.contains { $0.status.isFinished })
         }
         .padding(.horizontal, AppTheme.Spacing.lg)
-        .padding(.vertical, AppTheme.Spacing.md)
+        .padding(.vertical, AppTheme.Spacing.mdLg)
     }
 
     private var exportLog: some View {
@@ -583,8 +583,8 @@ struct ExportView: View {
 
     private func timelineFormatButton(_ format: TimelineExportFormat) -> some View {
         let selected = timelineFormat == format
-        return VStack(alignment: .leading, spacing: AppTheme.Spacing.md) {
-            HStack(alignment: .top, spacing: AppTheme.Spacing.md) {
+        return VStack(alignment: .leading, spacing: AppTheme.Spacing.mdLg) {
+            HStack(alignment: .top, spacing: AppTheme.Spacing.mdLg) {
                 Image(systemName: selected ? "checkmark.circle.fill" : "circle")
                     .font(.system(size: AppTheme.FontSize.md, weight: AppTheme.FontWeight.medium))
                     .foregroundStyle(selected ? AppTheme.Accent.primary : AppTheme.Text.mutedColor)
@@ -624,7 +624,7 @@ struct ExportView: View {
                 fcpxmlVersionRow
             }
         }
-        .padding(AppTheme.Spacing.md)
+        .padding(AppTheme.Spacing.mdLg)
         .background {
             RoundedRectangle(cornerRadius: AppTheme.Radius.sm, style: .continuous)
                 .fill(selected ? AppTheme.Background.prominentColor : AppTheme.Background.raisedColor)

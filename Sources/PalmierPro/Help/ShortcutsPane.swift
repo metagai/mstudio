@@ -80,13 +80,13 @@ struct ShortcutsPane: View {
     private func shortcutColumn(groups: [ShortcutGroup]) -> some View {
         Grid(
             alignment: .leading,
-            horizontalSpacing: AppTheme.Spacing.md,
+            horizontalSpacing: AppTheme.Spacing.mdLg,
             verticalSpacing: AppTheme.Spacing.sm
         ) {
             ForEach(Array(groups.enumerated()), id: \.element.title) { index, group in
                 if index > 0 {
                     Color.clear
-                        .frame(height: AppTheme.Spacing.md)
+                        .frame(height: AppTheme.Spacing.mdLg)
                         .gridCellColumns(2)
                 }
 

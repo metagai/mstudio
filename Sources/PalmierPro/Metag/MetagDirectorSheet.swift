@@ -25,7 +25,7 @@ struct MetagDirectorSheet: View {
     }
 
     var body: some View {
-        VStack(alignment: .leading, spacing: AppTheme.Spacing.md) {
+        VStack(alignment: .leading, spacing: AppTheme.Spacing.mdLg) {
             header
             if let run {
                 runBody(run)
@@ -74,7 +74,7 @@ struct MetagDirectorSheet: View {
     // MARK: - Setup
 
     private var setupBody: some View {
-        VStack(alignment: .leading, spacing: AppTheme.Spacing.md) {
+        VStack(alignment: .leading, spacing: AppTheme.Spacing.mdLg) {
             LazyVGrid(
                 columns: [GridItem(.flexible(), spacing: AppTheme.Spacing.sm), GridItem(.flexible(), spacing: AppTheme.Spacing.sm)],
                 spacing: AppTheme.Spacing.sm
@@ -134,7 +134,7 @@ struct MetagDirectorSheet: View {
 
     @ViewBuilder
     private func runBody(_ run: MetagDirector.Run) -> some View {
-        VStack(alignment: .leading, spacing: AppTheme.Spacing.md) {
+        VStack(alignment: .leading, spacing: AppTheme.Spacing.mdLg) {
             stageBar(run)
             budgetBar(run)
             if let site = run.artifacts.site, let title = site.title {

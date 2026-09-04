@@ -50,7 +50,7 @@ struct HelpView: View {
             Spacer()
         }
         .padding(.horizontal, AppTheme.Spacing.smMd)
-        .padding(.vertical, AppTheme.Spacing.md)
+        .padding(.vertical, AppTheme.Spacing.mdLg)
         .frame(maxHeight: .infinity, alignment: .top)
     }
 
@@ -66,7 +66,7 @@ struct HelpView: View {
                 Spacer()
             }
             .foregroundStyle(isActive ? AppTheme.Text.primaryColor : AppTheme.Text.secondaryColor)
-            .padding(.horizontal, AppTheme.Spacing.md)
+            .padding(.horizontal, AppTheme.Spacing.mdLg)
             .padding(.vertical, AppTheme.Spacing.sm)
             .contentShape(Rectangle())
             .hoverHighlight(isActive: isActive)

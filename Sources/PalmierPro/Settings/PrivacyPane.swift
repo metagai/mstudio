@@ -9,7 +9,7 @@ struct PrivacyPane: View {
     }
 
     var body: some View {
-        VStack(alignment: .leading, spacing: AppTheme.Spacing.md) {
+        VStack(alignment: .leading, spacing: AppTheme.Spacing.mdLg) {
             SettingsToggleRow(
                 title: L10n.string("Share usage data"),
                 subtitle: L10n.string("Send usage data from your interactions with \(AppIdentity.name) to help improve the app."),

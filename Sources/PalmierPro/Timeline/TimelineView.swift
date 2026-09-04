@@ -1124,7 +1124,7 @@ final class TimelineView: NSView, NSPopoverDelegate {
         ctx.strokePath()
 
         let arrowW = AppTheme.Spacing.sm
-        let arrowH = AppTheme.Spacing.md
+        let arrowH = AppTheme.Spacing.mdLg
         ctx.move(to: CGPoint(x: x, y: top))
         ctx.addLine(to: CGPoint(x: x + arrowW, y: top + Double(arrowH) / 2))
         ctx.addLine(to: CGPoint(x: x, y: top + Double(arrowH)))
@@ -1147,11 +1147,11 @@ final class TimelineView: NSView, NSPopoverDelegate {
             ]
         )
         let textSize = text.size()
-        let width = textSize.width + AppTheme.Spacing.md * 2
+        let width = textSize.width + AppTheme.Spacing.mdLg * 2
         let height = textSize.height + AppTheme.Spacing.xs * 2
         let minX = scrollOffset.x + AppTheme.Spacing.xs
         let maxX = max(minX, scrollOffset.x + visibleWidth - width - AppTheme.Spacing.xs)
-        let proposedX = CGFloat(geo.xForFrame(frame)) + AppTheme.Spacing.md
+        let proposedX = CGFloat(geo.xForFrame(frame)) + AppTheme.Spacing.mdLg
         let rect = NSRect(
             x: min(maxX, max(minX, proposedX)),
             y: scrollOffset.y + geo.rulerHeight + AppTheme.Spacing.xs,
@@ -1173,7 +1173,7 @@ final class TimelineView: NSView, NSPopoverDelegate {
         ctx.addPath(path)
         ctx.strokePath()
 
-        text.draw(in: rect.insetBy(dx: AppTheme.Spacing.md, dy: AppTheme.Spacing.xs))
+        text.draw(in: rect.insetBy(dx: AppTheme.Spacing.mdLg, dy: AppTheme.Spacing.xs))
     }
 
     // MARK: - Track drawing

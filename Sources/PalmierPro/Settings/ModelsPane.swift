@@ -125,7 +125,7 @@ struct ModelsPane: View {
                 .font(.system(size: AppTheme.FontSize.sm))
                 .foregroundStyle(AppTheme.Text.primaryColor)
         }
-        .padding(.horizontal, AppTheme.Spacing.md)
+        .padding(.horizontal, AppTheme.Spacing.mdLg)
         .padding(.vertical, AppTheme.Spacing.smMd)
         .cardSurface(
             AppTheme.Text.primaryColor.opacity(AppTheme.Opacity.subtle), cornerRadius: AppTheme.Radius.md, border: AppTheme.Border.primaryColor, borderWidth: AppTheme.BorderWidth.thin
@@ -149,7 +149,7 @@ struct ModelsPane: View {
     @ViewBuilder
     private func modelRow(_ row: Row) -> some View {
         let locked = isLocked(row)
-        HStack(spacing: AppTheme.Spacing.md) {
+        HStack(spacing: AppTheme.Spacing.mdLg) {
             if let iconKey = row.providerIconKey {
                 ProviderLogo(iconKey: iconKey, size: AppTheme.IconSize.md)
                     .opacity(locked ? AppTheme.Opacity.medium : AppTheme.Opacity.opaque)

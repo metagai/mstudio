@@ -204,7 +204,7 @@ struct PreviewContainerView: View {
             .layoutPriority(1)
 
             ViewThatFits(in: .horizontal) {
-                transportControls(spacing: AppTheme.Spacing.md)
+                transportControls(spacing: AppTheme.Spacing.mdLg)
                 transportControls(spacing: AppTheme.Spacing.xs)
             }
             .frame(minWidth: 0, maxWidth: .infinity)
@@ -668,7 +668,7 @@ struct PreviewContainerView: View {
     private func offlinePreview(assetId: String?, path: String?, isUnprocessable: Bool) -> some View {
         ZStack {
             AppTheme.MediaOverlay.backgroundColor.opacity(AppTheme.Opacity.strong)
-            VStack(spacing: AppTheme.Spacing.md) {
+            VStack(spacing: AppTheme.Spacing.mdLg) {
                 Image(systemName: "exclamationmark.triangle.fill")
                     .font(.system(size: AppTheme.FontSize.display))
                     .foregroundStyle(AppTheme.Status.errorColor)
@@ -719,7 +719,7 @@ struct PreviewContainerView: View {
     private func failedPreview(error: String) -> some View {
         ZStack {
             AppTheme.MediaOverlay.backgroundColor.opacity(AppTheme.Opacity.strong)
-            VStack(spacing: AppTheme.Spacing.md) {
+            VStack(spacing: AppTheme.Spacing.mdLg) {
                 Image(systemName: "exclamationmark.triangle.fill")
                     .font(.system(size: AppTheme.FontSize.display))
                     .foregroundStyle(AppTheme.Status.errorColor.opacity(AppTheme.Opacity.prominent))
@@ -754,7 +754,7 @@ struct PreviewContainerView: View {
                         }
                         .font(.system(size: AppTheme.FontSize.sm, weight: .medium))
                         .foregroundStyle(AppTheme.MediaOverlay.primaryColor)
-                        .padding(.horizontal, AppTheme.Spacing.md)
+                        .padding(.horizontal, AppTheme.Spacing.mdLg)
                         .padding(.vertical, AppTheme.Spacing.sm)
                     }
                     .buttonStyle(.plain)

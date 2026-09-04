@@ -9,7 +9,7 @@ private struct UpscaleOptionGroup: Identifiable {
 
 extension GenerationView {
     var upscaleSettingsContent: some View {
-        VStack(alignment: .leading, spacing: AppTheme.Spacing.md) {
+        VStack(alignment: .leading, spacing: AppTheme.Spacing.mdLg) {
             ForEach(upscaleModel.selectSettings) { upscaleSelectPicker($0) }
             ForEach(upscaleModel.numericSettings) { upscaleNumericControl($0) }
             ForEach(upscaleModel.toggleSettings) { setting in

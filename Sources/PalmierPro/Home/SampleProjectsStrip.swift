@@ -35,7 +35,7 @@ struct SampleProjectsStrip: View {
 
             if isExpanded {
                 ScrollView(.horizontal, showsIndicators: false) {
-                    HStack(spacing: AppTheme.Spacing.md) {
+                    HStack(spacing: AppTheme.Spacing.mdLg) {
                         ForEach(samples) { sample in
                             SampleCard(
                                 sample: sample,
@@ -108,7 +108,7 @@ private struct SampleCard: View {
                 .font(.system(size: AppTheme.FontSize.smMd, weight: .regular))
                 .foregroundStyle(AppTheme.Text.primaryColor)
                 .lineLimit(1)
-                .padding(.horizontal, AppTheme.Spacing.md)
+                .padding(.horizontal, AppTheme.Spacing.mdLg)
                 .padding(.bottom, AppTheme.Spacing.smMd)
 
             if let download {

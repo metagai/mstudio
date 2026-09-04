@@ -20,7 +20,7 @@ struct StoragePane: View {
     }
 
     private var cacheRow: some View {
-        HStack(alignment: .top, spacing: AppTheme.Spacing.md) {
+        HStack(alignment: .top, spacing: AppTheme.Spacing.mdLg) {
             VStack(alignment: .leading, spacing: AppTheme.Spacing.xs) {
                 Text(L10n.string("Temporary files"))
                     .font(.system(size: AppTheme.FontSize.md, weight: AppTheme.FontWeight.regular))
@@ -55,7 +55,7 @@ struct StoragePane: View {
 
     private var searchIndexSection: some View {
         VStack(alignment: .leading, spacing: AppTheme.Spacing.xs) {
-            HStack(alignment: .top, spacing: AppTheme.Spacing.md) {
+            HStack(alignment: .top, spacing: AppTheme.Spacing.mdLg) {
                 VStack(alignment: .leading, spacing: AppTheme.Spacing.xs) {
                     Text(L10n.string("Media indexing"))
                         .font(.system(size: AppTheme.FontSize.md, weight: AppTheme.FontWeight.regular))
@@ -83,7 +83,7 @@ struct StoragePane: View {
                 Text(ByteCountFormatter.string(fromByteCount: indexBytes, countStyle: .file))
                     .font(.system(size: AppTheme.FontSize.xs).monospacedDigit())
                     .foregroundStyle(AppTheme.Text.secondaryColor)
-                Spacer(minLength: AppTheme.Spacing.md)
+                Spacer(minLength: AppTheme.Spacing.mdLg)
                 Button(L10n.string("Clear index")) { clearIndex() }
                     .buttonStyle(actionButtonStyle)
                     .disabled(indexBytes == 0)
@@ -98,7 +98,7 @@ struct StoragePane: View {
                     Text(verbatim: "\(SearchIndexConfig.manifest.model) · \(ByteCountFormatter.string(fromByteCount: modelBytes, countStyle: .file))")
                         .font(.system(size: AppTheme.FontSize.xs).monospacedDigit())
                         .foregroundStyle(AppTheme.Text.secondaryColor)
-                    Spacer(minLength: AppTheme.Spacing.md)
+                    Spacer(minLength: AppTheme.Spacing.mdLg)
                     Button(L10n.string("Remove model")) { removeModel() }
                         .buttonStyle(actionButtonStyle)
                 }

@@ -62,7 +62,7 @@ struct MentionPopover: View {
                 .font(.system(size: AppTheme.FontSize.xs))
                 .foregroundStyle(AppTheme.Text.mutedColor)
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
-                .padding(AppTheme.Spacing.md)
+                .padding(AppTheme.Spacing.mdLg)
         } else {
             ScrollViewReader { proxy in
                 ScrollView {

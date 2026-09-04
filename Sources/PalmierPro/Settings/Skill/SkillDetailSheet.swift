@@ -154,10 +154,10 @@ struct SkillDetailSheet: View {
         let state = skill.flatMap { SkillCommunityState.resolve($0, store: store, catalog: catalog) }
         let dirty = editing && draft != originalDraft
 
-        return VStack(alignment: .leading, spacing: AppTheme.Spacing.md) {
-            HStack(spacing: AppTheme.Spacing.md) {
+        return VStack(alignment: .leading, spacing: AppTheme.Spacing.mdLg) {
+            HStack(spacing: AppTheme.Spacing.mdLg) {
                 titleView(editing ? draftName : skill?.name ?? draftName)
-                Spacer(minLength: AppTheme.Spacing.md)
+                Spacer(minLength: AppTheme.Spacing.mdLg)
                 closeButton
             }
 
@@ -168,7 +168,7 @@ struct SkillDetailSheet: View {
                         .foregroundStyle(state?.color ?? AppTheme.Text.tertiaryColor)
                 }
 
-                Spacer(minLength: AppTheme.Spacing.md)
+                Spacer(minLength: AppTheme.Spacing.mdLg)
                 headerControls(skill: skill, state: state, dirty: dirty)
             }
         }
@@ -455,7 +455,7 @@ struct SkillDetailSheet: View {
 
             Divider().overlay(AppTheme.Border.subtleColor)
 
-            VStack(alignment: .leading, spacing: AppTheme.Spacing.md) {
+            VStack(alignment: .leading, spacing: AppTheme.Spacing.mdLg) {
                 Text(L10n.string("Instructions"))
                     .font(.system(size: AppTheme.FontSize.smMd, weight: AppTheme.FontWeight.regular))
                     .foregroundStyle(AppTheme.Text.primaryColor)
@@ -475,7 +475,7 @@ struct SkillDetailSheet: View {
             .foregroundStyle(AppTheme.Text.primaryColor)
             .accessibilityLabel(L10n.string("Skill instructions"))
             .scrollContentBackground(.hidden)
-            .padding(AppTheme.Spacing.md)
+            .padding(AppTheme.Spacing.mdLg)
             .background(AppTheme.Background.raisedColor)
             .clipShape(RoundedRectangle(cornerRadius: AppTheme.Radius.md))
             .padding(AppTheme.Spacing.xlXxl)
@@ -500,7 +500,7 @@ struct SkillDetailSheet: View {
                     .truncationMode(.middle)
             }
 
-            Spacer(minLength: AppTheme.Spacing.md)
+            Spacer(minLength: AppTheme.Spacing.mdLg)
 
             Button(L10n.string("Open")) {
                 store.reveal(toast.url)

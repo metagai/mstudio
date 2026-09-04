@@ -49,7 +49,7 @@ struct ProjectSettingsMismatchView: View {
                 }
             }
 
-            HStack(spacing: AppTheme.Spacing.md) {
+            HStack(spacing: AppTheme.Spacing.mdLg) {
                 Button(L10n.string("Keep Current")) {
                     dismiss()
                 }
@@ -68,7 +68,7 @@ struct ProjectSettingsMismatchView: View {
                 .controlSize(.regular)
             }
         }
-        .padding(AppTheme.Spacing.xl + AppTheme.Spacing.md)
+        .padding(AppTheme.Spacing.xl + AppTheme.Spacing.mdLg)
         .frame(width: 360)
         .appSheetBackground()
     }

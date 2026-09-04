@@ -5,7 +5,7 @@ import SwiftUI
 struct MarkdownText: View {
     let text: String
     var proseFont: Font = .body
-    var blockSpacing: CGFloat = AppTheme.Spacing.md
+    var blockSpacing: CGFloat = AppTheme.Spacing.mdLg
 
     var body: some View {
         VStack(alignment: .leading, spacing: blockSpacing) {
@@ -33,7 +33,7 @@ struct MarkdownText: View {
                             .foregroundStyle(AppTheme.Text.primaryColor)
                             .textSelection(.enabled)
                             .frame(maxWidth: .infinity, alignment: .leading)
-                            .padding(AppTheme.Spacing.md)
+                            .padding(AppTheme.Spacing.mdLg)
                             .background(
                                 RoundedRectangle(cornerRadius: AppTheme.Radius.md, style: .continuous)
                                     .fill(AppTheme.Background.baseColor.opacity(AppTheme.Opacity.medium))
@@ -63,7 +63,7 @@ struct MarkdownText: View {
                             }
                         }
                     }
-                    .padding(AppTheme.Spacing.md)
+                    .padding(AppTheme.Spacing.mdLg)
                     .background(
                         RoundedRectangle(cornerRadius: AppTheme.Radius.md, style: .continuous)
                             .fill(AppTheme.Background.baseColor.opacity(AppTheme.Opacity.medium))

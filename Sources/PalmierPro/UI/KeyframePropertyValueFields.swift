@@ -132,7 +132,7 @@ struct KeyframePropertyValueFields: View {
         .buttonStyle(.plain)
         .popover(isPresented: $detailPresented, arrowEdge: .trailing) {
             cropEditor
-                .padding(AppTheme.Spacing.md)
+                .padding(AppTheme.Spacing.mdLg)
         }
     }
 

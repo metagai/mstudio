@@ -93,7 +93,7 @@ struct IdentityStrip: View {
     @State private var isPopoverPresented = false
 
     var body: some View {
-        HStack(spacing: AppTheme.Spacing.md) {
+        HStack(spacing: AppTheme.Spacing.mdLg) {
             Button(action: { isPopoverPresented.toggle() }) {
                 UserAvatar(
                     diameter: AppTheme.IconSize.xl,

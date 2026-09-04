@@ -997,7 +997,7 @@ struct InspectorView: View {
             contentInsets: EdgeInsets(
                 top: AppTheme.Spacing.xs,
                 leading: AppTheme.Spacing.smMd,
-                bottom: AppTheme.Spacing.md,
+                bottom: AppTheme.Spacing.mdLg,
                 trailing: AppTheme.Spacing.smMd
             )
         ) {
@@ -1026,7 +1026,7 @@ struct InspectorView: View {
                     cornerRadius: AppTheme.Radius.sm,
                     borderWidth: AppTheme.BorderWidth.hairline
                 )
-                .padding(.top, hasReferences ? AppTheme.Spacing.md : AppTheme.Spacing.zero)
+                .padding(.top, hasReferences ? AppTheme.Spacing.mdLg : AppTheme.Spacing.zero)
             }
         }
     }

@@ -38,7 +38,7 @@ struct AccountPane: View {
 
     private var creditsSection: some View {
         SettingsGroup(title: L10n.key("Credits")) {
-            HStack(alignment: .top, spacing: AppTheme.Spacing.md) {
+            HStack(alignment: .top, spacing: AppTheme.Spacing.mdLg) {
                 card {
                     cardCaption("Remaining")
                     Spacer(minLength: AppTheme.Spacing.sm)
@@ -79,7 +79,7 @@ struct AccountPane: View {
                     .font(.system(size: AppTheme.FontSize.sm))
                     .foregroundStyle(AppTheme.Text.tertiaryColor)
             } else {
-                HStack(alignment: .top, spacing: AppTheme.Spacing.md) {
+                HStack(alignment: .top, spacing: AppTheme.Spacing.mdLg) {
                     ForEach(account.subscriptionPlans) { plan in
                         planCard(plan)
                     }

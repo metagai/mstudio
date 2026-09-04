@@ -87,7 +87,7 @@ struct SkillsPane: View {
                 )
             }
 
-            Spacer(minLength: AppTheme.Spacing.md)
+            Spacer(minLength: AppTheme.Spacing.mdLg)
 
             searchField
                 .frame(width: AppTheme.Settings.skillsSearchWidth)
@@ -152,7 +152,7 @@ struct SkillsPane: View {
                 .help(L10n.string("Clear search"))
             }
         }
-        .padding(.horizontal, AppTheme.Spacing.md)
+        .padding(.horizontal, AppTheme.Spacing.mdLg)
         .padding(.vertical, AppTheme.Spacing.smMd)
         .cardSurface(AppTheme.Background.raisedColor, cornerRadius: AppTheme.Radius.sm)
     }

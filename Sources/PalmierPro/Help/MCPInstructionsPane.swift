@@ -115,12 +115,12 @@ struct MCPInstructionsPane: View {
                     fontSize: AppTheme.FontSize.xs,
                     showsCopy: token != nil
                 )
-                HStack(spacing: AppTheme.Spacing.md) {
+                HStack(spacing: AppTheme.Spacing.mdLg) {
                     Text(L10n.string("Kept in ~/Library/Application Support/METAG/mcp-token, readable only by you. The bundled Claude Desktop connector reads it automatically."))
                         .font(.system(size: AppTheme.FontSize.sm, weight: AppTheme.FontWeight.regular))
                         .foregroundStyle(AppTheme.Text.tertiaryColor)
                         .fixedSize(horizontal: false, vertical: true)
-                    Spacer(minLength: AppTheme.Spacing.md)
+                    Spacer(minLength: AppTheme.Spacing.mdLg)
                     Button(action: rotate) {
                         Text(isRotating ? "Regenerating…" : "Regenerate")
                             .font(.system(size: AppTheme.FontSize.sm, weight: AppTheme.FontWeight.regular))
@@ -147,7 +147,7 @@ struct MCPInstructionsPane: View {
                 .fixedSize(horizontal: false, vertical: true)
         }
         .padding(.horizontal, AppTheme.Spacing.mdLg)
-        .padding(.vertical, AppTheme.Spacing.md)
+        .padding(.vertical, AppTheme.Spacing.mdLg)
         .cardSurface(AppTheme.Background.raisedColor, cornerRadius: AppTheme.Radius.sm)
     }
 
@@ -253,11 +253,11 @@ struct MCPInstructionsPane: View {
         action: (label: String, perform: () -> Void)? = nil,
         @ViewBuilder details: () -> Details
     ) -> some View {
-        VStack(alignment: .leading, spacing: AppTheme.Spacing.md) {
-            HStack(alignment: .center, spacing: AppTheme.Spacing.md) {
+        VStack(alignment: .leading, spacing: AppTheme.Spacing.mdLg) {
+            HStack(alignment: .center, spacing: AppTheme.Spacing.mdLg) {
                 agentIdentity(agent: agent, name: name, description: description)
                 if let action {
-                    Spacer(minLength: AppTheme.Spacing.md)
+                    Spacer(minLength: AppTheme.Spacing.mdLg)
                     externalAction(action.label, action: action.perform)
                 }
             }
@@ -267,7 +267,7 @@ struct MCPInstructionsPane: View {
     }
 
     private func agentIdentity(agent: SkillExternalAgent, name: String, description: String) -> some View {
-        HStack(spacing: AppTheme.Spacing.md) {
+        HStack(spacing: AppTheme.Spacing.mdLg) {
             ExternalAgentLogo(agent: agent, size: AppTheme.IconSize.lgXl)
 
             VStack(alignment: .leading, spacing: AppTheme.Spacing.xs) {
@@ -336,7 +336,7 @@ private struct CodeBlockView: View {
     let content: String
     var fontSize = AppTheme.FontSize.xs
     var foreground = AppTheme.Text.secondaryColor
-    var verticalPadding = AppTheme.Spacing.md
+    var verticalPadding = AppTheme.Spacing.mdLg
     var showsCopy = true
 
     var body: some View {

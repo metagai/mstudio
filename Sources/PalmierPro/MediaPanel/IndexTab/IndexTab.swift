@@ -16,7 +16,7 @@ struct IndexModeTabs: View {
     @Binding var selection: IndexBrowserSection
 
     var body: some View {
-        HStack(spacing: AppTheme.Spacing.md) {
+        HStack(spacing: AppTheme.Spacing.mdLg) {
             ForEach(IndexBrowserSection.allCases, id: \.self) { section in
                 let selected = selection == section
                 Button { selection = section } label: {

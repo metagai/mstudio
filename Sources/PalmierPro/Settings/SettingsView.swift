@@ -93,7 +93,7 @@ private struct SettingsSidebar: View {
                 action: { SettingsWindowController.shared.dismiss() }
             )
             .padding(.horizontal, AppTheme.Spacing.smMd)
-            .padding(.top, AppTheme.Spacing.md)
+            .padding(.top, AppTheme.Spacing.mdLg)
 
             if !account.isMisconfigured {
                 IdentityStrip()
@@ -116,7 +116,7 @@ private struct SettingsSidebar: View {
             }
         }
         .padding(.horizontal, AppTheme.Spacing.smMd)
-        .padding(.vertical, AppTheme.Spacing.md)
+        .padding(.vertical, AppTheme.Spacing.mdLg)
     }
 }
 
@@ -184,7 +184,7 @@ struct SettingsSection<Content: View>: View {
                 .font(.system(size: AppTheme.FontSize.smMd, weight: AppTheme.FontWeight.regular))
                 .foregroundStyle(AppTheme.Text.primaryColor)
 
-            VStack(alignment: .leading, spacing: AppTheme.Spacing.md) {
+            VStack(alignment: .leading, spacing: AppTheme.Spacing.mdLg) {
                 content()
             }
             .frame(maxWidth: .infinity, alignment: .leading)
@@ -215,7 +215,7 @@ struct SettingsToggleRow: View {
     @Binding var isOn: Bool
 
     var body: some View {
-        HStack(alignment: .center, spacing: AppTheme.Spacing.md) {
+        HStack(alignment: .center, spacing: AppTheme.Spacing.mdLg) {
             VStack(alignment: .leading, spacing: AppTheme.Spacing.xs) {
                 Text(verbatim: title)
                     .font(.system(size: AppTheme.FontSize.md, weight: AppTheme.FontWeight.regular))

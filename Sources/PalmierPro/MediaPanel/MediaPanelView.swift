@@ -67,7 +67,7 @@ struct MediaPanelView: View {
             }
             .padding(
                 .top,
-                section == .media ? AppTheme.Spacing.md : AppTheme.Spacing.zero
+                section == .media ? AppTheme.Spacing.mdLg : AppTheme.Spacing.zero
             )
             .frame(minWidth: 0, maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
         }

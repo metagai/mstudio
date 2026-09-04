@@ -194,11 +194,11 @@ extension InspectorView {
         EditorPanelGroup(
             title,
             isExpanded: adjustSectionExpandedBinding(title),
-            contentSpacing: AppTheme.Spacing.md,
+            contentSpacing: AppTheme.Spacing.mdLg,
             contentInsets: EdgeInsets(
-                top: AppTheme.Spacing.md,
+                top: AppTheme.Spacing.mdLg,
                 leading: AppTheme.Spacing.lg,
-                bottom: AppTheme.Spacing.md,
+                bottom: AppTheme.Spacing.mdLg,
                 trailing: AppTheme.Spacing.lg
             ),
             headerAccessory: {
@@ -447,7 +447,7 @@ extension InspectorView {
 
     @ViewBuilder
     private func wheelsContent(clips: [Clip]) -> some View {
-        HStack(alignment: .top, spacing: AppTheme.Spacing.md) {
+        HStack(alignment: .top, spacing: AppTheme.Spacing.mdLg) {
             wheelControl(L10n.string("Lift"), prefix: "lift", clips: clips)
             wheelControl(L10n.string("Gamma"), prefix: "gamma", clips: clips)
             wheelControl(L10n.string("Gain"), prefix: "gain", clips: clips)
@@ -494,7 +494,7 @@ extension InspectorView {
     @ViewBuilder
     private func lutContent(clips: [Clip]) -> some View {
         let path = lutPath(in: clips)
-        VStack(alignment: .leading, spacing: AppTheme.Spacing.md) {
+        VStack(alignment: .leading, spacing: AppTheme.Spacing.mdLg) {
             lutFileRow(path: path, clips: clips)
             if path != nil { lutIntensityRow(clips: clips) }
         }

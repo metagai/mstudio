@@ -65,7 +65,7 @@ struct AgentMessageView: View {
 
     @ViewBuilder
     private var assistantBody: some View {
-        VStack(alignment: .leading, spacing: AppTheme.Spacing.md) {
+        VStack(alignment: .leading, spacing: AppTheme.Spacing.mdLg) {
             ForEach(Array(message.blocks.enumerated()), id: \.offset) { _, block in
                 switch block {
                 case .thinking(let text, let signature):
@@ -139,7 +139,7 @@ private struct ThinkingSummaryView: View {
             .font(.system(size: AppTheme.FontSize.xs))
             .foregroundStyle(AppTheme.Text.tertiaryColor)
             .frame(maxWidth: .infinity, alignment: .leading)
-            .padding(.leading, AppTheme.Spacing.md)
+            .padding(.leading, AppTheme.Spacing.mdLg)
             .overlay(alignment: .leading) {
                 Rectangle()
                     .fill(AppTheme.Border.subtleColor)
@@ -205,7 +205,7 @@ private struct ToolRunRow: View {
                     if isRunning {
                         ProgressView()
                             .controlSize(.mini)
-                            .frame(width: AppTheme.Spacing.md, height: AppTheme.Spacing.md)
+                            .frame(width: AppTheme.Spacing.mdLg, height: AppTheme.Spacing.mdLg)
                     } else {
                         Image(systemName: statusIcon)
                             .font(.system(size: AppTheme.FontSize.xs))
@@ -225,14 +225,14 @@ private struct ToolRunRow: View {
             .buttonStyle(.plain)
 
             if expanded {
-                VStack(alignment: .leading, spacing: AppTheme.Spacing.md) {
+                VStack(alignment: .leading, spacing: AppTheme.Spacing.mdLg) {
                     argsSection
                     if let result { resultSection(result) }
                 }
                 .font(.system(size: AppTheme.FontSize.xs, design: .monospaced))
                 .foregroundStyle(AppTheme.Text.tertiaryColor)
                 .frame(maxWidth: .infinity, alignment: .leading)
-                .padding(AppTheme.Spacing.md)
+                .padding(AppTheme.Spacing.mdLg)
                 .background(
                     RoundedRectangle(cornerRadius: AppTheme.Radius.md, style: .continuous)
                         .fill(AppTheme.Text.primaryColor.opacity(AppTheme.Opacity.subtle))

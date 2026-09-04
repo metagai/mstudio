@@ -597,7 +597,7 @@ private struct AgentStarterPromptButton: View {
                     .multilineTextAlignment(.leading)
                     .frame(maxWidth: .infinity, alignment: .leading)
             }
-            .padding(.horizontal, AppTheme.Spacing.md)
+            .padding(.horizontal, AppTheme.Spacing.mdLg)
             .padding(.vertical, AppTheme.Spacing.xs)
             .frame(maxWidth: .infinity, alignment: .leading)
             .hoverHighlight(cornerRadius: AppTheme.Radius.lg)

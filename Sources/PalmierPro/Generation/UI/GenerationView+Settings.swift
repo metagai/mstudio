@@ -334,7 +334,7 @@ extension GenerationView {
             .frame(width: GenerationSettingsLayout.upscalePopoverWidth)
             .frame(maxHeight: GenerationSettingsLayout.upscalePopoverMaxHeight)
         } else {
-            VStack(alignment: .leading, spacing: AppTheme.Spacing.md) {
+            VStack(alignment: .leading, spacing: AppTheme.Spacing.mdLg) {
                 if selectedType == .video {
                     settingsPicker(L10n.string("Duration"), selection: $selectedDuration, options: videoModel.durations) { "\($0)s" }
                 }

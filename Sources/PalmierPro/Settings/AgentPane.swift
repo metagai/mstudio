@@ -157,7 +157,7 @@ private struct APIKeySettingRow: View {
             .font(.system(size: AppTheme.FontSize.sm, design: .monospaced))
             .foregroundStyle(AppTheme.Text.primaryColor)
             .onSubmit(save)
-            .padding(.horizontal, AppTheme.Spacing.md)
+            .padding(.horizontal, AppTheme.Spacing.mdLg)
             .padding(.vertical, AppTheme.Spacing.smMd)
             .cardSurface(
                 AppTheme.Background.baseColor.opacity(AppTheme.Opacity.medium), cornerRadius: AppTheme.Radius.sm, border: isFocused ? AppTheme.Border.primaryColor : AppTheme.Border.subtleColor, borderWidth: AppTheme.BorderWidth.thin

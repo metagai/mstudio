@@ -171,7 +171,7 @@ struct GenerationView: View {
     }
 
     private var catalogLoadingView: some View {
-        VStack(spacing: AppTheme.Spacing.md) {
+        VStack(spacing: AppTheme.Spacing.mdLg) {
             ProgressView()
             Text(L10n.string("Loading models…"))
                 .font(.system(size: AppTheme.FontSize.sm))
@@ -211,7 +211,7 @@ struct GenerationView: View {
                 }
                 .buttonStyle(.plain)
             }
-            .padding(.horizontal, AppTheme.Spacing.md)
+            .padding(.horizontal, AppTheme.Spacing.mdLg)
 
             VStack(spacing: AppTheme.Spacing.sm) {
                 referencesContent
@@ -263,10 +263,10 @@ struct GenerationView: View {
                 }
                 .animation(.easeOut(duration: AppTheme.Anim.hover), value: isPromptFocused)
             }
-            .padding(.horizontal, AppTheme.Spacing.md)
-            .padding(.bottom, AppTheme.Spacing.md)
+            .padding(.horizontal, AppTheme.Spacing.mdLg)
+            .padding(.bottom, AppTheme.Spacing.mdLg)
         }
-        .padding(.top, AppTheme.Spacing.md)
+        .padding(.top, AppTheme.Spacing.mdLg)
         .onGeometryChange(for: CGFloat.self) { $0.size.height } action: { measuredPanelHeight = $0 }
         .background {
             Color.clear
@@ -384,10 +384,10 @@ struct GenerationView: View {
         Capsule()
             .fill(AppTheme.Text.primaryColor.opacity(AppTheme.Opacity.soft))
             .frame(width: 24, height: 2)
-            .frame(maxWidth: .infinity, minHeight: AppTheme.Spacing.md)
+            .frame(maxWidth: .infinity, minHeight: AppTheme.Spacing.mdLg)
             .contentShape(Rectangle())
             .pointerStyle(.rowResize)
-            .offset(y: -AppTheme.Spacing.md / 2)
+            .offset(y: -AppTheme.Spacing.mdLg / 2)
             .gesture(
                 DragGesture(minimumDistance: 0, coordinateSpace: .global)
                     .onChanged { value in
@@ -429,8 +429,8 @@ struct GenerationView: View {
                 Text(promptPlaceholder)
                     .font(.system(size: AppTheme.FontSize.sm))
                     .foregroundStyle(AppTheme.Text.mutedColor)
-                    .padding(.horizontal, AppTheme.Spacing.md)
-                    .padding(.top, AppTheme.Spacing.md)
+                    .padding(.horizontal, AppTheme.Spacing.mdLg)
+                    .padding(.top, AppTheme.Spacing.mdLg)
                     .allowsHitTesting(false)
             }
         }
@@ -462,7 +462,7 @@ struct GenerationView: View {
                 Text(placeholder)
                     .font(.system(size: AppTheme.FontSize.sm))
                     .foregroundStyle(AppTheme.Text.mutedColor)
-                    .padding(.horizontal, AppTheme.Spacing.md)
+                    .padding(.horizontal, AppTheme.Spacing.mdLg)
                     .padding(.top, AppTheme.Spacing.sm)
                     .allowsHitTesting(false)
             }
@@ -491,7 +491,7 @@ struct GenerationView: View {
             submitButton
         }
         .frame(maxWidth: .infinity)
-        .padding(.horizontal, AppTheme.Spacing.md)
+        .padding(.horizontal, AppTheme.Spacing.mdLg)
         .padding(.vertical, AppTheme.Spacing.sm)
     }
 }

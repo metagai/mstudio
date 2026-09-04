@@ -9,7 +9,7 @@ struct OnboardingQuestionnaireStep: View {
         VStack(alignment: .leading, spacing: AppTheme.Spacing.zero) {
             OnboardingTitle(title)
             ForEach(questions) { question in
-                Spacer(minLength: AppTheme.Spacing.md)
+                Spacer(minLength: AppTheme.Spacing.mdLg)
                 section(question)
             }
         }

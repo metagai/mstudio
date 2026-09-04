@@ -7,7 +7,7 @@ struct MyProjectsSection: View {
                 minimum: AppTheme.ComponentSize.projectCardWidth,
                 maximum: AppTheme.ComponentSize.projectCardWidth
             ),
-            spacing: AppTheme.Spacing.md,
+            spacing: AppTheme.Spacing.mdLg,
             alignment: .leading
         )
     ]
@@ -29,7 +29,7 @@ struct MyProjectsSection: View {
     }
 
     private var toolbar: some View {
-        HStack(spacing: AppTheme.Spacing.md) {
+        HStack(spacing: AppTheme.Spacing.mdLg) {
             Text(L10n.string("My Projects"))
                 .font(.system(size: AppTheme.FontSize.md, weight: AppTheme.FontWeight.regular))
                 .foregroundStyle(AppTheme.Text.primaryColor)
@@ -270,7 +270,7 @@ private struct NewProjectCard: View {
                 .font(.system(size: AppTheme.FontSize.smMd, weight: .regular))
                 .foregroundStyle(AppTheme.Text.primaryColor)
                 .lineLimit(1)
-                .padding(.horizontal, AppTheme.Spacing.md)
+                .padding(.horizontal, AppTheme.Spacing.mdLg)
                 .padding(.bottom, AppTheme.Spacing.smMd)
         }
         .contentShape(Rectangle())

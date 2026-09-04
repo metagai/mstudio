@@ -379,7 +379,8 @@ enum AppTheme {
         static let xs: CGFloat = 4
         static let sm: CGFloat = 6
         static let smMd: CGFloat = 8
-        static let md: CGFloat = 10
+        /// **12。** `md = 10` 并进来了 —— 10 和 12 摆在一起谁也看不出，
+        /// 而两档并存意味着每处都要选一次。落到 Apple HIG 的 4pt 网格上。
         static let mdLg: CGFloat = 12
         /// **16。** 原来是 14，和它隔壁的 `lgXl = 16` 差 2pt ——
         /// 肉眼分不出，而选择多了一倍。2026-09-03 两档并成一档，

@@ -71,7 +71,7 @@ struct MetagPremiereBar: View {
             }
         }
         .padding(.horizontal, AppTheme.Spacing.lg)
-        .padding(.vertical, AppTheme.Spacing.md)
+        .padding(.vertical, AppTheme.Spacing.mdLg)
         // 幕用**磨砂**而不是实心：它盖在他刚拿到的片子上面，
         // 下面那点画面透出来，这一层才像"浮着"，不像"挡着"。
         .cardSurface(

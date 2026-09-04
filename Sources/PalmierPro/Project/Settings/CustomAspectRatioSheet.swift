@@ -45,7 +45,7 @@ struct CustomAspectRatioSheet: View {
                 .font(.system(size: AppTheme.FontSize.sm))
                 .foregroundStyle(AppTheme.Text.secondaryColor)
 
-            HStack(alignment: .bottom, spacing: AppTheme.Spacing.md) {
+            HStack(alignment: .bottom, spacing: AppTheme.Spacing.mdLg) {
                 ratioField("Width", text: $horizontalText)
                 Text(verbatim: ":")
                     .font(.system(size: AppTheme.FontSize.md, weight: AppTheme.FontWeight.medium))
@@ -64,7 +64,7 @@ struct CustomAspectRatioSheet: View {
                     .foregroundStyle(AppTheme.Status.errorColor)
             }
 
-            HStack(spacing: AppTheme.Spacing.md) {
+            HStack(spacing: AppTheme.Spacing.mdLg) {
                 Spacer()
                 Button(L10n.string("Cancel")) { dismiss() }
                     .buttonStyle(.capsule(.secondary, size: .regular))

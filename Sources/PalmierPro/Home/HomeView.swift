@@ -89,7 +89,7 @@ private struct HomeSidebar: View {
                 )
             }
             .padding(.horizontal, AppTheme.Spacing.smMd)
-            .padding(.vertical, AppTheme.Spacing.md)
+            .padding(.vertical, AppTheme.Spacing.mdLg)
 
             Spacer(minLength: 0)
 
@@ -120,7 +120,7 @@ private struct HomeSidebar: View {
     private var footer: some View {
         Divider()
             .overlay(AppTheme.Border.subtleColor)
-            .padding(.horizontal, AppTheme.Spacing.md)
+            .padding(.horizontal, AppTheme.Spacing.mdLg)
             .padding(.bottom, AppTheme.Spacing.xs)
 
         VStack(alignment: .leading, spacing: 0) {
@@ -146,7 +146,7 @@ private struct HomeSidebar: View {
             )
         }
         .padding(.horizontal, AppTheme.Spacing.smMd)
-        .padding(.bottom, AppTheme.Spacing.md)
+        .padding(.bottom, AppTheme.Spacing.mdLg)
     }
 }
 

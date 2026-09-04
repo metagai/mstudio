@@ -60,7 +60,7 @@ struct MatteSheet: View {
             Text(label)
                 .font(.system(size: AppTheme.FontSize.sm, weight: AppTheme.FontWeight.medium))
                 .foregroundStyle(AppTheme.Text.primaryColor)
-            Spacer(minLength: AppTheme.Spacing.md)
+            Spacer(minLength: AppTheme.Spacing.mdLg)
             control()
                 .frame(width: AppTheme.Matte.controlWidth, alignment: .trailing)
         }

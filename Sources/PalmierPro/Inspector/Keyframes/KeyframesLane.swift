@@ -299,7 +299,7 @@ struct KeyframesPanel: View {
 
     var body: some View {
         ZStack(alignment: .topLeading) {
-            VStack(alignment: .leading, spacing: AppTheme.Spacing.md) {
+            VStack(alignment: .leading, spacing: AppTheme.Spacing.mdLg) {
                 ClipRulerBlock(clip: clip, tint: tint, onSeek: { editor.seekToFrame($0) })
                 ForEach(rows, id: \.0) { row in
                     KeyframesLaneRow(
