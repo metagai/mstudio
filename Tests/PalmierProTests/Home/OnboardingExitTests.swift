@@ -23,7 +23,7 @@ struct OnboardingExitTests {
     }
 
     /// 别的屏本来就有"继续"，不需要第二条出路 —— 出口不是到处都加。
-    @Test(arguments: [OnboardingStep.welcome, .discovery, .profile])
+    @Test(arguments: [OnboardingStep.discovery, .profile])
     func theOtherStepsDoNotNeedOne(step: OnboardingStep) {
         #expect(!OnboardingStore.showsSkip(step: step, signedIn: false, misconfigured: false))
     }

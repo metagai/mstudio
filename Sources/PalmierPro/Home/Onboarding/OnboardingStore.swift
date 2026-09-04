@@ -9,7 +9,7 @@ final class OnboardingStore {
 
     private static let surveyVersion = 2
 
-    private(set) var step = OnboardingStep.welcome
+    private(set) var step = OnboardingStep.account
 
     /// 直接落到某一步 —— **给取景器用**。
     ///

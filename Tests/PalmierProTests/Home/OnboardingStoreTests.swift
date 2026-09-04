@@ -5,12 +5,18 @@ import Testing
 @Suite("Onboarding store")
 @MainActor
 struct OnboardingStoreTests {
-    @Test func newUserStartsAtWelcome() throws {
+    /// **第一屏就是他要做的那个决定。**
+    ///
+    /// 2026-09-03 删掉了 `welcome` 那一步：它是一张盖住首屏的卡片，
+    /// 上面是「欢迎使用 METAG」+ 一张图库蝴蝶照 + **和首屏一字不差的同一句话**
+    /// （两处用的是同一个 `L10n.string(...)`）。
+    /// 新用户看到的第一样东西，不该是一张重复被它挡住那句话的卡片。
+    @Test func newUserStartsAtTheDecision() throws {
         try withDefaults { defaults in
             let store = OnboardingStore(defaults: defaults)
 
             #expect(!store.isComplete)
-            #expect(store.step == .welcome)
+            #expect(store.step == .account)
         }
     }
 
@@ -24,15 +30,15 @@ struct OnboardingStoreTests {
         }
     }
 
-    /// **欢迎之后就是看片**，不是问卷。
+    /// **第一屏就是看片，不是问卷。**
     ///
     /// 2026-09-01 把顺序从 `welcome → discovery → profile → account`
     /// 换成 `welcome → account → discovery → profile`：一个刚装完、
     /// 什么都还没看到的人，原来要先答完两屏问卷才走到"看你的片子"。
-    @Test func welcomeLeadsStraightToTheFilm() throws {
+    /// 2026-09-03 `welcome` 删掉之后，`account` 直接就是第一屏。
+    @Test func theFirstScreenIsTheFilm() throws {
         try withDefaults { defaults in
             let store = OnboardingStore(defaults: defaults)
-            store.advance()
 
             #expect(store.step == .account)
         }
@@ -42,7 +48,6 @@ struct OnboardingStoreTests {
     @Test func theSurveyComesAfterTheFilm() throws {
         try withDefaults { defaults in
             let store = OnboardingStore(defaults: defaults)
-            store.advance()
             store.advance()
 
             #expect(store.step == .discovery)
@@ -57,7 +62,7 @@ struct OnboardingStoreTests {
             let store = OnboardingStore(defaults: defaults)
             store.goBack()
 
-            #expect(store.step == .welcome)
+            #expect(store.step == .account)
 
             store.advance()
             store.advance()

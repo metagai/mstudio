@@ -1,41 +1,5 @@
 import AppKit
 import SwiftUI
-
-struct OnboardingWelcomeStep: View {
-    private static let hero = BundledResource.url("Images/welcome-butterfly.jpg")
-        .flatMap(NSImage.init(contentsOf:))
-
-    var body: some View {
-        VStack(alignment: .leading, spacing: AppTheme.Spacing.smMd) {
-            OnboardingTitle(L10n.string("Welcome to \(AppIdentity.name)"))
-            heroImage
-            // **第一句话要和首页说的是同一件事。**
-            //
-            // 原来这句是上游的定位：「A video editor built for AI」——
-            // 一个"给 AI 用的视频编辑器"。而免费的 DaVinci Resolve 和刚发 4.0 的
-            // OpenShot 已经把"编辑器"这条路占满了，我们在那条路上没有胜算；
-            // 更要紧的是**首页说的根本不是这个**（"写一句话，METAG 分镜、配音、
-            // 配乐，再把它剪成片子"）。两屏两个产品，而这一屏是他读到的第一句。
-            //
-            // 复用首页那句 —— 一个承诺只有一种说法，而且三语已经在了。
-            OnboardingDetail(L10n.string("Write one line. METAG boards the shots, casts a voice, scores it, and cuts it together."))
-        }
-    }
-
-    private var heroImage: some View {
-        Group {
-            if let hero = Self.hero {
-                Image(nsImage: hero).resizable().aspectRatio(contentMode: .fill)
-            } else {
-                AppTheme.Background.raisedColor
-            }
-        }
-        .frame(maxWidth: .infinity)
-        .frame(height: AppTheme.Onboarding.welcomeHeroHeight)
-        .clipShape(RoundedRectangle(cornerRadius: AppTheme.Radius.md, style: .continuous))
-    }
-}
-
 struct OnboardingQuestionnaireStep: View {
     @Bindable var onboarding: OnboardingStore
     let title: String

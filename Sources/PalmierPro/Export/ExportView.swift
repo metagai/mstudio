@@ -85,17 +85,34 @@ struct ExportView: View {
             }
             .frame(width: AppTheme.Export.sheetWidth)
 
-            Divider()
+            // **一条任务都没有的时候，这一栏整个不在。**
+            //
+            // 它原来固定占着**半个屏幕**，里面居中写着「尚无导出任务」——
+            // 而他打开这一屏是为了把刚做好的片子留下来。
+            // 一块只说"这里什么都没有"的地方，不配占那么大位置。
+            //
+            // 第一次导出之后它自己出现（那时它有话说），
+            // 而不是一直在那儿等着有话说。
+            if !projectJobs.isEmpty {
+                Divider()
 
-            VStack(spacing: AppTheme.Spacing.zero) {
-                logHeader
-                Divider().opacity(AppTheme.Opacity.moderate)
-                exportLog
+                VStack(spacing: AppTheme.Spacing.zero) {
+                    logHeader
+                    Divider().opacity(AppTheme.Opacity.moderate)
+                    exportLog
+                }
+                .frame(width: AppTheme.Export.logPaneWidth)
+                .background(AppTheme.Background.raisedColor)
+                .transition(.move(edge: .trailing).combined(with: .opacity))
             }
-            .frame(width: AppTheme.Export.logPaneWidth)
-            .background(AppTheme.Background.raisedColor)
         }
-        .frame(width: AppTheme.Export.sheetWidthWithLog, height: AppTheme.Export.sheetHeight)
+        .frame(
+            width: projectJobs.isEmpty
+                ? AppTheme.Export.sheetWidth
+                : AppTheme.Export.sheetWidthWithLog,
+            height: AppTheme.Export.sheetHeight
+        )
+        .animation(.easeOut(duration: AppTheme.Anim.transition), value: projectJobs.isEmpty)
         .appSheetBackground()
         .task {
             selectedTimelineId = editor.activeTimelineId

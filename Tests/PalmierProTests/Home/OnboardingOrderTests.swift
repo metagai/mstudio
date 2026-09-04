@@ -17,16 +17,21 @@ import Testing
 struct OnboardingOrderTests {
     /// 翻页完全由 raw value 决定，所以顺序就是这几个数。
     @Test func theFilmComesBeforeTheSurvey() {
-        #expect(OnboardingStep.welcome.rawValue < OnboardingStep.account.rawValue,
-                "欢迎必须在最前")
+        #expect(OnboardingStep.account.rawValue == 0,
+                "他看到的第一屏不是那个决定了 —— 前面又插了东西进来")
         #expect(OnboardingStep.account.rawValue < OnboardingStep.discovery.rawValue,
                 "问卷又排到看片前面了 —— 那两屏正好站在价值前面")
         #expect(OnboardingStep.account.rawValue < OnboardingStep.profile.rawValue)
     }
 
-    /// 中间不许插东西：欢迎的下一屏就是看片。
-    @Test func nothingStandsBetweenWelcomeAndTheFilm() {
-        #expect(OnboardingStep(rawValue: OnboardingStep.welcome.rawValue + 1) == .account)
+    /// **第一屏就是看片那一屏。**
+    ///
+    /// 2026-09-03 删掉了 `welcome`：那是一张盖住首屏的卡片，
+    /// 上面是「欢迎使用 METAG」+ 一张图库蝴蝶照 + **和首屏一字不差的同一句话**
+    /// （两处用的是同一个 `L10n.string(...)`），底下一颗「继续」。
+    /// 新用户看到的第一样东西，不该是一张重复被它挡住那句话的卡片。
+    @Test func theFirstScreenIsTheFilmScreen() {
+        #expect(OnboardingStep(rawValue: 0) == .account)
     }
 
     /// 不动手的人要有一条往下走的路 —— 看片这一屏不再是最后一屏了。

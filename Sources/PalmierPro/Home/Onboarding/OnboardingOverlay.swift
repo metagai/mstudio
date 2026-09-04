@@ -71,8 +71,6 @@ struct OnboardingOverlay: View {
     @ViewBuilder
     private var stepContent: some View {
         switch onboarding.step {
-        case .welcome:
-            OnboardingWelcomeStep()
         case .discovery:
             OnboardingQuestionnaireStep(
                 onboarding: onboarding,
@@ -117,13 +115,13 @@ struct OnboardingOverlay: View {
 
 
             HStack(spacing: AppTheme.Spacing.sm) {
-                if onboarding.step != .welcome {
+                // 第一步没有"上一步"。**按序号判，不按某一步的名字判** ——
+                // 名字会被删掉（`welcome` 就是），而"第一步"这个概念不会。
+                if onboarding.step.rawValue > 0 {
                     secondaryButton(L10n.string("Back"), action: onboarding.goBack)
                 }
                 Spacer()
                 switch onboarding.step {
-                case .welcome:
-                    primaryButton(L10n.string("Continue"), action: onboarding.advance)
                 case .discovery:
                     primaryButton(L10n.string("Continue"), action: onboarding.advance)
                 case .profile:
@@ -163,7 +161,7 @@ struct OnboardingOverlay: View {
         switch onboarding.step {
         case .profile, .discovery:
             AppTheme.Spacing.md
-        case .welcome, .account:
+        case .account:
             AppTheme.Spacing.xxl
         }
     }

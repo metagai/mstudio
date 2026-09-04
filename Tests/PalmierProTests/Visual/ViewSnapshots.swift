@@ -212,7 +212,7 @@ struct ViewSnapshots {
     /// 此前只有第一屏可能被人看过 —— 要看第四屏得先答完问卷。
     /// 而第四屏是他刚装完 app 看到的第一样东西，也是转化的第一道门。
     @Test func onboarding() throws {
-        for step in [OnboardingStep.welcome, .account] {
+        for step in [OnboardingStep.account] {
             let store = OnboardingStore(defaults: UserDefaults(
                 suiteName: "onboarding-shot-\(UUID().uuidString)")!)
             store.jumpForTesting(to: step)
