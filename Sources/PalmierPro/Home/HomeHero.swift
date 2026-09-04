@@ -107,17 +107,39 @@ struct HomeHero: View {
                     .foregroundStyle(AppTheme.Status.successColor)
             case .waiting:
                 ProgressView().controlSize(.small)
-                Text(L10n.string("Waiting for you to finish in your browser."))
+                Text(verbatim: account.signInPhase.message ?? "")
                     .foregroundStyle(AppTheme.Text.secondaryColor)
+            case .slow:
+                // **卡住的时候不能什么都不说。**
+                //
+                // 回调靠浏览器跳 `metag://` 送回来。网差时那一跳可能根本不到，
+                // 而**服务端那边可能已经登录成功了** —— 他在浏览器里看到"已授权"，
+                // 在这儿看到一个永远转下去的圈。
+                //
+                // 不说"失败了"（我们不知道），也不再说"正在等你" （他已经做完了）。
+                // 说实话 + 给一条真出路：重开一次多半直接就过，
+                // 因为浏览器里那个会话还在，不用再扫一次码。
+                Image(systemName: "clock.arrow.circlepath")
+                    .foregroundStyle(AppTheme.Text.secondaryColor)
+                Text(verbatim: account.signInPhase.message ?? "")
+                    .foregroundStyle(AppTheme.Text.secondaryColor)
+                Button(L10n.string("Open again")) {
+                    guard let provider = account.lastSignInProvider else { return }
+                    account.retrySignIn(with: provider)
+                }
+                .buttonStyle(.plain)
+                .font(.system(size: AppTheme.FontSize.smMd, weight: AppTheme.FontWeight.medium))
+                .foregroundStyle(AppTheme.Accent.brand)
+                .pointerStyle(.link)
             case .finishing:
                 ProgressView().controlSize(.small)
-                Text(L10n.string("Signing you in…"))
+                Text(verbatim: account.signInPhase.message ?? "")
                     .foregroundStyle(AppTheme.Text.secondaryColor)
             case .landed(let credits):
                 // **最后一句说的是他拿到了什么**，不是"操作成功"。
                 Image(systemName: "sparkles")
                     .foregroundStyle(AppTheme.Accent.brand)
-                Text(L10n.string("You're in. \(credits.formatted()) credits are yours — enough for your first film."))
+                Text(verbatim: account.signInPhase.message ?? "")
                     .foregroundStyle(AppTheme.Text.primaryColor)
             }
         }

@@ -55,15 +55,16 @@ struct SignInWaitTests {
 
     /// 落地那一句必须**带上余额** —— 他这一趟真正换到的是这个，
     /// 不是一句"登录成功"。
+    ///
+    /// 这条原来读 `HomeHero.swift` 的源码，断言 `case .landed` 后面有
+    /// `credits.formatted()`。2026-09-03 把四档文案收进
+    /// `SignInPhase.message`（为了让判据够得着那句话本身）之后，
+    /// **它当场红了，而界面一个字没变**。
+    /// 判据咬住实现细节，会在代码变好的时候报警。
     @Test func theLandingLineNamesWhatHeGot() {
-        let hero = Self.source("Home/HomeHero.swift")
-        guard let landed = hero.range(of: "case .landed(let credits):") else {
-            Issue.record("落地那一步不带余额了")
-            return
-        }
-        let tail = String(hero[landed.lowerBound...].prefix(600))
-        #expect(tail.contains("credits.formatted()"),
-                "落地只说了'成功'，没说他拿到了什么")
+        let landed = AccountService.SignInPhase.landed(credits: 200).message ?? ""
+        #expect(landed.contains("200"),
+                "落地只说了'成功'，没说他拿到了什么：\(landed)")
     }
 
     /// 登录失败要退回原样，不许把"正在登录"留在屏幕上。

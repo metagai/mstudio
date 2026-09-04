@@ -895,6 +895,7 @@
 "Open Skills Folder" = "Abrir carpeta de habilidades";
 "Open Skills to browse community playbooks, create your own, or add them to other agents." = "Abre Habilidades para explorar guías de la comunidad, crear las tuyas o añadirlas a otros agentes.";
 "Open Timeline" = "Abrir línea de tiempo";
+"Open again" = "Abrir otra vez";
 "Open in the editor" = "Abrir en el editor";
 "Open the AI Edit tab to upscale, prompt-edit, create video from a frame, or generate music, SFX, cleanup, and dubbing from the clip." = "Abre la pestaña Edición con IA para aumentar la resolución, editar con un prompt, crear vídeo a partir de un fotograma, o generar música, efectos de sonido, limpieza de voz y doblaje desde el clip.";
 "Open the tutorial project" = "Abrir el proyecto de ejemplo";
@@ -1322,6 +1323,7 @@
 "This audio couldn’t be transcribed — try a different clip." = "No se pudo transcribir este audio: prueba con otro clip.";
 "This film has no usable shots." = "Esta película no tiene planos utilizables.";
 "This film isn't on this account." = "Esta película no está en esta cuenta.";
+"This is taking longer than usual. If you already approved it, open it once more." = "Está tardando más de lo normal. Si ya lo autorizaste, ábrelo otra vez.";
 "This is where all your footage and assets live." = "Aquí se encuentran todo tu material y tus recursos.";
 "This is your preview panel to play a selected media or the whole timeline." = "Este es el panel de previsualización, donde puedes reproducir el contenido seleccionado o toda la línea de tiempo.";
 "This model cannot cap the output at 60 FPS." = "Este modelo no puede limitar la salida a 60 FPS.";

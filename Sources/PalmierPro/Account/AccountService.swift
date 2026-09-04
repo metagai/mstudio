@@ -32,13 +32,62 @@ final class AccountService {
         case idle
         /// 浏览器开着，人在微信那一侧 —— 我们这里什么都不知道。
         case waiting
+        /// **等太久了。**
+        ///
+        /// 回调是靠浏览器跳 `metag://` 送回来的。网差的时候这一跳可能根本不到，
+        /// 而**服务端那边可能已经登录成功了** —— 他在浏览器里看到"已授权"，
+        /// 在 METAG 这边看到一个永远转下去的圈。
+        ///
+        /// 原来这一档不存在：`waiting` 那句「正在等你在浏览器里完成」
+        /// 会一直说下去，**没有超时、没有出路**。
+        /// 一个卡住的产品最露怯的地方，就是卡住的时候它什么都不说。
+        case slow
         /// 票回来了，正在跟网关核对。这一段是我们自己的，约一个来回。
         case finishing
         /// 落地。带上余额 —— 这是他这一趟真正换到的东西。
         case landed(credits: Int)
+
+        /// 这一档屏幕上说什么。
+        ///
+        /// **抽出来是因为判据够不着视图里那句话。** 上一版判据在测试里
+        /// 自己敲了一遍那句英文，于是我把视图改成「登录失败，请重试」之后
+        /// **它照样绿** —— 它查的是旧 key，而那个 key 还在词条表里。
+        /// 一条测自己写的字符串的判据，是空的。
+        @MainActor
+        var message: String? {
+            switch self {
+            case .idle: nil
+            case .waiting: L10n.string("Waiting for you to finish in your browser.")
+            case .slow:
+                L10n.string("This is taking longer than usual. If you already approved it, open it once more.")
+            case .finishing: L10n.string("Signing you in…")
+            case .landed(let credits):
+                L10n.string("You're in. \(credits.formatted()) credits are yours — enough for your first film.")
+            }
+        }
     }
 
     private(set) var signInPhase: SignInPhase = .idle
+
+    /// 他上一次是用哪一家登的。**"重开一次"要重开同一家** ——
+    /// 换一家等于让他从头再来，而他刚刚已经授权过了。
+    private(set) var lastSignInProvider: MetagAuth.Provider?
+
+    /// 等多久算"太久"。
+    ///
+    /// 从国内打网关一个来回实测 1.1–1.3 秒，扫码 + 授权正常也就十几秒。
+    /// 20 秒还没回来，多半是那一跳丢了 —— 而**这时候他最需要的不是再等**，
+    /// 是知道自己可以重来。
+    static let signInFeelsSlowAfter: Duration = .seconds(20)
+
+    /// 关掉正开着的登录窗，重新开一个。
+    ///
+    /// **给"卡住"一条出路。** 服务端可能已经登录成功了，而那一跳没回来 ——
+    /// 重开一次多半直接就过（那时浏览器里已经有会话，不用再扫一次码）。
+    func retrySignIn(with provider: MetagAuth.Provider) {
+        MetagAuth.shared.cancelSignIn()
+        Task { await signIn(with: provider) }
+    }
     @ObservationIgnored private var landingTask: Task<Void, Never>?
     private(set) var isBuyingCredits: Bool = false
 
@@ -176,10 +225,18 @@ final class AccountService {
             return
         }
         isSigningIn = true
+        lastSignInProvider = provider
         lastError = nil
         landingTask?.cancel()
         signInPhase = .waiting
-        defer { isSigningIn = false }
+        // 等太久就换一句话，并给一条真出路。**只换话，不动那个会话** ——
+        // 他可能正在手机上确认，这一刻打断他是最糟的。
+        let slowWatch = Task { @MainActor [weak self] in
+            try? await Task.sleep(for: Self.signInFeelsSlowAfter)
+            guard let self, self.signInPhase == .waiting else { return }
+            self.signInPhase = .slow
+        }
+        defer { isSigningIn = false; slowWatch.cancel() }
         do {
             // 账号是 `MetagAuth` 验票时**已经拿到的那一份**，不再多打一个来回。
             let account = try await MetagAuth.shared.signIn(with: provider) {

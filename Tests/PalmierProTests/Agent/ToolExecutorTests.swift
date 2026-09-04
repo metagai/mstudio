@@ -20,6 +20,12 @@ final class ToolHarness {
     ) {
         let editor = EditorViewModel()
         editor.timeline = timeline
+        // **判据不赌机器有多快。**
+        //
+        // Agent 的改动高亮一秒后自己消失。满载并行时那一秒到不了断言那一行，
+        // 于是三条判据在一个完全正常的产品上红，而单跑全绿。
+        // 关掉自动消失，它们看的就是"亮没亮过"，不是"跑得够不够快"。
+        editor.autoClearsAgentActivity = false
         self.editor = editor
         self.exportQueue = exportQueue
         self.executor = ToolExecutor(

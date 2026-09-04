@@ -193,7 +193,13 @@ struct OnboardingAdaptationTests {
             // 合伙人跑了一次 `sync.sh` 把它们清掉，它当场红。
             // **判据的第一件事不是"它对不对"，是"它是不是这一次的"**
             // （docs/lessons.md 第三十五条）。
-            for key in ["Welcome to %@", "What best describes your role?",
+            // 2026-09-03 `"Welcome to %@"` 从这张名单里去掉了 ——
+            // **欢迎那一屏删掉了**（它盖住首屏，而上面那句话和首屏一字不差）。
+            // 这条判据当场红，红得对：它点名的那句话真的不在了。
+            //
+            // 名单里留的是**现在这一版引导真的会说的话**。
+            for key in ["What best describes your role?",
+                        "Sign in and your films follow you",
                         "Write one line and see your film. No account needed for the first look."] {
                 #expect(table.contains("\"\(key)\""), "\(lang) 缺文案：\(key)")
             }

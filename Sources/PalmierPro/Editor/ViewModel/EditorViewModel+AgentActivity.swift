@@ -70,6 +70,7 @@ extension EditorViewModel {
     }
 
     private func scheduleAgentActivityClear(after duration: Double) {
+        guard autoClearsAgentActivity else { return }
         let revision = agentActivity.revision
         agentActivityClearTask?.cancel()
         agentActivityClearTask = Task { @MainActor [weak self] in

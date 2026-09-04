@@ -31,7 +31,16 @@ private final class MediaAssetsChangeCounter {
 /// separate file and is the real creative work. A bad manifest should degrade to "media
 /// offline" (like a missing manifest already does), and the original bytes must be preserved
 /// on disk so a newer build (e.g. after a schema change) can still recover the library.
-@Suite("VideoProject package load resilience")
+/// ⚠ `.serialized`：这一组要读写真文件、还要等两层没句柄的游离 Task 跑完。
+///
+/// 2026-09-03：和另外 2000 多条测试抢机器时，那两层任务**根本跑不完** ——
+/// 预算从 1 秒提到 45 秒，它在 67 秒时还是没等到。
+/// 那不是"机器慢"，是那棵任务树在满载下饿死了。
+///
+/// **不缩小它断言的东西来让它变绿**（那是「换问法」，第四十条），
+/// 也不再往上加预算（加到多少都是赌）。让它单独跑。
+/// 真正的修法是给那棵任务树一个句柄，已记进 `docs/todo.md`。
+@Suite("VideoProject package load resilience", .serialized)
 struct VideoProjectLoadTests {
 
     private let fm = FileManager.default
@@ -196,7 +205,7 @@ struct VideoProjectLoadTests {
         //
         // **不缩小它断言的东西来让它变绿** —— 那是「换问法」，
         // 判据会绿而用户拿到的东西一点没变（lessons 第四十条）。
-        let restored = await AsyncWait.until("清单还原补上缩略图和尺寸", timeout: .seconds(45)) {
+        let restored = await AsyncWait.until("清单还原补上缩略图和尺寸", timeout: .seconds(20)) {
             document.editorViewModel.mediaVisualCache.imageThumbnail(for: "used-image") != nil
                 && document.editorViewModel.mediaAssets
                     .first { $0.id == "unused-image" }?.sourceWidth == 640

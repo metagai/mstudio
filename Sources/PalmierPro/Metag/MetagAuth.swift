@@ -153,6 +153,15 @@ final class MetagAuth: NSObject {
         return account
     }
 
+    /// 把正在开着的那个登录窗关掉。
+    ///
+    /// **系统会用 `canceledLogin` 回调那个 continuation**，所以它只被 resume 一次 ——
+    /// 这一点很要紧：这个 continuation 双 resume 会当场崩。
+    func cancelSignIn() {
+        session?.cancel()
+        session = nil
+    }
+
     func signOut() {
         MetagGateway.token = nil
     }

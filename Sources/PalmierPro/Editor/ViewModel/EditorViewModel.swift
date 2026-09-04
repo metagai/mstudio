@@ -196,6 +196,15 @@ final class EditorViewModel {
     var pendingReplacements: Set<String> = []
     var agentActivity = AgentActivityHighlight()
     @ObservationIgnored var agentActivityClearTask: Task<Void, Never>?
+
+    /// Agent 的改动高亮**一秒后自己消失**。判据要看它亮过，就得比那一秒快 ——
+    /// 而 2000 多条测试并行满载时，机器慢一个数量级，那一秒到不了断言那一行。
+    ///
+    /// 于是三条判据在**一个完全正常的产品上**红（`AgentActivityHighlightTests`），
+    /// 而它们单跑全绿。**门里一条偶发红比没有判据更糟：它教会所有人忽略红色。**
+    ///
+    /// 判据把它关掉，就不再赌机器有多快。产品里永远是 true。
+    @ObservationIgnored var autoClearsAgentActivity = true
     var cropEditingActive: Bool = false
     var chromaKeySamplingClipId: String?
     /// Clip whose region-removal rectangle is being drawn on the canvas.
