@@ -1165,6 +1165,8 @@
 "Side by Side" = "并排";
 "Sign In to Start" = "登录后开始";
 "Sign In" = "登录";
+"Sign in and your films follow you — %@ free credits to start" = "登录之后作品跟着你走 —— 还送 %@ credits";
+"Sign in and your films follow you" = "登录之后，作品就跟着你走";
 "Sign in and your films stay with you" = "登录，作品就跟着你走";
 "Sign in to METAG to generate." = "登录 METAG 后即可生成。";
 "Sign in to METAG" = "登录 METAG";

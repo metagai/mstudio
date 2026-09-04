@@ -37,3 +37,27 @@ struct OnboardingExitTests {
         #expect(store.isComplete, "答完问卷按下 Continue 之后还留在那张关不掉的卡上")
     }
 }
+
+/// **解释那四颗按钮的话，不许跟着一个数字一起消失。**
+@Suite("登录那一块说不说得清")
+@MainActor
+struct SignInReasonTests {
+    /// 上一版整句话挂在 `if let grant` 里：网关那一格取不到
+    /// （首屏那一刻多半还没回来，国内更慢），底下四颗
+    /// WeChat / Apple / Google / GitHub 就**一句说明都没有** ——
+    /// 新用户看到的第二屏上四颗没头没尾的按钮。
+    ///
+    /// 又是「把不知道画成事实」最坏的那一种：**说明无声消失。**
+    @Test func theReasonSurvivesAMissingNumber() {
+        let withoutGrant = OnboardingOverlay.signInReason(grant: nil)
+        #expect(!withoutGrant.isEmpty,
+                "赠额取不到，那四颗登录按钮就一句说明都没有了")
+        let hasDigit = withoutGrant.rangeOfCharacter(from: .decimalDigits) != nil
+        #expect(!hasDigit, "不知道赠额多少，却印了个数：\(withoutGrant)")
+    }
+
+    /// 知道的时候要说出来 —— 别为了躲上面那条把理由也藏了。
+    @Test func theNumberShowsWhenWeHaveIt() {
+        #expect(OnboardingOverlay.signInReason(grant: 200).contains("200"))
+    }
+}

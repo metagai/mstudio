@@ -96,6 +96,26 @@ struct OnboardingOverlay: View {
 
     private var footer: some View {
         VStack(spacing: AppTheme.Spacing.xs) {
+            // **登录那四颗另起一行。**
+            //
+            // 它们原来跟"上一步""先看一眼"挤在同一个 `HStack` 里 ——
+            // 六颗按钮加一句赠额文字塞进一行放不下，于是 provider 按钮被压到最窄，
+            // 字一个一个往下折：WeC/hat、App/le、Goo/gle、Git/Hub。
+            // 2026-09-02 创始人装完真机截图照出来的，而这一屏是他看到的第一样东西。
+            // **它排在动作行之前。**
+            //
+            // 原来夹在动作行和出口之间，于是「返回」正好贴在这四颗上面 ——
+            // 读起来像「返回 / WeChat / Apple / Google / GitHub」是一组，
+            // 而它们是两件完全不同的事。
+            // 现在是：先摆出他此刻能做的选择（登录，或者直接去看片子），
+            // **导航（返回）和出路（以后再说）留在下面。**
+            if onboarding.step == .account {
+                accountSignIn
+                    .padding(.bottom, AppTheme.Spacing.xs)
+            }
+
+
+
             HStack(spacing: AppTheme.Spacing.sm) {
                 if onboarding.step != .welcome {
                     secondaryButton(L10n.string("Back"), action: onboarding.goBack)
@@ -117,14 +137,6 @@ struct OnboardingOverlay: View {
                     accountPrimary
                 }
             }
-
-            // **登录那四颗另起一行。**
-            //
-            // 它们原来跟"上一步""先看一眼"挤在同一个 `HStack` 里 ——
-            // 六颗按钮加一句赠额文字塞进一行放不下，于是 provider 按钮被压到最窄，
-            // 字一个一个往下折：WeC/hat、App/le、Goo/gle、Git/Hub。
-            // 2026-09-02 创始人装完真机截图照出来的，而这一屏是他看到的第一样东西。
-            if onboarding.step == .account { accountSignIn }
 
             // 看片这一屏现在排在问卷前面，所以它不再是最后一屏 ——
             // 不动手的人得有一条往下走的路。
@@ -191,11 +203,18 @@ struct OnboardingOverlay: View {
                 // 赠额是**登录的理由**，不是打开 app 的理由，所以它领着这一块，
                 // 不再吊在按钮右边。数字取自网关的 signup_free_credits；
                 // 取不到就不提数字 —— 宁可少说一句，也不要说错一个数。
-                if let grant = account.signupFreeCredits {
-                    Text(L10n.string("\(grant.formatted()) free credits when you sign in"))
-                        .font(.system(size: AppTheme.FontSize.xs))
-                        .foregroundStyle(AppTheme.Text.mutedColor)
-                }
+                //
+                // **但"少说一句"不能变成"什么都不说"。**
+                // 上一版整句话都挂在 `if let grant` 里：网关那一格取不到
+                // （首屏那一刻多半还没回来，国内更慢），
+                // 底下四颗 WeChat / Apple / Google / GitHub 就**一句说明都没有** ——
+                // 新用户看到的第二屏上四颗没头没尾的按钮。
+                // 又是「把不知道画成事实」最坏的那一种：**说明无声消失。**
+                //
+                // 所以：那句话永远在，数字是它的**补充**。
+                Text(verbatim: Self.signInReason(grant: account.signupFreeCredits))
+                    .font(.system(size: AppTheme.FontSize.xs))
+                    .foregroundStyle(AppTheme.Text.mutedColor)
                 // 四种都给。**Apple 排第一** —— 在 Mac 上它是"这个 app 属于这台电脑"
                 // 的信号；微信对国内用户是唯一顺手的那个。
                 HStack(spacing: AppTheme.Spacing.xs) {
@@ -211,6 +230,16 @@ struct OnboardingOverlay: View {
             }
             .frame(maxWidth: .infinity, alignment: .leading)
         }
+    }
+
+    /// 那四颗登录按钮上面那句话。**它永远在，数字只是补充。**
+    ///
+    /// 判据直接问它：`grant` 为 nil 时那句话不许是空的。
+    @MainActor
+    static func signInReason(grant: Int?) -> String {
+        grant.map {
+            L10n.string("Sign in and your films follow you — \($0.formatted()) free credits to start")
+        } ?? L10n.string("Sign in and your films follow you")
     }
 
     private func primaryButton(_ label: String, action: @escaping () -> Void) -> some View {
