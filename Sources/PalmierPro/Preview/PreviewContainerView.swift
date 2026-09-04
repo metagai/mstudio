@@ -58,9 +58,20 @@ struct PreviewContainerView: View {
                     if let premiere = editor.premiere {
                         MetagPremiereBar(
                             premiere: premiere,
+                            // **「留下它」就把它留下来。**
+                            //
+                            // 上一版这里是 `showExportDialog = true` —— 打开 759 行的
+                            // 专业导出面板：目标位置、编码、分辨率、时间线格式、
+                            // FCPXML 目标、FCPXML 版本、导出队列。**一个刚看完自己
+                            // 第一条片子的人，迎面撞上六个下拉框。** 首映条只有三颗
+                            // 按钮这件事我曾拿来当"我们没犯 A00d 那个错"的证据，
+                            // 而那颗按钮通向的正是一个控制面板。
+                            //
+                            // 想挑参数的人一步就到：标题栏那颗 Export 照旧。
+                            // 这里不新增按钮 —— 首映条仍是三颗。
                             onKeep: {
                                 editor.premiere = nil
-                                editor.showExportDialog = true
+                                KeepIt.save(editor)
                             },
                             onAgain: {
                                 editor.premiere = nil

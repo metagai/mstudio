@@ -1,8 +1,16 @@
+import AppKit
 import Foundation
 
 enum ExportJobSource: String, Sendable {
     case manual
     case agent
+    /// 首映条上那颗「留下它」—— 一次不问参数的保存。
+    ///
+    /// 单列一档不是为了改行为，是为了**在漏斗里认得出它**：
+    /// `exported` 那一格记的就是 `source.rawValue`，
+    /// 于是"他是自己配参数导的、还是按了留下它"能分开读。
+    /// 2026-09-04 那一格是 0 —— 分不开也就无所谓，但它不该一直是 0。
+    case keepIt
 }
 
 enum ExportJobStatus: String, Sendable {
@@ -322,6 +330,11 @@ final class ExportQueue {
                 name: filename,
                 reason: service.error ?? L10n.string("The export didn't finish.")
             )
+        } else if status == .completed, source == .keepIt {
+            // **他不知道片子去了哪。** 「留下它」没问他存哪儿（那一刻他要的是
+            // "别弄丢它"，不是"决定它叫什么"），所以存完必须让他看见位置 ——
+            // 否则这颗按钮的回执是"什么都没发生"。
+            NSWorkspace.shared.activateFileViewerSelecting([outputURL])
         } else if status == .completed, source == .agent {
             // 成功那一条仍然只给 agent 发 —— 人手点的时候他就在屏幕前，
             // 而 Finder 里多一个文件本身就是回执。
