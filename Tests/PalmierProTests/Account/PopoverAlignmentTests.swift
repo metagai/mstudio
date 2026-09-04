@@ -18,27 +18,15 @@ import Testing
 @MainActor
 struct PopoverAlignmentTests {
     @Test func everyRowStartsOnTheSameLine() throws {
-        let host = NSHostingView(rootView: AccountPopoverCard().frame(width: 300).padding())
-        host.frame = CGRect(x: 0, y: 0, width: 332, height: 260)
-        host.layoutSubtreeIfNeeded()
-        let rep = try #require(host.bitmapImageRepForCachingDisplay(in: host.bounds))
-        host.cacheDisplay(in: host.bounds, to: rep)
-
-        // 每一行墨迹从第几列开始。空行跳过。
-        var edges: [Int] = []
-        for y in stride(from: 0, to: rep.pixelsHigh, by: 1) {
-            var first: Int?
-            for x in stride(from: 0, to: rep.pixelsWide, by: 1) {
-                guard let c = rep.colorAt(x: x, y: y)?.usingColorSpace(.sRGB) else { continue }
-                // 底色是纸白；够暗才算墨。
-                if c.alphaComponent > 0.5, c.brightnessComponent < 0.55 { first = x; break }
-            }
-            if let first { edges.append(first) }
-        }
+        // **用仓库里那一份，不再手搓。** 见 `ViewInk` 开头那段：
+        // 我第一版自己写的那个循环找的是"浅底上的深色墨迹"，
+        // 换到暗色外观就一个都匹配不到 —— 在一个正常界面上判红。
+        let bitmap = try ViewInk.bitmap(of: AccountPopoverCard(), width: 300)
+        let edges = ViewInk.leftEdges(bitmap)
         try #require(edges.count > 20, "这一屏几乎没画出东西")
 
-        // 菜单行如果居中，它的左边缘会明显靠右 —— 而"最靠右的那些左边缘"
-        // 正是那一行。用分位数看：九成的行应该挤在同一个窄带里。
+        // 菜单行如果居中，它的左边缘会明显靠右。用分位数看：
+        // 九成的行应该挤在同一个窄带里。
         let sorted = edges.sorted()
         let p10 = sorted[sorted.count / 10]
         let p90 = sorted[sorted.count * 9 / 10]

@@ -52,20 +52,9 @@ struct UnknownIsNotZeroTests {
     @Test func theBuyButtonSurvivesAPricingOutage() throws {
         #expect(AccountService.shared.creditPack == nil,
                 "这条判据的前提是报价单为空；不为空就没在测想测的东西")
-        let view = CreditPackButton().frame(width: 240).padding()
-        let host = NSHostingView(rootView: view)
-        host.frame = CGRect(x: 0, y: 0, width: 272, height: 60)
-        host.layoutSubtreeIfNeeded()
-        let rep = try #require(host.bitmapImageRepForCachingDisplay(in: host.bounds))
-        host.cacheDisplay(in: host.bounds, to: rep)
-
-        var lit = 0
-        for y in stride(from: 0, to: rep.pixelsHigh, by: 2) {
-            for x in stride(from: 0, to: rep.pixelsWide, by: 2) {
-                guard let c = rep.colorAt(x: x, y: y)?.usingColorSpace(.sRGB) else { continue }
-                if c.alphaComponent > 0.05 { lit += 1 }
-            }
-        }
+        // **用仓库里那一份，不再手搓**（见 `ViewInk`）。
+        let bitmap = try ViewInk.bitmap(of: CreditPackButton(), width: 240)
+        let lit = ViewInk.litPixels(bitmap)
         #expect(lit > 500,
                 "报价单没拉到，付钱的按钮只画出 \(lit) 个像素 —— 他这一会话找不到地方付钱")
     }

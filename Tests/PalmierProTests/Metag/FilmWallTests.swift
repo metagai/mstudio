@@ -61,23 +61,12 @@ struct FilmWallTests {
     /// 量的是屏幕上有没有东西，不是源码里那个分支还在不在 ——
     /// 一面墙如果在图到齐之前是空白，他看到的就是"这一屏坏了"。
     @Test func aCardIsVisibleBeforeItsPosterArrives() throws {
-        let view = MetagFilmCard(
+        // **用仓库里那一份，不再手搓**（见 `ViewInk`）。
+        let bitmap = try ViewInk.bitmap(of: MetagFilmCard(
             film: Self.film(), poster: nil,
             onOpen: {}, onShare: {}, onDelete: {}
-        ).frame(width: 240).padding()
-        let host = NSHostingView(rootView: view)
-        host.frame = CGRect(x: 0, y: 0, width: 272, height: 240)
-        host.layoutSubtreeIfNeeded()
-        let rep = try #require(host.bitmapImageRepForCachingDisplay(in: host.bounds))
-        host.cacheDisplay(in: host.bounds, to: rep)
-        var lit = 0
-        for y in stride(from: 0, to: rep.pixelsHigh, by: 2) {
-            for x in stride(from: 0, to: rep.pixelsWide, by: 2) {
-                if let c = rep.colorAt(x: x, y: y)?.usingColorSpace(.sRGB), c.alphaComponent > 0.05 {
-                    lit += 1
-                }
-            }
-        }
+        ), width: 240)
+        let lit = ViewInk.litPixels(bitmap)
         #expect(lit > 800, "海报没到时那张卡只画出 \(lit) 个像素 —— 一面空白的墙")
     }
 }

@@ -180,14 +180,28 @@ struct VideoProjectLoadTests {
         document.editorViewModel.mediaManifest = manifest
 
         document.restoreAssetsFromManifest()
-        for _ in 0..<100 {
-            let usedReady = document.editorViewModel.mediaVisualCache.imageThumbnail(for: "used-image") != nil
-            let unusedReady = document.editorViewModel.mediaAssets.first(where: { $0.id == "unused-image" })?.sourceWidth == 640
-            if usedReady && unusedReady {
-                break
-            }
-            try await Task.sleep(for: .milliseconds(10))
+        // **预算给足，而且超时要说清是超时。**
+        // 原来是 `for _ in 0..<100 { sleep(10ms) }` —— 总共 1 秒，
+        // 整套测试并行跑时不够，五次里红两次。
+        // 门里一条偶发红比没有判据更糟：**它教会所有人忽略红色。**
+        // ⚠ **预算 45 秒，而且这是个症状，不是修法。**
+        //
+        // 还原起的是**两层没有句柄的游离 Task**：一层扫文件是否存在，
+        // 一层每个素材各起一个（`loadMetadata` → `prepareMediaVisuals`）。
+        // 外面没有任何可以 await 的口子，所以这里只能等。
+        //
+        // 10 秒不够（满载并行时 13.9 秒才失败）。真正的修法是给那一整棵
+        // 任务树一个句柄 —— 那样测试能确定地等，而且**关闭工程时能取消**
+        // （AGENTS.md 明写：游离 Task 必须有 owner）。已记进 docs/todo.md。
+        //
+        // **不缩小它断言的东西来让它变绿** —— 那是「换问法」，
+        // 判据会绿而用户拿到的东西一点没变（lessons 第四十条）。
+        let restored = await AsyncWait.until("清单还原补上缩略图和尺寸", timeout: .seconds(45)) {
+            document.editorViewModel.mediaVisualCache.imageThumbnail(for: "used-image") != nil
+                && document.editorViewModel.mediaAssets
+                    .first { $0.id == "unused-image" }?.sourceWidth == 640
         }
+        try #require(restored, "等了 10 秒，清单还原还没补完 —— 这是超时，不一定是功能坏了")
 
         let used = try #require(document.editorViewModel.mediaAssets.first { $0.id == "used-image" })
         let unused = try #require(document.editorViewModel.mediaAssets.first { $0.id == "unused-image" })
