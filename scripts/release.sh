@@ -143,6 +143,30 @@ fi
 /usr/libexec/PlistBuddy -c "Set :CFBundleVersion $NEW_BUILD" "$PLIST"
 echo "    $VERSION (build $NEW_BUILD)"
 
+# 埋点 token 从仓库根的 .env 里取（gitignored，永不进脚本或日志）。
+#
+# **`bundle.sh` 一直会读 `POSTHOG_PROJECT_TOKEN`，而这里从来没设过它** ——
+# 于是 `Analytics.swift`（12.6KB，事件铺满全 app）每一次上报都落进虚空。
+# `founder-todo` §15 写着「等你去开通 PostHog」，而它 2026-09-04 查实早就
+# 开通了：50 字符的真 token 一直躺在 .env 里，只差这三行。
+#
+# **取不到就发不出去。** 埋点静悄悄是空的，正是我们连瞎四个版本的那个形状
+# （0.1.9–0.1.12 发出去打不开，靠创始人截图才发现）。要故意发一个瞎的包，
+# 就显式写出来 —— 让它是一个决定，不是一次遗忘。
+ENV_FILE="$(dirname "$0")/../../.env"
+if [ -f "$ENV_FILE" ]; then
+  POSTHOG_PROJECT_TOKEN="$(grep -m1 '^POSTHOG_PROJECT_TOKEN=' "$ENV_FILE" | cut -d= -f2- | tr -d '"'"'"' \r')"
+  export POSTHOG_PROJECT_TOKEN
+fi
+if [ -z "${POSTHOG_PROJECT_TOKEN:-}" ] && [ "${ALLOW_BLIND_RELEASE:-}" != "1" ]; then
+  echo "!! 拿不到 POSTHOG_PROJECT_TOKEN —— 这一版发出去我们看不见任何人在用它。" >&2
+  echo "   token 在仓库根的 .env 里。真要发一个瞎的包：ALLOW_BLIND_RELEASE=1" >&2
+  exit 1
+fi
+if [ -n "${POSTHOG_PROJECT_TOKEN:-}" ]; then
+  echo "==> 埋点 token 已就位（${#POSTHOG_PROJECT_TOKEN} 字符，不打印内容）"
+fi
+
 echo "==> Building signed + notarized DMG"
 BUILD_LOG="$(mktemp -t metag-build.XXXXXX).log"
 trap 'rm -f "$NOTES_CLEAN" "$BUILD_LOG"' EXIT
