@@ -62,11 +62,19 @@ struct LocalizationTests {
         for language in Self.languages.dropFirst() {
             let translated = try table(language)
             for (key, source) in english {
-                let expected = source.components(separatedBy: "%@").count
-                let actual = (translated[key] ?? "").components(separatedBy: "%@").count
+                // 数的是**占位符**，不是 `%@` 这一种写法。
+                // 语序跟英文不一样的语言得写 `%2$@ … %1$@`（zh-Hans 那条
+                // "%@ of %@ shots are in" 就是），按字面切 "%@" 会把它数成 0。
+                let expected = Self.placeholders(in: source)
+                let actual = Self.placeholders(in: translated[key] ?? "")
                 #expect(actual == expected, "\(language): placeholder count differs for \"\(key)\"")
             }
         }
+    }
+
+    /// `%@`、`%1$@`、`%d` 都算一个。
+    static func placeholders(in s: String) -> Int {
+        s.matches(of: /%(\d+\$)?[@dfs]/).count
     }
 
     /// English values are the keys themselves, so a missing entry degrades readably.

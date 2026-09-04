@@ -42,7 +42,7 @@
 "%@ isn't a .cube 3D LUT. METAG reads .cube files exported from most color tools." = "%@ 不是 .cube 三维 LUT。METAG 读大多数调色工具导出的 .cube 文件。";
 "%@ loaded this clip's source file but couldn't prepare it for playback. The file may be corrupt or in an unsupported format." = "%@ 读到了这一段的源文件，但没法把它准备成可播放的。文件可能损坏了，或者是不支持的格式。";
 "%@ model not available" = "%@ 模型不可用";
-"%@ of %@ shots are in" = "%@ 镜里到了 %@";
+"%@ of %@ shots are in" = "%2$@ 镜里到了 %1$@";
 "%@ shots · %@ credits" = "%@ 镜 · %@ credits";
 "%@ shots · refunded" = "%@ 镜 · 已退款";
 "%@ shots" = "%@ 个镜头";
