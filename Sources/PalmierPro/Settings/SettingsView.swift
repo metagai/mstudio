@@ -188,7 +188,7 @@ struct SettingsSection<Content: View>: View {
                 content()
             }
             .frame(maxWidth: .infinity, alignment: .leading)
-            .padding(.horizontal, AppTheme.Spacing.lgXl)
+            .padding(.horizontal, AppTheme.Spacing.lg)
             .padding(.vertical, AppTheme.Spacing.mdLg)
             .cardSurface(AppTheme.Background.prominentColor, cornerRadius: AppTheme.Radius.mdLg)
         }

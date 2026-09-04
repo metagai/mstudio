@@ -21,7 +21,7 @@ struct CapsuleButtonStyle: ButtonStyle {
         @State private var hovered = false
 
         private var fontSize: CGFloat { size == .small ? AppTheme.FontSize.xs : AppTheme.FontSize.smMd }
-        private var hPadding: CGFloat { size == .small ? AppTheme.Spacing.smMd : AppTheme.Spacing.lgXl }
+        private var hPadding: CGFloat { size == .small ? AppTheme.Spacing.smMd : AppTheme.Spacing.lg }
         private var vPadding: CGFloat { size == .small ? AppTheme.Spacing.xs : AppTheme.Spacing.smMd }
 
         private var foreground: AnyShapeStyle {

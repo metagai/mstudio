@@ -255,7 +255,7 @@ struct AgentPanelView: View {
                     errorBanner
                 }
                 .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .center)
-                .padding(.horizontal, AppTheme.Spacing.lgXl)
+                .padding(.horizontal, AppTheme.Spacing.lg)
             } else {
                 scrollingMessages
             }
@@ -277,7 +277,7 @@ struct AgentPanelView: View {
                     errorBanner
                         .padding(.top, AppTheme.Spacing.sm)
                 }
-                .padding(.horizontal, AppTheme.Spacing.lgXl)
+                .padding(.horizontal, AppTheme.Spacing.lg)
                 .padding(.top, AppTheme.Spacing.mdLg)
                 .padding(.bottom, AppTheme.Spacing.smMd)
                 .frame(maxWidth: Layout.chatColumnMax)

@@ -15,7 +15,7 @@ struct EditorActionFooter<Actions: View>: View {
             actions()
         }
         .frame(maxWidth: .infinity, alignment: .leading)
-        .padding(.horizontal, AppTheme.Spacing.lgXl)
+        .padding(.horizontal, AppTheme.Spacing.lg)
         .padding(.vertical, AppTheme.Spacing.md)
     }
 }

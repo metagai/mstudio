@@ -274,8 +274,8 @@ struct MediaTab: View {
                 )
         )
         .shadow(AppTheme.Shadow.lg)
-        .padding(.horizontal, AppTheme.Spacing.lgXl)
-        .padding(.bottom, AppTheme.Spacing.lgXl)
+        .padding(.horizontal, AppTheme.Spacing.lg)
+        .padding(.bottom, AppTheme.Spacing.lg)
         .onTapGesture {
             guard toast.kind != .progress else { return }
             editor.dismissMediaPanelToast()

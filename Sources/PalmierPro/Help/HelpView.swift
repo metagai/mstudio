@@ -86,7 +86,7 @@ struct HelpView: View {
             }
             .padding(.horizontal, AppTheme.Spacing.xlXxl)
             .padding(.top, AppTheme.Spacing.xxl)
-            .padding(.bottom, AppTheme.Spacing.lgXl)
+            .padding(.bottom, AppTheme.Spacing.lg)
 
             switch selectedTab {
             case .shortcuts: ShortcutsPane()

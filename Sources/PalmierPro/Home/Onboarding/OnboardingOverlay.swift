@@ -31,7 +31,7 @@ struct OnboardingOverlay: View {
             cardContent
             footer
                 .padding(.horizontal, AppTheme.Spacing.xxl)
-                .padding(.vertical, AppTheme.Spacing.lgXl)
+                .padding(.vertical, AppTheme.Spacing.lg)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .background(

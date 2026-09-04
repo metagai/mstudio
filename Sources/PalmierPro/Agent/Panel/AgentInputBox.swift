@@ -119,7 +119,7 @@ struct AgentInputBox<LeadingTools: View>: View {
                 Text(L10n.string("Ask, or type @ to reference media"))
                     .font(.system(size: AppTheme.FontSize.md))
                     .foregroundStyle(AppTheme.Text.mutedColor)
-                    .padding(.horizontal, AppTheme.Spacing.lgXl)
+                    .padding(.horizontal, AppTheme.Spacing.lg)
                     .padding(.top, AppTheme.Spacing.mdLg)
                     .allowsHitTesting(false)
             }

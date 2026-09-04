@@ -212,7 +212,7 @@ struct AIEditTab: View {
             Image(systemName: icon)
                 .font(.system(size: AppTheme.FontSize.sm))
                 .foregroundStyle(isOn.wrappedValue ? AppTheme.Accent.primary : AppTheme.Text.tertiaryColor)
-                .frame(width: AppTheme.Spacing.lgXl, alignment: .center)
+                .frame(width: AppTheme.Spacing.lg, alignment: .center)
             Text(L10n.string(key: label))
                 .font(.system(size: AppTheme.FontSize.sm))
                 .foregroundStyle(AppTheme.Text.secondaryColor)

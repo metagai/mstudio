@@ -520,7 +520,7 @@ struct SkillDetailSheet: View {
             borderWidth: AppTheme.BorderWidth.hairline
         )
         .shadow(AppTheme.Shadow.lg)
-        .padding(.top, AppTheme.Spacing.lgXl)
+        .padding(.top, AppTheme.Spacing.lg)
         .onTapGesture { copyToast = nil }
         .task(id: toast) {
             try? await Task.sleep(for: AppTheme.Settings.skillToastDuration)

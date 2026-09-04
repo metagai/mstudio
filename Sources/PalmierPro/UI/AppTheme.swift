@@ -380,8 +380,10 @@ enum AppTheme {
         static let smMd: CGFloat = 8
         static let md: CGFloat = 10
         static let mdLg: CGFloat = 12
-        static let lg: CGFloat = 14
-        static let lgXl: CGFloat = 16
+        /// **16。** 原来是 14，和它隔壁的 `lgXl = 16` 差 2pt ——
+        /// 肉眼分不出，而选择多了一倍。2026-09-03 两档并成一档，
+        /// 落到 Apple HIG 的 4pt 网格上。
+        static let lg: CGFloat = 16
         static let xl: CGFloat = 20
         static let xlXxl: CGFloat = 24
         static let xxl: CGFloat = 28

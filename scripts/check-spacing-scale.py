@@ -32,8 +32,8 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 
 # ── 高水位（2026-09-03 冻结）。**只许调小。** ──────────────────
-MAX_SPACING_STEPS = 13   # 目标 ~7
-MAX_OFF_GRID = 4         # 目标 0：2 / 6 / 10 / 14
+MAX_SPACING_STEPS = 12   # 目标 ~7（2026-09-03 收掉 lg=14，并入 16）
+MAX_OFF_GRID = 3         # 目标 0：2 / 6 / 10
 MAX_FONT_STEPS = 12      # 目标 ~7
 MAX_INDISTINCT_PAIRS = 7 # 相邻差 < 2pt 的对数，目标 0
 GRID = 4                 # Apple HIG

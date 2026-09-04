@@ -46,7 +46,7 @@ struct MatteSheet: View {
             .disabled(isCreating)
             .padding(.top, AppTheme.Spacing.xs)
         }
-        .padding(AppTheme.Spacing.lgXl)
+        .padding(AppTheme.Spacing.lg)
         .frame(width: AppTheme.Matte.sheetWidth)
         .appSheetBackground()
     }
