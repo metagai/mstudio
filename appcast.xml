@@ -17,6 +17,19 @@
         <description>Updates for METAG for Mac</description>
         <language>en</language>
         <item>
+            <title>Version 0.1.15</title>
+            <pubDate>Fri, 04 Sep 2026 09:35:40 -0700</pubDate>
+            <sparkle:version>92</sparkle:version>
+            <sparkle:shortVersionString>0.1.15</sparkle:shortVersionString>
+            <sparkle:minimumSystemVersion>26.0</sparkle:minimumSystemVersion>
+            <enclosure url="https://metag.ai/mac/METAG-0.1.15.dmg"
+                       sparkle:version="92"
+                       sparkle:shortVersionString="0.1.15"
+                       length="79414173"
+                       type="application/octet-stream"
+                       sparkle:edSignature="qAaZuQJN+hGMHrIyTzR+q+09LDn8mzKbKuFt5r7itoxzqWXTQNzEQUnadBzh3NNMO6V5J4SIWmzS2NdVHIWOBA==" />
+        </item>
+        <item>
             <title>Version 0.1.14</title>
             <pubDate>Fri, 04 Sep 2026 04:23:35 -0700</pubDate>
             <sparkle:version>91</sparkle:version>
