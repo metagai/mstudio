@@ -12,9 +12,9 @@ struct MetagShowcaseStrip: View {
     @State private var playing: MetagShowcase?
     @State private var player: AVPlayer?
     @State private var hovered: String?
-    @State private var previews: [String: AVPlayer] = [:]
-    @State private var previewTasks: [String: Task<Void, Never>] = [:]
-    @State private var loopObservers: [String: NSObjectProtocol] = [:]
+    /// 播放器、定时器、观察者三样都交给它 —— **清理由 ARC 保证，
+    /// 不由 `onDisappear` 保证**（SwiftUI 不保证那个回调一定到）。
+    @State private var preview = ShowcasePreview()
 
     var body: some View {
         VStack(alignment: .leading, spacing: AppTheme.Spacing.smMd) {
@@ -40,7 +40,7 @@ struct MetagShowcaseStrip: View {
                     .fixedSize(horizontal: false, vertical: true)
             }
         }
-        .onDisappear { stop(); endAllPreviews() }
+        .onDisappear { stop(); preview.endAll() }
     }
 
     private func poster(_ film: MetagShowcase) -> some View {
@@ -59,8 +59,8 @@ struct MetagShowcaseStrip: View {
                 // 一个视频产品，第一屏应该在他还没决定要不要试之前就先动给他看。
                 //
                 // 海报留在底下：播放器接手时不闪一下黑。
-                if let preview = previews[film.id] {
-                    VideoPlayer(player: preview)
+                if let live = preview.players[film.id] {
+                    VideoPlayer(player: live)
                         .allowsHitTesting(false)
                         .transition(.opacity)
                 }
@@ -90,75 +90,25 @@ struct MetagShowcaseStrip: View {
                     .font(.system(size: AppTheme.FontSize.display))
                     .foregroundStyle(.white)
                     .shadow(AppTheme.Shadow.md)
-                    .opacity(previews[film.id] == nil ? AppTheme.Opacity.strong : 0)
-                    .animation(.easeOut(duration: AppTheme.Anim.transition), value: previews[film.id] == nil)
+                    .opacity(preview.players[film.id] == nil ? AppTheme.Opacity.strong : 0)
+                    .animation(.easeOut(duration: AppTheme.Anim.transition), value: preview.players[film.id] == nil)
             }
             // 停上去轻轻抬一下。**只抬一点点** —— 这一排的主角是画面，不是动效。
             .scaleEffect(hovered == film.id ? 1.02 : 1)
             .animation(.easeOut(duration: AppTheme.Anim.hover), value: hovered)
             .onHover { inside in
                 hovered = inside ? film.id : nil
-                inside ? beginPreview(film) : endPreview(film)
+                if inside {
+                    preview.begin(film, fullPlayerOpen: playing != nil) { hovered == film.id }
+                } else {
+                    preview.end(film.id)
+                }
             }
         }
         .buttonStyle(.plain)
         .pointerStyle(.link)
         .help(film.line)
         .accessibilityLabel(film.line)
-    }
-
-    /// 停上去 → 就地无声试播；移开 → 停。
-    ///
-    /// **等一下再开。** 鼠标横扫过这一排时不该同时起三个播放器 ——
-    /// 那既费机器，看起来也慌。180ms 是"停下来看"和"路过"的分界。
-    /// 该不该为这一张起一个试播。**抽出来是因为判据没有鼠标** ——
-    /// 留在闭包里的话，唯一的问法就是"源码里那行还在吗"。
-    nonisolated static func shouldPreview(
-        alreadyPlaying: Bool, alreadyPreviewing: Bool
-    ) -> Bool {
-        // 大播放器开着的时候不抢它；同一张已经在试播就别再起一个。
-        !alreadyPlaying && !alreadyPreviewing
-    }
-
-    private func beginPreview(_ film: MetagShowcase) {
-        guard Self.shouldPreview(alreadyPlaying: playing != nil,
-                                 alreadyPreviewing: previews[film.id] != nil) else { return }
-        previewTasks[film.id]?.cancel()
-        previewTasks[film.id] = Task { @MainActor in
-            try? await Task.sleep(for: .milliseconds(180))
-            guard !Task.isCancelled, hovered == film.id, playing == nil else { return }
-            let player = AVPlayer(url: film.reel)
-            player.isMuted = true            // 一排同时出声是灾难
-            player.actionAtItemEnd = .none
-            // 循环：他停在那儿看第二遍是常事，而一条停住的片子看起来像卡住了。
-            loopObservers[film.id] = NotificationCenter.default.addObserver(
-                forName: .AVPlayerItemDidPlayToEndTime,
-                object: player.currentItem, queue: .main
-            ) { _ in
-                Task { @MainActor in player.seek(to: .zero); player.play() }
-            }
-            previews[film.id] = player
-            player.play()
-        }
-    }
-
-    private func endPreview(_ film: MetagShowcase) {
-        previewTasks[film.id]?.cancel()
-        previewTasks[film.id] = nil
-        previews[film.id]?.pause()
-        previews[film.id] = nil
-        if let token = loopObservers.removeValue(forKey: film.id) {
-            NotificationCenter.default.removeObserver(token)
-        }
-    }
-
-    private func endAllPreviews() {
-        for id in previews.keys { previews[id]?.pause() }
-        previews.removeAll()
-        previewTasks.values.forEach { $0.cancel() }
-        previewTasks.removeAll()
-        loopObservers.values.forEach(NotificationCenter.default.removeObserver)
-        loopObservers.removeAll()
     }
 
     /// 同一张再点一次是停 —— 不然他没有办法把它关掉。
