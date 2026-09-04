@@ -216,6 +216,21 @@ if [ "$LOCALIZATION_COUNT" -eq 0 ]; then
   echo "!! no compiled localizations in SwiftPM resource bundle at $RES_BUNDLE" >&2
   exit 1
 fi
+# 数量要和源码里的词条目录对上。
+#
+# 用户能选哪些语言，靠的是 `bundle.localizations` —— **没有白名单，
+# 打进包里的就是他能选的**。所以少复制一门语言不会报错、不会崩，
+# 只是那门语言在语言菜单里消失，而没有任何判据会红。
+# 单测查不出这个：SwiftPM 的 .process 把整个目录原样复制进测试 bundle，
+# 磁盘和 bundle 是同一份东西的两次拷贝，构造上就不可能分歧。
+# **会分歧的只有这里 —— 打包出来的那个 .app。**
+SOURCE_LOCALIZATIONS=$(find "$(dirname "$0")/../Sources/PalmierPro/Resources/Localization" \
+  -maxdepth 1 -name '*.lproj' -type d | wc -l | tr -d ' ')
+if [ "$LOCALIZATION_COUNT" != "$SOURCE_LOCALIZATIONS" ]; then
+  echo "!! 词条目录 $SOURCE_LOCALIZATIONS 个，打进包里 $LOCALIZATION_COUNT 个 —— 少的那几门语言用户在菜单里看不到" >&2
+  exit 1
+fi
+echo "==> 语言 $LOCALIZATION_COUNT 门，与源码目录一致"
 if [ -d "$RES_BUNDLE/Changelog" ]; then
   cp -R "$RES_BUNDLE/Changelog" "$APP/Contents/Resources/"
 else

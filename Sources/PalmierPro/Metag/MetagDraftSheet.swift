@@ -55,7 +55,17 @@ final class MetagDraftModel: ObservableObject {
         }
     }
 
-    var narrations: [String] { job?.shots.map(\.narration) ?? [] }
+    /// **分镜写到哪儿就露到哪儿。**
+    ///
+    /// `shots` 要等整个 storyboard 步跑完（实测 20–37 秒）才有内容，
+    /// 而网关的 `storyboard_preview` 是一句一句到的 —— 同一份分镜的两个时刻。
+    /// 之前只读前者，于是那几十秒里空格子上一个字都没有。
+    ///
+    /// 落定之后以 `shots` 为准：它是这条片子最终的那一份。
+    var narrations: [String] {
+        let settled = job?.shots.map(\.narration) ?? []
+        return settled.isEmpty ? (job?.storyboard_preview ?? []) : settled
+    }
     /// 当前旁白人格。网关认不出的值一律当没有 —— 宁可不显示，也不显示一个错的。
     var narrator: MetagNarrator? { job?.narrator.flatMap(MetagNarrator.init(rawValue:)) }
     var ready: Bool { job?.status == "done" && !(job?.shots.isEmpty ?? true) }
@@ -93,6 +103,9 @@ final class MetagDraftModel: ObservableObject {
     /// 判据直接喂那个时间戳 —— 造一整个 `Job` 只为测一个减法，
     /// 测的就变成"我会不会拼 JSON"了。
     func noteLagForTesting(readyAt: Int64?) { noteLag(readyAt: readyAt) }
+
+    /// 判据要能摆出「分镜写到一半」这个状态，而 `job` 是 private(set)。
+    func applyJobForTesting(_ j: MetagGateway.Job) { job = j }
 
     private func noteLag(readyAt: Int64?) {
         guard firstFrameLagMs == nil, let readyAt else { return }

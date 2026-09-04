@@ -88,3 +88,41 @@ struct FunnelCoverageTests {
                 "编出来的原因比不记更糟 —— 网关只认这三种")
     }
 }
+
+/// 我们自己发的漏斗事件必须打上 `probe`，否则它进的是真人的分母。
+///
+/// 2026-09-04：`exported` 那一格 100% 被一个 anon 独占 —— 是开发机。
+/// 报表按 `meta.probe` 滤自己人（`workers/funnel_report.py` 的 `NOT_OURS`），
+/// web 那侧一直带着，Mac 从第一天起一条都没带。
+@Suite("自己人的事件要认得出")
+struct FunnelProbeMarkTests {
+
+    /// 单测本身就跑在 debug 里，所以这里 `isOurs` 恒真 —— 正是要断言的那件事。
+    @Test func ourOwnEventsCarryTheProbeMark() {
+        let meta = MetagFunnel.body(.landed, meta: nil)["meta"] as? [String: Any]
+        #expect(meta?["probe"] as? Bool == true,
+                "开发机发的事件没打 probe —— 它会被算进真人的转化率里")
+    }
+
+    /// **调用点冲不掉它。** `probe` 和 `page` 一样是"谁发的"，不是自由字段。
+    @Test func theCallSiteCannotOverwriteIt() {
+        let meta = MetagFunnel.body(.landed, meta: ["probe": false, "page": "landing"])["meta"] as? [String: Any]
+        #expect(meta?["probe"] as? Bool == true)
+        #expect(meta?["page"] as? String == "mac", "page 不该被调用点冲掉")
+    }
+}
+
+/// **判据不往生产库写。**
+///
+/// 2026-09-04：生产漏斗的 `exported` 那一格里 1072 次是单元测试打进去的
+/// （anon 住在 `swiftpm-testing-helper` 的 defaults 域，`meta.where = "agent"`）。
+/// 打 `probe` 标只让报表滤得掉，**它仍然在写生产库** —— 那是更早的一条线。
+@Suite("判据不发漏斗事件")
+struct FunnelSilentUnderTestTests {
+
+    /// 这条判据自己就跑在判据里，所以它必须认得出自己。
+    @Test func weKnowWeAreRunningUnderTest() {
+        #expect(MetagFunnel.isRunningTests,
+                "判据认不出自己在判据里跑 —— 那 track() 会照常打到生产漏斗")
+    }
+}

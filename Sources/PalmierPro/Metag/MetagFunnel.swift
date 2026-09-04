@@ -98,16 +98,63 @@ enum MetagFunnel {
     /// `"page": Self.page` 和 `"meta": payload` 这两行还在 ——
     /// 而"字符串还在、发出去的东西却不对"是可能的（比如 `page` 被算成空串、
     /// 或者 meta 合并方向反了把 page 冲掉）。判据看不见那种错。
+    /// 这一条是不是我们自己发的。
+    ///
+    /// **报表按 `meta.probe` 滤自己人**（`workers/funnel_report.py` 的
+    /// `NOT_OURS`），web 那侧的探针一直带着它，而 Mac 从第一天起一条都没带 ——
+    /// 于是开发机每验一次 Mac，就往真人堆里掺一个人。
+    ///
+    /// 2026-09-04 的账：`exported` 那一格 **100% 是一个 anon 独占**，
+    /// 就是这台开发机；`draft_started 70%` / `line_ready 81%` 同理。
+    /// **分子被我们自己吹大了，而不需要任何人撒谎。**
+    ///
+    /// 两条都要：debug 构建一定是我们（`swift run` / 单测）；
+    /// 而验发布包时跑的是 release，那时用环境变量。
+    /// **不要只留 `#if DEBUG`** —— 今天混进去的那些正是release 包发的。
+    nonisolated static var isOurs: Bool {
+        #if DEBUG
+        return true
+        #else
+        return ProcessInfo.processInfo.environment["METAG_INTERNAL"] == "1"
+        #endif
+    }
+
+    /// **跑在判据里的时候一条都不发。**
+    ///
+    /// 2026-09-04 查实：生产漏斗里 `exported` 那一格
+    /// **1072 次是单元测试打进去的**（anon `7FC0232E…`，住在
+    /// `swiftpm-testing-helper` 这个 defaults 域里，`meta.where = "agent"`
+    /// —— MCP 那条路的判据每跑一次就导出一次）。从 9/1 起每天几十条。
+    ///
+    /// 打个 `probe` 标只能让报表滤掉它，**而它仍然在往生产库里写**。
+    /// 判据不该有副作用落在生产上，这是比数字变脏更早的一条线。
+    ///
+    /// 认的是**跑判据的那个进程**，不是 DEBUG：`swift run` 手动验的时候
+    /// 事件是要发的（带 probe），那是真的在用产品。
+    nonisolated static var isRunningTests: Bool {
+        let env = ProcessInfo.processInfo.environment
+        if env["XCTestConfigurationFilePath"] != nil { return true }
+        if env["XCTestSessionIdentifier"] != nil { return true }
+        if env["SWIFT_TESTING_ENABLED"] != nil { return true }
+        return ProcessInfo.processInfo.processName.contains("testing-helper")
+            || ProcessInfo.processInfo.processName.contains("xctest")
+    }
+
     static func body(_ step: Step, meta: [String: Any]?) -> [String: Any] {
         var payload: [String: Any] = ["page": Self.page]
         // 调用点给的 meta 后合并 —— 但**它不该能冲掉 page**：
         // page 是这一条属于哪个客户端，不是调用点的自由字段。
         if let meta { payload.merge(meta) { _, new in new } }
         payload["page"] = Self.page
+        // `probe` 和 `page` 一样，是"这一条是谁发的"，不是调用点的自由字段 ——
+        // 所以在合并**之后**盖上去，调用点冲不掉。
+        if Self.isOurs { payload["probe"] = true }
         return ["anon": anon, "step": step.rawValue, "meta": payload]
     }
 
     static func track(_ step: Step, once: Bool = false, meta: [String: Any]? = nil) {
+        // 判据不往生产库写。见 `isRunningTests` 上面那段账。
+        if Self.isRunningTests { return }
         if once, !Self.once.fresh(step.rawValue) { return }
         // **每一条都带 page。** 不带的话 `meta` 整个是 NULL，而在报表里
         // 一个 NULL meta 的事件和一个裸脚本长得一模一样 —— 真实用户会被当噪音
