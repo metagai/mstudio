@@ -1047,18 +1047,37 @@ enum MetagGateway {
     /// 全端点权限 —— 泄漏一次等于账号被接管。票据只活 300 秒、只绑这一个任务：
     /// 泄漏的代价从"整个账号七天"降到"一个任务五分钟"。
     ///
-    /// 取不到票据时退回 token：宁可取得到，也不要因为鉴权升级而变得取不到片子。
+    /// **拿不到票不回落到 token。**
+    ///
+    /// 曾经写的是「取不到票据时退回 token：宁可取得到」。那句话是错的，
+    /// 两个理由，和 web 的 `subscribeJob` 当初摘掉同一条回落时一模一样：
+    ///
+    /// 1. **回落即常态**。它一旦存在就不是应急路径而是第二条主路：
+    ///    票据那条路坏掉的时候没有任何人会发现（网关侧 `split_once` 那个
+    ///    bug 正是被这类回落盖住的）。
+    /// 2. **它换不到可用性**。拿票用的是同一把 JWT（header），
+    ///    JWT 有效则票必然拿得到；回落只在网络抖动时触发，
+    ///    而那一刻下载本身多半也在抖 —— 用一周的账号权限换一次抖动，不划算。
+    ///
+    /// 所以：票据**退避重试**三次（0 / 0.4s / 1.2s）。`send` 不重试 POST
+    /// （可能已在服务端生效），而换票是幂等的，重试在这一层做。
+    /// 网关那侧已经不认 `?token=`（`delivery.rs::requester`）。
     static func fileURL(job id: String, name: String) async throws -> URL {
         if let absolute = URL(string: name), absolute.scheme != nil { return absolute }
-        let query: URLQueryItem
-        if let ticket = try? await fileTicket(job: id) {
-            query = URLQueryItem(name: "ticket", value: ticket)
-        } else {
-            guard let token else { throw Failure.signedOut }
-            query = URLQueryItem(name: "token", value: token)
+        var lastError: Error = Failure.signedOut
+        for backoff in [0.0, 0.4, 1.2] {
+            if backoff > 0 { try? await Task.sleep(for: .seconds(backoff)) }
+            do {
+                let ticket = try await fileTicket(job: id)
+                return baseURL.appendingPathComponent("files/\(id)/\(name)")
+                    .appending(queryItems: [URLQueryItem(name: "ticket", value: ticket)])
+            } catch {
+                // 服务端已经答过的不必再问：没登录，重试拿到同一个答案。
+                if let f = error as? Failure, case .signedOut = f { throw error }
+                lastError = error
+            }
         }
-        return baseURL.appendingPathComponent("files/\(id)/\(name)")
-            .appending(queryItems: [query])
+        throw lastError
     }
 
     static func download(job id: String, name: String, to directory: URL) async throws -> URL {
@@ -1074,8 +1093,7 @@ enum MetagGateway {
             // 票据只活 300 秒、只绑这一个任务：泄漏的代价从"整个账号七天"
             // 降到"一个任务五分钟"。
             //
-            // web 端早就在用票据了（fileUrl），只有这里还在发完整 JWT。
-            // 取不到票据时退回 token：宁可下载得到，也不要因为鉴权升级而变得取不到片子。
+            // 拿不到票**不回落到 token**（理由见 fileURL）：网关也已经不认了。
             url = try await fileURL(job: id, name: name)
         }
         // **下载也要重试。** API 调用早就有重试了（这条链路实测丢包 6.7%–20%），
