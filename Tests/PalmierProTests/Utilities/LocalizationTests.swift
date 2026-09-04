@@ -5,7 +5,41 @@ import Testing
 @Suite("Localization")
 struct LocalizationTests {
 
-    private static let languages = ["en", "zh-Hans", "es"]
+    /// **28 张词条表全都发出去了** —— 语言列表是从 bundle 里现有的
+    /// `.lproj` 推出来的（`AppLocalization.localizationResources`），
+    /// 没有白名单。所以判据的分母也必须是全部，不是我熟的那三个。
+    ///
+    /// ## 2026-09-04：这一行原来写的是 `["en", "zh-Hans", "es"]`
+    ///
+    /// 于是「每一句英文都有翻译」这条判据一直绿，而**另外 25 个语言
+    /// 每个都缺 356–361 句**（约 26% 的界面），包括全部计费文案。
+    /// 一个德语用户选了德语，看到的价格那一行是英文。
+    ///
+    /// 判据没写坏，是**分母被缩小了** —— 它诚实地回答了一个太小的问题。
+    private static let languages: [String] = {
+        let root = URL(fileURLWithPath: #filePath)
+            .deletingLastPathComponent().deletingLastPathComponent()
+            .deletingLastPathComponent().deletingLastPathComponent()
+            .appendingPathComponent("Sources/PalmierPro/Resources/Localization")
+        let all = ((try? FileManager.default.contentsOfDirectory(atPath: root.path)) ?? [])
+            .filter { $0.hasSuffix(".lproj") }
+            .map { String($0.dropLast(6)) }
+            .sorted()
+        return ["en"] + all.filter { $0 != "en" }
+    }()
+
+    /// 现在缺着的那些。**这不是"它们不用翻"，是"它们还没翻"** ——
+    /// 记进基线只为了让**新增的**英文串不能再悄悄少一份翻译。
+    /// 数字印在失败信息里，它自己会提醒下一个人。
+    private static let untranslatedBaseline: Set<String> = {
+        let root = URL(fileURLWithPath: #filePath)
+            .deletingLastPathComponent().deletingLastPathComponent()
+            .deletingLastPathComponent().deletingLastPathComponent()
+            .appendingPathComponent("Tests/PalmierProTests/Utilities/untranslated-baseline.txt")
+        let text = (try? String(contentsOf: root, encoding: .utf8)) ?? ""
+        return Set(text.split(separator: "\n").map(String.init)
+            .filter { !$0.isEmpty && !$0.hasPrefix("#") })
+    }()
 
     /// 读**源码目录里那份词典**，不是构建产物。
     ///
@@ -49,9 +83,11 @@ struct LocalizationTests {
         let english = Set(try table("en").keys)
         #expect(!english.isEmpty)
         for language in Self.languages.dropFirst() {
-            let missing = english.subtracting(try table(language).keys).sorted()
-            #expect(missing.isEmpty,
-                    "\(language) 少 \(missing.count) 句 —— 界面上那几处会是英文：\(missing.prefix(5))")
+            let missing = english.subtracting(try table(language).keys)
+            let unregistered = missing.subtracting(Self.untranslatedBaseline).sorted()
+            let owed = missing.count - unregistered.count
+            #expect(unregistered.isEmpty,
+                    "\(language) 新少了 \(unregistered.count) 句（基线里已有 \(owed) 句欠账）—— 界面上那几处会是英文：\(unregistered.prefix(5))")
         }
     }
 
@@ -62,11 +98,16 @@ struct LocalizationTests {
         for language in Self.languages.dropFirst() {
             let translated = try table(language)
             for (key, source) in english {
+                // **没翻的键在这里不算错** —— 它回落成英文，占位符自然对得上。
+                // 缺翻译由 everyEnglishStringHasATranslation 管，
+                // 两条判据各答各的问题；混在一起会让 25 个语言的欠账
+                // 在这里炸成 1900 条噪音，把真正的占位符错埋掉。
+                guard let value = translated[key] else { continue }
                 // 数的是**占位符**，不是 `%@` 这一种写法。
                 // 语序跟英文不一样的语言得写 `%2$@ … %1$@`（zh-Hans 那条
                 // "%@ of %@ shots are in" 就是），按字面切 "%@" 会把它数成 0。
                 let expected = Self.placeholders(in: source)
-                let actual = Self.placeholders(in: translated[key] ?? "")
+                let actual = Self.placeholders(in: value)
                 #expect(actual == expected, "\(language): placeholder count differs for \"\(key)\"")
             }
         }
