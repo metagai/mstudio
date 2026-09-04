@@ -81,6 +81,25 @@ let package = Package(
                 .define("BUNDLED_SPEECH", .when(traits: ["BundledSpeech"])),
                 .define("PRODUCTION_TELEMETRY", .when(traits: ["ProductionTelemetry"])),
             ],
+            // **AVKit 要显式链上。**
+            //
+            // 2026-09-04：打包出来的 app 一启动就 abort（退出码 134）：
+            //
+            //     failed to demangle superclass of VideoPlayerView
+            //     from mangled name 'So12AVPlayerViewC'
+            //
+            // SwiftUI 的 `VideoPlayer` 住在 `_AVKit_SwiftUI` 里，而它内部那个
+            // `VideoPlayerView` 继承 AVKit 的 `AVPlayerView`。
+            // 链接表里只有 `_AVKit_SwiftUI`，**没有 AVKit** ——
+            // 运行时给那个类建元数据时找不到父类，当场 abort。
+            //
+            // 0.1.13 没崩是**运气**：那条路上的元数据在启动时还没被要到。
+            // 用到 `VideoPlayer` 的地方现在有四处（首屏样片、作品墙、
+            // 首映、草案播放），靠"启动时还轮不到它"活着不是个办法。
+            //
+            // 这个崩溃**两千多条测试和整条门全绿**，是打包脚本里那道
+            // 「造完就启一次」拦下来的。
+            linkerSettings: [.linkedFramework("AVKit")],
             plugins: ["MetalCIKernelPlugin"]
         ),
         .plugin(name: "MetalCIKernelPlugin", capability: .buildTool()),
