@@ -124,6 +124,19 @@ final class MediaVisualCache {
         onDeadAirCacheInvalidated?()
     }
 
+    /// **在途的活干完了没有。**
+    ///
+    /// 这一层的 `Task.detached` 是**有主的**（三个 in-flight 集合记着它们），
+    /// 和还原那两层游离任务不是一回事 —— 但判据从外面看不见它们，
+    /// 于是"等还原跑完"之后缩略图还没生成，测试只能再赌一次时间。
+    ///
+    /// 只读这三个集合、不改行为：**给判据一个能确定地等的口子**，
+    /// 而不是让它把预算调大。
+    var hasWorkInFlightForTesting: Bool {
+        !waveformInFlight.isEmpty || !videoThumbnailInFlight.isEmpty
+            || !imageThumbnailInFlight.isEmpty
+    }
+
     func generateImageThumbnail(for asset: MediaAsset) {
         let key = asset.id
         guard imageThumbnails[key] == nil, !imageThumbnailInFlight.contains(key) else { return }

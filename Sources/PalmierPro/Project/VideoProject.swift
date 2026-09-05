@@ -421,6 +421,10 @@ class VideoProject: NSDocument {
     // MARK: - Close
 
     override func close() {
+        // **关掉一个正在还原的工程，那一串任务不该还在跑。**
+        // 它们持有 editorViewModel —— 不取消就是把一个已经关掉的编辑器
+        // 拖着继续加载素材，用户看不见，而内存和磁盘都在动。
+        restoreTask?.cancel()
         super.close()
         DispatchQueue.main.async {
             if AppState.shared.activeProject === self {
@@ -586,6 +590,27 @@ class VideoProject: NSDocument {
 
     // MARK: - Media restore
 
+    /// 还原素材那棵任务树的**唯一句柄**。
+    ///
+    /// 之前它是两层游离 `Task`：外层扫文件存不存在，扫完在
+    /// `finishRestoredMediaScan` 里**给每个素材各起一个**，一个都没有句柄。
+    /// 后果两条，都写在 `docs/todo.md` 里：
+    ///
+    /// 1. **判据只能靠等** —— `manifestRestoreRefreshesTimelineMetadata…`
+    ///    五次红两次，预算从 1 秒提到 10 秒还不够（满载并行时 13.9 秒才失败）。
+    ///    **门里一条偶发红比没有判据更糟：它教会所有人忽略红色。**
+    /// 2. **关掉正在还原的工程时取不消** —— 那一串任务还在跑，
+    ///    而它们持有 `editorViewModel`。AGENTS.md：
+    ///    「Unstructured tasks must have a clear owner, stored handle
+    ///    when cancellation matters」。
+    private var restoreTask: Task<Void, Never>?
+
+    /// 判据直接 await 这一棵，不再赌时间。
+    func awaitRestoreForTesting() async { await restoreTask?.value }
+
+    /// 判据要能问"关掉之后它还在跑吗"，而这句话只有句柄能回答。
+    var restoreIsCancelledForTesting: Bool { restoreTask?.isCancelled ?? false }
+
     func restoreAssetsFromManifest() {
         let entries = editorViewModel.mediaManifest.entries
         let expectedURLs = MediaResolver.expectedURLMap(entries: entries, projectURL: editorViewModel.projectURL)
@@ -615,18 +640,40 @@ class VideoProject: NSDocument {
         let initialMissingRefs = missingRefs
         let initialMissingCount = missing
         let manifestEntries = entries.count
-        Task { [weak self] in
+        restoreTask?.cancel()
+        restoreTask = Task { [weak self] in
             let existingRefs = await Task.detached(priority: .utility) {
                 Self.existingMediaRefs(restoreCandidates)
             }.value
-            self?.finishRestoredMediaScan(
+            guard !Task.isCancelled, let self else { return }
+            // 扫描的结论落在主 actor 上，**要预热哪些素材由它返回**，
+            // 不再在里面自己起任务 —— 那些任务正是没有句柄的那一层。
+            let pending = self.finishRestoredMediaScan(
                 candidates: restoreCandidates,
                 existingRefs: existingRefs,
                 initialMissingRefs: initialMissingRefs,
                 initialMissingCount: initialMissingCount,
                 manifestEntries: manifestEntries
             )
+            // 一棵结构化的树：取消外层，里面这些跟着一起停。
+            await withTaskGroup(of: Void.self) { group in
+                for item in pending {
+                    group.addTask { [weak self] in
+                        _ = await item.asset.loadMetadata(includeThumbnail: false)
+                        guard item.usedOnTimeline, !Task.isCancelled, let self else { return }
+                        await MainActor.run {
+                            self.editorViewModel.prepareMediaVisuals(for: item.asset)
+                        }
+                    }
+                }
+            }
         }
+    }
+
+    /// 扫描完之后还要预热哪一个素材。**这是个值，不是一个已经跑起来的任务。**
+    struct PendingVisualWarmup {
+        let asset: MediaAsset
+        let usedOnTimeline: Bool
     }
 
     private nonisolated static func existingMediaRefs(_ candidates: [RestoredMediaCandidate]) -> Set<String> {
@@ -641,7 +688,8 @@ class VideoProject: NSDocument {
         initialMissingRefs: Set<String>,
         initialMissingCount: Int,
         manifestEntries: Int
-    ) {
+    ) -> [PendingVisualWarmup] {
+        var pending: [PendingVisualWarmup] = []
         var assetsByID: [String: MediaAsset] = [:]
         for asset in editorViewModel.mediaAssets {
             assetsByID[asset.id] = asset
@@ -690,12 +738,10 @@ class VideoProject: NSDocument {
                 manifestUpdates.append(asset)
             }
             restored += 1
-            let usedOnTimeline = timelineMediaRefs.contains(asset.id)
-            Task { [weak self] in
-                _ = await asset.loadMetadata(includeThumbnail: false)
-                guard usedOnTimeline, let self else { return }
-                self.editorViewModel.prepareMediaVisuals(for: asset)
-            }
+            pending.append(PendingVisualWarmup(
+                asset: asset,
+                usedOnTimeline: timelineMediaRefs.contains(asset.id)
+            ))
         }
 
         editorViewModel.updateManifestMetadata(for: manifestUpdates)
@@ -706,6 +752,7 @@ class VideoProject: NSDocument {
             telemetry: "Media restored",
             data: ["restored": restored, "missing": missing, "manifestEntries": manifestEntries]
         )
+        return pending
     }
 }
 

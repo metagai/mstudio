@@ -141,10 +141,8 @@ struct VideoProjectLoadTests {
         document.editorViewModel.mediaManifest = manifest
 
         document.restoreAssetsFromManifest()
-        for _ in 0..<100 {
-            if document.editorViewModel.mediaAssets.first?.sourceWidth == 640 { break }
-            try await Task.sleep(for: .milliseconds(10))
-        }
+        // 同上：等那棵树，不赌 1 秒。
+        await document.awaitRestoreForTesting()
 
         let asset = try #require(document.editorViewModel.mediaAssets.first)
         #expect(asset.sourceWidth == 640)
@@ -189,28 +187,24 @@ struct VideoProjectLoadTests {
         document.editorViewModel.mediaManifest = manifest
 
         document.restoreAssetsFromManifest()
-        // **预算给足，而且超时要说清是超时。**
-        // 原来是 `for _ in 0..<100 { sleep(10ms) }` —— 总共 1 秒，
-        // 整套测试并行跑时不够，五次里红两次。
+        // **直接等那棵任务树，不再赌时间。**
+        //
+        // 这里原来是 `AsyncWait.until(..., timeout: .seconds(20))`，而在那之前
+        // 是 `for _ in 0..<100 { sleep(10ms) }`（总共 1 秒）—— **五次红两次**，
+        // 预算从 1 秒提到 10 秒还不够（满载并行时 13.9 秒才失败）。
         // 门里一条偶发红比没有判据更糟：**它教会所有人忽略红色。**
-        // ⚠ **预算 45 秒，而且这是个症状，不是修法。**
         //
-        // 还原起的是**两层没有句柄的游离 Task**：一层扫文件是否存在，
-        // 一层每个素材各起一个（`loadMetadata` → `prepareMediaVisuals`）。
-        // 外面没有任何可以 await 的口子，所以这里只能等。
-        //
-        // 10 秒不够（满载并行时 13.9 秒才失败）。真正的修法是给那一整棵
-        // 任务树一个句柄 —— 那样测试能确定地等，而且**关闭工程时能取消**
-        // （AGENTS.md 明写：游离 Task 必须有 owner）。已记进 docs/todo.md。
-        //
-        // **不缩小它断言的东西来让它变绿** —— 那是「换问法」，
-        // 判据会绿而用户拿到的东西一点没变（lessons 第四十条）。
-        let restored = await AsyncWait.until("清单还原补上缩略图和尺寸", timeout: .seconds(20)) {
-            document.editorViewModel.mediaVisualCache.imageThumbnail(for: "used-image") != nil
-                && document.editorViewModel.mediaAssets
-                    .first { $0.id == "unused-image" }?.sourceWidth == 640
+        // 真因是还原起了**两层没有句柄的游离 Task**，外面没有可以 await 的口子。
+        // 2026-09-04 收成了一棵结构化的树（`restoreTask` + `TaskGroup`），
+        // 所以这里能确定地等到它跑完 —— **不是把预算调大，是把不确定性去掉。**
+        await document.awaitRestoreForTesting()
+        // 缩略图那一层归 `MediaVisualCache` 管（它自己有 in-flight 集合），
+        // **不在还原那棵树里** —— 所以要分别等。等的是一个精确的信号
+        // （"在途为空"），不是一个猜出来的秒数。
+        let drained = await AsyncWait.until("缩略图那一层跑完", timeout: .seconds(30)) {
+            !document.editorViewModel.mediaVisualCache.hasWorkInFlightForTesting
         }
-        try #require(restored, "等了 10 秒，清单还原还没补完 —— 这是超时，不一定是功能坏了")
+        try #require(drained, "缩略图还有在途的活 —— 这是超时，不一定是功能坏了")
 
         let used = try #require(document.editorViewModel.mediaAssets.first { $0.id == "used-image" })
         let unused = try #require(document.editorViewModel.mediaAssets.first { $0.id == "unused-image" })
@@ -368,5 +362,43 @@ struct VideoProjectLoadTests {
         let reopened = try VideoProject.readProjectPackage(at: bundle)
         #expect(reopened.manifest?.entries.isEmpty == true)   // emptied library sticks
         #expect(reopened.manifestUnreadable == false)         // valid (empty) manifest now
+    }
+}
+
+/// **关掉一个正在还原的工程，那一串任务不该还在跑。**
+///
+/// 2026-09-03 记在 todo 里：还原起了两层没有句柄的游离 Task，它们持有
+/// `editorViewModel` —— 用户关掉工程之后，一个已经关掉的编辑器还在被拖着
+/// 加载素材。AGENTS.md 明写：「Unstructured tasks must have a clear owner,
+/// stored handle when cancellation matters」。
+///
+/// 2026-09-04 收成一棵结构化的树（`restoreTask` + `TaskGroup`）之后，
+/// 这句话第一次**能被问**。
+@Suite("关掉工程要取消还原")
+@MainActor
+struct VideoProjectRestoreCancellationTests {
+
+    @Test func closingTheProjectCancelsTheRestore() async throws {
+        let imageURL = try CompositorFixtures.patternPNG(size: CGSize(width: 640, height: 360))
+        let document = VideoProject()
+        var manifest = MediaManifest()
+        manifest.entries = (0..<8).map { i in
+            MediaManifestEntry(
+                id: "img-\(i)", name: "Image \(i)", type: .image,
+                source: .external(absolutePath: imageURL.path),
+                duration: Defaults.imageDurationSeconds
+            )
+        }
+        document.editorViewModel.mediaManifest = manifest
+
+        document.restoreAssetsFromManifest()
+        #expect(!document.restoreIsCancelledForTesting, "还没关就已经取消了 —— 那这条判据什么都没证明")
+
+        document.close()
+        #expect(document.restoreIsCancelledForTesting,
+                "关掉工程之后还原还在跑 —— 它持有 editorViewModel，一个已经关掉的编辑器还在加载素材")
+
+        // 取消之后它要**真的停下来**，不是标记一下就完了。
+        await document.awaitRestoreForTesting()
     }
 }

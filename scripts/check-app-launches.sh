@@ -25,7 +25,17 @@ trap 'rm -rf "$TMP"' EXIT
 ditto "$APP" "$TMP/$(basename "$APP")"
 RUN="$TMP/$(basename "$APP")/Contents/MacOS/$(basename "$EXEC")"
 
-"$RUN" >"$TMP/out.txt" 2>&1 &
+# **这一发起的是 release 构建，而 release 构建会往生产漏斗发事件。**
+#
+# 2026-09-04：`exported` 那一格 1072 次是判据打进去的（那一批是单测，
+# 已经改成跑在判据里一条都不发）。**而这里是另一条路** ——
+# 它起的是真正的 .app，`isRunningTests` 认不出它，`#if DEBUG` 也不成立。
+# 每发一次版就往生产漏斗灌一条 `landed`，而它长得和真人一模一样。
+#
+# `METAG_INTERNAL=1` 让 `MetagFunnel.isOurs` 认出自己，事件带 `probe` 标，
+# 报表按 `NOT_OURS` 滤得掉。**不是不发** —— 发但认得出，
+# 因为"启动之后活过 8 秒"这件事本身也值得留一条记录。
+METAG_INTERNAL=1 "$RUN" >"$TMP/out.txt" 2>&1 &
 PID=$!
 sleep 8
 
