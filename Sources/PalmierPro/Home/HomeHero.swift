@@ -18,6 +18,7 @@ struct HomeHero: View {
 
     @Bindable private var account = AccountService.shared
     @Bindable private var showcase = MetagShowcaseStore.shared
+    @Bindable private var onboarding = OnboardingStore.shared
     @StateObject private var myFilms = MetagMyFilmsModel()
 
     /// 这一屏最宽到哪。**不铺满**：一行字横跨 1400 点没法读，
@@ -101,6 +102,14 @@ struct HomeHero: View {
         .onAppear {
             focused = true
             showcase.loadOnce()
+        }
+        // **引导层一关，光标就在他面前闪。**
+        //
+        // `onAppear` 早在引导层还盖着的时候就跑过了 —— 那一刻 focus 给不到
+        // 一个被遮住的输入框。引导结束之后不接回来的话，
+        // 他按完「先看一眼你的片子」看到的是一屏静止的东西，还得自己去点输入框。
+        .onChange(of: onboarding.isComplete) { _, done in
+            if done { focused = true }
         }
         // 没登录就不问 —— 问了也只会拿到 401，而那会在日志里长得像故障。
         .task(id: account.isSignedIn) {
