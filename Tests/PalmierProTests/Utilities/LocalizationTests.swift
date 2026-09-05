@@ -37,6 +37,8 @@ struct LocalizationTests {
             .deletingLastPathComponent().deletingLastPathComponent()
             .appendingPathComponent("Tests/PalmierProTests/Utilities/untranslated-baseline.txt")
         let text = (try? String(contentsOf: root, encoding: .utf8)) ?? ""
+        // **按语言登记，不是并集。** 并集会让补齐的语言静悄悄退回去 ——
+        // 那个键还在名单里，删掉一句判据不会红（分母比真实大，假绿的第二种）。
         return Set(text.split(separator: "\n").map(String.init)
             .filter { !$0.isEmpty && !$0.hasPrefix("#") })
     }()
@@ -84,7 +86,10 @@ struct LocalizationTests {
         #expect(!english.isEmpty)
         for language in Self.languages.dropFirst() {
             let missing = english.subtracting(try table(language).keys)
-            let unregistered = missing.subtracting(Self.untranslatedBaseline).sorted()
+            let owedHere = Set(Self.untranslatedBaseline
+                .filter { $0.hasPrefix("\(language)\t") }
+                .map { String($0.dropFirst(language.count + 1)) })
+            let unregistered = missing.subtracting(owedHere).sorted()
             let owed = missing.count - unregistered.count
             #expect(unregistered.isEmpty,
                     "\(language) 新少了 \(unregistered.count) 句（基线里已有 \(owed) 句欠账）—— 界面上那几处会是英文：\(unregistered.prefix(5))")

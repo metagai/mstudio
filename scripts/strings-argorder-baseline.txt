@@ -68,3 +68,20 @@ zh-Hans.lproj	"Voice “%@” is ready — %@ credits"
 zh-Hans.lproj	"~%@s · %@ credits · ~%@ min"
 zh-Hant.lproj	"Can't relink \"%@\". Required media type: %@. Selected media type: %@."
 zh-Hant.lproj	"Starts %@s into the group's clock; matched the master with %@%% confidence."
+
+# ── 下面这批是 2026-09-04 补繁中时写的，**我逐条读过语序** ──
+# 和上面那批不一样：上面是「没被读过」，这里是「读过，确认与英文同序」。
+# （真正需要调换的那一条 `%@ of %@ shots are in` 已经写成 %2$@/%1$@，不在这里。）
+# engine→credits→spec→shots，与英文同序
+zh-Hant.lproj	"%@ costs %@ credits — %@, %@ shots. Billed only after you approve."
+# shots→credits，同序
+zh-Hant.lproj	"%@ shots · %@ credits"
+# shots→narrations，同序
+zh-Hant.lproj	"Loaded %@ shots and %@ narration tracks — no score."
+# shots→narrations，同序
+zh-Hant.lproj	"Loaded %@ shots and %@ narration tracks."
+# voice→credits，同序
+zh-Hant.lproj	"Voice “%@” is ready — %@ credits"
+# 秒→credits→分钟，同序
+zh-Hant.lproj	"~%@s · %@ credits · ~%@ min"
+
