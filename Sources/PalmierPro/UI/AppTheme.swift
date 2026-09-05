@@ -482,6 +482,9 @@ enum AppTheme {
         static let cardMinWidth: CGFloat = 208
         /// 海报按 16:9 —— 他的片子多数是横的，混排时统一比例才排得齐。
         static let posterAspect: CGFloat = 16.0 / 9
+        /// 首屏那一张（他上一条片子）。比墙上的卡宽一档：
+        /// **它是那一屏唯一一张，不需要和别人排队。**
+        static let lastFilmWidth: CGFloat = 320
     }
 
     /// 首屏那几条真片子。

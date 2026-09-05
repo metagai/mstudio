@@ -266,6 +266,36 @@ final class AppState {
         )
     }
 
+    /// 打开他上一条片子 —— 从首页那一格进来。
+    ///
+    /// 和 `startFilm` 同一个形状（建工程 → 开编辑器 → 交给面板），
+    /// **不是另起一条路**：铺时间线那一段只有 `MetagJobOpener` 知道怎么做，
+    /// 而它要一个 editor，首页这一刻还没有。
+    func openFilm(jobId: String, named line: String) async {
+        let name = Self.projectName(from: line)
+        do {
+            var attempt = name
+            var n = 2
+            while true {
+                do {
+                    let project = try await createProject(named: attempt)
+                    showEditor(for: project)
+                    break
+                } catch ProjectError.nameTaken {
+                    attempt = "\(name) \(n)"
+                    n += 1
+                    if n > 50 { throw ProjectError.nameTaken(Project.storageDirectory) }
+                }
+            }
+        } catch {
+            Log.project.error("open film from home failed: \(error.localizedDescription)")
+            return
+        }
+        NotificationCenter.default.post(
+            name: .metagOpenFilm, object: nil, userInfo: ["jobId": jobId]
+        )
+    }
+
     /// 把一句话变成一个能当文件名的项目名。
     ///
     /// 只做三件事：去掉路径分隔符和首尾点、压掉连续空白、按**字符**截断。

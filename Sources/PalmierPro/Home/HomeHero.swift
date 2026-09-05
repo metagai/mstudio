@@ -18,6 +18,7 @@ struct HomeHero: View {
 
     @Bindable private var account = AccountService.shared
     @Bindable private var showcase = MetagShowcaseStore.shared
+    @StateObject private var myFilms = MetagMyFilmsModel()
 
     /// 这一屏最宽到哪。**不铺满**：一行字横跨 1400 点没法读，
     /// 而且铺满会让它看起来像个搜索框而不是一句问话。
@@ -70,7 +71,22 @@ struct HomeHero: View {
             //
             // 取不到就退回那三行例句。**一个视频产品的第一屏可以少几张海报，
             // 但不能是一片空白。**
-            if showcase.films.isEmpty {
+            // **他有自己的片子，就不该先看别人的。**
+            //
+            // 创始人：「最近的项目和 Template Lib 有待重新设计（交互不 Aha 是原罪）」。
+            // 判据：**一个刚回来的创作者，零点击就能看见自己上次做的东西。**
+            // 这一格是条件化的，不是新加一块 —— 那句问话照旧留着，
+            // 对第一次来的人它仍然是对的主角。
+            if let last = LastFilm.pick(myFilms.films) {
+                LastFilm(film: last) {
+                    Task {
+                        await AppState.shared.openFilm(
+                            jobId: last.job_id,
+                            named: last.prompt ?? L10n.string("Untitled")
+                        )
+                    }
+                }
+            } else if showcase.films.isEmpty {
                 VStack(alignment: .leading, spacing: AppTheme.Spacing.smMd) {
                     ForEach(Self.starters, id: \.self) { starter in
                         StarterLine(text: starter) { start(starter) }
@@ -85,6 +101,11 @@ struct HomeHero: View {
         .onAppear {
             focused = true
             showcase.loadOnce()
+        }
+        // 没登录就不问 —— 问了也只会拿到 401，而那会在日志里长得像故障。
+        .task(id: account.isSignedIn) {
+            guard account.isSignedIn else { return }
+            await myFilms.load()
         }
     }
 

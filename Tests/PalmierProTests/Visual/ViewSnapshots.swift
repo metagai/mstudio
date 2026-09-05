@@ -204,6 +204,14 @@ struct ViewSnapshots {
 
     /// 「我的作品」—— 今天加了缩略图，一张都没看过。
     @Test func myFilms() throws {
+        // 首屏那一格：他上一条片子。测试里没有真视频，所以这里看的是
+        // **占位那一刻的样子** —— 而那正是他网慢时会看到的第一眼。
+        let lastFilm = try JSONDecoder().decode(MetagGateway.FilmRow.self, from: Data("""
+        {"job_id":"a","status":"done","engine":"local","shots":3,"credits":30,
+         "created_at":1000,"prompt":"一个女孩在天台上看城市的灯一格一格亮起来",
+         "retrievable":true,"refunded":false,"poster":"shot_0.mp4"}
+        """.utf8))
+        try snapshot("last-film", width: 400) { LastFilm(film: lastFilm, onOpen: {}) }
         try snapshot("my-films", width: 640) { MetagMyFilmsView(onOpen: { _ in }) }
     }
 

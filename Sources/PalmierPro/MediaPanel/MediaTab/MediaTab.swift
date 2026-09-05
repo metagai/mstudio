@@ -203,6 +203,10 @@ struct MediaTab: View {
             pendingAssets = note.userInfo?["assets"] as? [URL] ?? []
             showDraftSheet = true
         }
+        .onReceive(NotificationCenter.default.publisher(for: .metagOpenFilm)) { note in
+            guard let jobId = note.userInfo?["jobId"] as? String else { return }
+            Task { await MetagJobOpener.open(jobId: jobId, into: editor) }
+        }
         .sheet(isPresented: $showDraftSheet) {
             MetagDraftSheet(initialPrompt: pendingPrompt, initialAssets: pendingAssets)
         }

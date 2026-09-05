@@ -23,9 +23,18 @@ struct MetagFilmCard: View {
     let onShare: () -> Void
     let onDelete: () -> Void
     var busy: Bool = false
+    /// **不用停上去就自己在动。**
+    ///
+    /// 一整面墙十二张卡同时下十二段视频是灾难，所以那里是悬停才播。
+    /// 而首屏只有一张 —— 他上一条片子 —— 那一张要**零点击**就在动着。
+    /// 创始人 2026-08-10 点过名：「最近的项目和 Template Lib 有待重新设计
+    /// （交互不 Aha 是原罪）」，判据是「一个刚回来的创作者，
+    /// **零点击就能看见自己上次做的东西**」。
+    var autoplay: Bool = false
 
     @State private var hovered = false
     @State private var player: AVPlayer?
+    @State private var loop: NSObjectProtocol?
 
     private var openable: Bool { film.retrievable && film.status != "failed" }
 
@@ -47,7 +56,10 @@ struct MetagFilmCard: View {
             hovered = inside
             inside ? startPreview() : stopPreview()
         }
-        .onDisappear(perform: stopPreview)
+        .onAppear { if autoplay { startPreview() } }
+        // **走的时候一定要放掉**，自动播那一张也不例外 ——
+        // `stopPreview` 对它是空操作（它不跟鼠标走），所以这里直接放。
+        .onDisappear(perform: releasePlayer)
     }
 
     private var art: some View {
@@ -148,17 +160,35 @@ struct MetagFilmCard: View {
         guard openable, player == nil, let name = film.poster else { return }
         Task { @MainActor in
             guard let url = try? await MetagGateway.fileURL(job: film.job_id, name: name),
-                  hovered else { return }
+                  hovered || autoplay else { return }
             let next = AVPlayer(url: url)
             next.isMuted = true          // 一面墙同时出声是灾难
             next.actionAtItemEnd = .none
+            // **一遍就停下的"自动播"比不播更糟** —— 他抬头时它已经不动了，
+            // 而屏幕上留着一帧静止画面，看起来就是一张海报。
+            // 循环这一段和 `ShowcasePreview` 是同一个写法，两处别分家。
+            loop = NotificationCenter.default.addObserver(
+                forName: .AVPlayerItemDidPlayToEndTime, object: next.currentItem, queue: .main
+            ) { _ in
+                Task { @MainActor in next.seek(to: .zero); next.play() }
+            }
             player = next
             next.play()
         }
     }
 
     private func stopPreview() {
+        // 自动播的那一张不跟着鼠标走。
+        guard !autoplay else { return }
+        releasePlayer()
+    }
+
+    /// **播放器和它的观察者一起走。** 只 `pause()` 不摘观察者，
+    /// 那个闭包会一直持有 player，卡片消失了它还活着。
+    private func releasePlayer() {
         player?.pause()
         player = nil
+        if let loop { NotificationCenter.default.removeObserver(loop) }
+        loop = nil
     }
 }

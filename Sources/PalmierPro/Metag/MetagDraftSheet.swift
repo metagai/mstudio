@@ -4,6 +4,9 @@ extension Notification.Name {
     /// 引导页那颗主按钮：**先看一眼你的片子**，不是先登录。
     /// 用通知而不是共享状态：发起的是首屏，接住的是媒体面板，两者互不认识。
     static let metagStartDraft = Notification.Name("metagStartDraft")
+    /// 从首页打开他上一条片子。**首页那一刻还没有项目**，
+    /// 所以和起草一样：先建工程、开编辑器，再由面板接手把片子铺上时间线。
+    static let metagOpenFilm = Notification.Name("metagOpenFilm")
 }
 
 /// 免费草案：先看片，再决定付不付钱。
