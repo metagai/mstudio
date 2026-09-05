@@ -62,6 +62,10 @@ enum MetagGateway {
         /// 网关只回已验证的邮箱；未验证时为 nil，不能当身份凭据用。
         let email: String?
         let email_verified: Bool?
+        /// **快到期时网关随手换给你的新票**（不换的时候是 nil）。
+        ///
+        /// 这个字段以前不在这里，于是解码时被静默丢掉 —— 见 `shouldAdopt`。
+        let token: String?
     }
 
     /// GET /api/v1/pricing —— 单价真源，无需认证。只解我们用得到的字段。
@@ -585,7 +589,9 @@ enum MetagGateway {
     }
 
     static func account() async throws -> Account {
-        try await send(request("api/v1/me"), as: Account.self)
+        let account = try await send(request("api/v1/me"), as: Account.self)
+        if MetagTicket.shouldAdopt(account.token, replacing: token) { token = account.token }
+        return account
     }
 
     /// 价格与赠额的单价真源。无需登录 —— 登录页也要报出赠额，所以不能挂在 JWT 上。
