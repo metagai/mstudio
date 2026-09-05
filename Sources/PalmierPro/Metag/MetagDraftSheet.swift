@@ -28,6 +28,19 @@ final class MetagDraftModel: ObservableObject {
     var knownShots: Int? { chosenShots ?? job?.shots.count.nonZero }
     /// 网关给的这一条片子的报价。为空就退回本地按档位单价算 ——
     /// 那是第二份真源，只在问不到价时用。
+    /// 这句话旁边该不该有一扇门，以及是哪一扇。
+    ///
+    /// `note` 是一个字符串 —— 到了界面那一层，"为什么失败"已经没了。
+    /// 而**只有一种失败是转化那一刻**：他想出片、余额不够。
+    enum NoteDoor: Equatable { case topUp }
+    @Published var noteDoor: NoteDoor?
+
+    /// 判据要能摆出"刚撞了墙"这个状态，而设置它的那段藏在 `approve` 的 catch 里。
+    func noteDoorForTesting(_ error: Error) {
+        if case MetagGateway.Failure.insufficientCredits = error { noteDoor = .topUp }
+    }
+    func clearNoteForTesting() { note = nil; noteDoor = nil }
+
     @Published var quote: MetagGateway.Quote?
     @Published private(set) var jobId: String?
     @Published private(set) var job: MetagGateway.Job?
@@ -198,7 +211,7 @@ final class MetagDraftModel: ObservableObject {
     /// 确认出片。**此刻才计费** —— 返回成片任务 id 交给调用方去等。
     func approve(engine: String, allShots: Bool) async -> String? {
         guard let id = jobId, !busy else { return nil }
-        busy = true; note = nil
+        busy = true; note = nil; noteDoor = nil
         defer { busy = false }
         do {
             let job = try await MetagGateway.approvePreview(id: id, engine: engine, allShots: allShots)
@@ -215,6 +228,19 @@ final class MetagDraftModel: ObservableObject {
             return job
         } catch {
             note = error.localizedDescription
+            // **撞墙那一刻要留一扇门，不是留一句指路。**
+            //
+            // 30 天真数：撞上额度墙 4 人 → 打开收银台 1 人，**丢掉 75%**，
+            // 这是有真人走过的步骤里转化最差的一格。
+            // 而这句话原来是 `Not enough credits — top up or subscribe in
+            // Settings › Account.` —— 它自己的注释写着「这是转化那一刻，
+            // 而它原来是个句号」，然后把句号换成了**一句指路**。
+            //
+            // 指路和门的区别：指路要他记住一条路径、退出这一屏、自己找过去，
+            // 而他此刻手里正有一条看完的草案。**门就在这句话旁边。**
+            if case MetagGateway.Failure.insufficientCredits = error {
+                noteDoor = .topUp
+            }
             return nil
         }
     }
@@ -440,9 +466,7 @@ struct MetagDraftSheet: View {
                 }
             }
             if let n = model.note {
-                Text(n)
-                    .font(.system(size: AppTheme.FontSize.sm))
-                    .foregroundStyle(AppTheme.Status.warningColor)
+                MetagNoteRow(note: n, door: model.noteDoor)
             }
         }
         .padding(AppTheme.Spacing.lg)

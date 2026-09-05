@@ -32,15 +32,20 @@ struct HoverToLifeTests {
         // **等它出现，不赌它多快出现。**
         // 固定睡 330ms 那一版在满载并行时也红了 —— 和我刚修好的那几条同一个病。
         preview.begin(Self.film, fullPlayerOpen: false) { true }
-        let appeared = await AsyncWait.until("试播的播放器建起来") { !preview.players.isEmpty }
-        try #require(appeared, "播放器压根没建起来 —— 这条判据什么都没测")
+        // **等那个任务，不等一个秒数。**
+        // 上一版是 `AsyncWait.until(…)`（默认 10 秒）—— 全量并行跑时
+        // 那个 180ms 的主 actor 任务能被饿到十秒以上，而它红出来的样子
+        // 和"清理坏了"一模一样。给句柄不给预算。
+        await preview.awaitSettleForTesting(Self.film.id)
+        try #require(!preview.players.isEmpty, "播放器压根没建起来 —— 这条判据什么都没测")
 
         preview.end(Self.film.id)
         #expect(preview.players.isEmpty, "移开之后还留着播放器")
 
         // 整片离开也要清干净。
         preview.begin(Self.film, fullPlayerOpen: false) { true }
-        try #require(await AsyncWait.until("再起一个") { !preview.players.isEmpty })
+        await preview.awaitSettleForTesting(Self.film.id)
+        try #require(!preview.players.isEmpty, "第二次没起来")
         preview.endAll()
         #expect(preview.players.isEmpty, "离屏之后还留着播放器")
     }

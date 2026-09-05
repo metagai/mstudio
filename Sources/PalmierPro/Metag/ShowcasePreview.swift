@@ -63,6 +63,17 @@ final class ShowcasePreview {
         cleanup.tasks.append(task)
     }
 
+    /// 那一张的试播任务跑完没有。
+    ///
+    /// **判据不该赌主 actor 什么时候轮到它。** `begin` 排的是一个
+    /// 180ms 之后才建播放器的主 actor 任务；全量并行跑时主 actor 被别的
+    /// 渲染占满，那个任务能被饿到十秒以上 —— 2026-09-04 就这么红过一次，
+    /// 而那一次红和"清理坏了"长得一模一样。
+    ///
+    /// 给它一个能等的句柄，不是把预算调大。
+    /// （同一天在 `VideoProject.restoreAssetsFromManifest` 上用的是同一个修法。）
+    func awaitSettleForTesting(_ id: String) async { await tasks[id]?.value }
+
     func end(_ id: String) {
         tasks.removeValue(forKey: id)?.cancel()
         players.removeValue(forKey: id)?.pause()
