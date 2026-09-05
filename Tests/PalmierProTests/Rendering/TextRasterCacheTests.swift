@@ -67,7 +67,20 @@ struct TextRasterCacheTests {
                 _ = TextFrameRenderer.image(clip: c, frame: frame, renderSize: size)
             }
         }
-        #expect(count == 1, "entrance frames must reuse the static base, got \(count) rasters")
+        // **NSCache 随时可以淘汰任何条目** —— 这是它文档写明的行为，
+        // 不是我们的 bug。整套 2000+ 判据并行跑时内存压力很大，
+        // 底图在两帧之间被淘汰一次，就会多出一次栅格化。
+        //
+        // 这条判据要守的缺陷是「入场动画每一帧都重新栅格化」—— 那是 8 次。
+        // 1 和 2 的差别是 NSCache 的脾气，1 和 8 的差别才是这段代码坏没坏。
+        // ⚠ 放宽之后我做了变异：把共用底图那一手拿掉 → 8 次 → 仍然当场红。
+        // **放宽到还能红为止，不是放宽到绿为止。**
+        // ⚠ **上界放宽了，下界必须留着。**
+        // 第一版我只写 `count <= 2`，而变异（把 frame 塞进缓存键）之后
+        // 计数是 **0** —— 钩子按内容匹配，键一变就再也匹配不上 ——
+        // 于是 `0 <= 2` 照样通过。**放宽一侧就等于把另一侧的门也拆了。**
+        #expect(count >= 1, "底图一次都没画 —— 这条判据什么都没测到（钩子多半没匹配上）")
+        #expect(count <= 2, "entrance frames must reuse the static base, got \(count) rasters")
     }
 
     @Test func perWordSteadyFramesReuseRasterAndRampsDoNot() {
