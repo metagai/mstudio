@@ -18,6 +18,12 @@ struct MetagReachabilityTests {
     /// Reached from outside the client for reasons the compiler cannot see.
     private static let exempt: Set<String> = [
         "request",              // internal request builder
+        // 请求工厂：**七处各造各的 URLRequest 时，加一个头就得改七处，
+        // 而漏掉的那一处不会报错 —— 它只是从此匿名。** 收成一个出口之后，
+        // 它按定义只在这个文件里被调用。**不设 private 是为了能测**：
+        // `ClientTagTests` 断言每个请求都带得出 `X-Metag-Client`，
+        // 而网关那侧要靠这个头把 `jobs` 的来源列填出来。
+        "urlRequest",           // internal request factory (X-Metag-Client)
         "send",                 // internal transport
         // 204 没有响应体，`send<T: Decodable>` 会试着解 JSON 而必然失败 ——
         // 那会让一次成功的删除看起来像失败。与 send 同类，都是传输原语。

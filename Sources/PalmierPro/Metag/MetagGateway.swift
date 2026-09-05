@@ -7,6 +7,30 @@ enum MetagGateway {
 
     private static let tokenAccount = "metag.jwt"
 
+    /// 每一次调用都自报家门。
+    ///
+    /// ## 为什么加这个头
+    ///
+    /// 2026-09-05：`jobs` 表**没有任何一列记来源**，于是"这条草案是谁起的"
+    /// 只能靠猜提示词内容。那天我和 partner 各自拿出一套"证据"，**两套都是恒真的**
+    /// （他那条被限流闸决定，我那条被代码路径决定），最后谁也证不了谁 ——
+    /// **缺的不是推理，是裁判。** 网关那侧会把它落成 `jobs` 的来源列。
+    ///
+    /// ⚠ 版本号这里是第 4 处 `CFBundleShortVersionString` 读取（另三处在
+    /// Changelog / Telemetry / FeedbackMail）。**收敛成一个访问器是另一件事**，
+    /// 不夹带在这次改动里。
+    static let clientTag =
+        "mac/" + ((Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString")
+                   as? String) ?? "dev")
+
+    /// **网关请求只从这里造。** 七处各造各的时候，加一个头就得改七处，
+    /// 而漏掉的那一处不会报错 —— 它只是从此匿名。
+    nonisolated static func urlRequest(_ path: String) -> URLRequest {
+        var req = URLRequest(url: baseURL.appendingPathComponent(path))
+        req.setValue(clientTag, forHTTPHeaderField: "X-Metag-Client")
+        return req
+    }
+
     static var token: String? {
         get { KeychainStore.load(account: tokenAccount) }
         set {
@@ -417,7 +441,7 @@ enum MetagGateway {
         // 用户不知道自己其实登录过，也不知道为什么昨天还好好的。
         if ticketExpired { token = nil }
         if token != nil { return true }
-        var req = URLRequest(url: baseURL.appendingPathComponent("api/v1/anon"))
+        var req = urlRequest("api/v1/anon")
         req.httpMethod = "POST"
         do {
             let (data, resp) = try await URLSession.shared.data(for: req)
@@ -444,7 +468,7 @@ enum MetagGateway {
     /// 8/29 起的漏斗：10 个人走到能动手的那一屏，**0 个人动手**。
     /// 「按下去之后才知道花了多少」正好挡在那一格上。
     static func quote(prompt: String, shots: Int, lang: String) async throws -> Quote {
-        var req = URLRequest(url: baseURL.appendingPathComponent("api/v1/quote"))
+        var req = urlRequest("api/v1/quote")
         req.httpMethod = "POST"
         req.setValue("application/json", forHTTPHeaderField: "Content-Type")
         // 登录了就带上票，没登录也照发 —— 这条端点本来就是为陌生人写的。
@@ -481,7 +505,7 @@ enum MetagGateway {
 
     static func request(_ path: String, method: String = "GET", body: [String: Any]? = nil) throws -> URLRequest {
         guard let token else { throw Failure.signedOut }
-        var req = URLRequest(url: baseURL.appendingPathComponent(path))
+        var req = urlRequest(path)
         req.httpMethod = method
         req.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
         if let body {
@@ -779,7 +803,7 @@ enum MetagGateway {
     }
 
     static func pricing() async throws -> Pricing {
-        try await send(URLRequest(url: baseURL.appendingPathComponent("api/v1/pricing")), as: Pricing.self)
+        try await send(urlRequest("api/v1/pricing"), as: Pricing.self)
     }
 
     /// 提交一句话生成；engine: local | cloud | seedance | hh
@@ -873,7 +897,7 @@ enum MetagGateway {
         struct Response: Decodable { let frame_id: String }
         guard let token else { throw Failure.signedOut }
         let data = try Data(contentsOf: fileURL)
-        var req = URLRequest(url: baseURL.appendingPathComponent("api/v1/upload/frame"))
+        var req = urlRequest("api/v1/upload/frame")
         req.httpMethod = "POST"
         req.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
         req.httpBody = data
@@ -922,7 +946,7 @@ enum MetagGateway {
     /// 只能生成之后才知道改成了什么样。为此在网关加了 GET /api/v1/frames/{id}。
     static func frame(_ frameId: String, to directory: URL) async throws -> URL {
         guard let token else { throw Failure.signedOut }
-        var req = URLRequest(url: baseURL.appendingPathComponent("api/v1/frames/\(frameId)"))
+        var req = urlRequest("api/v1/frames/\(frameId)")
         req.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
         let (data, response) = try await URLSession.shared.data(for: req)
         let code = (response as? HTTPURLResponse)?.statusCode ?? 0
@@ -1014,7 +1038,7 @@ enum MetagGateway {
         struct Response: Decodable { let sample_url: String }
         guard let token else { throw Failure.signedOut }
         let data = try Data(contentsOf: fileURL)
-        var req = URLRequest(url: baseURL.appendingPathComponent("api/v1/upload/voice-sample"))
+        var req = urlRequest("api/v1/upload/voice-sample")
         req.httpMethod = "POST"
         req.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
         req.httpBody = data
