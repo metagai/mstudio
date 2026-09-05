@@ -231,6 +231,25 @@ if [ "$LOCALIZATION_COUNT" != "$SOURCE_LOCALIZATIONS" ]; then
   exit 1
 fi
 echo "==> 语言 $LOCALIZATION_COUNT 门，与源码目录一致"
+
+# 埋点是不是真的编进去了。
+#
+# **`Info.plist` 里有 token，和"这个包会上报"是两件事。**
+# 整段 Analytics 活在 `#if PRODUCTION_TELEMETRY` 里 —— trait 一关，
+# 代码根本不参与编译，而 token 照样躺在 plist 里。
+# **两者看起来一模一样**：`PlistBuddy` 查得到、`grep` 查得到、发版日志也说
+# 「埋点 token 已就位」，而每一次上报都落进虚空。
+#
+# 我们在这上面已经瞎过一次（0.1.10 起发出去的包里 Analytics 全程空转，
+# 而它的原因是发版脚本没导出 token）。这一道守的是同一件事的另一半。
+if $INCLUDE_PRODUCTION_TELEMETRY; then
+  BIN="$APP/Contents/MacOS/$(/usr/libexec/PlistBuddy -c 'Print :CFBundleExecutable' "$APP/Contents/Info.plist")"
+  if ! strings "$BIN" 2>/dev/null | grep -qi "PostHogSDK"; then
+    echo "!! 说好要带埋点，而二进制里找不到 PostHog —— 这个包发出去我们看不见任何人在用它" >&2
+    exit 1
+  fi
+  echo "==> 埋点已编进二进制（PostHogSDK 在）"
+fi
 if [ -d "$RES_BUNDLE/Changelog" ]; then
   cp -R "$RES_BUNDLE/Changelog" "$APP/Contents/Resources/"
 else
