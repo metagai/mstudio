@@ -209,7 +209,7 @@
 "Budget" = "Presupuesto";
 "Built-in (free)" = "Integrada (gratis)";
 "Buy $%lld" = "Comprar $%lld";
-"Buy %@ credits · $%@" = "Comprar %@ créditos · $%@";
+"Buy %@ credits · %@" = "Comprar %1$@ créditos · %2$@";
 "Buy credits" = "Comprar créditos";
 "Buy more" = "Comprar más";
 "Buy" = "Comprar";

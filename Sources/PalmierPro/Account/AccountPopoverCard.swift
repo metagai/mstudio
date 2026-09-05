@@ -98,7 +98,8 @@ struct AccountPopoverCard: View {
 
     private func planRow(_ plan: MetagGateway.Pricing.Plan) -> some View {
         HStack(spacing: AppTheme.Spacing.smMd) {
-            Text("$\(plan.price_usd, specifier: "%.2f")/mo")
+            // 同 AccountPane：价和币种都由网关给，界面不猜。
+            Text("\(plan.displayPrice ?? "")/mo")
                 .font(.system(size: AppTheme.FontSize.sm, weight: .semibold))
                 .foregroundStyle(AppTheme.Text.primaryColor)
                 .monospacedDigit()

@@ -1182,7 +1182,7 @@
 "Breaking your line into shots" = "We knippen je zin op in shots";
 "Budget" = "Budget";
 "Built-in (free)" = "Ingebouwd (gratis)";
-"Buy %@ credits · $%@" = "%@ credits kopen · $%@";
+"Buy %@ credits · %@" = "%1$@ credits kopen · %2$@";
 "Buy credits" = "Credits kopen";
 "By default only lip-sync shots use it; the rest stay on the standard tier" = "Standaard gebruiken alleen lipsync-shots dit; de rest blijft op het standaardniveau";
 "Can't reach METAG right now. Try again in a moment." = "METAG is nu niet bereikbaar. Probeer het zo nog eens.";

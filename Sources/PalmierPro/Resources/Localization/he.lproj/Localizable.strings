@@ -1182,7 +1182,7 @@
 "Breaking your line into shots" = "מפרקים את המשפט שלך לשוטים";
 "Budget" = "תקציב";
 "Built-in (free)" = "מובנה (בחינם)";
-"Buy %@ credits · $%@" = "קנה %@ credits · %@ $";
+"Buy %@ credits · %@" = "קנה %1$@ credits · %2$@";
 "Buy credits" = "קנה credits";
 "By default only lip-sync shots use it; the rest stay on the standard tier" = "כברירת מחדל רק שוטים עם סנכרון שפתיים משתמשים בזה; השאר נשארים ברמה הרגילה";
 "Can't reach METAG right now. Try again in a moment." = "אי אפשר להגיע ל-METAG כרגע. נסה שוב בעוד רגע.";

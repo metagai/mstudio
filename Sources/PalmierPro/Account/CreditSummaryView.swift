@@ -157,7 +157,8 @@ struct CreditPackButton: View {
         } label: {
             HStack(spacing: AppTheme.Spacing.xs) {
                 if let pack = account.creditPack {
-                    Text(L10n.string("Buy \(pack.credits.formatted()) credits · $\(String(format: "%.2f", pack.price_usd))"))
+                    // 价和币种都由网关给 —— 硬编码 `$` 曾让国内用户看见 $9.90、被扣 ¥69。
+                    Text(L10n.string("Buy \(pack.credits.formatted()) credits · \(pack.displayPrice ?? "")"))
                 } else {
                     Text(L10n.string("Buy credits"))
                 }

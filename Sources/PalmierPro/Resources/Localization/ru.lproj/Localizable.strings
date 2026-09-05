@@ -1182,7 +1182,7 @@
 "Breaking your line into shots" = "Разбиваем вашу фразу на кадры";
 "Budget" = "Бюджет";
 "Built-in (free)" = "Встроенный (бесплатно)";
-"Buy %@ credits · $%@" = "Купить %@ credits · $%@";
+"Buy %@ credits · %@" = "Купить %1$@ credits · %2$@";
 "Buy credits" = "Купить credits";
 "By default only lip-sync shots use it; the rest stay on the standard tier" = "По умолчанию его используют только кадры с синхронизацией губ, остальные остаются на стандартном уровне";
 "Can't reach METAG right now. Try again in a moment." = "Сейчас METAG недоступен. Попробуйте чуть позже.";

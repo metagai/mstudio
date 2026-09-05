@@ -1182,7 +1182,7 @@
 "Breaking your line into shots" = "กำลังแตกประโยคของคุณออกเป็นช็อต";
 "Budget" = "งบประมาณ";
 "Built-in (free)" = "ในตัว (ฟรี)";
-"Buy %@ credits · $%@" = "ซื้อ %@ credits · $%@";
+"Buy %@ credits · %@" = "ซื้อ %1$@ credits · %2$@";
 "Buy credits" = "ซื้อ credits";
 "By default only lip-sync shots use it; the rest stay on the standard tier" = "ค่าเริ่มต้นจะใช้เฉพาะช็อตที่ต้องลิปซิงก์ ที่เหลืออยู่ระดับมาตรฐาน";
 "Can't reach METAG right now. Try again in a moment." = "ตอนนี้ติดต่อ METAG ไม่ได้ ลองใหม่อีกสักครู่";

@@ -1182,7 +1182,7 @@
 "Breaking your line into shots" = "당신의 한 문장을 컷으로 나누는 중";
 "Budget" = "예산";
 "Built-in (free)" = "기본 제공(무료)";
-"Buy %@ credits · $%@" = "%@ credits 구매 · $%@";
+"Buy %@ credits · %@" = "%1$@ credits 구매 · %2$@";
 "Buy credits" = "credits 구매";
 "By default only lip-sync shots use it; the rest stay on the standard tier" = "기본적으로 립싱크가 필요한 컷만 이걸 쓰고, 나머지는 표준 등급으로 갑니다";
 "Can't reach METAG right now. Try again in a moment." = "지금 METAG에 연결할 수 없습니다. 잠시 후 다시 시도해 주세요.";

@@ -1182,7 +1182,7 @@
 "Breaking your line into shots" = "Rozdělujeme tvoji větu na záběry";
 "Budget" = "Rozpočet";
 "Built-in (free)" = "Vestavěný (zdarma)";
-"Buy %@ credits · $%@" = "Koupit %@ credits · %@ $";
+"Buy %@ credits · %@" = "Koupit %1$@ credits · %2$@";
 "Buy credits" = "Koupit credits";
 "By default only lip-sync shots use it; the rest stay on the standard tier" = "Ve výchozím stavu ho používají jen záběry se synchronizací rtů; zbytek zůstává na standardní úrovni";
 "Can't reach METAG right now. Try again in a moment." = "METAG teď není dostupný. Zkus to za chvíli.";

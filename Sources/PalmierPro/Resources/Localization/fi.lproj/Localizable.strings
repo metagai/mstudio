@@ -1182,7 +1182,7 @@
 "Breaking your line into shots" = "Pilkomme lauseesi kuviksi";
 "Budget" = "Budjetti";
 "Built-in (free)" = "Sisäänrakennettu (ilmainen)";
-"Buy %@ credits · $%@" = "Osta %@ credits · %@ $";
+"Buy %@ credits · %@" = "Osta %1$@ credits · %2$@";
 "Buy credits" = "Osta credits";
 "By default only lip-sync shots use it; the rest stay on the standard tier" = "Oletuksena sitä käyttävät vain huulisynkronia vaativat kuvat; loput pysyvät perustasolla";
 "Can't reach METAG right now. Try again in a moment." = "METAG ei ole juuri nyt tavoitettavissa. Yritä hetken päästä uudelleen.";

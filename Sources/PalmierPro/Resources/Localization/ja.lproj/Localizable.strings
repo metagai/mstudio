@@ -1197,7 +1197,7 @@
 "Breaking your line into shots" = "あなたの一文をカットに分けています";
 "Budget" = "予算";
 "Built-in (free)" = "内蔵（無料）";
-"Buy %@ credits · $%@" = "%@ credits を購入 · $%@";
+"Buy %@ credits · %@" = "%1$@ credits を購入 · %2$@";
 "Buy credits" = "credits を購入";
 "By default only lip-sync shots use it; the rest stay on the standard tier" = "標準ではリップシンクが必要なカットだけがこれを使い、残りは標準ティアのままです";
 "Can't reach METAG right now. Try again in a moment." = "いま METAG につながりません。少し経ってからお試しください。";

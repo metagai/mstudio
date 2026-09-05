@@ -157,7 +157,7 @@
 "Browse Community Skills ↗" = "Browse Community Skills ↗";
 "Budget" = "Budget";
 "Built-in (free)" = "Built-in (free)";
-"Buy %@ credits · $%@" = "Buy %@ credits · $%@";
+"Buy %@ credits · %@" = "Buy %@ credits · %@";
 "Buy credits" = "Buy credits";
 "By default only lip-sync shots use it; the rest stay on the standard tier" = "By default only lip-sync shots use it; the rest stay on the standard tier";
 "Cache" = "Cache";

@@ -1182,7 +1182,7 @@
 "Breaking your line into shots" = "Đang tách câu của bạn thành các cảnh";
 "Budget" = "Ngân sách";
 "Built-in (free)" = "Có sẵn (miễn phí)";
-"Buy %@ credits · $%@" = "Mua %@ credits · %@ $";
+"Buy %@ credits · %@" = "Mua %1$@ credits · %2$@";
 "Buy credits" = "Mua credits";
 "By default only lip-sync shots use it; the rest stay on the standard tier" = "Mặc định chỉ những cảnh cần khớp khẩu hình mới dùng nó; phần còn lại giữ ở mức tiêu chuẩn";
 "Can't reach METAG right now. Try again in a moment." = "Hiện không kết nối được METAG. Thử lại sau ít phút.";

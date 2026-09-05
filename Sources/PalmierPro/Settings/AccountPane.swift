@@ -91,7 +91,8 @@ struct AccountPane: View {
     private func planCard(_ plan: MetagGateway.Pricing.Plan) -> some View {
         card {
             HStack(alignment: .firstTextBaseline, spacing: AppTheme.Spacing.xs) {
-                Text("$\(plan.price_usd, specifier: "%.2f")")
+                // 币种交给网关说了算 —— 硬编码 `$` 曾让国内用户看见 $9.90、被扣 ¥69。
+                Text(plan.displayPrice ?? "")
                     .font(.system(size: AppTheme.FontSize.xl, weight: AppTheme.FontWeight.semibold))
                     .foregroundStyle(AppTheme.Text.primaryColor)
                 Text(L10n.string("/ month"))

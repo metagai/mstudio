@@ -1183,7 +1183,7 @@
 "Breaking your line into shots" = "正在把你那句話拆成分鏡";
 "Budget" = "預算";
 "Built-in (free)" = "內建音色（免費）";
-"Buy %@ credits · $%@" = "購買 %@ credits · $%@";
+"Buy %@ credits · %@" = "購買 %1$@ credits · %2$@";
 "Buy credits" = "購買 credits";
 "By default only lip-sync shots use it; the rest stay on the standard tier" = "預設只有需要對嘴型的鏡頭用它，其餘走標準檔";
 "Can't reach METAG right now. Try again in a moment." = "現在連不上 METAG。過一會兒再試。";

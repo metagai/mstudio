@@ -1182,7 +1182,7 @@
 "Breaking your line into shots" = "Vi deler din sætning op i indstillinger";
 "Budget" = "Budget";
 "Built-in (free)" = "Indbygget (gratis)";
-"Buy %@ credits · $%@" = "Køb %@ credits · %@ $";
+"Buy %@ credits · %@" = "Køb %1$@ credits · %2$@";
 "Buy credits" = "Køb credits";
 "By default only lip-sync shots use it; the rest stay on the standard tier" = "Som standard bruger kun indstillinger med læbesynkronisering den; resten bliver på standardniveauet";
 "Can't reach METAG right now. Try again in a moment." = "METAG kan ikke nås lige nu. Prøv igen om lidt.";

@@ -210,7 +210,7 @@
 "Budget" = "预算";
 "Built-in (free)" = "内置音色（免费）";
 "Buy $%lld" = "购买 $%lld";
-"Buy %@ credits · $%@" = "购买 %@ credits · $%@";
+"Buy %@ credits · %@" = "购买 %1$@ credits · %2$@";
 "Buy credits" = "购买 credits";
 "Buy more" = "购买更多";
 "Buy" = "购买";

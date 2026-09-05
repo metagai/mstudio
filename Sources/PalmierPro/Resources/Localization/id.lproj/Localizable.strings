@@ -1182,7 +1182,7 @@
 "Breaking your line into shots" = "Kami memecah kalimatmu jadi shot";
 "Budget" = "Anggaran";
 "Built-in (free)" = "Bawaan (gratis)";
-"Buy %@ credits · $%@" = "Beli %@ credits · $%@";
+"Buy %@ credits · %@" = "Beli %1$@ credits · %2$@";
 "Buy credits" = "Beli credits";
 "By default only lip-sync shots use it; the rest stay on the standard tier" = "Secara bawaan hanya shot dengan lip-sync yang memakainya; sisanya tetap di tingkat standar";
 "Can't reach METAG right now. Try again in a moment." = "METAG tidak bisa dihubungi sekarang. Coba lagi sebentar.";

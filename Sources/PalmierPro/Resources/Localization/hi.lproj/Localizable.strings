@@ -1182,7 +1182,7 @@
 "Breaking your line into shots" = "आपकी लाइन को शॉट में बाँट रहे हैं";
 "Budget" = "बजट";
 "Built-in (free)" = "अंतर्निर्मित (मुफ़्त)";
-"Buy %@ credits · $%@" = "%@ credits खरीदें · $%@";
+"Buy %@ credits · %@" = "%1$@ credits खरीदें · %2$@";
 "Buy credits" = "credits खरीदें";
 "By default only lip-sync shots use it; the rest stay on the standard tier" = "डिफ़ॉल्ट रूप से इसे सिर्फ़ लिप-सिंक वाले शॉट इस्तेमाल करते हैं; बाकी मानक स्तर पर रहते हैं";
 "Can't reach METAG right now. Try again in a moment." = "अभी METAG तक नहीं पहुँच पा रहे। थोड़ी देर में फिर कोशिश करें।";

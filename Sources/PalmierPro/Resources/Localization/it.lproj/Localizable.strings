@@ -1182,7 +1182,7 @@
 "Breaking your line into shots" = "Stiamo dividendo la tua frase in inquadrature";
 "Budget" = "Budget";
 "Built-in (free)" = "Integrata (gratuita)";
-"Buy %@ credits · $%@" = "Acquista %@ credits · %@ $";
+"Buy %@ credits · %@" = "Acquista %1$@ credits · %2$@";
 "Buy credits" = "Acquista credits";
 "By default only lip-sync shots use it; the rest stay on the standard tier" = "Per impostazione predefinita lo usano solo le inquadrature in sincrono labiale; il resto resta sul livello standard";
 "Can't reach METAG right now. Try again in a moment." = "METAG non è raggiungibile ora. Riprova tra poco.";

@@ -1182,7 +1182,7 @@
 "Breaking your line into shots" = "نقسّم جملتك إلى لقطات";
 "Budget" = "الميزانية";
 "Built-in (free)" = "مدمج (مجانًا)";
-"Buy %@ credits · $%@" = "شراء %@ credits · %@ $";
+"Buy %@ credits · %@" = "شراء %1$@ credits · %2$@";
 "Buy credits" = "شراء credits";
 "By default only lip-sync shots use it; the rest stay on the standard tier" = "افتراضيًا لا تستخدمه إلا اللقطات التي تحتاج مزامنة الشفاه؛ الباقي يبقى على المستوى القياسي";
 "Can't reach METAG right now. Try again in a moment." = "تعذّر الوصول إلى METAG الآن. أعد المحاولة بعد قليل.";

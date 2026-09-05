@@ -101,6 +101,45 @@ enum MetagGateway {
             let credits: Int
 
             var isSubscription: Bool { interval == "month" }
+
+            /// 这一档在这个区**实际结算**的币种（`"usd"` / `"cny"`）。
+            ///
+            /// ## 之前发生的事（2026-09-05）
+            ///
+            /// Mac 端四处价格显示**全部硬编码 `$`**，而国内区那一次性档
+            /// 在 Stripe 上按 **¥69** 结算 —— **按钮上印 `$9.90`，收银台扣 ¥69**。
+            /// 那是一句正对着掏钱的人说的假话，而付费墙是漏斗最后一格。
+            ///
+            /// 老网关不回这个字段时按 `usd` 处理 —— 那正是这个字段出现之前的行为。
+            var currency: String? = nil
+            /// 实收金额，**最小货币单位**（分）。老网关不回时由 `price_usd` 折算，
+            /// 行为与从前一致。
+            var amount_minor: Int? = nil
+            /// 这一档在这个区**能不能结算**。国内三档订阅在 Stripe 上没有 cny 价位
+            /// （`gateway/src/billing.rs:439`），传了会 400 —— 那三档在国内是 false。
+            ///
+            /// 老网关不回这个字段时按可售处理：把"不知道"当成"坏了"，
+            /// 一次回滚就会让所有档位从界面上消失（与 `Engine.available` 同一条理由）。
+            var available: Bool? = nil
+            var isAvailable: Bool { available ?? true }
+
+            /// 屏幕上那个价。
+            ///
+            /// **`available == false` 时返回 nil** —— 显示一个他付不了的价，
+            /// 比不显示更坏：他会点下去，然后在收银台前才发现付不了。
+            ///
+            /// 货币符号交给 `NumberFormatter`，**不许在界面上硬编码 `$`** ——
+            /// 这条正是这个属性存在的全部理由。
+            var displayPrice: String? {
+                guard isAvailable else { return nil }
+                let code = (currency ?? "usd").uppercased()
+                let minor = amount_minor ?? Int((price_usd * 100).rounded())
+                let f = NumberFormatter()
+                f.numberStyle = .currency
+                f.currencyCode = code
+                f.locale = .current
+                return f.string(from: NSNumber(value: Double(minor) / 100))
+            }
         }
         /// One generation engine. Billing is flat per shot — `credits_per_shot` is what the
         /// gateway actually charges. `duration_s` / `resolution` are structured on purpose:

@@ -367,7 +367,7 @@ struct AgentPanelView: View {
             let pack = AccountService.shared.creditPack
             return ErrorCTA(
                 title: pack.map {
-                    L10n.string("Buy \($0.credits.formatted()) credits · $\(String(format: "%.2f", $0.price_usd))")
+                    L10n.string("Buy \($0.credits.formatted()) credits · \($0.displayPrice ?? "")")
                 } ?? L10n.string("Buy credits")
             ) {
                 AccountService.shared.buyCreditPack()

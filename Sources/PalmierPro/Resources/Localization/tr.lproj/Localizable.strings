@@ -1182,7 +1182,7 @@
 "Breaking your line into shots" = "Cümleni planlara ayırıyoruz";
 "Budget" = "Bütçe";
 "Built-in (free)" = "Yerleşik (ücretsiz)";
-"Buy %@ credits · $%@" = "%@ credits satın al · %@ $";
+"Buy %@ credits · %@" = "%1$@ credits satın al · %2$@";
 "Buy credits" = "Credits satın al";
 "By default only lip-sync shots use it; the rest stay on the standard tier" = "Varsayılan olarak yalnızca dudak senkronu gereken planlar bunu kullanır; kalanı standart kademede kalır";
 "Can't reach METAG right now. Try again in a moment." = "METAG şu anda erişilemiyor. Biraz sonra tekrar dene.";
