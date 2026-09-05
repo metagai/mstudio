@@ -34,6 +34,40 @@ final class AppState {
     static let shared = AppState()
 
     private(set) var activeProject: VideoProject?
+
+    /// 他打完那一句、按下去之后，还没送到面板手上的那一份。
+    ///
+    /// ## 为什么不能只靠一条通知
+    ///
+    /// `startFilm` 建完工程就 `showWindows()`，紧接着发 `.metagStartDraft`。
+    /// 而听它的是编辑器里的 `MediaTab` —— 一个 SwiftUI 视图，
+    /// **它的 `.onReceive` 要等第一次渲染才订阅上**。
+    /// 窗口刚 `showWindows()` 返回那一刻，它订阅上了没有，取决于当时机器多忙。
+    ///
+    /// 赢了竞态就一切正常，输了的样子是：**他打了字、按了钮，
+    /// 落进一个空编辑器，什么都没发生。** 而那正是我们最贵的那一次交互。
+    ///
+    /// 2026-09-04 刚在引导层上修过同一个形状（那条通知一个接收者都没有），
+    /// 这一条是它的孪生兄弟 —— 有接收者，但可能还没醒。
+    ///
+    /// 所以改成**顺序无关**：先把它放在这儿，通知照发。
+    /// 面板醒着就当场收到；醒得晚就在 `onAppear` 里自己来取。
+    /// 取走即清 —— **一份草案只该开一次**。
+    struct PendingDraft: Equatable {
+        let prompt: String?
+        let assets: [URL]
+    }
+    private(set) var pendingDraft: PendingDraft?
+
+    func queueDraft(prompt: String?, assets: [URL]) {
+        pendingDraft = PendingDraft(prompt: prompt, assets: assets)
+    }
+
+    /// 面板来取。**取走即清**，第二个面板不会再开一张。
+    func takePendingDraft() -> PendingDraft? {
+        defer { pendingDraft = nil }
+        return pendingDraft
+    }
     private var projectPathsBeingDeleted: Set<String> = []
     private var projectOpenCounts: [String: Int] = [:]
 
@@ -260,10 +294,19 @@ final class AppState {
         }
         // 项目开好了再把草案面板端上来：面板活在编辑器的媒体面板里，
         // 而首页那一刻还没有项目。
-        NotificationCenter.default.post(
-            name: .metagStartDraft, object: nil,
-            userInfo: ["prompt": line, "assets": assets]
-        )
+        handOffDraft(prompt: line, assets: assets)
+    }
+
+    /// 把那一句交给面板。**两条路都留着** —— 面板醒着走通知，醒得晚走排队那一份。
+    ///
+    /// 抽出来是因为判据够不着 `startFilm`（它要真的建一个工程、开一扇窗）。
+    /// 而"到底排没排队"正是这件事的全部：第一版我只测了 `queueDraft` 本身，
+    /// **把 `startFilm` 里那一行删掉，判据照样全绿。**
+    func handOffDraft(prompt: String?, assets: [URL]) {
+        queueDraft(prompt: prompt, assets: assets)
+        var info: [String: Any] = ["assets": assets]
+        if let prompt { info["prompt"] = prompt }
+        NotificationCenter.default.post(name: .metagStartDraft, object: nil, userInfo: info)
     }
 
     /// 打开他上一条片子 —— 从首页那一格进来。

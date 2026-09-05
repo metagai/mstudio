@@ -196,7 +196,18 @@ struct MediaTab: View {
         }
         // 免费草案：先看片，再决定付不付钱。
         // web 端一直有这条路，macOS 端此前没有 —— 而"先看后买"是首页对外的承诺。
+        // **醒得晚也不丢。** 通知是在窗口刚出来那一刻发的，而这个视图的
+        // `.onReceive` 要等第一次渲染才订阅上 —— 输了那个竞态的样子是
+        // "他打了字、按了钮，落进一个空编辑器"。取走即清，不会开两张。
+        .onAppear {
+            guard let queued = AppState.shared.takePendingDraft() else { return }
+            pendingPrompt = queued.prompt
+            pendingAssets = queued.assets
+            showDraftSheet = true
+        }
         .onReceive(NotificationCenter.default.publisher(for: .metagStartDraft)) { note in
+            // 走通知这条路时也要把那一份取走，否则下一个面板出现时会再开一张。
+            _ = AppState.shared.takePendingDraft()
             pendingPrompt = note.userInfo?["prompt"] as? String
             // 首页粘进来的图跟着一起过来 —— 中间丢掉的话，
             // 他会以为我们没看见他贴的那张参考图。
