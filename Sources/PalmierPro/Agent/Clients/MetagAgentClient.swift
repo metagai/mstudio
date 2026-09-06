@@ -32,12 +32,13 @@ struct MetagAgentClient: AgentClient {
         context: AgentRequestContext,
         continuation: AsyncThrowingStream<AgentStreamEvent, Error>.Continuation
     ) async throws {
-        let endpoint = MetagGateway.baseURL.appendingPathComponent(Self.path)
+
         guard let jwt = MetagGateway.token, !jwt.isEmpty else {
             throw AgentServiceError.unauthenticated
         }
 
-        var request = URLRequest(url: endpoint)
+        // 同 MetagFunnel：经工厂，带上 X-Metag-Client。
+        var request = MetagGateway.urlRequest(Self.path)
         request.httpMethod = "POST"
         request.setValue("Bearer \(jwt)", forHTTPHeaderField: "Authorization")
         request.setValue("application/json", forHTTPHeaderField: "content-type")

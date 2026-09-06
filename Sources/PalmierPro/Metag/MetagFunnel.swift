@@ -165,7 +165,9 @@ enum MetagFunnel {
         guard let data = try? JSONSerialization.data(withJSONObject: Self.body(step, meta: meta))
         else { return }
 
-        var req = URLRequest(url: MetagGateway.baseURL.appendingPathComponent("api/v1/funnel"))
+        // 走工厂：**所有打网关的地方都要自报家门**，否则来源列上会落成 `direct`，
+        // 而那一格是留给"外面的人"的。
+        var req = MetagGateway.urlRequest("api/v1/funnel")
         req.httpMethod = "POST"
         req.setValue("application/json", forHTTPHeaderField: "Content-Type")
         // 没登录也照发：最上面两步发生在登录之前，要求登录就量不到最大的那一段。
