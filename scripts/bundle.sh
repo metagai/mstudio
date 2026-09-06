@@ -143,7 +143,10 @@ if [ -n "$SENTRY_DSN" ]; then
   /usr/libexec/PlistBuddy -c "Delete :SentryDSN" "$APP/Contents/Info.plist" 2>/dev/null || true
   /usr/libexec/PlistBuddy -c "Add :SentryDSN string $SENTRY_DSN" "$APP/Contents/Info.plist"
 else
-  echo "==> SENTRY_DSN not set — telemetry will be a no-op in this build"
+  # **说清后果，别只说状态。** 这一版发出去之后崩溃是静默的，
+  # 而"一条崩溃都没收到"和"没人崩过"在报表上长得一模一样 ——
+  # 十个人的手工实验里丢掉一个，我们连"发生过"都不会知道。
+  echo "==> SENTRY_DSN 没设 —— 这一版崩了我们不会知道，而那和「没崩」看起来一样"
 fi
 
 if [ -n "$POSTHOG_PROJECT_TOKEN" ]; then
@@ -260,6 +263,32 @@ if $INCLUDE_PRODUCTION_TELEMETRY; then
     exit 1
   fi
   echo "==> 埋点已编进二进制（PostHogSDK $POSTHOG_HITS 处）"
+
+  # **崩溃那一半，此前一处判据都没有。**
+  #
+  # 上面那段注释（「plist 里有 token ≠ 这个包会上报」）当时只落成了 PostHog
+  # 这一条判据。Sentry 走的是同一条路、同一个 trait、同一种失效，
+  # **而它的失效更难发现**：埋点断了会看到"没人在用"，
+  # 崩溃断了看到的是"一条崩溃都没有" —— 那正是我们希望看到的样子。
+  SENTRY_HITS="$(strings "$BIN" 2>/dev/null | grep -c "SentrySDK" || true)"
+  if [ "${SENTRY_HITS:-0}" -eq 0 ]; then
+    echo "!! 说好要带崩溃上报，而二进制里找不到 Sentry —— 这个包崩了我们不会知道" >&2
+    exit 1
+  fi
+  echo "==> 崩溃上报已编进二进制（SentrySDK $SENTRY_HITS 处）"
+
+  # DSN 得从**发出去的那个 plist** 里读回来，不是信我们刚才写过。
+  # 键名对不上（代码读 `SentryDSN`）、后面有谁重写了 Info.plist、
+  # PlistBuddy 静默失败 —— 三种都让上报变成空转，而三种都不会报错。
+  # ⚠ 只印主机名，DSN 本身是凭据，不许进日志。
+  if [ -n "$SENTRY_DSN" ]; then
+    SHIPPED_DSN="$(/usr/libexec/PlistBuddy -c 'Print :SentryDSN' "$APP/Contents/Info.plist" 2>/dev/null || true)"
+    if [ "$SHIPPED_DSN" != "$SENTRY_DSN" ]; then
+      echo "!! Info.plist 里的 SentryDSN 和传进来的对不上 —— 崩溃上报会全程空转" >&2
+      exit 1
+    fi
+    echo "==> DSN 已落进发出去的 plist（${SHIPPED_DSN#*@})"
+  fi
 fi
 if [ -d "$RES_BUNDLE/Changelog" ]; then
   cp -R "$RES_BUNDLE/Changelog" "$APP/Contents/Resources/"
@@ -318,12 +347,20 @@ upload_dsyms() {
     echo "==> Sentry creds not set — skipping dSYM upload"
     return
   fi
+  # 凭据一旦填上，就等于我们声明了"这一版的崩溃要能定位"。
+  # **从这里往下三种软失败都变成硬失败**：没有符号表的崩溃报告
+  # 只告诉你"崩了"，不告诉你崩在哪 —— 而十个人的实验里，
+  # 一条不知道崩在哪的崩溃，和没收到那条崩溃差不多贵。
+  # （没填凭据时照旧跳过 —— 那是今天的实况，不是这次要改的事。）
   if ! command -v sentry-cli >/dev/null 2>&1; then
-    echo "!! sentry-cli not found in PATH — skipping dSYM upload"
-    return
+    echo "!! 填了 Sentry 凭据却没有 sentry-cli —— 这一版的崩溃报告会没有符号表" >&2
+    exit 1
   fi
   echo "==> Uploading dSYM to Sentry"
-  sentry-cli debug-files upload --include-sources "$DSYM" || echo "!! sentry-cli upload failed (continuing)"
+  if ! sentry-cli debug-files upload --include-sources "$DSYM"; then
+    echo "!! dSYM 上传失败 —— 这一版崩了只知道崩了，不知道崩在哪" >&2
+    exit 1
+  fi
 }
 
 if [ "$MODE" = "dev" ] || [ "$MODE" = "dmg" ]; then
