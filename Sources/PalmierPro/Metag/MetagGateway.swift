@@ -332,6 +332,18 @@ enum MetagGateway {
     }
 
     enum Failure: LocalizedError {
+        /// **判据在生产上建任务了。**
+        ///
+        /// 2026-09-06 查实：快照测试渲染 `MetagDraftSheet(initialPrompt:)`
+        /// 会触发 `seedIfNeeded()` → `model.draft()` → 这里，
+        /// **于是每跑一次判据，生产上就多一条真草案**（`jobs.client='mac/dev'`，
+        /// 单价还是别人的 2.4 倍）。
+        ///
+        /// 这条线两个月前就画过一次 —— `MetagFunnel.isRunningTests` 的注释里
+        /// 白纸黑字写着「**判据不该有副作用落在生产上，这是比数字变脏更早的一条线**」，
+        /// 而它只画在了埋点上。**理由是通用的，实现是单点的。**
+        /// 所以这次画在网关这一层，不指望每个测试作者记得。
+        case runningUnderTest(String)
         case signedOut
         case insufficientCredits
         case http(Int)
@@ -367,6 +379,10 @@ enum MetagGateway {
         /// 判据伸手去够全局状态，就说明代码该把那个决定摆出来。
         func message(anonymous: Bool) -> String? {
             switch self {
+            // **不本地化**：这句只有判据作者会看到，用户永远不会。
+            // 把它翻成 28 门语言，是把成本花在一个没有读者的句子上。
+            case .runningUnderTest(let what):
+                return "判据不许打生产：\(what)。要联调就把 METAG_BASE_URL 指到本地假网关。"
             case .signedOut: return L10n.string("Sign in to METAG to generate.")
             case .tokenNotAcceptedHere(let provider):
                 return "\(provider): " + L10n.key("signed you in, but this app can't use that session yet. Try another sign-in method.")
@@ -651,6 +667,12 @@ enum MetagGateway {
         throw lastError
     }
 
+    /// 判据跑到写路径上就是错的。**在这一层拦，不指望每个测试作者记得。**
+    /// 读路径不拦：报价、清单、账号这些没有副作用，判据要靠它们。
+    nonisolated static func refuseUnderTest(_ what: String) throws {
+        if MetagFunnel.isRunningTests { throw Failure.runningUnderTest(what) }
+    }
+
     static func account() async throws -> Account {
         let account = try await send(request("api/v1/me"), as: Account.self)
         if MetagTicket.shouldAdopt(account.token, replacing: token) { token = account.token }
@@ -760,6 +782,7 @@ enum MetagGateway {
         firstFrame: String? = nil,
         assets: [String] = []
     ) async throws -> String {
+        try Self.refuseUnderTest("preview")
         struct Response: Decodable { let job_id: String }
         var body: [String: Any] = [
             "prompt": prompt,
@@ -789,6 +812,7 @@ enum MetagGateway {
     ///
     /// 一人一次，对用户 0 credits。第二次网关回 402 / sample_used。
     static func sampleShot(id: String, engine: String) async throws {
+        try Self.refuseUnderTest("sampleShot")
         struct Response: Decodable { let cost: Int }
         let req = try request("api/v1/preview/\(id)/sample", method: "POST",
                               body: ["engine": engine])
@@ -796,6 +820,7 @@ enum MetagGateway {
     }
 
     static func revisePreview(id: String, edits: [ReviseEdit] = [], narrator: MetagNarrator? = nil) async throws {
+        try Self.refuseUnderTest("revisePreview")
         struct Ack: Decodable { let status: String? }
         // 键名是 **shots**，不是 edits —— 网关按 shots 解析，发 edits 会拿到 400
         // 且不带任何说明。这条路此前在 Mac 上从来没成功过。
@@ -832,6 +857,7 @@ enum MetagGateway {
 
     /// 确认出片：**此刻才计费**，从用户看过的那批首帧出发。
     static func approvePreview(id: String, engine: String, allShots: Bool = false) async throws -> String {
+        try Self.refuseUnderTest("approvePreview")
         struct Response: Decodable { let job_id: String }
         var body: [String: Any] = ["engine": engine]
         // 用户选的引擎是**上限**：默认只有需要口型同步的镜头才用它，其余降到 local。
@@ -919,6 +945,7 @@ enum MetagGateway {
     /// Re-shoot one shot of a finished film. The delivered take is never overwritten —
     /// the result arrives as an extra take, so the choice stays reversible.
     static func reshoot(job id: String, shot: Int, reroll: Bool, candidates: Int) async throws {
+        try Self.refuseUnderTest("reshoot")
         var body: [String: Any] = ["shot": shot, "candidates": candidates]
         if reroll { body["reroll"] = true }
         let req = try request("/api/v1/jobs/\(id)/reshoot", method: "POST", body: body)
@@ -933,6 +960,7 @@ enum MetagGateway {
 
     /// 图生视频首帧上传，返回 frame_id（服务端内存盘，1 小时蒸发）
     static func uploadFrame(_ fileURL: URL) async throws -> String {
+        try Self.refuseUnderTest("uploadFrame")
         struct Response: Decodable { let frame_id: String }
         guard let token else { throw Failure.signedOut }
         let data = try Data(contentsOf: fileURL)
@@ -1074,6 +1102,7 @@ enum MetagGateway {
     /// 样本传对象存储，拿到语音服务商能拉到的地址。
     /// 网关只认 WAV / MP3 / M4A 的魔数，上限 16 MB，每小时 20 次。
     static func uploadVoiceSample(_ fileURL: URL) async throws -> String {
+        try Self.refuseUnderTest("uploadVoiceSample")
         struct Response: Decodable { let sample_url: String }
         guard let token else { throw Failure.signedOut }
         let data = try Data(contentsOf: fileURL)

@@ -24,6 +24,11 @@ struct MetagReachabilityTests {
         // `ClientTagTests` 断言每个请求都带得出 `X-Metag-Client`，
         // 而网关那侧要靠这个头把 `jobs` 的来源列填出来。
         "urlRequest",           // internal request factory (X-Metag-Client)
+        // 判据不许打生产的那道闸：**它按定义只在这个文件里被调用**
+        // （七个写路径各调一次）。不设 private 是为了能测 ——
+        // `NoProductionWritesUnderTestTests` 直接断言它对七条路都抛。
+        // 起因见那条判据的说明：快照测试曾经每跑一次就在生产上建一条真草案。
+        "refuseUnderTest",      // internal write gate (判据不许打生产)
         "send",                 // internal transport
         // 204 没有响应体，`send<T: Decodable>` 会试着解 JSON 而必然失败 ——
         // 那会让一次成功的删除看起来像失败。与 send 同类，都是传输原语。
