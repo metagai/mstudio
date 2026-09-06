@@ -49,10 +49,33 @@ struct OneGatewayExitTests {
         return walker.compactMap { $0 as? URL }.filter { $0.pathExtension == "swift" }
     }
 
+    /// 工厂**现在住在哪个文件**，由它自己说了算 —— 不写死文件名。
+    ///
+    /// ⚠ 2026-09-06 合伙人那句：**「例外由行为决定，不由名单决定 ——
+    /// 名单会过期，行为不会。」** 这一条原来写死 `MetagGateway.swift`：
+    /// 那个文件改名或者工厂被搬走的那一天，**判据会静静地少管一个地方**，
+    /// 而没有任何东西会红。现在改成"谁定义了 `urlRequest`，谁就是工厂的家"。
+    private func factoryHomes() -> [URL] {
+        swiftFiles(under: sourceRoot).filter { url in
+            (try? String(contentsOf: url, encoding: .utf8))?
+                .contains("static func urlRequest(") == true
+        }
+    }
+
+    /// **工厂只能有一个家。** 不断这一条的话，上面那个"按行为找例外"会在
+    /// 有人复制出第二个工厂时**自动把它也豁免掉** —— 名单会过期，
+    /// 而一个自动扩张的例外比过期的名单更坏。
+    @Test func thereIsExactlyOneFactory() {
+        let homes = factoryHomes().map(\.lastPathComponent)
+        #expect(homes.count == 1,
+                "定义 urlRequest 的文件不是一个：\(homes) —— 例外会跟着扩张")
+    }
+
     /// 除工厂所在的那个文件外，没有第二处既造 `URLRequest` 又用网关地址。
     @Test func onlyTheFactoryBuildsRequestsForTheGateway() throws {
+        let homes = Set(factoryHomes().map(\.lastPathComponent))
         let offenders = swiftFiles(under: sourceRoot)
-            .filter { $0.lastPathComponent != "MetagGateway.swift" }
+            .filter { !homes.contains($0.lastPathComponent) }
             .filter { url in
                 guard let s = try? String(contentsOf: url, encoding: .utf8) else { return false }
                 return s.contains("URLRequest(") && s.contains("MetagGateway.baseURL")

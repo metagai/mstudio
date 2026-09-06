@@ -58,10 +58,35 @@ struct PriceIsNeverHandBuiltTests {
             .appendingPathComponent("Sources/PalmierPro")
     }
 
-    /// `price_usd` 的唯一合法消费者是 `Plan.displayPrice`（在 MetagGateway.swift 里）。
+    /// 出口**现在住在哪个文件**，由它自己说了算 —— 不写死文件名。
+    ///
+    /// ⚠ 2026-09-06 合伙人那句：**「例外由行为决定，不由名单决定 ——
+    /// 名单会过期，行为不会。」** 这一条原来写死 `MetagGateway.swift`：
+    /// 那个文件改名、或者 `displayPrice` 被搬到别处的那一天，
+    /// **判据会静静地少管一个地方**，而没有任何东西会红。
+    private func exitHomes() -> [URL] {
+        swiftFiles(under: sourceRoot).filter { url in
+            (try? String(contentsOf: url, encoding: .utf8))?
+                .contains("var displayPrice") == true
+        }
+    }
+
+    /// **出口只能有一个。** 不断这一条的话，上面那个"按行为找例外"会在
+    /// 有人复制出第二个价格格式化器时**自动把它也豁免掉** ——
+    /// 一个自动扩张的例外比过期的名单更坏。
+    ///
+    /// 这一条也顺带守住了那个 bug 本身：**两处各自拼价格，迟早会不一样。**
+    @Test func thereIsExactlyOnePriceFormatter() {
+        let homes = exitHomes().map(\.lastPathComponent)
+        #expect(homes.count == 1,
+                "定义 displayPrice 的文件不是一个：\(homes) —— 例外会跟着扩张")
+    }
+
+    /// `price_usd` 的唯一合法消费者是 `Plan.displayPrice`。
     @Test func onlyTheModelMayTouchTheDollarPrice() throws {
+        let homes = Set(exitHomes().map(\.lastPathComponent))
         let offenders = swiftFiles(under: sourceRoot)
-            .filter { $0.lastPathComponent != "MetagGateway.swift" }
+            .filter { !homes.contains($0.lastPathComponent) }
             .filter { (try? String(contentsOf: $0, encoding: .utf8))?.contains("price_usd") == true }
             .map { $0.lastPathComponent }
         #expect(offenders.isEmpty,

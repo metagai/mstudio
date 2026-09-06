@@ -45,6 +45,43 @@ struct MetagReachabilityTests {
         "downsample",           // internal, 由 highlights() 抽稀能量曲线
     ]
 
+    /// **名单式豁免必须带一条"这个名单还对不对"的判据。**
+    ///
+    /// ⚠ 2026-09-06 合伙人定的规矩，起因是同一天我们数出的两件事：
+    /// 「例外由行为决定，不由名单决定 —— 名单会过期，行为不会」，
+    /// 以及**我那天正好用一句注释当过一次例外**（判据不读注释）。
+    ///
+    /// 上面那两处（`urlRequest` / `refuseUnderTest`）改不成行为式的：
+    /// 要豁免的是**符号**，而符号没有"它自己在哪儿"这种可查的性质。
+    /// 所以退而求其次 —— **名单里的每个名字，必须还真的是这个文件里的一个出口。**
+    ///
+    /// 不断这一条的话，改名或删掉其中一个之后：
+    /// 那条豁免从此**什么都不豁免**（无害但已是死条目），
+    /// 更坏的是**它会静静地豁免掉将来某个同名的新函数** —— 而那才是它变危险的方式。
+    @Test func everyExemptionStillNamesSomethingReal() throws {
+        let text = try String(contentsOf: gatewaySource, encoding: .utf8)
+        // ⚠ 泛型函数是 `func send<T: Decodable>(`，**只匹 `(` 会把它判成不存在**。
+        //    这条判据第一次跑就红在 `send` 上 —— 是判据的模式错了，不是名单过期了。
+        //    （新判据第一次就红，先怀疑判据自己。）
+        let stale = Self.exempt
+            .filter { !text.contains("func \($0)(") && !text.contains("func \($0)<") }
+            .sorted()
+        #expect(stale.isEmpty,
+                """
+                豁免名单里这几个名字在 MetagGateway.swift 里已经不存在了：\(stale)
+                删掉它们 —— 一条死豁免会在将来有人写出同名函数时静静地放过它。
+                """)
+    }
+
+    private var gatewaySource: URL {
+        URL(fileURLWithPath: #filePath)
+            .deletingLastPathComponent()   // Generation
+            .deletingLastPathComponent()   // PalmierProTests
+            .deletingLastPathComponent()   // Tests
+            .deletingLastPathComponent()   // repo root
+            .appendingPathComponent("Sources/PalmierPro/Metag/MetagGateway.swift")
+    }
+
     private func sources(under directory: URL) throws -> [URL] {
         guard let walker = FileManager.default.enumerator(at: directory, includingPropertiesForKeys: nil)
         else { return [] }
