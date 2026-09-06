@@ -2,6 +2,19 @@
   "changelogURL": "https://metag.ai/docs",
   "entries": [
     {
+      "version": "0.1.16",
+      "date": "2026-09-06",
+      "sections": [
+        {
+          "heading": "Fixed",
+          "items": [
+            "The price on the button is the price at the till. If you buy credits from China, the pack is billed in RMB — ¥69 — while the app kept showing $9.90. It now shows the amount that will actually be charged, in the currency it will be charged in. A plan that cannot be settled where you are shows no price at all, instead of a price you cannot pay.",
+            "You stay signed in. The server hands the app a fresh pass whenever your old one is close to running out, and the app was throwing it away — so everyone was signed out on the seventh day, however often they had used it. The pass is now kept."
+          ]
+        }
+      ]
+    },
+    {
       "version": "0.1.15",
       "date": "2026-09-04",
       "sections": [
