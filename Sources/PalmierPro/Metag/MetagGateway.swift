@@ -381,8 +381,11 @@ enum MetagGateway {
             switch self {
             // **不本地化**：这句只有判据作者会看到，用户永远不会。
             // 把它翻成 28 门语言，是把成本花在一个没有读者的句子上。
+            // ⚠ 而"不本地化"要写成英文，不是写成裸中文 —— `Mac 文案覆盖`
+            // 那条判据扫的是"源码里有没有裸中文"，它不读注释里的例外理由。
+            // 2026-09-06 我用一句注释当例外，把合伙人的闸捅红了一次。
             case .runningUnderTest(let what):
-                return "判据不许打生产：\(what)。要联调就把 METAG_BASE_URL 指到本地假网关。"
+                return "Tests must not hit production: \(what). Point METAG_BASE_URL at a local fake gateway to do integration work."
             case .signedOut: return L10n.string("Sign in to METAG to generate.")
             case .tokenNotAcceptedHere(let provider):
                 return "\(provider): " + L10n.key("signed you in, but this app can't use that session yet. Try another sign-in method.")
