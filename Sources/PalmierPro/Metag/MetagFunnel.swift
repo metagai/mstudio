@@ -45,6 +45,13 @@ enum MetagFunnel {
         /// `meta.where` 哪一屏、`meta.fmt` 什么格式。不记文件名、不记内容。
         /// 读数**按人去重不按次数**：一个人可能导好几次。
         case exported
+        /// **他没等到画面就走了。**
+        ///
+        /// 契约照抄 studio 那侧线上真事件的形状（`{page, at_sec, frames, narration}`）——
+        /// 不是照抄它的源码（studio 在另一个仓，我读不到），是照抄**库里已经存在的那些行**。
+        /// 两侧字段必须一样，否则 10-04 那天我们会有两份数却比不了，
+        /// 而"Mac 上的悬崖和 web 一样吗"正是那天最值钱的问题之一。
+        case waitLeft = "wait_left"
     }
 
     /// `film_failed` 的 `why`。**只有网关认的这三种。**

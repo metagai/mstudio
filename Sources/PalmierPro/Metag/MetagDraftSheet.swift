@@ -94,6 +94,44 @@ final class MetagDraftModel: ObservableObject {
     /// 只记一次，跟着 `draft_seen` 一起报上去。
     private(set) var firstFrameLagMs: Int?
 
+    /// 等待从哪一刻算起 —— `wait_left` 的 `at_sec` 从它算。
+    private var waitStartedAt: ContinuousClock.Instant?
+    /// 草案真的到他屏幕上了没有。**没到就走，才算 `wait_left`。**
+    private var sawDraft = false
+    /// 只报一次：一次等待里这一格发两条，会让分母虚高。
+    private var reportedLeave = false
+
+    /// **他没等到画面就走了。**
+    ///
+    /// 30 天的数说这一格是产品最大的那道悬崖：做好的 404 条草案里，
+    /// 只有 52 条（12.9%）的主人撑到了第一张画面就绪的时刻。
+    /// 而 **Mac 此前根本没有这一格** —— 10-04 那十个人里有人在等待中走掉的话，
+    /// 我们会把它记成"他不喜欢"，而那是三种完全不同的失败里最不该混的一种。
+    ///
+    /// 判据落在"这一屏没了，而他还没看见草案"，不落在"他点了取消"——
+    /// 关窗、切走、点取消，对他都是同一件事：**他不看了。**
+    /// **返回它真的报了什么，`nil` 表示这一次不该报。**
+    /// 埋点在判据里是不发的（`isRunningTests`），所以"发了什么"只能靠返回值来断 ——
+    /// 断 `track` 有没有被调用，等于断一个在判据里按定义不会发生的事。
+    @discardableResult
+    func noteLeftWhileWaiting() -> [String: Any]? {
+        guard let startedAt = waitStartedAt, !sawDraft, !reportedLeave else { return nil }
+        reportedLeave = true
+        let meta: [String: Any] = [
+            "at_sec": Int(startedAt.duration(to: .now).components.seconds),
+            "frames": frames.count,
+            "narration": narrator != nil,
+        ]
+        MetagFunnel.track(.waitLeft, meta: meta)
+        return meta
+    }
+
+    /// 判据要摆出"等待已经开始"这个状态，而 `waitStartedAt` 是 private。
+    /// 同 `applyJobForTesting` / `noteLagForTesting`。
+    func beginWaitForTesting() { waitStartedAt = .now }
+    /// 判据要摆出"草案已经到他屏幕上了"。
+    func markDraftSeenForTesting() { sawDraft = true }
+
     private func fetchFrames(_ id: String, _ job: MetagGateway.Job) async {
         guard let names = job.first_frames else { return }
         for (i, name) in names.enumerated() where frames[i] == nil {
@@ -275,6 +313,7 @@ final class MetagDraftModel: ObservableObject {
 
     private func poll(_ id: String) async {
         // 从数轮数改成看时钟 —— 间隔不再是常数，轮数就不再等于时长。
+        waitStartedAt = ContinuousClock.now
         let deadline = ContinuousClock.now.advanced(by: .seconds(480))
         while ContinuousClock.now < deadline {
             if let j = try? await MetagGateway.job(id) {
@@ -295,6 +334,7 @@ final class MetagDraftModel: ObservableObject {
                     if j.status == "done" {
                         // `first_frame_lag_ms`：首帧就绪到他真的看见，隔了多久。
                         // **这是那 4.4 秒第一次进报表** —— 在此之前它连量都量不了。
+                        sawDraft = true
                         MetagFunnel.track(.draftSeen, meta: firstFrameLagMs.map {
                             ["first_frame_lag_ms": $0]
                         })
@@ -475,6 +515,8 @@ struct MetagDraftSheet: View {
             engines = (try? await MetagGateway.pricing().engines) ?? []
         }
         .onAppear(perform: seedIfNeeded)
+        // 关窗、切走、点取消 —— 对他都是同一件事：他不看了。
+        .onDisappear { model.noteLeftWhileWaiting() }
     }
 
     /// 带着首屏那句话进来的话，填好并立刻开跑。
