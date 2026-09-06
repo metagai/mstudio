@@ -244,11 +244,22 @@ echo "==> 语言 $LOCALIZATION_COUNT 门，与源码目录一致"
 # 而它的原因是发版脚本没导出 token）。这一道守的是同一件事的另一半。
 if $INCLUDE_PRODUCTION_TELEMETRY; then
   BIN="$APP/Contents/MacOS/$(/usr/libexec/PlistBuddy -c 'Print :CFBundleExecutable' "$APP/Contents/Info.plist")"
-  if ! strings "$BIN" 2>/dev/null | grep -qi "PostHogSDK"; then
+  # ⚠ **不要写成 `strings … | grep -q …`。** 这个脚本开头是 `set -o pipefail`，
+  # 而 `grep -q` 一匹配上就退出，`strings` 随即被 SIGPIPE 杀掉（141）——
+  # **管道被判成失败，尽管 grep 明明匹配上了。**
+  #
+  # 2026-09-06 它真的这么砍掉过一次 0.1.16：二进制里 `PostHogSDK` 有 5 处，
+  # 判据却报「找不到 PostHog」。**一条因为自己的原因而红的判据，
+  # 报出来的却是产品的故障** —— 和限流把 429 报成产品坏了是同一种。
+  # 而它之前每次都过，是因为 `strings` 恰好先写完；**这是一直都在的偶发。**
+  #
+  # `grep -c` 会读完全部输入，不产生 SIGPIPE，顺带给出一个能印进日志的数。
+  POSTHOG_HITS="$(strings "$BIN" 2>/dev/null | grep -c "PostHogSDK" || true)"
+  if [ "${POSTHOG_HITS:-0}" -eq 0 ]; then
     echo "!! 说好要带埋点，而二进制里找不到 PostHog —— 这个包发出去我们看不见任何人在用它" >&2
     exit 1
   fi
-  echo "==> 埋点已编进二进制（PostHogSDK 在）"
+  echo "==> 埋点已编进二进制（PostHogSDK $POSTHOG_HITS 处）"
 fi
 if [ -d "$RES_BUNDLE/Changelog" ]; then
   cp -R "$RES_BUNDLE/Changelog" "$APP/Contents/Resources/"
