@@ -262,7 +262,20 @@ git push origin "$DEFAULT_BRANCH"
 # 上一版脚本到上面那行就结束了，于是**每一次"发版"都不会有任何用户收到更新**。
 PUBLISH_HOST="${PUBLISH_HOST:-yons@47.252.113.151}"
 PUBLISH_DIR="${PUBLISH_DIR:-/home/yons/metag/mac}"
-REMOTE_DMG="METAG-$VERSION.dmg"
+# **一个产物只能有一个名字。**
+#
+# 2026-09-06 之前这里是 `METAG-$VERSION.dmg`，而两个桶用的是
+# `METAG-$VERSION-mac.dmg` —— **同一个脚本里两套命名**。当天它就骗过我一次：
+# 我按桶那个名字去量服务器路径，报了一次假的"三条下载路全 404"，
+# 差点当成发版失败。而下一个人会在反方向上被骗 ——
+# 按服务器那个名字去传桶，传上去用户还是取不到。
+#
+# 桶里那两个名字是既成事实（0.1.15 / 0.1.16 已经在里面），所以统一到带 `-mac` 这一侧。
+# ⚠ 已发布的版本不受影响：appcast 里 0.1.16 那条指着旧名，服务器上那个文件不动。
+#
+# **下面 R2/OSS 那两个地址一律从这里派生，不许再各写一遍** ——
+# 名字只有一处定义，"三处一致"就不再需要一条判据去比对，它是构造上成立的。
+REMOTE_DMG="METAG-$VERSION-mac.dmg"
 
 # **先传 DMG，后传 appcast。** 反过来的话，中间那几十秒里 appcast 已经在
 # 告诉所有人有新版了，而那个包还没上去 —— 他们点更新，拿到 404。
@@ -281,7 +294,13 @@ if [ "$LIVE_LEN" != "$LENGTH" ]; then
   echo "       用户点更新会拿到一个对不上签名的包。发布没有完成。" >&2
   exit 1
 fi
-if ! curl -sS --max-time 30 https://metag.ai/mac/appcast.xml | grep -q "$REMOTE_DMG"; then
+# ⚠ **不要写成 `| grep -q`。** 本脚本开头是 `set -o pipefail`，而 `grep -q`
+# 一匹配就退出、`curl` 随即吃 SIGPIPE（141），**整条管道被判失败 —— 尽管匹配上了**。
+# 同一个机制在 `bundle.sh` 里砍掉过一次好的 0.1.16 发版（二进制里 PostHogSDK 有 5 处，
+# 判据却报"找不到"）。`grep -c` 读完全部输入，不产生 SIGPIPE，还给出一个能印的数。
+APPCAST_HITS="$(curl -sS --max-time 30 https://metag.ai/mac/appcast.xml \
+                 | grep -c "$REMOTE_DMG" || true)"
+if [ "${APPCAST_HITS:-0}" -eq 0 ]; then
   echo "error: 线上的 appcast 里没有 $REMOTE_DMG —— 没有人会收到这次更新" >&2
   exit 1
 fi
@@ -333,8 +352,8 @@ echo ""
 probe_bucket() {
   curl -sS -o /dev/null -w '%{http_code}' --max-time 25 -r 0-0 "$1" 2>/dev/null || echo 000
 }
-R2_URL="https://s3.metag.ai/metag/metag/releases/METAG-$VERSION-mac.dmg"
-OSS_URL="https://metagai.oss-cn-beijing.aliyuncs.com/metag/releases/METAG-$VERSION-mac.dmg"
+R2_URL="https://s3.metag.ai/metag/metag/releases/$REMOTE_DMG"
+OSS_URL="https://metagai.oss-cn-beijing.aliyuncs.com/metag/releases/$REMOTE_DMG"
 R2_CODE="$(probe_bucket "$R2_URL")"
 OSS_CODE="$(probe_bucket "$OSS_URL")"
 echo ""
