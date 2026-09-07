@@ -406,11 +406,21 @@ final class MetagDraftModel: ObservableObject {
                         let kind = MetagFailureKind(j.error_kind)
                         note = kind.message(refunded: j.refunded)
                         // `why` 用白名单里的三种，真实种类另记一格 —— 和交付那条同一个形状。
-                        MetagFunnel.track(.filmFailed, meta: [
+                        // **在他等了多久之后才被告知。**
+                        //
+                        // 「等 30 秒被告知失败」和「等 9 分钟被告知失败」，
+                        // 同一句话的意思完全不同 —— 后者我们已经浪费了他 9 分钟，
+                        // 那时候说什么都晚了。（合伙人 2026-09-07 提的，
+                        // 他要的是当天靠人掐表记下来；埋点能记就不该靠人记。）
+                        var meta: [String: Any] = [
                             "why": MetagFunnel.FailureReason.renderFailed.rawValue,
                             "kind": kind.rawValue,
                             "stage": j.stage ?? "unknown",
-                        ])
+                        ]
+                        if let startedAt = waitStartedAt {
+                            meta["waited_sec"] = Int(startedAt.duration(to: .now).components.seconds)
+                        }
+                        MetagFunnel.track(.filmFailed, meta: meta)
                     }
                     if j.status == "done" {
                         // `first_frame_lag_ms`：首帧就绪到他真的看见，隔了多久。

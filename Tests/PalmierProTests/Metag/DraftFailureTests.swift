@@ -14,6 +14,19 @@ import Testing
 @Suite("草案失败")
 @MainActor
 struct DraftFailureTests {
+    /// 失败那一支的**整段**，不是一个固定长度的窗口。
+    ///
+    /// 第一版用 `prefix(600)` —— 而我给这一段加了几行注释之后，
+    /// 断言的那句就被挤出了窗口，**判据在代码变好的时候红了**。
+    /// 这和我今天用 `grep -A 8` 把一个 enum case 看漏是同一个错：
+    /// **窗口是我自己选的，而我把"窗口里没有"当成了"里面没有"。**
+    private static func failedBranch() throws -> String {
+        let src = source()
+        let start = try #require(src.range(of: #"if j.status == "failed" {"#))
+        let end = try #require(src.range(of: #"if j.status == "done" {"#, range: start.upperBound..<src.endIndex))
+        return String(src[start.lowerBound..<end.lowerBound])
+    }
+
     private static func source() -> String {
         let url = URL(fileURLWithPath: #filePath)
             .deletingLastPathComponent().deletingLastPathComponent()
@@ -24,9 +37,7 @@ struct DraftFailureTests {
 
     /// 失败那一支必须**先说话**，再返回。
     @Test func aFailedDraftSaysSomething() throws {
-        let src = Self.source()
-        let branch = try #require(src.range(of: #"if j.status == "failed" {"#))
-        let tail = String(src[branch.lowerBound...].prefix(600))
+        let tail = try Self.failedBranch()
         #expect(tail.contains("note = kind.message"),
                 "失败又变回静默返回了 —— 界面会一直显示班底在干活")
         #expect(tail.contains("MetagFunnel.track(.filmFailed"),
@@ -58,5 +69,18 @@ struct DraftFailureTests {
     @Test(arguments: [nil, "", "something_new", "UPSTREAM"])
     func unrecognisedKindsFallBackToUnknown(raw: String?) {
         #expect(MetagFailureKind(raw) == .unknown)
+    }
+
+    /// **在他等了多久之后才被告知。**
+    ///
+    /// 「等 30 秒被告知失败」和「等 9 分钟被告知失败」，同一句话的意思完全不同 ——
+    /// 后者我们已经浪费了他 9 分钟，那时候说什么都晚了。
+    /// 合伙人本来要在实验当天靠人掐表记；**埋点能记的就不该靠人记**。
+    @Test func theFailureRecordsHowLongHeWaited() throws {
+        let tail = try Self.failedBranch()
+        #expect(tail.contains("waited_sec"),
+                "失败没记他等了多久 —— 而那决定了这句话还来不来得及")
+        #expect(tail.contains("waitStartedAt"),
+                "等待时长不是从等待开始那一刻算的")
     }
 }
