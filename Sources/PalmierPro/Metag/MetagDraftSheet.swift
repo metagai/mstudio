@@ -390,8 +390,28 @@ final class MetagDraftModel: ObservableObject {
                 quoteOnce()
                 await fetchFrames(id, j)
                 if j.status == "done" || j.status == "failed" {
-                    // **草案真的到他屏幕上了** —— 判据落在"渲完并且这一页还在"，
-                    // 不落在"我们提交成功了"。那两件事之间就是流失。
+                    // **失败了要说出来。**
+                    //
+                    // 这一支原来直接 `return` —— 什么都不设。而 `ready` 要求
+                    // `status == "done"`，于是界面落回**等待**那一支：
+                    // 班底继续"在干活"，场记板一格不填，**永远**。
+                    //
+                    // 他等了中位 4 分钟，然后屏幕告诉他"还在拍" —— 那不是
+                    // 没有出路，那是产品在说假话。A0 只允许改的正是这种地方。
+                    //
+                    // `MetagFailureKind` 和它那三句话早就写好了（交付那条路在用），
+                    // 只有草案这条路从来没接上：三种失败要说的话完全相反，
+                    // 对着一次上游 503 说「换个说法」，他会去改一句根本没问题的话。
+                    if j.status == "failed" {
+                        let kind = MetagFailureKind(j.error_kind)
+                        note = kind.message(refunded: j.refunded)
+                        // `why` 用白名单里的三种，真实种类另记一格 —— 和交付那条同一个形状。
+                        MetagFunnel.track(.filmFailed, meta: [
+                            "why": MetagFunnel.FailureReason.renderFailed.rawValue,
+                            "kind": kind.rawValue,
+                            "stage": j.stage ?? "unknown",
+                        ])
+                    }
                     if j.status == "done" {
                         // `first_frame_lag_ms`：首帧就绪到他真的看见，隔了多久。
                         // **这是那 4.4 秒第一次进报表** —— 在此之前它连量都量不了。
