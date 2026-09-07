@@ -107,3 +107,44 @@ struct ProgressStreamTests {
         #expect(p.isTerminal == false)
     }
 }
+
+/// **两条路送同一份分镜，屏幕上的规则只有一条。**
+///
+/// 轮询在拿到首帧之后退回 4 秒一轮，而分镜正是在那段一句句往外冒的；
+/// WS 每 2 秒推一次同样的 `storyboard_preview`。合伙人 2026-09-06 把第一句
+/// 从 13.5 秒提到 6.55 秒之后，**这几秒正落在那 45 个人离开的窗口里**。
+///
+/// ⚠ 两个来源写同一块屏，是这个仓明令要小心的形状。所以规则钉死在一处：
+/// 落定的 `shots` 最大，否则**谁的句子多听谁的** —— 不按"谁更新"，
+/// 那要再存一个时间戳，而两条路各自的时钟不一定同步。
+@Suite("分镜的两条路")
+@MainActor
+struct StreamedNarrationTests {
+
+    @Test func theStreamedLinesShowUpWhenPollingHasNothingYet() {
+        let m = MetagDraftModel()
+        m.applyStreamed(["第一句"])
+        #expect(m.narrations == ["第一句"], "WS 送来的句子没上屏")
+    }
+
+    /// **只增不减。** 网关推的是当下快照，Redis 抖一下可能回一份更短的 ——
+    /// 那会让屏幕上已经出现的句子当着他的面消失。
+    @Test func aShorterSnapshotNeverErasesWhatHeAlreadySaw() {
+        let m = MetagDraftModel()
+        m.applyStreamed(["一", "二", "三"])
+        m.applyStreamed(["一"])
+        #expect(m.narrations.count == 3, "更短的一份把屏幕上的句子擦掉了")
+        m.applyStreamed(nil)
+        #expect(m.narrations.count == 3, "nil 把屏幕擦掉了")
+    }
+
+    /// 落定的分镜最大 —— 那是这条片子最终的那一份。
+    @Test func theSettledStoryboardWins() throws {
+        let m = MetagDraftModel()
+        m.applyStreamed(["草稿一", "草稿二", "草稿三"])
+        m.applyJobForTesting(try JSONDecoder().decode(
+            MetagGateway.Job.self,
+            from: Data(#"{"job_id":"j","shots":[{"narration":"定稿","video":"v","audio":"a"}]}"#.utf8)))
+        #expect(m.narrations == ["定稿"], "落定之后还在显示草稿")
+    }
+}

@@ -80,8 +80,24 @@ final class MetagDraftModel: ObservableObject {
     /// 落定之后以 `shots` 为准：它是这条片子最终的那一份。
     var narrations: [String] {
         let settled = job?.shots.map(\.narration) ?? []
-        return settled.isEmpty ? (job?.storyboard_preview ?? []) : settled
+        if !settled.isEmpty { return settled }
+        // **两条路送的是同一份东西，取到得多的那一份。**
+        //
+        // 轮询在拿到首帧之后退回 4 秒一轮，而分镜正是在那段一句句往外冒的；
+        // WS 每 2 秒推一次，同样带着 `storyboard_preview`。
+        // 合伙人 2026-09-06 把第一句从 13.5 秒提到 6.55 秒之后，
+        // **这几秒正落在那 45 个人离开的窗口里**。
+        //
+        // 优先级只有一条规则，写在这一处：落定的 `shots` 最大，
+        // 否则谁的句子多听谁的。**不按"谁更新"** —— 那要再存一个时间戳，
+        // 而两条路各自的时钟不一定同步。
+        let polled = job?.storyboard_preview ?? []
+        return streamed.count > polled.count ? streamed : polled
     }
+
+    /// WS 那条路送来的分镜预览。**只进这一个地方**，
+    /// 汇合的规则在 `narrations` 里，就一处。
+    @Published private(set) var streamed: [String] = []
     /// 当前旁白人格。网关认不出的值一律当没有 —— 宁可不显示，也不显示一个错的。
     var narrator: MetagNarrator? { job?.narrator.flatMap(MetagNarrator.init(rawValue:)) }
     var ready: Bool { job?.status == "done" && !(job?.shots.isEmpty ?? true) }
@@ -124,6 +140,13 @@ final class MetagDraftModel: ObservableObject {
         ]
         MetagFunnel.track(.waitLeft, meta: meta)
         return meta
+    }
+
+    /// **只增不减。** 网关推的是当下的快照，而任务失败或者 Redis 抖一下时
+    /// 它可能回一份更短的 —— 那会让屏幕上已经出现的句子当着他的面消失。
+    func applyStreamed(_ lines: [String]?) {
+        guard let lines, lines.count > streamed.count else { return }
+        streamed = lines
     }
 
     /// 判据要摆出"等待已经开始"这个状态，而 `waitStartedAt` 是 private。
@@ -343,6 +366,7 @@ final class MetagDraftModel: ObservableObject {
             guard let self else { return }
             do {
                 for try await p in MetagGateway.progress(job: id) {
+                    await self.applyStreamed(p.storyboard_preview)
                     await self.fetchFrames(id, names: p.first_frames,
                                            readyAt: p.first_frame_at_ms)
                 }
