@@ -126,22 +126,13 @@ LAST_TAG="$(git describe --tags --abbrev=0 --match 'metag-v*' 2>/dev/null || ech
 } >"$NOTES_CLEAN"
 echo "    (edit on GitHub later if you want to polish)"
 
-echo "==> Bumping version"
-CURRENT_BUILD="$(/usr/libexec/PlistBuddy -c "Print :CFBundleVersion" "$PLIST")"
-NEW_BUILD=$((CURRENT_BUILD + 1))
-
-MAX_PUBLISHED="$(grep -oE '<sparkle:version>[0-9]+</sparkle:version>' "$APPCAST" \
-  | grep -oE '[0-9]+' | sort -n | tail -1)"
-if [ -n "$MAX_PUBLISHED" ] && [ "$NEW_BUILD" -le "$MAX_PUBLISHED" ]; then
-  echo "error: NEW_BUILD=$NEW_BUILD is not greater than max published sparkle:version=$MAX_PUBLISHED" >&2
-  echo "       Info.plist CFBundleVersion ($CURRENT_BUILD) was likely rolled back by an unrelated commit." >&2
-  echo "       Set CFBundleVersion to $MAX_PUBLISHED in $PLIST and retry." >&2
-  exit 1
-fi
-
-/usr/libexec/PlistBuddy -c "Set :CFBundleShortVersionString $VERSION" "$PLIST"
-/usr/libexec/PlistBuddy -c "Set :CFBundleVersion $NEW_BUILD" "$PLIST"
-echo "    $VERSION (build $NEW_BUILD)"
+# ── 凭据闸：**在改任何东西之前**拦下来 ────────────────────────────
+#
+# 原来这两道闸在版本号 +1 之后 —— 一次被拦下的发版仍然留下一个被改过的
+# `Info.plist`，下一次发版从那个数继续。闸该在副作用之前，
+# 否则"拦住了"本身也是一次改动。
+#
+# 这样它也变得可验：不带凭据跑一次，看它退 1 且工作区干净。
 
 # 埋点 token 从仓库根的 .env 里取（gitignored，永不进脚本或日志）。
 #
@@ -166,6 +157,53 @@ fi
 if [ -n "${POSTHOG_PROJECT_TOKEN:-}" ]; then
   echo "==> 埋点 token 已就位（${#POSTHOG_PROJECT_TOKEN} 字符，不打印内容）"
 fi
+
+# **崩溃上报同样是一道闸，不是一句提醒。**
+#
+# `bundle.sh` 对着空的 `SENTRY_DSN` 只打印一行「这一版崩了我们不会知道」——
+# 而那行从 0.1.10 起每次发版都在打印，**没有人接过**。一条只提醒不拦人的警告，
+# 和没有警告是同一回事（这是 09-06 那批"看不见"里最常见的形状）。
+#
+# 为什么现在是闸：十个陌生人的实验马上要跑，而**如果其中有人一打开就崩，
+# 我们不但救不回那个人，连"发生过"都不知道**。十个人是很贵的样本。
+#
+# 三个符号表变量一起取：没有它们崩溃栈只有一串地址，读不出函数名 ——
+# 那样"知道崩了"和"知道为什么崩"之间还差一整步。
+if [ -f "$ENV_FILE" ]; then
+  for KEY in SENTRY_DSN SENTRY_AUTH_TOKEN SENTRY_ORG SENTRY_PROJECT; do
+    VALUE="$(grep -m1 "^$KEY=" "$ENV_FILE" | cut -d= -f2- | tr -d '"'"'"' \r')"
+    [ -n "$VALUE" ] && export "$KEY=$VALUE"
+  done
+fi
+if [ -z "${SENTRY_DSN:-}" ] && [ "${ALLOW_BLIND_RELEASE:-}" != "1" ]; then
+  echo "!! 拿不到 SENTRY_DSN —— 这一版崩了我们不会知道，而那和「没崩」看起来一样。" >&2
+  echo "   sentry.io 建一个 macOS 项目，把 DSN 写进 mac/.env（见 founder-todo §15）。" >&2
+  echo "   真要发一个看不见崩溃的包：ALLOW_BLIND_RELEASE=1" >&2
+  exit 1
+fi
+if [ -n "${SENTRY_DSN:-}" ]; then
+  echo "==> 崩溃上报已就位（${#SENTRY_DSN} 字符，不打印内容）"
+  if [ -z "${SENTRY_AUTH_TOKEN:-}" ]; then
+    echo "   ⚠ 没有 SENTRY_AUTH_TOKEN —— 符号表不会上传，崩溃栈只有地址读不出函数名"
+  fi
+fi
+
+echo "==> Bumping version"
+CURRENT_BUILD="$(/usr/libexec/PlistBuddy -c "Print :CFBundleVersion" "$PLIST")"
+NEW_BUILD=$((CURRENT_BUILD + 1))
+
+MAX_PUBLISHED="$(grep -oE '<sparkle:version>[0-9]+</sparkle:version>' "$APPCAST" \
+  | grep -oE '[0-9]+' | sort -n | tail -1)"
+if [ -n "$MAX_PUBLISHED" ] && [ "$NEW_BUILD" -le "$MAX_PUBLISHED" ]; then
+  echo "error: NEW_BUILD=$NEW_BUILD is not greater than max published sparkle:version=$MAX_PUBLISHED" >&2
+  echo "       Info.plist CFBundleVersion ($CURRENT_BUILD) was likely rolled back by an unrelated commit." >&2
+  echo "       Set CFBundleVersion to $MAX_PUBLISHED in $PLIST and retry." >&2
+  exit 1
+fi
+
+/usr/libexec/PlistBuddy -c "Set :CFBundleShortVersionString $VERSION" "$PLIST"
+/usr/libexec/PlistBuddy -c "Set :CFBundleVersion $NEW_BUILD" "$PLIST"
+echo "    $VERSION (build $NEW_BUILD)"
 
 echo "==> Building signed + notarized DMG"
 BUILD_LOG="$(mktemp -t metag-build.XXXXXX).log"
