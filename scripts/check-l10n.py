@@ -22,7 +22,18 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 CJK = re.compile(r"[一-鿿]")
+# 我们自己写文案的三门。**但"我们维护三门"不等于"这把尺子只该量三门"** ——
+# 2026-09-07 我加了两句英文，这把尺子说三门全绿，而 Swift 那条
+# `everyEnglishStringHasATranslation`（量全部 28 门）当场红，我照着绿的推了红树。
+#
+# **两把尺子量同一件事，一把说绿一把说红，该修的是瞎的那把。**
+# 不修的话下一个人还会信它 —— 它摆在那儿、跑得快、还是绿的。
 MAINTAINED = ("en", "zh-Hans", "es")
+
+# 其余那 25 门是继承来的，我们不写它们的文案，但**英文串少了译文，
+# 那门语言的用户就会看到英文**。所以照样要量，只是允许有明写的欠账。
+# 欠账清单和 Swift 那条判据**读同一个文件** —— 两把尺子不许有两份真相。
+BASELINE = "Tests/PalmierProTests/Utilities/untranslated-baseline.txt"
 
 # 允许保留中文的地方，逐条写明理由。**空泛的通配不算例外，只能点名。**
 ALLOW = {
@@ -105,6 +116,25 @@ def l_keys():
     return keys
 
 
+def all_languages():
+    d = ROOT / "Sources/PalmierPro/Resources/Localization"
+    return sorted(p.name[:-6] for p in d.iterdir() if p.name.endswith(".lproj"))
+
+
+def owed():
+    """(语言, key) 的欠账 —— 和 Swift 那条判据同一份文件、同一种格式。"""
+    path = ROOT / BASELINE
+    if not path.exists():
+        return set()
+    out = set()
+    for line in path.read_text().splitlines():
+        if not line or line.startswith("#") or "\t" not in line:
+            continue
+        lang, key = line.split("\t", 1)
+        out.add((lang, key))
+    return out
+
+
 def table(lang):
     path = ROOT / f"Sources/PalmierPro/Resources/Localization/{lang}.lproj/Localizable.strings"
     entry = re.compile(r'^\s*"((?:[^"\\]|\\.)*)"\s*=', re.M)
@@ -137,6 +167,10 @@ def main():
     if not keys:
         print("FAIL 一个 key 都没扫到 —— 判据失效（本地化调用的写法可能改过了）")
         return 1
+    debts = owed()
+    english = table("en")
+    languages = all_languages()
+
     for lang in MAINTAINED:
         have = table(lang)
         missing = sorted(k for k in keys if k not in have)
@@ -148,6 +182,23 @@ def main():
                 print(f'       "{k[:60]}"  ← {rel}:{n}')
         else:
             print(f"OK   {lang} 覆盖了全部 {len(keys)} 个字面量 key")
+
+    # **其余 25 门：英文表里有的，它们也得有 —— 除非欠账写在明处。**
+    inherited = [l for l in languages if l not in MAINTAINED]
+    unregistered = []
+    for lang in inherited:
+        have = table(lang)
+        for key in english:
+            if key not in have and (lang, key) not in debts:
+                unregistered.append((lang, key))
+    if unregistered:
+        failed = True
+        print(f"FAIL 继承的 {len(inherited)} 门语言里有 {len(unregistered)} 处没译、也没登记欠账：")
+        for lang, key in unregistered[:10]:
+            print(f'       {lang}  "{key[:56]}"')
+        print(f"       登记在 {BASELINE}（一行一个 <语言><TAB><key>）")
+    else:
+        print(f"OK   继承的 {len(inherited)} 门语言：没译的都登记了欠账（{len(debts)} 条）")
 
     # **这条判据管不着的那一块，要自己说出来。**
     #
@@ -165,7 +216,8 @@ def main():
     print(f"NOTE 另有 {skipped} 个插值 key 不在本判据范围内（详见本文件注释）")
     # **说出自己量了多少。** 一把量了 0 个东西的尺子会报绿 ——
     # 2026-09-01 这条判据自己就是这么绿了一阵子的。
-    print(f"SCOPE {len(keys)} 个字面量 key × 3 张词条表")
+    print(f"SCOPE {len(keys)} 个字面量 key × 3 张维护表 + {len(english)} 句英文 × "
+          f"{len(inherited)} 门继承语言")
 
     return 1 if failed else 0
 
