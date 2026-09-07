@@ -144,9 +144,35 @@ echo "    (edit on GitHub later if you want to polish)"
 # **取不到就发不出去。** 埋点静悄悄是空的，正是我们连瞎四个版本的那个形状
 # （0.1.9–0.1.12 发出去打不开，靠创始人截图才发现）。要故意发一个瞎的包，
 # 就显式写出来 —— 让它是一个决定，不是一次遗忘。
-ENV_FILE="$(dirname "$0")/../../.env"
-if [ -f "$ENV_FILE" ]; then
-  POSTHOG_PROJECT_TOKEN="$(grep -m1 '^POSTHOG_PROJECT_TOKEN=' "$ENV_FILE" | cut -d= -f2- | tr -d '"'"'"' \r')"
+# **两个 .env 都读，mac/ 那份优先。**
+#
+# `founder-todo §15` 让创始人把 Sentry 那几个值写进 `mac/.env`，
+# 而这里原来只读仓库根的 `.env` —— 2026-09-07 实测：DSN 已经在 mac/.env 里
+# 躺着（95 字符），而这道闸照样会拦下发版。
+# **一个因为路径分歧而假红的闸，比没有闸更耗人**：它会让人以为脚本坏了。
+#
+# 谁也别去改文档迁就脚本 —— 两处都读，哪个地方填的都算。
+MAC_ENV="$(dirname "$0")/../.env"
+ROOT_ENV="$(dirname "$0")/../../.env"
+
+# 从这两个文件里取一个键（mac/ 优先），取不到返回空。
+#
+# ⚠ **占位符等于没填。** mac/.env 里 SENTRY_ORG / SENTRY_PROJECT /
+# SENTRY_AUTH_TOKEN 各是 1 个字符 —— 用 `-n` 判的话它们全算"已设置"，
+# 于是 sentry-cli 拿着一个垃圾 token 去上传、失败、而我们以为符号表传上去了。
+# 真实的 auth token 是 40+ 字符，slug 至少两位。
+env_value() {
+  local key="$1" min="${2:-1}" v=""
+  for f in "$MAC_ENV" "$ROOT_ENV"; do
+    [ -f "$f" ] || continue
+    v="$(grep -m1 "^$key=" "$f" | cut -d= -f2- | tr -d '"'"'"' \r')"
+    [ "${#v}" -ge "$min" ] && { printf '%s' "$v"; return; }
+  done
+  printf ''
+}
+ENV_FILE="$ROOT_ENV"
+if [ -z "${POSTHOG_PROJECT_TOKEN:-}" ]; then
+  POSTHOG_PROJECT_TOKEN="$(env_value POSTHOG_PROJECT_TOKEN 8)"
   export POSTHOG_PROJECT_TOKEN
 fi
 if [ -z "${POSTHOG_PROJECT_TOKEN:-}" ] && [ "${ALLOW_BLIND_RELEASE:-}" != "1" ]; then
@@ -169,12 +195,14 @@ fi
 #
 # 三个符号表变量一起取：没有它们崩溃栈只有一串地址，读不出函数名 ——
 # 那样"知道崩了"和"知道为什么崩"之间还差一整步。
-if [ -f "$ENV_FILE" ]; then
-  for KEY in SENTRY_DSN SENTRY_AUTH_TOKEN SENTRY_ORG SENTRY_PROJECT; do
-    VALUE="$(grep -m1 "^$KEY=" "$ENV_FILE" | cut -d= -f2- | tr -d '"'"'"' \r')"
+# 最小长度按各自的真实形状定：DSN 是一整条 URL，token 40+，slug 至少两位。
+for SPEC in "SENTRY_DSN 20" "SENTRY_AUTH_TOKEN 16" "SENTRY_ORG 2" "SENTRY_PROJECT 2"; do
+  KEY="${SPEC%% *}"; MIN="${SPEC##* }"
+  if [ -z "$(eval "printf '%s' \"\${$KEY:-}\"")" ]; then
+    VALUE="$(env_value "$KEY" "$MIN")"
     [ -n "$VALUE" ] && export "$KEY=$VALUE"
-  done
-fi
+  fi
+done
 if [ -z "${SENTRY_DSN:-}" ] && [ "${ALLOW_BLIND_RELEASE:-}" != "1" ]; then
   echo "!! 拿不到 SENTRY_DSN —— 这一版崩了我们不会知道，而那和「没崩」看起来一样。" >&2
   echo "   sentry.io 建一个 macOS 项目，把 DSN 写进 mac/.env（见 founder-todo §15）。" >&2
