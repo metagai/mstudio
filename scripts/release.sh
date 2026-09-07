@@ -193,9 +193,21 @@ echo "==> Tagging $TAG"
 git tag "$TAG"
 git push origin "$TAG"
 
+# **这个名字只在这里定义一次。**
+#
+# ⚠ 2026-09-06 它咬了 0.1.17：这一行原来定义在 80 行之后，而 appcast 那段
+# Python **自己又拼了一遍** `METAG-{v}.dmg`（没有 `-mac`）。于是包传上去叫
+# 一个名字、appcast 告诉所有人另一个名字，**每个用户的自动更新拿到 404**。
+# 而它上面那句注释当时写着"名字只有一处定义，它是构造上成立的" ——
+# **那句话是备忘，不是判据**：说得准，也没拦住任何东西。
+#
+# 现在提到 appcast 之前，并 `export` 进那段 Python。三处（appcast 的 URL、
+# scp 的目标名、R2/OSS 的键）从此真的只有一个来源。
+REMOTE_DMG="METAG-$VERSION-mac.dmg"
+
 echo "==> Updating appcast.xml"
 PUBDATE="$(date -R)"
-export VERSION NEW_BUILD PUBDATE LENGTH SIGNATURE
+export VERSION NEW_BUILD PUBDATE LENGTH SIGNATURE REMOTE_DMG
 python3 <<'PYEOF'
 import os
 v = os.environ["VERSION"]
@@ -209,7 +221,9 @@ s = os.environ["SIGNATURE"]
 # 也就是说这一行会把一个死链写进 appcast，**每个用户的自动更新当场坏掉**，
 # 而在此之前没人跑完过这个脚本，所以没人撞见。
 # 线上已发布的两条（0.1.7 / 0.1.8）用的都是 metag.ai，跟着它。
-url = f"https://metag.ai/mac/METAG-{v}.dmg"
+# **不许在这里再拼一次名字。** 名字由 `REMOTE_DMG` 一处定义 ——
+# 见它上面那段账：这一行曾经拼掉了 `-mac`，让 0.1.17 的自动更新指向一个不存在的文件。
+url = "https://metag.ai/mac/" + os.environ["REMOTE_DMG"]
 
 # **版本号在 `<item>` 里和 `<enclosure>` 上各写一遍。**
 #
@@ -271,11 +285,6 @@ PUBLISH_DIR="${PUBLISH_DIR:-/home/yons/metag/mac}"
 # 按服务器那个名字去传桶，传上去用户还是取不到。
 #
 # 桶里那两个名字是既成事实（0.1.15 / 0.1.16 已经在里面），所以统一到带 `-mac` 这一侧。
-# ⚠ 已发布的版本不受影响：appcast 里 0.1.16 那条指着旧名，服务器上那个文件不动。
-#
-# **下面 R2/OSS 那两个地址一律从这里派生，不许再各写一遍** ——
-# 名字只有一处定义，"三处一致"就不再需要一条判据去比对，它是构造上成立的。
-REMOTE_DMG="METAG-$VERSION-mac.dmg"
 
 # **先传 DMG，后传 appcast。** 反过来的话，中间那几十秒里 appcast 已经在
 # 告诉所有人有新版了，而那个包还没上去 —— 他们点更新，拿到 404。
@@ -361,7 +370,7 @@ if [[ "$R2_CODE" =~ ^20[06]$ && "$OSS_CODE" =~ ^20[06]$ ]]; then
   echo "==> 网站下载路也就位了（R2 $R2_CODE · OSS $OSS_CODE）"
 else
   echo "⚠️  网站那条下载路还没就位 —— R2 $R2_CODE · OSS $OSS_CODE" >&2
-  echo "    这两个桶要的是 METAG-$VERSION-mac.dmg（注意文件名和上面那条不一样）" >&2
+  echo "    这两个桶要的是 $REMOTE_DMG" >&2
   echo "    **在它们能取到之前，别让网关 meta 声称 $VERSION** —— " >&2
   echo "    网关按版本号拼下载地址，声称早一步 = 下载按钮两个区同时 404/403，而页面不报错。" >&2
 fi
