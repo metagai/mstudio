@@ -7,3 +7,62 @@
 # **空着别删。** 下一次有人加一句英文串而没翻，判据会红，那时该往这儿写。
 # 上一版这份名单是所有语言的并集 —— 一门补齐之后它还能静悄悄退回去，
 # 因为那个键仍在并集里。按语言登记之后就不会了。
+
+# ── 2026-09-07：A0i「他的图用在哪一镜」那两句 ──────────────────────
+# 我们维护的三门（en / zh-Hans / es）都翻了；**其余 25 门没翻，登记在这儿。**
+#
+# 为什么不顺手机翻 50 条：我读不了其中大部分语言，**交出去的会是
+# 一批我自己无法核对的句子** —— 那正是这个仓库一整天在清的那种东西
+# （"发出去没报错"不等于对）。宁可欠账写在明处。
+#
+# 清账条件：这两句在哪门语言里被真人翻了，就把那一行删掉。
+ar	Shot %@ opens on your image %@
+ar	Shot %@ takes its look from your image %@
+bn	Shot %@ opens on your image %@
+bn	Shot %@ takes its look from your image %@
+cs	Shot %@ opens on your image %@
+cs	Shot %@ takes its look from your image %@
+da	Shot %@ opens on your image %@
+da	Shot %@ takes its look from your image %@
+de	Shot %@ opens on your image %@
+de	Shot %@ takes its look from your image %@
+fi	Shot %@ opens on your image %@
+fi	Shot %@ takes its look from your image %@
+fr	Shot %@ opens on your image %@
+fr	Shot %@ takes its look from your image %@
+he	Shot %@ opens on your image %@
+he	Shot %@ takes its look from your image %@
+hi	Shot %@ opens on your image %@
+hi	Shot %@ takes its look from your image %@
+id	Shot %@ opens on your image %@
+id	Shot %@ takes its look from your image %@
+it	Shot %@ opens on your image %@
+it	Shot %@ takes its look from your image %@
+ja	Shot %@ opens on your image %@
+ja	Shot %@ takes its look from your image %@
+ko	Shot %@ opens on your image %@
+ko	Shot %@ takes its look from your image %@
+nb	Shot %@ opens on your image %@
+nb	Shot %@ takes its look from your image %@
+nl	Shot %@ opens on your image %@
+nl	Shot %@ takes its look from your image %@
+pl	Shot %@ opens on your image %@
+pl	Shot %@ takes its look from your image %@
+pt-BR	Shot %@ opens on your image %@
+pt-BR	Shot %@ takes its look from your image %@
+pt-PT	Shot %@ opens on your image %@
+pt-PT	Shot %@ takes its look from your image %@
+ru	Shot %@ opens on your image %@
+ru	Shot %@ takes its look from your image %@
+sv	Shot %@ opens on your image %@
+sv	Shot %@ takes its look from your image %@
+th	Shot %@ opens on your image %@
+th	Shot %@ takes its look from your image %@
+tr	Shot %@ opens on your image %@
+tr	Shot %@ takes its look from your image %@
+uk	Shot %@ opens on your image %@
+uk	Shot %@ takes its look from your image %@
+vi	Shot %@ opens on your image %@
+vi	Shot %@ takes its look from your image %@
+zh-Hant	Shot %@ opens on your image %@
+zh-Hant	Shot %@ takes its look from your image %@
