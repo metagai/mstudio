@@ -51,7 +51,7 @@ SCOPE = re.compile(r"^SCOPE\s+(\d+)\s+(\S.*)$", re.M)
 
 # 主仓那 7 把还没声明 scope 的尺子。**只能往下调。**
 # 它不判红是因为那是别人的代码；它是棘轮是因为"整类放过"等于没有判据。
-FOREIGN_UNDECLARED_HIGH_WATER = 7
+FOREIGN_UNDECLARED_HIGH_WATER = 2
 
 
 def declares_scope(script: Path) -> tuple[bool, str]:
