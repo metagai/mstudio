@@ -149,3 +149,34 @@ struct MCPAccessTokenStoreTests {
         #expect(try MCPAccessToken.loadOrCreate(at: url) == after)
     }
 }
+
+/// **帮助里印的那条路径，必须是这个版本真的在用的那条。**
+///
+/// 2026-09-07 查 A0h（「外面那扇门不认它自己发的票」）时的真因：
+/// `/Applications/METAG.app` 是 **0.1.8**，可执行文件还叫 `PalmierPro`，
+/// 令牌读的是 `~/Library/Application Support/PalmierPro/mcp-token`；
+/// 而查的人读的是 `.../METAG/mcp-token`（新版本写的那份）。
+/// **门是好的，钥匙拿错了。**
+///
+/// 实测：PalmierPro 那份 → HTTP 200；METAG 那份 → 403。
+///
+/// 误导人的正是那句 403 文案——它已经改口叫 METAG，而路径还是 PalmierPro。
+/// 帮助里那句同样是写死的字面量：`directoryName` 再改一次，它就开始说谎，
+/// 而没有任何东西会红。这一条让它红。
+@Suite("帮助里那条令牌路径")
+struct MCPTokenPathCopyTests {
+    @Test func theHelpTextNamesTheDirectoryWeActuallyUse() throws {
+        let src = try String(
+            contentsOf: URL(fileURLWithPath: #filePath)
+                .deletingLastPathComponent().deletingLastPathComponent()
+                .deletingLastPathComponent().deletingLastPathComponent()
+                .appendingPathComponent("Sources/PalmierPro/Help/MCPInstructionsPane.swift"),
+            encoding: .utf8
+        )
+        #expect(src.contains("Application Support/\(AppIdentity.directoryName)/mcp-token"),
+                "帮助里印的路径和 AppIdentity.directoryName 对不上 —— 用户会去读一个空文件夹")
+        #expect(MCPAccessToken.fileURL.path
+            .hasSuffix("Application Support/\(AppIdentity.directoryName)/mcp-token"),
+                "令牌真正落盘的位置漂了")
+    }
+}
