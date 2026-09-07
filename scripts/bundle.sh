@@ -337,7 +337,10 @@ if [ "$MODE" = "fast" ]; then
   exit 0
 fi
 
-DSYM="$ROOT/.build/PalmierPro.dSYM"
+# 名字跟着 app 走。**这一处是纯一致性** —— sentry-cli 按 UUID 认符号表，
+# 路径叫什么都能传上去（09-07 实测 UUID 与二进制一致）。
+# 但一个叫 PalmierPro.dSYM 的目录旁边放着 METAG.app，下一个人会以为传错了。
+DSYM="$ROOT/.build/METAG.dSYM"
 echo "==> Generating dSYM"
 rm -rf "$DSYM"
 dsymutil "$APP/Contents/MacOS/METAG" -o "$DSYM"
