@@ -251,7 +251,13 @@ struct HomeHero: View {
         line = typed
         busy = true
         Task {
-            await AppState.shared.startFilm(from: prompt, assets: PromptPaste.images(in: attachments))
+            // **他剧本里写着几镜就是几镜。** 卡片上已经数出来并印给他看了，
+            // 到这一步再丢掉、让 METAG 重新猜一遍，等于没读他那份稿子。
+            await AppState.shared.startFilm(
+                from: prompt,
+                assets: PromptPaste.images(in: attachments),
+                shots: PromptPaste.scriptedShots(in: attachments)
+            )
             busy = false
         }
     }

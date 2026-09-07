@@ -56,11 +56,13 @@ final class AppState {
     struct PendingDraft: Equatable {
         let prompt: String?
         let assets: [URL]
+        /// **他自己写在剧本里的镜数。** nil = 没写，交给 METAG 定。
+        let shots: Int?
     }
     private(set) var pendingDraft: PendingDraft?
 
-    func queueDraft(prompt: String?, assets: [URL]) {
-        pendingDraft = PendingDraft(prompt: prompt, assets: assets)
+    func queueDraft(prompt: String?, assets: [URL], shots: Int? = nil) {
+        pendingDraft = PendingDraft(prompt: prompt, assets: assets, shots: shots)
     }
 
     /// 面板来取。**取走即清**，第二个面板不会再开一张。
@@ -272,7 +274,7 @@ final class AppState {
     /// （顺带治掉列表里那些 `tl-074321` 的机器名）。名字撞了就往后加序号，
     /// 而不是弹一个错误让他重来。
     @MainActor
-    func startFilm(from line: String, assets: [URL] = []) async {
+    func startFilm(from line: String, assets: [URL] = [], shots: Int? = nil) async {
         let name = Self.projectName(from: line)
         do {
             var attempt = name
@@ -294,7 +296,7 @@ final class AppState {
         }
         // 项目开好了再把草案面板端上来：面板活在编辑器的媒体面板里，
         // 而首页那一刻还没有项目。
-        handOffDraft(prompt: line, assets: assets)
+        handOffDraft(prompt: line, assets: assets, shots: shots)
     }
 
     /// 把那一句交给面板。**两条路都留着** —— 面板醒着走通知，醒得晚走排队那一份。
@@ -302,10 +304,11 @@ final class AppState {
     /// 抽出来是因为判据够不着 `startFilm`（它要真的建一个工程、开一扇窗）。
     /// 而"到底排没排队"正是这件事的全部：第一版我只测了 `queueDraft` 本身，
     /// **把 `startFilm` 里那一行删掉，判据照样全绿。**
-    func handOffDraft(prompt: String?, assets: [URL]) {
-        queueDraft(prompt: prompt, assets: assets)
+    func handOffDraft(prompt: String?, assets: [URL], shots: Int? = nil) {
+        queueDraft(prompt: prompt, assets: assets, shots: shots)
         var info: [String: Any] = ["assets": assets]
         if let prompt { info["prompt"] = prompt }
+        if let shots { info["shots"] = shots }
         NotificationCenter.default.post(name: .metagStartDraft, object: nil, userInfo: info)
     }
 

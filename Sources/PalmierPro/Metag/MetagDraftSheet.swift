@@ -414,6 +414,8 @@ struct MetagDraftSheet: View {
     /// 而且写完立刻就开跑：面板一打开草案就在起，他等的是片子不是表单。
     var initialPrompt: String?
     var initialAssets: [URL] = []
+    /// 他剧本里写明的镜数。nil = 没写，交给 METAG 定。
+    var initialShots: Int?
 
     @Environment(\.dismiss) private var dismiss
     @Environment(EditorViewModel.self) private var editor
@@ -584,6 +586,9 @@ struct MetagDraftSheet: View {
     private func seedIfNeeded() {
         guard let initialPrompt, model.prompt.isEmpty, model.jobId == nil else { return }
         model.prompt = initialPrompt
+        // 他剧本里写明了几镜就用几镜。**没写才交给 METAG 定** ——
+        // 卡片上已经把这个数印给他看了，这里再丢掉等于没读他那份稿子。
+        model.chosenShots = initialShots
         attachments = initialAssets.map {
             PromptAttachment(title: $0.lastPathComponent, kind: .image($0))
         }

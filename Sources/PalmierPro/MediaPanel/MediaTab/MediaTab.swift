@@ -41,6 +41,7 @@ struct MediaTab: View {
     /// 首屏那句话，带进草案面板 —— 他已经写过一次了，不该再写一遍。
     @State private var pendingPrompt: String?
     @State private var pendingAssets: [URL] = []
+    @State private var pendingShots: Int?
 
     enum ViewMode: String, CaseIterable {
         case folder, flat, grouped
@@ -203,6 +204,7 @@ struct MediaTab: View {
             guard let queued = AppState.shared.takePendingDraft() else { return }
             pendingPrompt = queued.prompt
             pendingAssets = queued.assets
+            pendingShots = queued.shots
             showDraftSheet = true
         }
         .onReceive(NotificationCenter.default.publisher(for: .metagStartDraft)) { note in
@@ -212,6 +214,7 @@ struct MediaTab: View {
             // 首页粘进来的图跟着一起过来 —— 中间丢掉的话，
             // 他会以为我们没看见他贴的那张参考图。
             pendingAssets = note.userInfo?["assets"] as? [URL] ?? []
+            pendingShots = note.userInfo?["shots"] as? Int
             showDraftSheet = true
         }
         .onReceive(NotificationCenter.default.publisher(for: .metagOpenFilm)) { note in
@@ -219,7 +222,7 @@ struct MediaTab: View {
             Task { await MetagJobOpener.open(jobId: jobId, into: editor) }
         }
         .sheet(isPresented: $showDraftSheet) {
-            MetagDraftSheet(initialPrompt: pendingPrompt, initialAssets: pendingAssets)
+            MetagDraftSheet(initialPrompt: pendingPrompt, initialAssets: pendingAssets, initialShots: pendingShots)
         }
     }
 

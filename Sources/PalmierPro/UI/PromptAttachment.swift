@@ -225,6 +225,13 @@ enum PromptPaste {
             .joined(separator: "\n\n")
     }
 
+    /// 这些稿子里一共写明了几镜。**一份都没写就是 nil** —— 那时该由
+    /// 读过提示词的那一方去定，不是我们凑一个数。
+    static func scriptedShots(in attachments: [PromptAttachment]) -> Int? {
+        let total = attachments.compactMap(\.shots).reduce(0, +)
+        return total > 0 ? total : nil
+    }
+
     static func images(in attachments: [PromptAttachment]) -> [URL] {
         attachments.compactMap(\.imageURL)
     }
