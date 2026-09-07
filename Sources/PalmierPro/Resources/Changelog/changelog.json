@@ -2,6 +2,19 @@
   "changelogURL": "https://metag.ai/docs",
   "entries": [
     {
+      "version": "0.1.17",
+      "date": "2026-09-06",
+      "sections": [
+        {
+          "heading": "Improved",
+          "items": [
+            "The wait shows you something sooner. While your draft is being written, the app now listens on a live connection to the server instead of asking again every few seconds. Your storyboard lines appear as they are written, and the first picture appears as soon as it exists — several seconds earlier than before, and without the app having to go and ask.",
+            "Lines that have appeared stay put. A hiccup on the server used to be able to take a sentence back off the screen after you had already read it."
+          ]
+        }
+      ]
+    },
+    {
       "version": "0.1.16",
       "date": "2026-09-06",
       "sections": [
