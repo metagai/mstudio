@@ -38,8 +38,16 @@ struct MetagFilmStrip: View {
     /// 全到齐了。最后那一下落定挂在它上面。
     private var complete: Bool { shots > 0 && frames.count >= shots }
 
-    /// 摆几格。**不虚构格子** —— 网关报了镜数就按它，报不上来就按已到的张数。
-    private var slots: Int { max(shots, frames.keys.map { $0 + 1 }.max() ?? 0) }
+    /// 摆几格。**不虚构格子** —— 每一格都对着一件真到手的东西：
+    /// 网关报的镜数、已到的首帧、或者已经写出来的那几句旁白。
+    ///
+    /// ⚠ 2026-09-07 用取景器逐时刻画出来才发现的洞：默认路径上
+    /// `chosenShots` 是 nil（「METAG picks how many shots」是默认，
+    /// 而那是对的默认），于是 `shots == 0`，**这里原来算出 0 格** ——
+    /// 分镜一句句流回来，屏幕上一个字都不显示。
+    /// t=0 和"第一句已到"两张图**逐字节相同**。
+    /// 合伙人把首句从 13.5 秒提到 6.55 秒，Mac 用户一秒都没看见。
+    private var slots: Int { max(shots, narrations.count, frames.keys.map { $0 + 1 }.max() ?? 0) }
 
     // 判据要能问到这两个数，而它们是这块幕布"说的是不是真话"的全部内容。
     var slotCountForTesting: Int { slots }
@@ -63,7 +71,10 @@ struct MetagFilmStrip: View {
     var body: some View {
         VStack(alignment: .leading, spacing: AppTheme.Spacing.smMd) {
             grid
-            if let line = Self.arrivedLine(arrived: frames.count, total: slots) {
+            // **总数只有网关报了才敢说。** 镜数未知时格子是按已到的旁白摆的，
+            // 那时候印「1 镜里到了 0」，说的是一个还会变的总数 ——
+            // 比不说更糟（同这块幕布自己那条"不编一个出来"）。
+            if shots > 0, let line = Self.arrivedLine(arrived: frames.count, total: slots) {
                 Text(verbatim: line)
                     .font(.system(size: AppTheme.FontSize.xs))
                     .foregroundStyle(complete ? AppTheme.Accent.brand : AppTheme.Text.tertiaryColor)

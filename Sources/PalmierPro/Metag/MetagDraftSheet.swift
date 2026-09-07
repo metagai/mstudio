@@ -222,6 +222,13 @@ final class MetagDraftModel: ObservableObject {
     /// 判据要能摆出「分镜写到一半」这个状态，而 `job` 是 private(set)。
     func applyJobForTesting(_ j: MetagGateway.Job) { job = j }
 
+    /// 把这一屏摆到「他按下之后、还在等」那个分支上。
+    ///
+    /// A0e 写着「没有人验过那 17 秒的屏幕对一个真人是什么感受」——
+    /// 而验它的前提是能把它画出来，`jobId` 是 `private(set)`，从外面摆不进去。
+    func stageWaitForTesting(jobId id: String = "probe") { jobId = id }
+    func applyFrameForTesting(_ shot: Int, _ image: NSImage) { frames[shot] = image }
+
     private func noteLag(readyAt: Int64?) {
         guard firstFrameLagMs == nil, let readyAt else { return }
         let now = Int64(Date().timeIntervalSince1970 * 1000)
@@ -489,7 +496,17 @@ struct MetagDraftSheet: View {
 
     @Environment(\.dismiss) private var dismiss
     @Environment(EditorViewModel.self) private var editor
-    @StateObject private var model = MetagDraftModel()
+    @StateObject private var model: MetagDraftModel
+
+    /// `model` 只为取景器留的口子：等待中的那几个时刻从外面摆进来，
+    /// 否则这一屏只能靠真跑一次草案才看得到（而那要花全站每日免费额度）。
+    init(initialPrompt: String? = nil, initialAssets: [URL] = [], initialShots: Int? = nil,
+         model: MetagDraftModel = MetagDraftModel()) {
+        self.initialPrompt = initialPrompt
+        self.initialAssets = initialAssets
+        self.initialShots = initialShots
+        _model = StateObject(wrappedValue: model)
+    }
     @State private var engines: [MetagGateway.Pricing.Engine] = []
     @State private var engine = MetagDraftSheet.fallbackEngineID
     // 免费试渲：一人一次，所以只有"没用过 / 正在渲 / 已经用过"三种
@@ -614,6 +631,18 @@ struct MetagDraftSheet: View {
                 draftStage
             } else {
                 VStack(alignment: .leading, spacing: AppTheme.Spacing.smMd) {
+                    // **第一句分镜到达之前，屏幕上唯一真属于他的东西就是他那句话。**
+                    //
+                    // 2026-09-07 取景器逐时刻画出来：按下之后那一屏是
+                    // 「先看草案，再决定出片」加一行小灰字，**他刚打的那句话
+                    // 连一个字都不在**。A0e 数到 45/63 的真人在 10 秒内
+                    // 不再做任何事，而第一张画面在 17.1 秒。
+                    //
+                    // 这里不编任何进度、不摆假格子 —— 只是把他的话留在台上，
+                    // 直到导演写出第一句来替换它。
+                    if model.narrations.isEmpty, !model.prompt.isEmpty {
+                        CollapsingProse(text: model.prompt)
+                    }
                     // 说的是**谁在干什么**，而不是干到百分之几。
                     // 原来这里是一个转圈加一句"正在起草"；那句话曾经写着"约 40 秒"，
                     // 而实测 53–97 秒 —— 被告知 40 秒却等了 90 秒的人会觉得产品坏了。

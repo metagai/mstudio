@@ -465,3 +465,77 @@ struct ViewSnapshots {
         }
     }
 }
+
+/// **他按下之后那 17 秒，一刻一刻画出来。**
+///
+/// A0e★ 的结论是：45/63 的真人在 10 秒内就不再做任何事，而第一张画面在
+/// 17.1 秒。那一节最后写着 ——
+/// 「问题不是没东西给他看，是**没有人验过那 17 秒的屏幕对一个真人是什么感受**」。
+///
+/// 仓里此前只有 `MetagFilmStrip` 单独一块的图，**整屏没有人画过**，
+/// 更没有人按时刻排开看。这一组补的就是它：不判好坏（那要人看图），
+/// 只保证四个时刻都画得出来、且**彼此不同** —— 四张一模一样的图意味着
+/// 这 17 秒里屏幕上什么都没发生，而那正是要查的事。
+///
+/// 图落在 `.build/snapshots/wait-t*.png`。
+@Suite("等待那一屏，按时刻")
+@MainActor
+struct WaitScreenMomentsTests {
+    private static func job(shots: [String], stage: String, status: String = "running") throws -> MetagGateway.Job {
+        let s = shots.map { #"{"asset":null,"asset_use":null,"narration":"\#($0)","video":"v","audio":"a"}"# }
+        let json = #"{"job_id":"probe","status":"\#(status)","error":null,"shots":[\#(s.joined(separator: ","))],"cover":null,"shots_done":0,"stage":"\#(stage)"}"#
+        return try JSONDecoder().decode(MetagGateway.Job.self, from: Data(json.utf8))
+    }
+
+    /// 四个时刻：按下 / 首句到 / 分镜齐 / 第一帧到。
+    @Test func theFirstSeventeenSeconds() throws {
+        let lines = [
+            "天台的门被推开，风灌进来。",
+            "她没有往下看，只是把手放在栏杆上。",
+            "远处的城市一格一格亮起来。",
+            "最后一盏灯亮起时，她转身下楼。",
+        ]
+        let swatch = NSImage(size: NSSize(width: 160, height: 90), flipped: false) { rect in
+            NSColor.systemIndigo.setFill(); rect.fill(); return true
+        }
+
+        var pixels: [String: Data] = [:]
+        func shoot(_ name: String, _ stage: (MetagDraftModel) throws -> Void) throws {
+            let model = MetagDraftModel()
+            model.prompt = "一个女孩在天台上看城市的灯一格一格亮起来"
+            model.stageWaitForTesting()
+            try stage(model)
+            let host = NSHostingView(rootView: AnyView(
+                MetagDraftSheet(initialPrompt: nil, model: model)
+                    .environment(EditorViewModel())
+                    .padding(AppTheme.Spacing.lg)
+                    .background(Color.white)
+            ))
+            host.frame = CGRect(origin: .zero, size: host.fittingSize)
+            host.layoutSubtreeIfNeeded()
+            let rep = try #require(host.bitmapImageRepForCachingDisplay(in: host.bounds))
+            host.cacheDisplay(in: host.bounds, to: rep)
+            let png = try #require(rep.representation(using: .png, properties: [:]))
+            let dir = URL(fileURLWithPath: #filePath).deletingLastPathComponent()
+                .deletingLastPathComponent().deletingLastPathComponent()
+                .deletingLastPathComponent().appendingPathComponent(".build/snapshots")
+            try? FileManager.default.createDirectory(at: dir, withIntermediateDirectories: true)
+            try png.write(to: dir.appendingPathComponent("\(name).png"))
+            pixels[name] = png
+        }
+
+        // t=0：他刚按下。**默认路径上 `chosenShots` 是 nil**，于是幕布
+        // `shots: 0` —— 一个格子都没有，连「已到 0/N」那行都不印。
+        try shoot("wait-t0") { _ in }
+        try shoot("wait-t1-first-line") { $0.applyStreamed([lines[0]]) }
+        try shoot("wait-t2-storyboard") { $0.applyJobForTesting(try Self.job(shots: lines, stage: "frames")) }
+        try shoot("wait-t3-first-frame") {
+            $0.applyJobForTesting(try Self.job(shots: lines, stage: "frames"))
+            $0.applyFrameForTesting(0, swatch)
+        }
+
+        // **四张一样，就说明这 17 秒里屏幕上什么都没发生。**
+        #expect(Set(pixels.values).count == pixels.count,
+                "等待期间有两个时刻画出来一模一样 —— 那一段他盯着的是一张静止的图")
+    }
+}
