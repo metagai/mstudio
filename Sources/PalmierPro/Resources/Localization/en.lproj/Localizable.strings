@@ -1372,3 +1372,5 @@
 "using OpenAI API key" = "using OpenAI API key";
 "~%@s · %@ credits · ~%@ min" = "~%@s · %@ credits · ~%@ min";
 "“.%@” isn’t a subtitle file we can read — use .srt or .vtt." = "“.%@” isn’t a subtitle file we can read — use .srt or .vtt.";
+"Shot %@ takes its look from your image %@" = "Shot %@ takes its look from your image %@";
+"Shot %@ opens on your image %@" = "Shot %@ opens on your image %@";

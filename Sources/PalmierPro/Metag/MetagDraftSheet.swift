@@ -732,6 +732,11 @@ struct MetagDraftSheet: View {
         )
     }
 
+    /// 逐镜那几句「你的第 N 张图用在这里」。一处算，视图只读。
+    private var assetSentences: [String] {
+        MetagAssetUse.sentences(for: model.job?.shots ?? [])
+    }
+
     private var draftStage: some View {
         VStack(alignment: .leading, spacing: AppTheme.Spacing.smMd) {
             // **幕布真正拉开的那一刻。**
@@ -746,6 +751,27 @@ struct MetagDraftSheet: View {
                 MetagDraftPlayer(jobId: model.jobId ?? "", name: preview)
             } else {
                 filmStrip
+            }
+
+            // **他的图用在哪一镜。** 我们最稀有的那件事一直是看不见的：
+            // 他传三张图进去、导演逐镜分派了，而屏幕上没有一个字说这件事。
+            //
+            // 没有这两个键就整块不出现 —— 网关那一半还没接（09-07 核过），
+            // 那时候一个占位文案都不许有。
+            if !assetSentences.isEmpty {
+                VStack(alignment: .leading, spacing: AppTheme.Spacing.xs) {
+                    ForEach(assetSentences, id: \.self) { line in
+                        HStack(spacing: AppTheme.Spacing.xs) {
+                            Image(systemName: "photo.on.rectangle.angled")
+                                .font(.system(size: AppTheme.FontSize.xs))
+                                .foregroundStyle(AppTheme.Accent.brand)
+                            Text(verbatim: line)
+                                .font(.system(size: AppTheme.FontSize.xs))
+                                .foregroundStyle(AppTheme.Text.secondaryColor)
+                                .lineLimit(1)
+                        }
+                    }
+                }
             }
 
             ForEach(Array(model.narrations.enumerated()), id: \.offset) { i, text in

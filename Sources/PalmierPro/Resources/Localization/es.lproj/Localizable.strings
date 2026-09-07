@@ -1549,3 +1549,5 @@
 "you@example.com — so we can reply" = "tu@ejemplo.com — para que podamos responder";
 "~%@s · %@ credits · ~%@ min" = "~%@ s · %@ créditos · ~%@ min";
 "“.%@” isn’t a subtitle file we can read — use .srt or .vtt." = "«.%@» no es un archivo de subtítulos que podamos leer: usa .srt o .vtt.";
+"Shot %@ takes its look from your image %@" = "El plano %@ toma su aspecto de tu imagen %@";
+"Shot %@ opens on your image %@" = "El plano %@ abre con tu imagen %@";

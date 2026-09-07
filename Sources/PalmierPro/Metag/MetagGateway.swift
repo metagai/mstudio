@@ -192,6 +192,21 @@ enum MetagGateway {
 
     struct Job: Decodable, Sendable {
         struct Shot: Decodable, Sendable {
+            /// 这一镜用了他带来的第几张图。**nil = 这一镜没用他的图。**
+            ///
+            /// A0 决定二点名的那件"我们真正稀有的事"就是这个：
+            /// 一句话 → 分镜 → **把用户自己的图分派到具体镜上**
+            /// （2026-09-05 实测：镜0→素材0、镜1→素材1、镜2→素材2）。
+            ///
+            /// **而客户端一直看不见它发生过** —— 分镜里有（`storyboard.py`
+            /// 定义并校验），worker 真的按它拼 references，
+            /// 而两条 job 路都没把这两个键回给客户端。
+            /// 他传三张图进去、导演逐镜分派了，屏幕上没有一个字说这件事。
+            let asset: Int?
+            /// 怎么用那张图：`reference`（当参考）或 `first_frame`（当首帧）。
+            /// **两者对用户的意思完全不同**：一个是"照着这个感觉画"，
+            /// 一个是"这一镜就从这张图开始"。
+            let asset_use: String?
             let narration: String
             let video: String
             let audio: String
