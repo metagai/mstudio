@@ -956,6 +956,17 @@ enum MetagGateway {
         _ = try await send(req, as: Response.self)
     }
 
+    /// 一张只开这一个任务的门的票：**五分钟、一次性**。
+    ///
+    /// 两处用它：`<video src>` 那条取件路，和 WS 进度流。
+    /// **WS 带不了 header，凭证只能进 query —— 而 query 会进访问日志、
+    /// 进任何中间代理的日志。** 网关那侧已经把 `?token=`（七天 JWT）整条拆掉，
+    /// 只认票据；泄漏一张票和泄漏一把七天 JWT 不是一个量级。
+    ///
+    /// ⚠ 2026-09-06 接 WS 时我**又写了一个一模一样的**（`jobTicket`）——
+    /// 同一个接口、同一个返回、同一个文件里，相隔七十行。
+    /// 仓库第一条编码原则就是"先检查本地是否已有实现"，而我没查。
+    /// **两份都对、都能跑、判据全绿 —— 重复不会红。**
     static func fileTicket(job id: String) async throws -> String {
         struct Response: Decodable { let ticket: String }
         return try await send(request("api/v1/jobs/\(id)/ticket", method: "POST"), as: Response.self).ticket
@@ -1017,17 +1028,6 @@ enum MetagGateway {
         var isTerminal: Bool { status == "done" || status == "failed" }
     }
 
-    /// 一张只开这一个任务的门的票：**五分钟、一次性**。
-    ///
-    /// WS 带不了 header，凭证只能进 query —— **而 query 会进访问日志、
-    /// 进任何中间代理的日志**。网关那侧已经把 `?token=`（七天 JWT）整条拆掉，
-    /// 只认票据；泄漏一张票和泄漏一把七天 JWT 不是一个量级。
-    private static func jobTicket(_ id: String) async throws -> String {
-        struct Ticket: Decodable { let ticket: String }
-        return try await send(
-            request("api/v1/jobs/\(id)/ticket", method: "POST"), as: Ticket.self).ticket
-    }
-
     /// WS 的地址。**抽出来是为了能断一件安全的事**：
     /// 这个 URL 里除了票据，不许出现任何别的凭证。
     ///
@@ -1050,7 +1050,7 @@ enum MetagGateway {
         AsyncThrowingStream { continuation in
             let task = Task {
                 do {
-                    let ticket = try await jobTicket(id)
+                    let ticket = try await fileTicket(job: id)
                     var req = URLRequest(url: progressURL(job: id, ticket: ticket))
                     req.setValue(clientTag, forHTTPHeaderField: "X-Metag-Client")
                     let ws = URLSession.shared.webSocketTask(with: req)

@@ -89,6 +89,29 @@ struct OneGatewayExitTests {
                 """)
     }
 
+    /// **同一个接口只能有一个出口。**
+    ///
+    /// ⚠ 2026-09-06 我接 WS 时写了 `jobTicket(_:)`，而 `fileTicket(job:)`
+    /// **早就在同一个文件里、干的是一模一样的事**（同一个接口、同一个返回），
+    /// 相隔七十行。仓库第一条编码原则就是"先检查本地是否已有实现"，我没查。
+    ///
+    /// **两份都对、都能跑、判据全绿 —— 重复不会红。**
+    /// 而它不是"多写了几行"：两份实现会各自演化，
+    /// 到某一天一份带上了新的头、另一份没有，而没有任何东西会说话。
+    @Test func onlyOnePlaceAsksForATicket() throws {
+        let offenders = swiftFiles(under: sourceRoot).compactMap { url -> String? in
+            guard let s = try? String(contentsOf: url, encoding: .utf8) else { return nil }
+            let n = s.components(separatedBy: "/ticket\"").count - 1
+            return n > 0 ? "\(url.lastPathComponent)×\(n)" : nil
+        }
+        #expect(offenders == ["MetagGateway.swift×1"],
+                """
+                取票的地方不止一处：\(offenders)
+                用 `MetagGateway.fileTicket(job:)` —— 两份实现会各自演化，
+                到某一天一份带上了新的头、另一份没有，而没有任何东西会说话。
+                """)
+    }
+
     /// 工厂本身还在，且真的会盖那个头。
     /// **不断这一条的话，工厂被删掉之后上面那条会因为无人可查而恒真。**
     @Test func theFactoryStillStampsTheHeader() {
