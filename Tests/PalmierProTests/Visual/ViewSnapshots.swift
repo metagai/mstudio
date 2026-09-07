@@ -527,6 +527,9 @@ struct WaitScreenMomentsTests {
         // t=0：他刚按下。**默认路径上 `chosenShots` 是 nil**，于是幕布
         // `shots: 0` —— 一个格子都没有，连「已到 0/N」那行都不印。
         try shoot("wait-t0") { _ in }
+        // t≈1.5s：钩子到了。**这是这段等待里最早到的、属于他那部片子的东西**
+        // （合伙人 09-07 在 web 上量的）。Mac 此前一个字都没解。
+        try shoot("wait-t0b-hook") { $0.applyHook("她站在天台上，等一座城市替她把灯点完。") }
         try shoot("wait-t1-first-line") { $0.applyStreamed([lines[0]]) }
         try shoot("wait-t2-storyboard") { $0.applyJobForTesting(try Self.job(shots: lines, stage: "frames")) }
         try shoot("wait-t3-first-frame") {

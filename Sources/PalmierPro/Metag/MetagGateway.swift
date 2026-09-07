@@ -235,6 +235,16 @@ enum MetagGateway {
         /// `shots` 要等整个 storyboard 步跑完才有；这几句是一句一句到的。
         /// 二者是同一份分镜的两个时刻，不是两份东西。
         let storyboard_preview: [String]?
+        /// **模型读完他那句话之后写回来的一句。**
+        ///
+        /// 网关两条路都在发（`ProgressPeek` 同时并进 WS 推送和 REST 的 job），
+        /// 合伙人 09-07 在 web 上量到它 **1.5 秒**就到 —— 而第一句分镜要 6.5 秒、
+        /// 第一张画面要 17 秒。**它是这段等待里最早到的、属于他那部片子的东西。**
+        ///
+        /// Mac 此前一个字都没解（全仓 grep `hook_line` 0 处）——
+        /// 又一台做好了没接线的机器。接它比补版面对：
+        /// **那 17 秒里能放的东西很多，而只有它是别处给不了的。**
+        let hook_line: String?
         /// 逐镜首帧。**等待期间用它把空白换成真实画面** ——
         /// 图早就画好了（草案阶段或出片时画的），只是从没回给过客户端。
         /// 盯着一个转圈和盯着自己片子的开场画面，是两种等待。
@@ -1044,6 +1054,8 @@ enum MetagGateway {
         let first_frames: [String]?
         let first_frame_at_ms: Int64?
         let error_kind: String?
+        /// 模型读完他那句话之后写回来的一句。见 `Job.hook_line`。
+        let hook_line: String?
         var isTerminal: Bool { status == "done" || status == "failed" }
     }
 

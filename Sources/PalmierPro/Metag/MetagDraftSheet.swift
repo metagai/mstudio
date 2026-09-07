@@ -98,6 +98,20 @@ final class MetagDraftModel: ObservableObject {
     /// WS 那条路送来的分镜预览。**只进这一个地方**，
     /// 汇合的规则在 `narrations` 里，就一处。
     @Published private(set) var streamed: [String] = []
+
+    /// WS 那条路送来的那句钩子。**到了就不再变** ——
+    /// 已经出现在屏幕上的一句话被收回去，比它从没出现过更糟
+    /// （同「分镜句子不许被拿走」那条）。
+    @Published private(set) var streamedHook: String?
+
+    /// 模型读完他那句话之后写回来的一句。两条路送同一样东西：
+    /// WS 先到，REST 的 job 里也有，取先拿到的那个。
+    var hookLine: String? { streamedHook ?? job?.hook_line }
+
+    func applyHook(_ line: String?) {
+        guard streamedHook == nil, let line, !line.isEmpty else { return }
+        streamedHook = line
+    }
     /// 当前旁白人格。网关认不出的值一律当没有 —— 宁可不显示，也不显示一个错的。
     var narrator: MetagNarrator? { job?.narrator.flatMap(MetagNarrator.init(rawValue:)) }
     var ready: Bool { job?.status == "done" && !(job?.shots.isEmpty ?? true) }
@@ -412,6 +426,7 @@ final class MetagDraftModel: ObservableObject {
             do {
                 for try await p in MetagGateway.progress(job: id) {
                     await self.applyStreamed(p.storyboard_preview)
+                    await self.applyHook(p.hook_line)
                     await self.fetchFrames(id, names: p.first_frames,
                                            readyAt: p.first_frame_at_ms)
                 }
@@ -640,7 +655,21 @@ struct MetagDraftSheet: View {
                     //
                     // 这里不编任何进度、不摆假格子 —— 只是把他的话留在台上，
                     // 直到导演写出第一句来替换它。
-                    if model.narrations.isEmpty, !model.prompt.isEmpty {
+                    if let hook = model.hookLine {
+                        // **这段等待里最早到的、属于他那部片子的东西。**
+                        //
+                        // 合伙人 09-07 在 web 上量到它 1.5 秒就到；第一句分镜 6.5 秒，
+                        // 第一张画面 17.1 秒。而 45/63 的真人在 10 秒内就不再做任何事。
+                        //
+                        // 它不是进度、不是安慰话，是模型读完他那句话之后写回来的一句 ——
+                        // **那 17 秒里能放的东西很多，只有它是别处给不了的。**
+                        Text(verbatim: hook)
+                            .font(.system(size: AppTheme.FontSize.lg, weight: AppTheme.FontWeight.medium))
+                            .foregroundStyle(AppTheme.Text.primaryColor)
+                            .fixedSize(horizontal: false, vertical: true)
+                            .transition(.opacity)
+                    } else if !model.prompt.isEmpty {
+                        // 钩子还没到的那一两秒：台上留他自己那句话。
                         CollapsingProse(text: model.prompt)
                     }
                     // 说的是**谁在干什么**，而不是干到百分之几。
