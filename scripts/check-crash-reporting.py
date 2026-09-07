@@ -123,6 +123,13 @@ def main() -> int:
         "environment": "probe",
         "release": "probe",
         "tags": {"probe": "true"},
+        # ⚠ **这句话就是分组键，别改。**
+        #
+        # Sentry 按 message 分组，而这一组（MSTUDIO-2）已经被永久归档 ——
+        # 于是探针每跑一次不再给创始人发一封邮件。
+        # 2026-09-07 他收到过：10 封，全是这个探针。**十封"不是真崩溃"
+        # 会教会人跳过 Sentry 的邮件，而下一封可能是真的。**
+        # 改这句话等于开一个新分组，邮件立刻回来。
         "message": {"formatted": "METAG crash-reporting probe (not a real crash)"},
     }).encode()
     req = urllib.request.Request(
