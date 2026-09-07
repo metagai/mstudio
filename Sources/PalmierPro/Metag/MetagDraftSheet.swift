@@ -105,6 +105,12 @@ final class MetagDraftModel: ObservableObject {
     /// 首帧比成片早得多，没有理由让用户对着转圈干等。
     @Published private(set) var frames: [Int: NSImage] = [:]
 
+    /// 他按下"看一眼"的那一刻。**用户的表从这里开始走** ——
+    /// 提交那一个往返（国内实测 1.0–1.5 秒）也是他在等。
+    private var pressedAt: ContinuousClock.Instant?
+    /// 按下 → 他那句话的第一行上屏，多少毫秒。**A0e 的那个数。**
+    private(set) var firstLineMs: Int?
+
     /// 第一张画面**落到他屏幕上**的那一刻，距离它在世界上就绪隔了多久。
     ///
     /// 只记一次，跟着 `draft_seen` 一起报上去。
@@ -144,11 +150,30 @@ final class MetagDraftModel: ObservableObject {
 
     /// **只增不减。** 网关推的是当下的快照，而任务失败或者 Redis 抖一下时
     /// 它可能回一份更短的 —— 那会让屏幕上已经出现的句子当着他的面消失。
-    func applyStreamed(_ lines: [String]?) {
+    /// `now` 可注入 —— **不是为了好看，是因为不注入这条判据就是空的**：
+    /// 两次推送落在同一毫秒里，"只记第一次"和"每次都覆盖"算出来一样，
+    /// 于是变异改坏它判据照样绿（09-07 实测：变异 1 没红）。
+    func applyStreamed(_ lines: [String]?, now: ContinuousClock.Instant = .now) {
         guard let lines, lines.count > streamed.count else { return }
+        // **他那句话的第一行落到屏幕上的那一刻。**
+        //
+        // A0e 说要做的是「第 0–17 秒之间，屏幕上要有活的、属于他那句话的东西」，
+        // 而**这一刻在 Mac 上一直没被量过**。合伙人量的是 web（按下 → 12 秒才上屏），
+        // 而 Mac 走的是"先问再睡、1200ms 一轮"的轮询，两条路的形状不一样 ——
+        // **拿他那个数来改我这条路，正是我们数了一整天的那个错。**
+        //
+        // 所以不猜，装一个数：从**他按下去**算起（不是从轮询开始算），
+        // 因为提交那一个往返也是他在等。
+        // ⚠ 只取一次时钟：上一版把 `.now` 读了两遍再拼秒和阿托秒，
+        // 那是两个不同的时刻拼出来的一个数 —— 小，但它是假的。
+        if streamed.isEmpty, let pressedAt {
+            firstLineMs = pressedAt.duration(to: now).milliseconds
+        }
         streamed = lines
     }
 
+    /// 判据要摆出"他按下去了"这个状态，而 `pressedAt` 是 private。
+    func beginPressForTesting(at instant: ContinuousClock.Instant = .now) { pressedAt = instant }
     /// 判据要摆出"等待已经开始"这个状态，而 `waitStartedAt` 是 private。
     /// 同 `applyJobForTesting` / `noteLagForTesting`。
     func beginWaitForTesting() { waitStartedAt = .now }
@@ -226,8 +251,21 @@ final class MetagDraftModel: ObservableObject {
         guard !prompt.trimmingCharacters(in: .whitespaces).isEmpty, !busy else { return }
         // 这两步分开记。**「打了字」和「敢按下去」是两件事** ——
         // 合成一步就看不出"写完了却没按"这一段流失，而那一段最值钱。
+        pressedAt = .now
         MetagFunnel.track(.lineReady)
-        MetagFunnel.track(.draftStarted)
+        // **他带了几张自己的图。** 合伙人 09-07 查库：30 天 1482 条任务里
+        // 真人传过图的是 **0 个**，`asset_use` 被写出来 0 次 —— 也就是说
+        // A0 认定的那个楔子在生产上从来没运行过一次。
+        // 这一格现在会一直是 0，**而那正是它该存在的理由**：
+        // 哪天它不是 0 了，我们当天就知道。
+        MetagFunnel.track(.draftStarted, meta: [
+            "assets": imageURLs.count,
+            // 镜数是他自己剧本里写明的，还是交给 METAG 定的。
+            "scripted_shots": chosenShots != nil,
+            // **只记长度，永不记内容。** 一句话和一份剧本是两种用法，
+            // 而今天我们分不出来。
+            "prompt_chars": prompt.count,
+        ])
         busy = true; note = nil
         defer { busy = false }
         // 陌生人也能先看一眼。**他刚下完一个安装包，比网页访客更有耐心，
@@ -426,9 +464,11 @@ final class MetagDraftModel: ObservableObject {
                         // `first_frame_lag_ms`：首帧就绪到他真的看见，隔了多久。
                         // **这是那 4.4 秒第一次进报表** —— 在此之前它连量都量不了。
                         sawDraft = true
-                        MetagFunnel.track(.draftSeen, meta: firstFrameLagMs.map {
-                            ["first_frame_lag_ms": $0]
-                        })
+                        var seen: [String: Any] = [:]
+                        if let lag = firstFrameLagMs { seen["first_frame_lag_ms"] = lag }
+                        // **A0e 的那个数**：按下 → 他那句话的第一行上屏。
+                        if let first = firstLineMs { seen["first_line_ms"] = first }
+                        MetagFunnel.track(.draftSeen, meta: seen.isEmpty ? nil : seen)
                     }
                     return
                 }
@@ -932,5 +972,14 @@ struct MetagDraftSheet: View {
                 Text(blocked).font(.system(size: AppTheme.FontSize.xs)).foregroundStyle(AppTheme.Status.warningColor)
             }
         }
+    }
+}
+
+extension Duration {
+    /// 毫秒。**一次读时钟算出来的那个差** —— 秒和阿托秒来自同一个 `components`，
+    /// 不是两次 `.now` 拼的。
+    var milliseconds: Int {
+        let c = components
+        return Int(c.seconds) * 1000 + Int(c.attoseconds / 1_000_000_000_000_000)
     }
 }
