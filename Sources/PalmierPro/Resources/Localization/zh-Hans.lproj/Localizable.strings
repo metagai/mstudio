@@ -1549,5 +1549,5 @@
 "you@example.com — so we can reply" = "you@example.com，以便我们回复";
 "~%@s · %@ credits · ~%@ min" = "约 %@ 秒 · %@ credits · 约 %@ 分钟";
 "“.%@” isn’t a subtitle file we can read — use .srt or .vtt." = "「.%@」不是我们能读的字幕文件 —— 用 .srt 或 .vtt。";
-"Shot %@ takes its look from your image %@" = "第 %@ 镜照着你的第 %@ 张图";
-"Shot %@ opens on your image %@" = "第 %@ 镜从你的第 %@ 张图开始";
+"Shot %@ takes its look from your image %@" = "第 %1$@ 镜照着你的第 %2$@ 张图";
+"Shot %@ opens on your image %@" = "第 %1$@ 镜从你的第 %2$@ 张图开始";
