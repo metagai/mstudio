@@ -68,8 +68,13 @@ struct FirstFrameLagTests {
                 .deletingLastPathComponent().deletingLastPathComponent()
                 .appendingPathComponent("Sources/PalmierPro/Metag/MetagDraftSheet.swift"),
             encoding: .utf8)
+        // ⚠ 2026-09-06：这里原来钉的是 `noteFirstFrameLag(job)` 这个**名字**。
+        //    接 WS 快车道时那条路不再先拿到一整个 `Job`，调用点换成了
+        //    `noteLag(readyAt:)` —— **顺序一点没变，判据却红了。**
+        //    「判据的名字不是它的断言」：要断的是"图落地之后才记"，
+        //    钉的却是某一个函数叫什么。改成钉那个真正记数的入口。
         guard let assign = src.range(of: "frames[i] = img"),
-              let note = src.range(of: "noteFirstFrameLag(job)") else {
+              let note = src.range(of: "noteLag(readyAt: readyAt)") else {
             Issue.record("首帧落地那一段找不着了")
             return
         }

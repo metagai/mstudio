@@ -132,19 +132,32 @@ final class MetagDraftModel: ObservableObject {
     /// 判据要摆出"草案已经到他屏幕上了"。
     func markDraftSeenForTesting() { sawDraft = true }
 
+    /// 正在下的那几张 —— WS 和轮询会同时看到同一张首帧，
+    /// **不挡住的话就是两次下载**（浪费带宽，而且两条路都在等同一件事）。
+    private var fetching: Set<Int> = []
+
     private func fetchFrames(_ id: String, _ job: MetagGateway.Job) async {
-        guard let names = job.first_frames else { return }
-        for (i, name) in names.enumerated() where frames[i] == nil {
+        await fetchFrames(id, names: job.first_frames, readyAt: job.first_frame_at_ms)
+    }
+
+    /// **只认名字和就绪时刻** —— 这样 WS 那条路不用先拿到一整个 `Job` 就能下图，
+    /// 而"下图"正是那 17 秒里唯一真的救场的动作。
+    private func fetchFrames(_ id: String, names: [String]?, readyAt: Int64?) async {
+        guard let names else { return }
+        for (i, name) in names.enumerated() where frames[i] == nil && !fetching.contains(i) {
+            fetching.insert(i)
+            defer { fetching.remove(i) }
             guard let url = try? await MetagGateway.download(
                 job: id, name: name, to: FileManager.default.temporaryDirectory),
                   let img = NSImage(contentsOf: url) else { continue }
+            guard frames[i] == nil else { continue }
             let wasEmpty = frames.isEmpty
             frames[i] = img
             // **就绪到看见，中间那段第一次能量了。**
             //
             // 判据落在"图真的进了 `frames`"这一刻，不落在"我问到了"——
             // 那两件事之间还隔着一次下载，而那一段也算在他等的时间里。
-            if wasEmpty { noteFirstFrameLag(job) }
+            if wasEmpty { noteLag(readyAt: readyAt) }
         }
     }
 
@@ -314,6 +327,30 @@ final class MetagDraftModel: ObservableObject {
     private func poll(_ id: String) async {
         // 从数轮数改成看时钟 —— 间隔不再是常数，轮数就不再等于时长。
         waitStartedAt = ContinuousClock.now
+        // **首帧那条快车道。**
+        //
+        // 网关那条 WS（`/ws/{job}?ticket=`）早就在了，Mac 一行都没接 ——
+        // 于是首帧只能等下一次轮询撞上，而每次轮询要多花一整个往返
+        // （国内实测 1.0–1.5 秒）。这里只让它做一件事：**首帧名字一到就去下图**。
+        //
+        // 故意不让它去动 `job`：那是轮询那条路的东西，
+        // **两个写手一份状态，迟早各说各话**。这条只喂 `frames`，
+        // 而 `frames` 本来就只有一个写入口。
+        //
+        // 断了、连不上、票拿不到 —— 全都无所谓：下面的轮询原样兜底。
+        // **看不见进度比多打几次请求贵得多。**
+        let fastLane = Task { [weak self] in
+            guard let self else { return }
+            do {
+                for try await p in MetagGateway.progress(job: id) {
+                    await self.fetchFrames(id, names: p.first_frames,
+                                           readyAt: p.first_frame_at_ms)
+                }
+            } catch {
+                Log.account.debug("ws progress unavailable: \(error.localizedDescription)")
+            }
+        }
+        defer { fastLane.cancel() }
         let deadline = ContinuousClock.now.advanced(by: .seconds(480))
         while ContinuousClock.now < deadline {
             if let j = try? await MetagGateway.job(id) {

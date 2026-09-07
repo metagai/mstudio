@@ -998,6 +998,82 @@ enum MetagGateway {
         try await send(request("api/v1/jobs/\(id)"), as: Job.self)
     }
 
+    /// 网关每 2 秒推一条的进度报文。**字段照抄网关，不重命名。**
+    ///
+    /// 它不是 `Job` 的子集也不是超集：`shots` / `cover` / `narrator` 这些
+    /// 只有 REST 才给。所以**分工是** —— 等待期间听这条流（省掉一次往返），
+    /// 状态终结（done/failed）之后拉一次 REST 拿完整的那份。
+    struct Progress: Decodable, Sendable {
+        let status: String?
+        let position: Int?
+        let eta_secs: Int?
+        let shots_done: Int?
+        let shots_total: Int?
+        let stage: String?
+        let storyboard_preview: [String]?
+        let first_frames: [String]?
+        let first_frame_at_ms: Int64?
+        let error_kind: String?
+        var isTerminal: Bool { status == "done" || status == "failed" }
+    }
+
+    /// 一张只开这一个任务的门的票：**五分钟、一次性**。
+    ///
+    /// WS 带不了 header，凭证只能进 query —— **而 query 会进访问日志、
+    /// 进任何中间代理的日志**。网关那侧已经把 `?token=`（七天 JWT）整条拆掉，
+    /// 只认票据；泄漏一张票和泄漏一把七天 JWT 不是一个量级。
+    private static func jobTicket(_ id: String) async throws -> String {
+        struct Ticket: Decodable { let ticket: String }
+        return try await send(
+            request("api/v1/jobs/\(id)/ticket", method: "POST"), as: Ticket.self).ticket
+    }
+
+    /// WS 的地址。**抽出来是为了能断一件安全的事**：
+    /// 这个 URL 里除了票据，不许出现任何别的凭证。
+    ///
+    /// 网关那侧已经把 `?token=`（七天 JWT）整条拆掉，理由写在 `ws_handler` 上：
+    /// **query 会进访问日志、进浏览器历史、进任何中间代理的日志** ——
+    /// 一条日志泄漏等于一周的完整账号权限。票据是五分钟、一次性、
+    /// 只开这一个任务的门，泄漏它和泄漏一把 JWT 不是一个量级。
+    nonisolated static func progressURL(job id: String, ticket: String) -> URL {
+        var comps = URLComponents(
+            url: baseURL.appendingPathComponent("ws/\(id)"),
+            resolvingAgainstBaseURL: false)!
+        comps.scheme = (comps.scheme == "https") ? "wss" : "ws"
+        comps.queryItems = [URLQueryItem(name: "ticket", value: ticket)]
+        return comps.url!
+    }
+
+    /// 进度流。断了就结束，**调用方负责回落到轮询** ——
+    /// 这条管子不保证送达，而"看不见进度"比"多打几次请求"贵得多。
+    static func progress(job id: String) -> AsyncThrowingStream<Progress, Error> {
+        AsyncThrowingStream { continuation in
+            let task = Task {
+                do {
+                    let ticket = try await jobTicket(id)
+                    var req = URLRequest(url: progressURL(job: id, ticket: ticket))
+                    req.setValue(clientTag, forHTTPHeaderField: "X-Metag-Client")
+                    let ws = URLSession.shared.webSocketTask(with: req)
+                    ws.resume()
+                    defer { ws.cancel(with: .goingAway, reason: nil) }
+                    while !Task.isCancelled {
+                        let message = try await ws.receive()
+                        guard case .string(let text) = message,
+                              let p = try? JSONDecoder().decode(
+                                Progress.self, from: Data(text.utf8))
+                        else { continue }
+                        continuation.yield(p)
+                        if p.isTerminal { break }
+                    }
+                    continuation.finish()
+                } catch {
+                    continuation.finish(throwing: error)
+                }
+            }
+            continuation.onTermination = { _ in task.cancel() }
+        }
+    }
+
     /// 一句话改图。返回的 frame_id 可以直接当图生视频的首帧。
     ///
     /// `frameId` 必须是 uploadFrame 回的那个，且属于本人 —— 网关会校验。
