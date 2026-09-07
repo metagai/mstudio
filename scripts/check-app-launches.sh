@@ -35,21 +35,55 @@ RUN="$TMP/$(basename "$APP")/Contents/MacOS/$(basename "$EXEC")"
 # `METAG_INTERNAL=1` 让 `MetagFunnel.isOurs` 认出自己，事件带 `probe` 标，
 # 报表按 `NOT_OURS` 滤得掉。**不是不发** —— 发但认得出，
 # 因为"启动之后活过 8 秒"这件事本身也值得留一条记录。
+# **"还活着"不等于"他看得见东西"。**
+#
+# 2026-09-07：`swift run` 起来之后弹出「METAG 想要使用钥匙串 ai.metag 中的
+# 机密信息」，要用户输登录密码。**进程活得好好的，这道门照样绿。**
+# 而对一个刚下载的陌生人来说，一个系统密码框比什么都吓人 ——
+# 十个人的实验里撞上一个，那个人就没了，而我们连"发生过"都不知道。
+#
+# 弹这个框的是 `SecurityAgent`（09-07 01:26 的系统日志里确认：
+# securityd → SecurityAgentConnection → launchd 生成 SecurityAgent）。
+# 所以这里比对启动前后的 PID：**多出来一个，就是有人被要过密码。**
+#
+# ⚠ 已经在跑的那些不算 —— 别的 app 也会用它。只认这 8 秒里新生出来的。
+# ⚠ 中文输出里变量一律带大括号：`$NEW_PIDS）` 这种写法 bash 会把全角括号的
+# 字节吃进变量名，`set -u` 下当场 "unbound variable"。**而它只在 NEW_PIDS
+# 非空时才走到那一行 —— 也就是只在这道门真要报警的那一刻才崩。**
+# （合伙人今天栽过两次同样的坑并告诉了我，我还是走了进来。）
+WATCH_PROC="${WATCH_PROC:-SecurityAgent}"
+# ⚠ `pgrep` 无匹配时退 1，而"没有匹配"正是**正常情况** ——
+# 不写 `|| true` 的话 `set -e` 会在这里直接把整道门打断，
+# 而打断的表现是"静默退 1"：看起来像没通过，其实是没跑过。
+BEFORE_PIDS="$(pgrep -x "$WATCH_PROC" 2>/dev/null | sort | tr '\n' ' ' || true)"
+
 METAG_INTERNAL=1 "$RUN" >"$TMP/out.txt" 2>&1 &
 PID=$!
 sleep 8
 
+AFTER_PIDS="$(pgrep -x "$WATCH_PROC" 2>/dev/null | sort | tr '\n' ' ' || true)"
+NEW_PIDS=""
+for pid in $AFTER_PIDS; do
+  case " $BEFORE_PIDS " in *" $pid "*) ;; *) NEW_PIDS="$NEW_PIDS $pid" ;; esac
+done
+
 if kill -0 "$PID" 2>/dev/null; then
   kill -9 "$PID" 2>/dev/null || true
   wait "$PID" 2>/dev/null || true
-  echo "SCOPE 1 个 app：启动一次"
-  echo "OK   $(basename "$APP") 启动之后活过了 8 秒"
+  echo "SCOPE 1 个 app：启动一次（活过 8 秒 + 没弹系统密码框）"
+  if [ -n "$NEW_PIDS" ]; then
+    echo "FAIL $(basename "$APP") 起来了，但弹了系统密码框（${WATCH_PROC}:${NEW_PIDS}）"
+    echo "     一个刚下载的陌生人第一眼看到的是「请输入登录钥匙串的密码」。"
+    echo "     签名身份和创建钥匙串条目的那一个不一致时会这样 —— 先比对签名。"
+    exit 1
+  fi
+  echo "OK   $(basename "$APP") 启动之后活过了 8 秒，没有要过密码"
   exit 0
 fi
 
 wait "$PID" 2>/dev/null || CODE=$?
 CODE="${CODE:-0}"
-echo "SCOPE 1 个 app：启动一次"
+echo "SCOPE 1 个 app：启动一次（活过 8 秒 + 没弹系统密码框）"
 echo "FAIL $(basename "$APP") 起来就死了（退出码 ${CODE}）"
 if [ "$CODE" = 137 ]; then
   echo "     137 = SIGKILL：多半是签名/授权被 AMFI 拒了 ——"
