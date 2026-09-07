@@ -25,7 +25,7 @@ echo "Streaming OSLog (subsystem=ai.metag). Ctrl-C to quit app and stop." >&2
 echo >&2
 
 cleanup() {
-    pid=$(pgrep -f "METAG.app/Contents/MacOS/PalmierPro" | head -1 || true)
+    pid=$(pgrep -f "METAG.app/Contents/MacOS/METAG" | head -1 || true)
     if [ -n "$pid" ]; then
         osascript -e 'quit app "METAG"' 2>/dev/null || kill "$pid" 2>/dev/null || true
     fi

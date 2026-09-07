@@ -7,7 +7,14 @@ let package = Package(
     defaultLocalization: "en",
     platforms: [.macOS(.v26)],
     products: [
-        .executable(name: "PalmierPro", targets: ["PalmierPro"]),
+        // **产物名就是可执行文件名，也就是系统对话框里那个名字。**
+        // 钥匙串弹窗说的是「PalmierPro 想要使用…」—— 用户刚装的是 METAG，
+        // 而向他要密码的是一个他没听说过的名字（2026-09-03 创始人截图）。
+        //
+        // 只改产物名，不改 target 名：模块名来自 target，
+        // `NSDocumentClass = PalmierPro.VideoProject` 和资源包
+        // `PalmierPro_PalmierPro.bundle` 都跟着 target 走，不受影响。
+        .executable(name: "METAG", targets: ["PalmierPro"]),
     ],
     traits: [
         .trait(name: "BundledSpeech", description: "Include on-device speech models and MLX."),

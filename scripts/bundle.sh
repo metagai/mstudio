@@ -127,15 +127,15 @@ fi
 
 echo "==> Building ($CONFIG, traits: ${TRAITS:-none})"
 swift build "${BUILD_ARGS[@]}"
-BIN="$(swift build "${BUILD_ARGS[@]}" --show-bin-path)/PalmierPro"
+BIN="$(swift build "${BUILD_ARGS[@]}" --show-bin-path)/METAG"
 SPARKLE_FW="$ROOT/.build/artifacts/sparkle/Sparkle/Sparkle.xcframework/macos-arm64_x86_64/Sparkle.framework"
 
 echo "==> Assembling $APP"
 rm -rf "$APP"
 mkdir -p "$APP/Contents/MacOS" "$APP/Contents/Resources" "$APP/Contents/Frameworks"
-# The executable name stays PalmierPro: it is the SwiftPM product name and
-# CFBundleExecutable / NSDocumentClass in Info.plist depend on it.
-cp "$BIN" "$APP/Contents/MacOS/PalmierPro"
+# 可执行文件名 = SwiftPM 产物名 = 系统对话框里那个名字。**必须是 METAG。**
+# 模块名来自 target（仍是 PalmierPro），所以 NSDocumentClass 不受影响。
+cp "$BIN" "$APP/Contents/MacOS/METAG"
 cp "$RESOURCES/Info.plist" "$APP/Contents/Info.plist"
 
 if [ -n "$SENTRY_DSN" ]; then
@@ -323,7 +323,7 @@ if $INCLUDE_BUNDLED_SPEECH; then
   cp "$MLX_METALLIB" "$APP/Contents/Resources/mlx-swift_Cmlx.bundle/default.metallib"
 fi
 
-install_name_tool -add_rpath "@executable_path/../Frameworks" "$APP/Contents/MacOS/PalmierPro"
+install_name_tool -add_rpath "@executable_path/../Frameworks" "$APP/Contents/MacOS/METAG"
 touch "$APP"
 
 if [ "$MODE" = "fast" ]; then
@@ -340,7 +340,7 @@ fi
 DSYM="$ROOT/.build/PalmierPro.dSYM"
 echo "==> Generating dSYM"
 rm -rf "$DSYM"
-dsymutil "$APP/Contents/MacOS/PalmierPro" -o "$DSYM"
+dsymutil "$APP/Contents/MacOS/METAG" -o "$DSYM"
 
 upload_dsyms() {
   if [ -z "${SENTRY_AUTH_TOKEN:-}" ] || [ -z "${SENTRY_ORG:-}" ] || [ -z "${SENTRY_PROJECT:-}" ]; then
