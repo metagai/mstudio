@@ -47,7 +47,13 @@ struct ExportProjectToolTests {
         #expect(overwriteFalse.isError)
         #expect(ToolHarness.textOf(overwriteFalse).contains("already exists"))
 
-        let downloads = try #require(FileManager.default.urls(for: .downloadsDirectory, in: .userDomainMask).first)
+        // ⚠ **不碰他真的「下载」文件夹。**
+        // 上一版这里直接取 `.downloadsDirectory` 并往里写文件 —— 而 macOS 对
+        // 受保护目录的第一次访问会弹 TCC 授权框，**一个测试进程弹一次**。
+        // 创始人 2026-09-07 问"怎么一直弹文件框"，就是这个。
+        let downloads = try TestTemp.directory("downloads")
+        ToolExecutor.downloadsOverrideForTesting = downloads
+        defer { ToolExecutor.downloadsOverrideForTesting = nil }
         let base = "export-tool-\(UUID().uuidString)"
         h.editor.projectURL = URL(fileURLWithPath: "/tmp/\(base).\(Project.fileExtension)")
         let existingXML = downloads.appendingPathComponent("\(base).xml")

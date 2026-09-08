@@ -270,12 +270,27 @@ extension ToolExecutor {
         return url.standardizedFileURL
     }
 
+    /// 「下载」文件夹。**判据不许写进用户真的那个** ——
+    ///
+    /// 2026-09-07 创始人问"怎么一直弹文件框"：是 `swift test`。
+    /// `ExportProjectToolTests` 每跑一次就往他真的 `~/Downloads` 里写一个文件，
+    /// 而 macOS 对受保护目录的第一次访问会弹 TCC 授权框 —— **一个测试进程弹一次**，
+    /// 我今晚跑了七八轮。
+    ///
+    /// AGENTS.md 里那一行写着「Keep … **the user's real files** out of unit tests」。
+    /// 这里开一个只给判据用的口子，产品路径一个字没变。
+    nonisolated(unsafe) static var downloadsOverrideForTesting: URL?
+    static var downloadsDirectory: URL? {
+        downloadsOverrideForTesting
+            ?? FileManager.default.urls(for: .downloadsDirectory, in: .userDomainMask).first
+    }
+
     private func downloadsExportURL(
         mode: ExportProjectMode,
         format: ExportFormat?,
         editor: EditorViewModel
     ) throws -> URL {
-        guard let downloads = FileManager.default.urls(for: .downloadsDirectory, in: .userDomainMask).first else {
+        guard let downloads = Self.downloadsDirectory else {
             throw ToolError("export_project: Downloads folder not found")
         }
         try FileManager.default.createDirectory(at: downloads, withIntermediateDirectories: true)
