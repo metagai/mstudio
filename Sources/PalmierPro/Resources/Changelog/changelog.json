@@ -2,6 +2,28 @@
   "changelogURL": "https://metag.ai/docs",
   "entries": [
     {
+      "version": "0.1.18",
+      "date": "2026-09-07",
+      "sections": [
+        {
+          "heading": "Improved",
+          "items": [
+            "The wait now begins with a line about your film. A second or so after you press, the model writes back one sentence about what it read in your idea — it was always being written, the app just never showed it. Until it arrives, your own sentence stays on screen.",
+            "Your storyboard appears while you wait. The lines were arriving within seconds of pressing the button, but the screen had nowhere to put them until the whole storyboard was finished. Each line now takes its place as it is written.",
+            "If the app crashes, we find out. Crash reports carry no project content and can be turned off in Settings › Privacy."
+          ]
+        },
+        {
+          "heading": "Fixed",
+          "items": [
+            "A draft that fails now says so. If the server could not finish your draft, the screen kept showing the crew at work — for as long as you left it open. It now tells you what happened, and whether your credits came back.",
+            "The password prompt says METAG. When macOS asked for your keychain password, the dialog named “PalmierPro” — a name you never installed.",
+            "Your script decides the shot count. If your writing says how many shots it wants, that is how many you get."
+          ]
+        }
+      ]
+    },
+    {
       "version": "0.1.17",
       "date": "2026-09-06",
       "sections": [
