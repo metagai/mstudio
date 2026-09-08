@@ -8,9 +8,7 @@ struct XMLExporterTests {
     /// Build a tmpdir + manifest + resolver pointing at empty files on disk.
     /// XMLExporter only checks file existence; it doesn't read contents.
     private func makeResolver(entries: [MediaManifestEntry]) throws -> (MediaResolver, URL) {
-        let tmpDir = URL(fileURLWithPath: NSTemporaryDirectory())
-            .appendingPathComponent("XMLExporterTests-\(UUID().uuidString)", isDirectory: true)
-        try FileManager.default.createDirectory(at: tmpDir, withIntermediateDirectories: true)
+        let tmpDir = try TestTemp.directory("XMLExporterTests")
         for entry in entries {
             if case let .external(absolutePath) = entry.source {
                 FileManager.default.createFile(atPath: absolutePath, contents: Data())
@@ -111,9 +109,7 @@ struct XMLExporterTests {
     // MARK: - Clip emission
 
     @Test func videoClipEmitsClipitemWithStartAndEnd() async throws {
-        let tmpDir = URL(fileURLWithPath: NSTemporaryDirectory())
-            .appendingPathComponent("XMLExporterTests-\(UUID().uuidString)", isDirectory: true)
-        try FileManager.default.createDirectory(at: tmpDir, withIntermediateDirectories: true)
+        let tmpDir = try TestTemp.directory("XMLExporterTests")
         let videoFile = tmpDir.appendingPathComponent("video.mp4")
         FileManager.default.createFile(atPath: videoFile.path, contents: Data())
 
@@ -162,9 +158,7 @@ struct XMLExporterTests {
     @Test func repeatedMediaRefEmitsFileOnceThenReferences() async throws {
         // First clipitem gets the full <file> element; subsequent references collapse to
         // <file id="..."/> with no children. Catches the emittedFiles cache logic.
-        let tmpDir = URL(fileURLWithPath: NSTemporaryDirectory())
-            .appendingPathComponent("XMLExporterTests-\(UUID().uuidString)", isDirectory: true)
-        try FileManager.default.createDirectory(at: tmpDir, withIntermediateDirectories: true)
+        let tmpDir = try TestTemp.directory("XMLExporterTests")
         let videoFile = tmpDir.appendingPathComponent("video.mp4")
         FileManager.default.createFile(atPath: videoFile.path, contents: Data())
 
@@ -226,9 +220,7 @@ struct XMLExporterTests {
 
     @Test func linkedClipsEmitCrossReferences() async throws {
         // Video + audio sharing a linkGroupId emit <link> entries pointing at each other.
-        let tmpDir = URL(fileURLWithPath: NSTemporaryDirectory())
-            .appendingPathComponent("XMLExporterTests-\(UUID().uuidString)", isDirectory: true)
-        try FileManager.default.createDirectory(at: tmpDir, withIntermediateDirectories: true)
+        let tmpDir = try TestTemp.directory("XMLExporterTests")
 
         let videoFile = tmpDir.appendingPathComponent("v.mp4")
         let audioFile = tmpDir.appendingPathComponent("a.m4a")
@@ -442,9 +434,7 @@ struct XMLExporterTests {
     // MARK: - Escaping
 
     @Test func specialCharsInClipNameAreXMLEscaped() async throws {
-        let tmpDir = URL(fileURLWithPath: NSTemporaryDirectory())
-            .appendingPathComponent("XMLExporterTests-\(UUID().uuidString)", isDirectory: true)
-        try FileManager.default.createDirectory(at: tmpDir, withIntermediateDirectories: true)
+        let tmpDir = try TestTemp.directory("XMLExporterTests")
         let videoFile = tmpDir.appendingPathComponent("v.mp4")
         FileManager.default.createFile(atPath: videoFile.path, contents: Data())
 
@@ -546,9 +536,7 @@ struct XMLExporterTests {
     @Test func videoTracksAreReversedForFCPConvention() async throws {
         // Our model stores video tracks top→bottom; FCP XML wants bottom→top. So the LAST
         // video track in our model should appear FIRST in the XML.
-        let tmpDir = URL(fileURLWithPath: NSTemporaryDirectory())
-            .appendingPathComponent("XMLExporterTests-\(UUID().uuidString)", isDirectory: true)
-        try FileManager.default.createDirectory(at: tmpDir, withIntermediateDirectories: true)
+        let tmpDir = try TestTemp.directory("XMLExporterTests")
         let videoFile = tmpDir.appendingPathComponent("v.mp4")
         FileManager.default.createFile(atPath: videoFile.path, contents: Data())
 

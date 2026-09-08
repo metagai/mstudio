@@ -8,9 +8,7 @@ struct FCPXMLExporterTests {
     // MARK: - Helpers
 
     private func makeResolver(entries: [MediaManifestEntry]) throws -> (MediaResolver, URL) {
-        let tmpDir = URL(fileURLWithPath: NSTemporaryDirectory())
-            .appendingPathComponent("FCPXMLExporterTests-\(UUID().uuidString)", isDirectory: true)
-        try FileManager.default.createDirectory(at: tmpDir, withIntermediateDirectories: true)
+        let tmpDir = try TestTemp.directory("FCPXMLExporterTests")
         for entry in entries {
             if case let .external(absolutePath) = entry.source {
                 FileManager.default.createFile(atPath: absolutePath, contents: Data())
