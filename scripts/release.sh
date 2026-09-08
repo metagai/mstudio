@@ -380,6 +380,63 @@ if [ "${APPCAST_HITS:-0}" -eq 0 ]; then
   exit 1
 fi
 
+# ── 国内那份 appcast：enclosure 指 OSS ────────────────────────────
+#
+# **A0j。** `Info.plist` 的 `SUFeedURL` 写死 metag.ai，而合伙人 08-16 实测
+# 国内取 metag.ai 的大文件是 **14 KB/s** —— 76MB 是 37 分钟量级。
+# 不是慢一点，是**没有人会等完**：国内已装用户的自动更新等于不存在，
+# 而它一直是绿的（那个 xml 才几 KB，跨洋取得到，Sparkle 一声不响）。
+#
+# **慢的从来不是 appcast，是 dmg。** 所以这一份和海外那份内容一致，
+# 只把 `<enclosure url>` 换成 OSS —— 客户端那半（`Updater.feedURL`）
+# 按界面语言来这儿取。
+#
+# ⚠ **两半必须同一版落地**：今天已装的用户读的仍是包里写死的 metag.ai，
+# 他们更新到这一版走的还是老路；**新客户端只在装好之后才来读这份 feed**，
+# 而它就是在这一次发版里传上去的。所以"先放素材再声称"自动满足。
+#
+# ⚠ **改不了的那一半**：已装的国内用户这次只能靠网站手动重下一次
+# （国内域的下载已经 302 到 OSS）。产品修不了，归创始人一次触达。
+CN_PUBLISH_HOST="${CN_PUBLISH_HOST:-tony@8.130.47.189}"
+CN_PUBLISH_DIR="${CN_PUBLISH_DIR:-/var/www/metag-mac}"
+OSS_DMG_URL="https://metagai.oss-cn-beijing.aliyuncs.com/metag/releases/$REMOTE_DMG"
+CN_APPCAST="$(mktemp -t metag-appcast-cn.XXXXXX).xml"
+trap 'rm -f "$NOTES_CLEAN" "$CN_APPCAST"' EXIT
+
+# 只换 enclosure 那一处 —— 签名、长度、版本号都不许动，
+# **换了任何一项，Sparkle 会把包判成对不上签名。**
+python3 - "$APPCAST" "$CN_APPCAST" "$REMOTE_DMG" "$OSS_DMG_URL" <<'PYEOF'
+import sys
+src, dst, dmg, oss = sys.argv[1:5]
+xml = open(src, encoding="utf-8").read()
+old = f'https://metag.ai/mac/{dmg}'
+assert xml.count(old) == 1, f"appcast 里 {old} 出现了 {xml.count(old)} 次，期望 1 次"
+open(dst, "w", encoding="utf-8").write(xml.replace(old, oss, 1))
+PYEOF
+
+echo "==> Uploading 国内那份 appcast（enclosure → OSS）"
+scp "$CN_APPCAST" "$CN_PUBLISH_HOST:$CN_PUBLISH_DIR/appcast.xml"
+
+# **判据落在国内用户真走的那条路上**：不问 scp 的退出码，
+# 问"从公网取国内那份 feed，它指的那个包取得到吗、长度对不对"。
+echo "==> Verifying 国内那条更新路"
+CN_HITS="$(curl -sS --max-time 40 --noproxy '*' https://metag-ai.com/mac/appcast.xml \
+             | grep -c "$OSS_DMG_URL" || true)"
+if [ "${CN_HITS:-0}" -eq 0 ]; then
+  echo "error: 国内那份 appcast 里没有 $OSS_DMG_URL —— 国内用户的自动更新还是走跨洋" >&2
+  exit 1
+fi
+# ⚠ `--noproxy '*'`：合伙人 09-07 栽过一次 —— 本机代理会缓存，
+# **"我删了它还在"这类否定式观察全都可能是假的**。
+OSS_LEN="$(curl -sSI --max-time 40 --noproxy '*' "$OSS_DMG_URL" \
+  | tr -d '\r' | awk 'tolower($1)=="content-length:"{print $2}' | tail -1)"
+if [ "$OSS_LEN" != "$LENGTH" ]; then
+  echo "error: OSS 上那个包大小是 ${OSS_LEN:-取不到}，appcast 里写的是 $LENGTH" >&2
+  echo "       国内用户点更新会拿到一个对不上签名的包。**先把包传进 OSS**（founder-todo §26）。" >&2
+  exit 1
+fi
+echo "==> 国内那条更新路通了（OSS $OSS_LEN 字节，和 appcast 里写的一致）"
+
 # **归档放最后，而且不许它挡路。**
 #
 # 上一版把 `gh release create` 排在 appcast 和上传**之前**：GitHub 抖一下
