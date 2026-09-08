@@ -124,8 +124,9 @@ final class MetagDraftModel: ObservableObject {
     private var pressedAt: ContinuousClock.Instant?
     /// 按下 → 他那句话的第一行上屏，多少毫秒。**A0e 的那个数。**
     private(set) var firstLineMs: Int?
-    /// 按下 → preview 请求真的发出去。**和 web 同名同义**（合伙人 09-07 定的契约）：
-    /// web 那侧量到 6685ms，Mac 这条路上是领票 + 传图 + 建连接。
+    /// 按下 → preview 请求真的发出去。**和 web 同名同义**（合伙人 09-07 定的契约）。
+    /// ⚠ web 那侧先前那个 6685ms **不是这个东西**：它的取时刻在 `await` 之后，
+    /// 量的是"请求返回"，中间隔着一整个跨洋往返（合伙人已撤回并在改）。
     private(set) var pressToRequestMs: Int?
 
     /// 第一张画面**落到他屏幕上**的那一刻，距离它在世界上就绪隔了多久。
@@ -309,9 +310,10 @@ final class MetagDraftModel: ObservableObject {
             }
             if failed > 0 { note = PromptPaste.Notice.imageFailed.text }
             // 他没挑就不传 —— 让读过提示词的那一方去定。
-            // **按下 → 请求真的发出去。** 合伙人在 web 上量到这一段是 6685ms
-            // （路由切换 + 编辑器懒加载 + 两轮 effect）。Mac 这条路上它是
-            // 领票 + 传图 + 建连接，**我没量过，所以不猜**。
+            // **按下 → 请求真的发出去。** 取时刻必须在 `await` 之前 ——
+            // 放到后面量的就是"请求返回"，中间隔着一整个跨洋往返
+            // （web 那侧栽过，6685ms 那个数已撤回）。
+            // Mac 这条路上它是领票 + 传图 + 建连接，**我没量过，所以不猜**。
             //
             // ⚠ 它不像 web 那样挂在 `draft_started` 上：Mac 的 `draft_started`
             // 就在按下那一行发出（领票、传图都在它后面），把它挪到这里会**换掉分母** ——
@@ -673,8 +675,10 @@ struct MetagDraftSheet: View {
                     if let hook = model.hookLine {
                         // **这段等待里最早到的、属于他那部片子的东西。**
                         //
-                        // 合伙人 09-07 在 web 上量到它 1.5 秒就到；第一句分镜 6.5 秒，
-                        // 第一张画面 17.1 秒。而 45/63 的真人在 10 秒内就不再做任何事。
+                        // 第一句分镜 6.5 秒、第一张画面 17.1 秒，而 45/63 的真人
+                        // 在 10 秒内就不再做任何事。⚠ 钩子多快到 **Mac 这侧没量过**
+                        // —— web 那个"约 2 秒"的主语是 worker，用户实际等 9.4 秒
+                        // （合伙人 09-07 真站掐表）。见 `Job.hook_line`。
                         //
                         // 它不是进度、不是安慰话，是模型读完他那句话之后写回来的一句 ——
                         // **那 17 秒里能放的东西很多，只有它是别处给不了的。**
