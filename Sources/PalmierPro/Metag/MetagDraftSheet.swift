@@ -124,6 +124,9 @@ final class MetagDraftModel: ObservableObject {
     private var pressedAt: ContinuousClock.Instant?
     /// 按下 → 他那句话的第一行上屏，多少毫秒。**A0e 的那个数。**
     private(set) var firstLineMs: Int?
+    /// 按下 → preview 请求真的发出去。**和 web 同名同义**（合伙人 09-07 定的契约）：
+    /// web 那侧量到 6685ms，Mac 这条路上是领票 + 传图 + 建连接。
+    private(set) var pressToRequestMs: Int?
 
     /// 第一张画面**落到他屏幕上**的那一刻，距离它在世界上就绪隔了多久。
     ///
@@ -306,6 +309,15 @@ final class MetagDraftModel: ObservableObject {
             }
             if failed > 0 { note = PromptPaste.Notice.imageFailed.text }
             // 他没挑就不传 —— 让读过提示词的那一方去定。
+            // **按下 → 请求真的发出去。** 合伙人在 web 上量到这一段是 6685ms
+            // （路由切换 + 编辑器懒加载 + 两轮 effect）。Mac 这条路上它是
+            // 领票 + 传图 + 建连接，**我没量过，所以不猜**。
+            //
+            // ⚠ 它不像 web 那样挂在 `draft_started` 上：Mac 的 `draft_started`
+            // 就在按下那一行发出（领票、传图都在它后面），把它挪到这里会**换掉分母** ——
+            // 从"他按了"变成"他按了并且我们领到票了"，转化率会凭空变好。
+            // 所以它跟 `first_line_ms` 一起挂在 `draft_seen` 上。
+            pressToRequestMs = pressedAt?.duration(to: .now).milliseconds
             let id = try await MetagGateway.preview(prompt: prompt, shots: chosenShots, assets: assets)
             jobId = id
             await poll(id)
@@ -490,6 +502,9 @@ final class MetagDraftModel: ObservableObject {
                         if let lag = firstFrameLagMs { seen["first_frame_lag_ms"] = lag }
                         // **A0e 的那个数**：按下 → 他那句话的第一行上屏。
                         if let first = firstLineMs { seen["first_line_ms"] = first }
+                        // 请求没发出去（领不到票、传图全挂）就**没有这一格** ——
+                        // 缺了不等于 0，那是第三种状态。
+                        if let ptr = pressToRequestMs { seen["press_to_request_ms"] = ptr }
                         MetagFunnel.track(.draftSeen, meta: seen.isEmpty ? nil : seen)
                     }
                     return

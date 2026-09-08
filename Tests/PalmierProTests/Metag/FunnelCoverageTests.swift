@@ -71,6 +71,24 @@ struct FunnelCoverageTests {
                 "又变成只弹一句提示就结束了 —— 那次尝试在漏斗里根本不存在")
     }
 
+    /// **`draft_started` 必须在领票之前发 —— 否则分母被换掉了。**
+    ///
+    /// 2026-09-07 加 `press_to_request_ms` 时差点踩的：web 把这一格挂在
+    /// `draft_started` 上，而 Mac 的 `draft_started` 就在按下那一行发出，
+    /// 领票和传图都在它后面。要照抄 web 的位置，就得把 `draft_started`
+    /// 挪到请求发出之前 —— 那时它数的就不是"他按了"，
+    /// 而是"他按了**并且我们领到票了**"，**转化率会凭空变好而没人改过产品**。
+    ///
+    /// 所以那一格挂在 `draft_seen` 上，而这条判据钉住的是这个顺序。
+    /// 锚在动作上（`ensureTicket`），不锚在文案上。
+    @Test func draftStartedIsCountedBeforeWeAskForATicket() throws {
+        let src = Self.source("Metag/MetagDraftSheet.swift")
+        let track = try #require(src.range(of: "MetagFunnel.track(.draftStarted"))
+        let ticket = try #require(src.range(of: "await MetagGateway.ensureTicket()"))
+        #expect(track.lowerBound < ticket.lowerBound,
+                "draft_started 挪到领票之后了 —— 分母从「他按了」变成「他按了且领到票」，转化率会凭空变好")
+    }
+
     /// 取件过期也是"他等完了但手上是空的"。
     @Test func expiredDownloadsAreCountedToo() {
         #expect(Self.source("Metag/MetagJobOpener.swift").contains("FailureReason.expired"))
