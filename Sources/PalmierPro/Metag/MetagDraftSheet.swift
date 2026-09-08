@@ -678,11 +678,22 @@ struct MetagDraftSheet: View {
                         //
                         // 它不是进度、不是安慰话，是模型读完他那句话之后写回来的一句 ——
                         // **那 17 秒里能放的东西很多，只有它是别处给不了的。**
-                        Text(verbatim: hook)
-                            .font(.system(size: AppTheme.FontSize.lg, weight: AppTheme.FontWeight.medium))
-                            .foregroundStyle(AppTheme.Text.primaryColor)
-                            .fixedSize(horizontal: false, vertical: true)
-                            .transition(.opacity)
+                        // 左边那道细线是说：**这一句不是我们的界面文案，是他那部片子的。**
+                        // 上一版和标题同字重、紧挨着，读起来像我们的副标题
+                        // （三种版面渲出来看过：同字重、更大更轻、加引线 —— 挑的是这个）。
+                        HStack(alignment: .top, spacing: AppTheme.Spacing.mdLg) {
+                            Rectangle()
+                                .fill(AppTheme.Accent.brand)
+                                .frame(width: AppTheme.BorderWidth.thick)
+                            Text(verbatim: hook)
+                                .font(.system(size: AppTheme.FontSize.lg, weight: AppTheme.FontWeight.regular))
+                                .foregroundStyle(AppTheme.Text.primaryColor)
+                                .lineSpacing(AppTheme.Spacing.xs)
+                                .fixedSize(horizontal: false, vertical: true)
+                        }
+                        .fixedSize(horizontal: false, vertical: true)
+                        .padding(.vertical, AppTheme.Spacing.smMd)
+                        .transition(.opacity)
                     } else if !model.prompt.isEmpty {
                         // 钩子还没到的那一两秒：台上留他自己那句话。
                         CollapsingProse(text: model.prompt)
