@@ -15,6 +15,7 @@
 /* 补齐（2026-09-01）*/
 "$%.2f" = "$%.2f";
 "$%.2f/mo" = "$%.2f/月";
+"%@/mo" = "%@/月";
 "$%lld/mo" = "$%lld/月";
 "$%lld–$%lld · Credits expire at renewal." = "$%lld–$%lld · credits 将在续订时到期。";
 "%@ (Paid)" = "%@（付费）";

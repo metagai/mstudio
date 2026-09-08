@@ -1149,6 +1149,7 @@
 // credits 不译：和价目表、API 字段（cost_credits）、客服话术同一个词。
 "$%.2f" = "$%.2f";
 "$%.2f/mo" = "$%.2f/Mon.";
+"%@/mo" = "%@/Mon.";
 "%@ / %@ credits" = "%@ / %@ Credits";
 "%@ characters" = "%@ Zeichen";
 "%@ costs %@ credits — %@, %@ shots. Billed only after you approve." = "%@ kostet %@ Credits — %@, %@ Einstellungen. Erst nach deiner Freigabe berechnet.";

@@ -77,6 +77,29 @@ struct PreviewContainerView: View {
                                 editor.premiere = nil
                                 AppState.shared.createProjectInteractively()
                             },
+                            // **分享不收幕。** 他把链接发出去之后多半还要再看一遍 ——
+                            // 把片子从他眼前撤走，是拿走他刚要给别人看的东西。
+                            onShare: {
+                                let id = premiere.jobId
+                                Task { @MainActor in
+                                    do {
+                                        let url = try await MetagGateway.shareFilm(id)
+                                        NSPasteboard.general.clearContents()
+                                        NSPasteboard.general.setString(url, forType: .string)
+                                        // 记在**真的拿到链接之后** —— 记在点击上的话，
+                                        // 网络断了那次也会被算成一次分享。
+                                        MetagFunnel.track(.shared, meta: ["where": "premiere"])
+                                        editor.mediaPanelToast = MediaPanelToast(
+                                            message: L10n.string("Link copied"),
+                                            kind: .success
+                                        )
+                                    } catch {
+                                        editor.mediaPanelToast = MediaPanelToast(
+                                            message: error.localizedDescription
+                                        )
+                                    }
+                                }
+                            },
                             onDismiss: { editor.premiere = nil }
                         )
                     }

@@ -33,6 +33,15 @@ struct MetagPremiere: Equatable, Sendable {
     /// 这一版是不是从失败里抢救回来的 —— 那时不该说"你的片子"说得那么满。
     let salvaged: Bool
 
+    /// 请不请他把这条发出去。
+    ///
+    /// **抢救回来的那一版不请** —— 那时我们自己都不说"你的片子"说得那么满
+    /// （见 `headline`），却请他发出去，等于拿他的社交信誉赌我们的残次品。
+    ///
+    /// 这是个属性而不是视图里的一个 `if`：判据要能直接问这件事，
+    /// 而不是去数像素或者读源码字符串。
+    var offersShare: Bool { !salvaged }
+
     @MainActor
     static func headline(shots: Int, salvaged: Bool) -> String {
         salvaged
@@ -47,6 +56,8 @@ struct MetagPremiereBar: View {
     let premiere: MetagPremiere
     let onKeep: () -> Void
     let onAgain: () -> Void
+    /// 把公开链接放进剪贴板。**抢救回来的那一版不给这个** —— 见下面。
+    let onShare: () -> Void
     let onDismiss: () -> Void
 
     var body: some View {
@@ -68,6 +79,26 @@ struct MetagPremiereBar: View {
                     .buttonStyle(.plain)
                     .font(.system(size: AppTheme.FontSize.sm))
                     .foregroundStyle(AppTheme.Text.secondaryColor)
+                // **他刚看完自己的片子，下一个动作多半是给人看。**
+                //
+                // 上一版这里写着「不新增按钮 —— 首映条仍是三颗」，那句话是对的，
+                // 但它防的是**把控制面板推给他**（当时"留下它"通向六个下拉框）。
+                // 分享不是面板：一次点击，链接进剪贴板。
+                // 而在此之前，分享**只存在于「我的片子」列表里**
+                // （全仓 `.shared` 埋点只有那一个调用点）—— 也就是说，
+                // 他最想分享的那一刻，屏幕上没有这个动作。
+                //
+                // 所以它加进来了，但**不是胶囊**：主次仍然是"留下它"。
+                //
+                // ⚠ **抢救回来的那一版不给分享。** 那时我们自己都不说"你的片子"
+                // 说得那么满（见 `headline`），却请他把它发出去 —— 那是拿他的
+                // 社交信誉去赌我们的残次品。
+                if premiere.offersShare {
+                    Button(L10n.string("Share")) { onShare() }
+                        .buttonStyle(.plain)
+                        .font(.system(size: AppTheme.FontSize.sm))
+                        .foregroundStyle(AppTheme.Text.secondaryColor)
+                }
             }
         }
         .padding(.horizontal, AppTheme.Spacing.lg)

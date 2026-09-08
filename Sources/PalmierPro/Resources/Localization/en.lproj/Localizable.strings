@@ -1,7 +1,5 @@
 /* Generated from app-owned UI copy. Translate values only in other locales. */
 
-"$%.2f" = "$%.2f";
-"$%.2f/mo" = "$%.2f/mo";
 "%@ (Paid)" = "%@ (Paid)";
 "%@ / %@ credits" = "%@ / %@ credits";
 "%@ characters" = "%@ characters";
@@ -30,6 +28,7 @@
 "%@ · %lldcr" = "%@ · %lldcr";
 "%@ – %@  %@" = "%@ – %@  %@";
 "%@, %lld skills" = "%@, %lld skills";
+"%@/mo" = "%@/mo";
 "%@: %@." = "%@: %@.";
 "%lld" = "%lld";
 "%lld Lottie animations are ready in %@." = "%lld Lottie animations are ready in %@.";
@@ -1019,6 +1018,8 @@
 "Sharpen" = "Sharpen";
 "Shortcuts" = "Shortcuts";
 "Shot %@ narration" = "Shot %@ narration";
+"Shot %@ opens on your image %@" = "Shot %@ opens on your image %@";
+"Shot %@ takes its look from your image %@" = "Shot %@ takes its look from your image %@";
 "Show All Tabs" = "Show All Tabs";
 "Show Info" = "Show Info";
 "Show Timeline Tabs" = "Show Timeline Tabs";
@@ -1372,5 +1373,3 @@
 "using OpenAI API key" = "using OpenAI API key";
 "~%@s · %@ credits · ~%@ min" = "~%@s · %@ credits · ~%@ min";
 "“.%@” isn’t a subtitle file we can read — use .srt or .vtt." = "“.%@” isn’t a subtitle file we can read — use .srt or .vtt.";
-"Shot %@ takes its look from your image %@" = "Shot %@ takes its look from your image %@";
-"Shot %@ opens on your image %@" = "Shot %@ opens on your image %@";

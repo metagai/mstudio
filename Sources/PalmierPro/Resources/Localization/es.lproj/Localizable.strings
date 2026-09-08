@@ -14,6 +14,7 @@
 /* 补齐（2026-09-01）*/
 "$%.2f" = "$%.2f";
 "$%.2f/mo" = "$%.2f/mes";
+"%@/mo" = "%@/mes";
 "$%lld/mo" = "$%lld/mes";
 "$%lld–$%lld · Credits expire at renewal." = "$%lld–$%lld · Los créditos caducan al renovar.";
 "%@ (Paid)" = "%@ (De pago)";

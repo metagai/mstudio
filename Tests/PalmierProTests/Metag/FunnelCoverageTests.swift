@@ -144,3 +144,38 @@ struct FunnelSilentUnderTestTests {
                 "判据认不出自己在判据里跑 —— 那 track() 会照常打到生产漏斗")
     }
 }
+
+/// **他最想分享的那一刻，屏幕上要有那个动作。**
+///
+/// 2026-09-07 查实：全仓 `MetagFunnel.track(.shared)` 只有一个调用点，
+/// 在「我的片子」列表里。也就是说分享是有的，**只是不在片子刚放完的那一刻** ——
+/// 而创始人定的目标②（导出、下载、分享）里，那一刻是最贵的。
+@Suite("分享在那一刻")
+struct ShareAtThePremiereTests {
+    private static func source(_ name: String) -> String {
+        let url = URL(fileURLWithPath: #filePath)
+            .deletingLastPathComponent().deletingLastPathComponent()
+            .deletingLastPathComponent().deletingLastPathComponent()
+            .appendingPathComponent("Sources/PalmierPro/\(name)")
+        return (try? String(contentsOf: url, encoding: .utf8)) ?? ""
+    }
+
+    /// **抢救回来的那一版不请他分享。**
+    @Test(arguments: [(false, true), (true, false)])
+    func salvagedFilmsAreNotOfferedForSharing(salvaged: Bool, offers: Bool) {
+        let premiere = MetagPremiere(jobId: "j", shots: 4, salvaged: salvaged)
+        #expect(premiere.offersShare == offers,
+                salvaged ? "抢救版也请他发出去了 —— 那是拿他的社交信誉赌我们的残次品"
+                         : "好片子反而不请他分享")
+    }
+
+    /// **记在真的拿到链接之后。** 记在点击上的话，网络断了那次也算一次分享 ——
+    /// 和 `checkout_open` 那条同一个坑（转化率凭空变好而钱一分没进来）。
+    @Test func sharingIsCountedOnlyAfterTheLinkExists() throws {
+        let src = Self.source("Preview/PreviewContainerView.swift")
+        let got = try #require(src.range(of: "try await MetagGateway.shareFilm(id)"))
+        let track = try #require(src.range(of: "MetagFunnel.track(.shared"))
+        #expect(got.upperBound < track.lowerBound,
+                "还没拿到链接就记上了 —— 失败那次也会被算成一次分享")
+    }
+}
