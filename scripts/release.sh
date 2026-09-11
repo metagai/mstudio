@@ -490,7 +490,7 @@ R2_CODE="$(probe_bucket "$R2_URL")"
 OSS_CODE="$(probe_bucket "$OSS_URL")"
 echo ""
 if [[ "$R2_CODE" =~ ^20[06]$ && "$OSS_CODE" =~ ^20[06]$ ]]; then
-  echo "==> 网站下载路也就位了（R2 $R2_CODE · OSS $OSS_CODE）"
+  echo "==> 网站下载路也就位了（R2 ${R2_CODE} · OSS ${OSS_CODE}）"
 else
   echo "⚠️  网站那条下载路还没就位 —— R2 $R2_CODE · OSS $OSS_CODE" >&2
   echo "    这两个桶要的是 $REMOTE_DMG" >&2
