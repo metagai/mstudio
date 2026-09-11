@@ -35,7 +35,7 @@ struct ExportProjectToolTests {
             Fixtures.videoTrack(clips: [Fixtures.clip(mediaRef: "missing", start: 0, duration: 30)]),
         ]))
 
-        let existingVideo = FileManager.default.temporaryDirectory
+        let existingVideo = TestTemp.root
             .appendingPathComponent("export-tool-existing-\(UUID().uuidString).mp4")
         try Data("existing".utf8).write(to: existingVideo)
         defer { try? FileManager.default.removeItem(at: existingVideo) }
@@ -69,11 +69,11 @@ struct ExportProjectToolTests {
         try await waitForJob(from: unique, in: h.exportQueue)
 
         let blocker = try h.exportQueue.enqueueForTesting(
-            outputURL: FileManager.default.temporaryDirectory.appendingPathComponent("export-blocker-\(UUID().uuidString).mov")
+            outputURL: TestTemp.root.appendingPathComponent("export-blocker-\(UUID().uuidString).mov")
         ) { _ in
             try? await Task.sleep(for: .seconds(30))
         }
-        let uiActiveVideo = FileManager.default.temporaryDirectory
+        let uiActiveVideo = TestTemp.root
             .appendingPathComponent("export-tool-ui-active-\(UUID().uuidString).mp4")
         let uiActiveResult = try await h.runOK("export_project", args: [
             "mode": "video",
@@ -95,7 +95,7 @@ struct ExportProjectToolTests {
         h.editor.timelines.append(other)
         let activeBefore = h.editor.activeTimelineId
 
-        let out = FileManager.default.temporaryDirectory
+        let out = TestTemp.root
             .appendingPathComponent("export-tool-tl-\(UUID().uuidString).xml")
         defer { try? FileManager.default.removeItem(at: out) }
 
@@ -125,7 +125,7 @@ struct ExportProjectToolTests {
         let h = ToolHarness(timeline: Fixtures.timeline(tracks: [
             Fixtures.videoTrack(clips: [nestedClip]),
         ]))
-        let xmlURL = FileManager.default.temporaryDirectory
+        let xmlURL = TestTemp.root
             .appendingPathComponent("export-tool-\(UUID().uuidString).xml")
         defer { try? FileManager.default.removeItem(at: xmlURL) }
         let xml = try await h.runOK("export_project", args: [
@@ -142,7 +142,7 @@ struct ExportProjectToolTests {
             id: "missing", name: "Missing", type: .video,
             source: .external(absolutePath: "/tmp/missing-\(UUID().uuidString).mov"), duration: 1
         )]
-        let palmierURL = FileManager.default.temporaryDirectory
+        let palmierURL = TestTemp.root
             .appendingPathComponent("export-tool-\(UUID().uuidString).metag")
         defer { try? FileManager.default.removeItem(at: palmierURL) }
         let palmier = try await h.runOK("export_project", args: [

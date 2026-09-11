@@ -591,7 +591,7 @@ struct XMLExporterTests {
             ? Fixtures.audioTrack(clips: [clip])
             : Fixtures.videoTrack(clips: [clip])
         let timeline = Fixtures.timeline(tracks: [track])
-        let out = FileManager.default.temporaryDirectory
+        let out = TestTemp.root
             .appendingPathComponent("export-\(UUID().uuidString).xml")
         try? await XMLExporter.export(timeline: timeline, resolver: resolver, outputURL: out)
         return (try? String(contentsOf: out, encoding: .utf8)) ?? ""

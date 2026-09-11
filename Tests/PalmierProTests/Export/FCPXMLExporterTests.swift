@@ -118,7 +118,7 @@ struct FCPXMLExporterTests {
     }
 
     @Test func distinctMediaRefsWithSameSourceFileEmitOneAssetResource() async throws {
-        let source = URL(fileURLWithPath: NSTemporaryDirectory())
+        let source = TestTemp.root
             .appendingPathComponent("shared-source-\(UUID().uuidString).mp4")
         let entryA = MediaManifestEntry(
             id: "shared-a", name: "A", type: .video,

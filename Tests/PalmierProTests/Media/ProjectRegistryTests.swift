@@ -9,7 +9,7 @@ struct ProjectRegistryTests {
     /// Fresh registry backed by a unique temp file per test — never touches the singleton's
     /// production storage.
     private func makeRegistry() -> ProjectRegistry {
-        let url = URL(fileURLWithPath: NSTemporaryDirectory())
+        let url = TestTemp.root
             .appendingPathComponent("registry-\(UUID().uuidString).json")
         return ProjectRegistry(fileURL: url)
     }

@@ -59,7 +59,7 @@ struct TextExportGlyphTests {
         timeline.width = Int(canvas.width)
         timeline.height = Int(canvas.height)
 
-        let outURL = URL(fileURLWithPath: NSTemporaryDirectory())
+        let outURL = TestTemp.root
             .appendingPathComponent("export-\(UUID().uuidString).mp4")
         defer { try? FileManager.default.removeItem(at: outURL) }
 

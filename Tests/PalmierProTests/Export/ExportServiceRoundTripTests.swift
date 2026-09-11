@@ -34,7 +34,7 @@ struct ExportServiceRoundTripTests {
         timeline.height = Int(renderSize.height)
 
         // 4. Export to a temp .mp4.
-        let outURL = URL(fileURLWithPath: NSTemporaryDirectory())
+        let outURL = TestTemp.root
             .appendingPathComponent("export-\(UUID().uuidString).mp4")
         defer { try? FileManager.default.removeItem(at: outURL) }
 
@@ -91,7 +91,7 @@ struct ExportServiceRoundTripTests {
         timeline.width = Int(renderSize.width)
         timeline.height = Int(renderSize.height)
 
-        let outURL = URL(fileURLWithPath: NSTemporaryDirectory())
+        let outURL = TestTemp.root
             .appendingPathComponent("export-\(UUID().uuidString).mp4")
         defer { try? FileManager.default.removeItem(at: outURL) }
 
@@ -106,7 +106,7 @@ struct ExportServiceRoundTripTests {
     }
 
     @Test func cancellationPreservesExistingOutput() async throws {
-        let outURL = FileManager.default.temporaryDirectory
+        let outURL = TestTemp.root
             .appendingPathComponent("export-cancel-\(UUID().uuidString).xml")
         defer { try? FileManager.default.removeItem(at: outURL) }
         let existing = Data("existing-output".utf8)

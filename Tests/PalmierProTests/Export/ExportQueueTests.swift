@@ -125,7 +125,7 @@ struct ExportQueueTests {
     }
 
     private func temporaryURL(_ name: String) -> URL {
-        FileManager.default.temporaryDirectory.appendingPathComponent("export-queue-\(name)")
+        TestTemp.root.appendingPathComponent("export-queue-\(name)")
     }
 
     private func waitUntil(_ condition: @escaping @MainActor () -> Bool) async -> Bool {
