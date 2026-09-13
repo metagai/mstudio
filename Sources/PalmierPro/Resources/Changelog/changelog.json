@@ -2,6 +2,25 @@
   "changelogURL": "https://metag.ai/docs",
   "entries": [
     {
+      "version": "0.1.19",
+      "date": "2026-09-13",
+      "sections": [
+        {
+          "heading": "Improved",
+          "items": [
+            "You can share a film the moment it finishes. The premiere bar now has a share action next to keeping it, so the film you just watched can go to someone else without a detour through the editor.",
+            "The line that greets you while a film is being made now reads like your film, not like our subtitle."
+          ]
+        },
+        {
+          "heading": "Fixed",
+          "items": [
+            "Updates inside mainland China now come from the China site instead of crossing the ocean. Until now every copy checked metag.ai for new versions and downloaded from there, which for a 76 MB package meant a wait nobody sits through. This build asks the nearer site instead. Note that it only helps from this version on — an older copy still has to fetch this one the slow way, once."
+          ]
+        }
+      ]
+    },
+    {
       "version": "0.1.18",
       "date": "2026-09-07",
       "sections": [
