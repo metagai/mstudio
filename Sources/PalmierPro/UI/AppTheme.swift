@@ -642,6 +642,19 @@ enum AppTheme {
         static let agentReadHighlightHold: Double = 0.7
         static let agentReadHighlightFade: Double = 0.25
         static let agentReadHighlightDuration = agentReadHighlightHold + agentReadHighlightFade
+        /// One full hue revolution for a hand-drawn annotation.
+        static let annotationHue: Double = 6
+    }
+
+    // MARK: - Hand-drawn annotation
+
+    enum Annotation {
+        /// Perpendicular wobble that makes a stroke read as drawn, not plotted.
+        static let jitter: CGFloat = 1.5
+        /// Segment count along a stroke; fewer reads as a polyline, more cancels the wobble out.
+        static let segments = 14
+        static let arrowLength: CGFloat = 26
+        static let arrowHead: CGFloat = 7
     }
 }
 

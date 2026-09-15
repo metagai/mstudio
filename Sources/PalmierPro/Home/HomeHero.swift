@@ -64,6 +64,11 @@ struct HomeHero: View {
             // 起来的，不是在他读完三个例子之后。
             footnote
 
+            // Only while idle: once sign-in starts, the line above says something else.
+            if case .idle = account.signInPhase {
+                HandDrawnNote(text: L10n.string("Try it first."))
+            }
+
             // **先给他看一条真片子。**
             //
             // 这个位置原来是三行写死的例句，点一下直接开拍 —— 那条路的 Aha
