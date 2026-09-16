@@ -1494,3 +1494,7 @@
 "unavailable right now." = "ตอนนี้ใช้ไม่ได้";
 "~%@s · %@ credits · ~%@ min" = "~%@ วินาที · %@ credits · ~%@ นาที";
 "“.%@” isn’t a subtitle file we can read — use .srt or .vtt." = "«.%@» ไม่ใช่ไฟล์คำบรรยายที่เราอ่านได้ — ใช้ .srt หรือ .vtt";
+"Making it for %@ credits in %@s" = "จะสร้างด้วย %1$@ เครดิตในอีก %2$@ วินาที";
+"Rendering shot %lld of %lld…" = "กำลังเรนเดอร์ช็อต %1$lld จาก %2$lld…";
+"Still rendering. It will appear in your films when it is done." = "ยังเรนเดอร์อยู่ เมื่อเสร็จจะปรากฏในหนังของคุณ";
+"Try it first." = "ลองก่อน";

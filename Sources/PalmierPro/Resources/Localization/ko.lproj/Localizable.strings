@@ -1494,3 +1494,7 @@
 "unavailable right now." = "지금은 사용할 수 없습니다.";
 "~%@s · %@ credits · ~%@ min" = "약 %@초 · %@ credits · 약 %@분";
 "“.%@” isn’t a subtitle file we can read — use .srt or .vtt." = "「.%@」은(는) 저희가 읽을 수 있는 자막 파일이 아닙니다 — .srt나 .vtt를 쓰세요.";
+"Making it for %@ credits in %@s" = "%2$@초 후 %1$@ 크레딧으로 제작합니다";
+"Rendering shot %lld of %lld…" = "%2$lld개 중 %1$lld번째 숏 렌더링 중…";
+"Still rendering. It will appear in your films when it is done." = "아직 렌더링 중입니다. 완료되면 내 영상에 나타납니다.";
+"Try it first." = "먼저 해보세요.";

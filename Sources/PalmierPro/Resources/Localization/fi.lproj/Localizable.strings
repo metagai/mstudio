@@ -1494,3 +1494,7 @@
 "unavailable right now." = "ei juuri nyt käytettävissä.";
 "~%@s · %@ credits · ~%@ min" = "~%@ s · %@ credits · ~%@ min";
 "“.%@” isn’t a subtitle file we can read — use .srt or .vtt." = "«.%@» ei ole tekstitystiedosto, jota osaamme lukea — käytä .srt tai .vtt.";
+"Making it for %@ credits in %@s" = "Tehdään %1$@ krediitillä %2$@ s kuluttua";
+"Rendering shot %lld of %lld…" = "Renderöidään otos %1$lld/%2$lld…";
+"Still rendering. It will appear in your films when it is done." = "Renderöinti kesken. Elokuva ilmestyy, kun se on valmis.";
+"Try it first." = "Kokeile ensin.";

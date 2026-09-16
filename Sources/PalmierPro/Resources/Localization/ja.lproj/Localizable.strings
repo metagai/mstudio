@@ -1504,3 +1504,7 @@
 "unavailable right now." = "いまは利用できません。";
 "~%@s · %@ credits · ~%@ min" = "約 %@ 秒 · %@ credits · 約 %@ 分";
 "“.%@” isn’t a subtitle file we can read — use .srt or .vtt." = "「.%@」は読み取れる字幕ファイルではありません —— .srt か .vtt をお使いください。";
+"Making it for %@ credits in %@s" = "%2$@ 秒後に %1$@ クレジットで制作します";
+"Rendering shot %lld of %lld…" = "ショット %1$lld / %2$lld をレンダリング中…";
+"Still rendering. It will appear in your films when it is done." = "レンダリング中です。完成すると作品一覧に表示されます。";
+"Try it first." = "まず試す。";

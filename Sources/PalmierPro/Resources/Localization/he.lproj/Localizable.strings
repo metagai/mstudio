@@ -1494,3 +1494,7 @@
 "unavailable right now." = "לא זמין כרגע.";
 "~%@s · %@ credits · ~%@ min" = "~%@ שנ׳ · %@ credits · ~%@ דק׳";
 "“.%@” isn’t a subtitle file we can read — use .srt or .vtt." = "‏«.%@» אינו קובץ כתוביות שאנחנו יודעים לקרוא — השתמש ב-‎.srt‎ או ב-‎.vtt‎.";
+"Making it for %@ credits in %@s" = "ייווצר תמורת %1$@ קרדיטים בעוד %2$@ שניות";
+"Rendering shot %lld of %lld…" = "מעבד שוט %1$lld מתוך %2$lld…";
+"Still rendering. It will appear in your films when it is done." = "עדיין מעבד. הסרט יופיע כשיסתיים.";
+"Try it first." = "נסה קודם.";

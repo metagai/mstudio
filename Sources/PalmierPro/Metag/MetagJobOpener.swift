@@ -19,6 +19,40 @@ enum MetagJobOpener {
         return false
     }
 
+    /// 付完钱之后一直等到这一单真的做完，再把它铺上时间线。
+    ///
+    /// **批准会新建一条任务，那一刻它还在排队、一镜都没渲。** 这里原来只取一次，
+    /// 于是 `open` 当场判"没有可开的镜头"、报一句失败，而之后没有任何地方
+    /// 再看它一眼 —— 他付了钱，屏幕上却是失败，片子再也不会自己出现。
+    /// 生产库里 Mac 端的 `film_ready` 和 `film_failed` 历来都是 0：这条路一次都没跑过。
+    @MainActor
+    static func deliver(jobId: String, into editor: EditorViewModel) async {
+        // 推荐档实测最慢 19 分钟（`docs/todo.md` 那张表），留到半小时。
+        let deadline = ContinuousClock.now.advanced(by: .seconds(1800))
+        while ContinuousClock.now < deadline {
+            guard let job = try? await MetagGateway.job(jobId) else {
+                // 取不到就再等一轮：一次网络抖动不该让他以为片子没了。
+                try? await Task.sleep(for: .seconds(4))
+                continue
+            }
+            if job.status == "done" || job.status == "failed" {
+                await open(jobId: jobId, into: editor)
+                return
+            }
+            // **等的时候要有人说话，而且说在他正盯着的那块地方。**
+            if let done = job.shots_done, !job.shots.isEmpty {
+                editor.mediaPanelToast = MediaPanelToast(
+                    message: L10n.string("Rendering shot \(done) of \(job.shots.count)…"),
+                    kind: .progress)
+            }
+            try? await Task.sleep(for: .seconds(4))
+        }
+        // 超时不等于失败：任务还在服务器上跑，别让他以为钱白花了。
+        editor.mediaPanelToast = MediaPanelToast(
+            message: L10n.key("Still rendering. It will appear in your films when it is done."),
+            kind: .progress)
+    }
+
     @MainActor
     static func open(jobId: String, into editor: EditorViewModel) async {
         do {

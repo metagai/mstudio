@@ -1552,3 +1552,7 @@
 "“.%@” isn’t a subtitle file we can read — use .srt or .vtt." = "«.%@» no es un archivo de subtítulos que podamos leer: usa .srt o .vtt.";
 "Shot %@ takes its look from your image %@" = "El plano %1$@ toma su aspecto de tu imagen %2$@";
 "Shot %@ opens on your image %@" = "El plano %1$@ abre con tu imagen %2$@";
+"Making it for %@ credits in %@s" = "Se creará por %1$@ créditos en %2$@ s";
+"Rendering shot %lld of %lld…" = "Renderizando toma %1$lld de %2$lld…";
+"Still rendering. It will appear in your films when it is done." = "Sigue renderizando. Aparecerá en tus películas al terminar.";
+"Try it first." = "Pruébalo primero.";

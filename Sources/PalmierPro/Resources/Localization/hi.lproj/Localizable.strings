@@ -1494,3 +1494,7 @@
 "unavailable right now." = "अभी उपलब्ध नहीं।";
 "~%@s · %@ credits · ~%@ min" = "~%@ सेकंड · %@ credits · ~%@ मिनट";
 "“.%@” isn’t a subtitle file we can read — use .srt or .vtt." = "«.%@» ऐसी सबटाइटल फ़ाइल नहीं है जिसे हम पढ़ सकें — .srt या .vtt इस्तेमाल कीजिए।";
+"Making it for %@ credits in %@s" = "%2$@ सेकंड में %1$@ क्रेडिट में बनेगा";
+"Rendering shot %lld of %lld…" = "शॉट %1$lld / %2$lld रेंडर हो रहा है…";
+"Still rendering. It will appear in your films when it is done." = "अभी रेंडर हो रहा है। पूरा होने पर आपकी फ़िल्मों में दिखेगा।";
+"Try it first." = "पहले आज़माकर देखें।";

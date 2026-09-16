@@ -1494,3 +1494,7 @@
 "unavailable right now." = "şu anda kullanılamıyor.";
 "~%@s · %@ credits · ~%@ min" = "~%@ sn · %@ credits · ~%@ dk";
 "“.%@” isn’t a subtitle file we can read — use .srt or .vtt." = "«.%@» okuyabildiğimiz bir altyazı dosyası değil — .srt ya da .vtt kullan.";
+"Making it for %@ credits in %@s" = "%2$@ sn içinde %1$@ kredi karşılığında yapılacak";
+"Rendering shot %lld of %lld…" = "%2$lld çekimden %1$lld’i işleniyor…";
+"Still rendering. It will appear in your films when it is done." = "Hâlâ işleniyor. Bitince filmlerinizde görünecek.";
+"Try it first." = "Önce deneyin.";

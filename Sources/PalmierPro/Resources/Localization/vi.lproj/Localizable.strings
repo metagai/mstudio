@@ -1494,3 +1494,7 @@
 "unavailable right now." = "hiện không dùng được.";
 "~%@s · %@ credits · ~%@ min" = "~%@ giây · %@ credits · ~%@ phút";
 "“.%@” isn’t a subtitle file we can read — use .srt or .vtt." = "«.%@» không phải tệp phụ đề chúng tôi đọc được — dùng .srt hoặc .vtt.";
+"Making it for %@ credits in %@s" = "Sẽ dựng với %1$@ tín dụng sau %2$@ giây";
+"Rendering shot %lld of %lld…" = "Đang kết xuất cảnh %1$lld trên %2$lld…";
+"Still rendering. It will appear in your films when it is done." = "Vẫn đang kết xuất. Phim sẽ xuất hiện khi xong.";
+"Try it first." = "Thử trước đã.";

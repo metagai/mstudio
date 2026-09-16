@@ -656,6 +656,7 @@
 "Made with METAG" = "Made with METAG";
 "Main + Sidebar" = "Main + Sidebar";
 "Make vertical shorts" = "Make vertical shorts";
+"Making it for %@ credits in %@s" = "Making it for %@ credits in %@s";
 "Manage" = "Manage";
 "Manage credits" = "Manage credits";
 "Manual setup" = "Manual setup";
@@ -920,6 +921,7 @@
 "Rename Track" = "Rename Track";
 "Rendering" = "Rendering";
 "Rendering a sample shot…" = "Rendering a sample shot…";
+"Rendering shot %lld of %lld…" = "Rendering shot %lld of %lld…";
 "Rendering…" = "Rendering…";
 "Renews %@" = "Renews %@";
 "Replace clip source" = "Replace clip source";
@@ -1091,6 +1093,7 @@
 "Step Backward" = "Step Backward";
 "Step Forward" = "Step Forward";
 "Still downloading the search model — try again in a moment." = "Still downloading the search model — try again in a moment.";
+"Still rendering. It will appear in your films when it is done." = "Still rendering. It will appear in your films when it is done.";
 "Stop" = "Stop";
 "Stop editing crop on canvas" = "Stop editing crop on canvas";
 "Stopped" = "Stopped";

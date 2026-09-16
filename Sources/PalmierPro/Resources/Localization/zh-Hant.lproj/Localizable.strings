@@ -1495,3 +1495,7 @@
 "unavailable right now." = "暫時不可用。";
 "~%@s · %@ credits · ~%@ min" = "約 %@ 秒 · %@ credits · 約 %@ 分鐘";
 "“.%@” isn’t a subtitle file we can read — use .srt or .vtt." = "「.%@」不是我們能讀的字幕檔 —— 用 .srt 或 .vtt。";
+"Making it for %@ credits in %@s" = "%1$@ credits，%2$@ 秒後開始製作";
+"Rendering shot %lld of %lld…" = "正在算繪第 %1$lld 鏡，共 %2$lld 鏡…";
+"Still rendering. It will appear in your films when it is done." = "仍在算繪。完成後會出現在你的影片裡。";
+"Try it first." = "先試一下。";

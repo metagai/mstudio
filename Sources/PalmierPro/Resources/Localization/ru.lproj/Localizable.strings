@@ -1494,3 +1494,7 @@
 "unavailable right now." = "сейчас недоступно.";
 "~%@s · %@ credits · ~%@ min" = "~%@ с · %@ credits · ~%@ мин";
 "“.%@” isn’t a subtitle file we can read — use .srt or .vtt." = "«.%@» — не тот формат субтитров, который мы читаем: используйте .srt или .vtt.";
+"Making it for %@ credits in %@s" = "Будет создан за %1$@ кредитов через %2$@ с";
+"Rendering shot %lld of %lld…" = "Рендеринг кадра %1$lld из %2$lld…";
+"Still rendering. It will appear in your films when it is done." = "Ещё рендерится. Фильм появится, когда будет готов.";
+"Try it first." = "Сначала попробуйте.";

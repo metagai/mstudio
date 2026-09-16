@@ -1494,3 +1494,7 @@
 "unavailable right now." = "utilgængelig lige nu.";
 "~%@s · %@ credits · ~%@ min" = "~%@ s · %@ credits · ~%@ min";
 "“.%@” isn’t a subtitle file we can read — use .srt or .vtt." = "«.%@» er ikke en undertekstfil, vi kan læse — brug .srt eller .vtt.";
+"Making it for %@ credits in %@s" = "Laves for %1$@ kreditter om %2$@ s";
+"Rendering shot %lld of %lld…" = "Renderer klip %1$lld af %2$lld…";
+"Still rendering. It will appear in your films when it is done." = "Renderer stadig. Den dukker op i dine film, når den er færdig.";
+"Try it first." = "Prøv det først.";

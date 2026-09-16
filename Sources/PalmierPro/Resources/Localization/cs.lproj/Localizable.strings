@@ -1494,3 +1494,7 @@
 "unavailable right now." = "teď nedostupné.";
 "~%@s · %@ credits · ~%@ min" = "~%@ s · %@ credits · ~%@ min";
 "“.%@” isn’t a subtitle file we can read — use .srt or .vtt." = "«.%@» není soubor titulků, který umíme přečíst — použij .srt nebo .vtt.";
+"Making it for %@ credits in %@s" = "Vyrobí se za %1$@ kreditů během %2$@ s";
+"Rendering shot %lld of %lld…" = "Vykresluje se záběr %1$lld z %2$lld…";
+"Still rendering. It will appear in your films when it is done." = "Stále se vykresluje. Až bude hotovo, objeví se mezi vašimi filmy.";
+"Try it first." = "Nejdřív to vyzkoušejte.";

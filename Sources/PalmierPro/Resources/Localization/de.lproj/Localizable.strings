@@ -1504,3 +1504,7 @@
 "unavailable right now." = "gerade nicht verfügbar.";
 "~%@s · %@ credits · ~%@ min" = "~%@ s · %@ Credits · ~%@ Min.";
 "“.%@” isn’t a subtitle file we can read — use .srt or .vtt." = "„.%@“ ist keine Untertiteldatei, die wir lesen können — nimm .srt oder .vtt.";
+"Making it for %@ credits in %@s" = "Wird für %1$@ Credits in %2$@ s erstellt";
+"Rendering shot %lld of %lld…" = "Einstellung %1$lld von %2$lld wird gerendert…";
+"Still rendering. It will appear in your films when it is done." = "Wird noch gerendert. Der Film erscheint, sobald er fertig ist.";
+"Try it first." = "Probier es erst aus.";

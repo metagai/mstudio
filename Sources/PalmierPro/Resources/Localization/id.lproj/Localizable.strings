@@ -1494,3 +1494,7 @@
 "unavailable right now." = "sedang tidak tersedia.";
 "~%@s · %@ credits · ~%@ min" = "~%@ dtk · %@ credits · ~%@ mnt";
 "“.%@” isn’t a subtitle file we can read — use .srt or .vtt." = "«.%@» bukan file subtitle yang bisa kami baca — pakai .srt atau .vtt.";
+"Making it for %@ credits in %@s" = "Dibuat seharga %1$@ kredit dalam %2$@ dtk";
+"Rendering shot %lld of %lld…" = "Merender bidikan %1$lld dari %2$lld…";
+"Still rendering. It will appear in your films when it is done." = "Masih dirender. Filmnya muncul setelah selesai.";
+"Try it first." = "Coba dulu.";

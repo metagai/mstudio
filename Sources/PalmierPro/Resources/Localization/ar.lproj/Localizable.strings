@@ -1494,3 +1494,7 @@
 "unavailable right now." = "غير متاح الآن.";
 "~%@s · %@ credits · ~%@ min" = "~%@ ثانية · %@ credits · ~%@ دقيقة";
 "“.%@” isn’t a subtitle file we can read — use .srt or .vtt." = "‏«.%@» ليس ملف ترجمة نستطيع قراءته — استخدم ‎.srt‎ أو ‎.vtt‎.";
+"Making it for %@ credits in %@s" = "سيبدأ الإنتاج مقابل %1$@ رصيد خلال %2$@ ثانية";
+"Rendering shot %lld of %lld…" = "عرض اللقطة %1$lld من %2$lld…";
+"Still rendering. It will appear in your films when it is done." = "ما زال العرض جاريًا. سيظهر الفيلم عند اكتماله.";
+"Try it first." = "جرّبه أولًا.";

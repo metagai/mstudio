@@ -550,6 +550,68 @@ struct MetagDraftSheet: View {
     private var uiLang: String { AppLocalization.shared.gatewayLanguage }
     /// 全片使用所选引擎。**默认关** —— 默认只有口播镜用贵引擎，其余降到 local。
     @State private var allShots = false
+
+    // MARK: - 草案好了就自己往下走
+
+    /// 「花钱的那一步永不自动」这条规矩 2026-09-15 由创始人撤销，换成
+    /// **按钮标价即同意**：钱数必须是真的，所以**报不出准价就不自动**，
+    /// 而且倒计时这几秒是他反悔的窗口 —— 自动不等于不给他退路。
+    @State private var autoIn: Int?
+    @State private var autoTask: Task<Void, Never>?
+    @State private var autoStopped = false
+
+    private static let autoDelay = 5
+
+    /// 只有整片同一档时这个数才是真的：local 不混档，勾了"每一镜都用这档"也不混。
+    private var exactPrice: Int? {
+        guard engine == Self.fallbackEngineID || allShots else { return nil }
+        return model.quote?.options.first { $0.engine == engine }?.total_credits
+    }
+
+    /// 该不该替他往下走。**五个条件缺一不可**，所以它值得被单独测：
+    /// 停过了就再也不自动（他说过不要）、草案没好没得可付、档位坏了点下去是 503、
+    /// 没登录付不了钱（自动只会把他推到一句失败上）、报不出准价就不算标过价。
+    nonisolated static func shouldAutoProduce(
+        stopped: Bool, alreadyCounting: Bool, ready: Bool,
+        blocked: Bool, signedIn: Bool, exactPrice: Int?
+    ) -> Bool {
+        !stopped && !alreadyCounting && ready && !blocked && signedIn && exactPrice != nil
+    }
+
+    private func startAutoProduce() {
+        guard Self.shouldAutoProduce(
+            stopped: autoStopped, alreadyCounting: autoTask != nil, ready: model.ready,
+            blocked: blocked != nil, signedIn: MetagGateway.isSignedIn, exactPrice: exactPrice
+        ) else { return }
+        autoIn = Self.autoDelay
+        autoTask = Task { @MainActor in
+            while let left = autoIn, left > 0 {
+                try? await Task.sleep(for: .seconds(1))
+                if Task.isCancelled { return }
+                autoIn = left - 1
+            }
+            autoIn = nil
+            await produce()
+        }
+    }
+
+    private func stopAutoProduce() {
+        autoStopped = true
+        autoTask?.cancel()
+        autoTask = nil
+        autoIn = nil
+    }
+
+    /// 确认出片这一件事只有一份实现：手点和自动走的是同一条路。
+    private func produce() async {
+        guard let job = await model.approve(engine: engine, allShots: allShots) else { return }
+        editor.mediaPanelToast = MediaPanelToast(
+            message: L10n.key("Generating — shots will land as they finish."),
+            kind: .progress)
+        dismiss()
+        // 交给一个独立的任务：这一屏马上就关了，**片子不能跟着它一起没**。
+        Task { await MetagJobOpener.deliver(jobId: job, into: editor) }
+    }
     /// 粘进来的稿子。**卡片是纯界面** —— `draft()` 之前会并回 `model.prompt`。
     @State private var attachments: [PromptAttachment] = []
     @State private var notices: [PromptPaste.Notice] = []
@@ -736,8 +798,16 @@ struct MetagDraftSheet: View {
             engines = (try? await MetagGateway.pricing().engines) ?? []
         }
         .onAppear(perform: seedIfNeeded)
+        // 草案好了、价也报回来了 —— 两件事哪个后到都要能接上，所以两处都试一次。
+        .onChange(of: model.ready) { _, _ in startAutoProduce() }
+        .onChange(of: exactPrice) { _, _ in startAutoProduce() }
         // 关窗、切走、点取消 —— 对他都是同一件事：他不看了。
-        .onDisappear { model.noteLeftWhileWaiting() }
+        .onDisappear {
+            model.noteLeftWhileWaiting()
+            // 还在倒计时就关窗 = 他不要了。已经开始出片的那条不在这儿，
+            // 它跑在自己的任务里。
+            if autoIn != nil { stopAutoProduce() }
+        }
     }
 
     /// 带着首屏那句话进来的话，填好并立刻开跑。
@@ -1041,19 +1111,21 @@ struct MetagDraftSheet: View {
                 // 价钱写在按钮上，不写在按钮旁边。**这是全站一致的规矩** ——
                 // 旁边那行会被换行、被挤走、被读屏跳过，而按钮不会。
                 // 导演台（MetagDirectorSheet）和 Web 端都是这么做的。
-                Button(Self.produceLabel(credits: quote)) {
-                    Task {
-                        if let job = await model.approve(engine: engine, allShots: allShots) {
-                            editor.mediaPanelToast = MediaPanelToast(
-                                message: L10n.key("Generating — shots will land as they finish."),
-                                kind: .progress)
-                            await MetagJobOpener.open(jobId: job, into: editor)
-                            dismiss()
-                        }
-                    }
+                Button(Self.produceLabel(credits: quote ?? exactPrice)) {
+                    stopAutoProduce()
+                    Task { await produce() }
                 }
                 .buttonStyle(.capsule(.prominent, size: .regular))
                 .disabled(model.busy || blocked != nil)
+            }
+            // **自动往下走，但把钱数和退路一起摆在这儿。**
+            if let left = autoIn, let credits = exactPrice {
+                HStack(spacing: AppTheme.Spacing.smMd) {
+                    Text(L10n.string("Making it for \(credits.formatted()) credits in \(left.formatted())s"))
+                        .font(.system(size: AppTheme.FontSize.sm, weight: AppTheme.FontWeight.medium))
+                    Button(L10n.string("Stop")) { stopAutoProduce() }
+                        .buttonStyle(.capsule(.secondary, size: .small))
+                }
             }
             if let blocked {
                 // 说出原因，而不是给一个禁用的按钮让用户猜
