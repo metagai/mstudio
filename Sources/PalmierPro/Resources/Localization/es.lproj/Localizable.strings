@@ -1286,6 +1286,7 @@
 "That file is too large — images up to 8 MB, voice samples up to 16 MB." = "Archivo demasiado grande: imágenes hasta 8 MB, muestras de voz hasta 16 MB.";
 "That file isn't there any more — pick it again." = "Ese archivo ya no está: vuelve a elegirlo.";
 "That file type is not supported — images as PNG/JPEG/WebP, audio as WAV/MP3/M4A." = "Formato no admitido: imágenes en PNG/JPEG/WebP, audio en WAV/MP3/M4A.";
+"That free shot didn't render — your free one is still yours to spend." = "Ese plano gratis no se generó: tu plano gratis sigue disponible.";
 "That generation type is not available yet — text-to-video and image-to-video are." = "Ese tipo de generación aún no está disponible; sí lo están texto a vídeo e imagen a vídeo.";
 "That is not yours to open." = "Eso no es tuyo.";
 "That job is gone — jobs are kept for 24 hours, free files for 60 minutes." = "Ese trabajo ya no está: se guardan 24 horas, y los archivos gratuitos 60 minutos.";
@@ -1335,6 +1336,7 @@
 "This month's payment didn't go through. Nothing's cut off yet." = "El pago de este mes no se procesó. Aún no se ha cortado nada.";
 "This one couldn't be filmed as written. Try describing the scene a different way." = "Esta no se pudo filmar tal como está escrita. Prueba a describir la escena de otra forma.";
 "This one didn't come out. We can see it on our side — try again, or change a line." = "Esta no salió. Lo vemos por nuestro lado: inténtalo de nuevo o cambia una línea.";
+"This one shot is what producing looks like — the rest are still frames." = "Este plano es como se ve la producción final; el resto son fotogramas fijos.";
 "This permanently removes %@." = "Esto elimina %@ de forma permanente.";
 "This sample is my own voice, or I have permission to use it." = "Esta muestra es mi propia voz, o tengo permiso para usarla.";
 "This shot has only one take. Re-shoot with more takes to compare." = "Esta escena solo tiene una toma. Vuelve a rodar con más tomas para comparar.";

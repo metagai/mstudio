@@ -137,3 +137,56 @@ struct SampleQuotaCopyTests {
                 "没说清这不是他的错：「\(site)」")
     }
 }
+
+/// 免费试渲那一镜**得真的到他眼前**。
+///
+/// 2026-09-20 我先把"自动去渲"推上去了，然后追交付路径才发现：worker 渲完
+/// 写 `sample_ready`，而网关不回、客户端不读、草案播的还是静帧那条 ——
+/// 花掉他一人一次的机会、花掉我们约 $0.23，屏幕上什么都不会变。
+/// 那一笔被我撤了，等网关回出这三个键（e19166f）才连同展示一起放回来。
+@MainActor
+struct SampleArrivesOnScreenTests {
+    /// **从真响应的形状解出来**，不是手搓一个结构体：
+    /// 这条判据要守的正是"网关回的键和我解的键是同一个"。
+    /// 原文取自 CTO 在真网关上量到的那一条：
+    /// `{"sample_shot": 1, "sample_ready": true, "sample_error": null}`。
+    static func job(ready: Bool?, shot: Int?, error: String? = nil) -> MetagGateway.Job {
+        func lit(_ v: Bool?) -> String { v.map { $0 ? "true" : "false" } ?? "null" }
+        let json = """
+        {"job_id": "j", "status": "done", "error": null, "shots": [],
+         "cover": null, "shots_done": null, "stage": null,
+         "sample_shot": \(shot.map(String.init) ?? "null"),
+         "sample_ready": \(lit(ready)),
+         "sample_error": \(error.map { "\"\($0)\"" } ?? "null")}
+        """
+        return try! JSONDecoder().decode(MetagGateway.Job.self, from: Data(json.utf8))
+    }
+
+    /// 渲好了就播那一镜。
+    @Test func aFinishedSampleIsTheOneWeShow() {
+        #expect(MetagDraftModel.readySampleShot(Self.job(ready: true, shot: 1)) == 1)
+    }
+
+    /// **没试渲过是 null，不是 false** —— 网关特意不回 false（回了的话
+    /// 客户端会显示"正在渲"，而真相是根本没开始）。两种都不许播。
+    @Test func nothingToShowBeforeItIsRendered() {
+        #expect(MetagDraftModel.readySampleShot(Self.job(ready: nil, shot: nil)) == nil)
+        #expect(MetagDraftModel.readySampleShot(Self.job(ready: false, shot: 0)) == nil)
+        #expect(MetagDraftModel.readySampleShot(nil) == nil)
+    }
+
+    /// `ready` 为真而不知道是哪一镜 —— 那是我们读不懂的状态，
+    /// **不是"第 0 镜好了"**。猜一镜播出去，他看到的可能是另一镜。
+    @Test func readyWithoutAShotNumberShowsNothing() {
+        #expect(MetagDraftModel.readySampleShot(Self.job(ready: true, shot: nil)) == nil)
+    }
+
+    /// 渲挂了不播，但**要说出来**（界面那一行读 `sampleFailure`）。
+    @Test func aFailedSampleIsNotShownAsAPicture() {
+        let failed = Self.job(ready: nil, shot: 0, error: "upstream said no")
+        #expect(MetagDraftModel.readySampleShot(failed) == nil)
+        let model = MetagDraftModel()
+        model.applyJobForTesting(failed)
+        #expect(model.sampleFailure == "upstream said no", "渲挂了没有下文，比没渲更伤")
+    }
+}

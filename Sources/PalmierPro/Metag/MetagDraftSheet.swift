@@ -112,6 +112,29 @@ final class MetagDraftModel: ObservableObject {
         guard streamedHook == nil, let line, !line.isEmpty else { return }
         streamedHook = line
     }
+    /// 免费试渲那一镜**渲好了没有**，以及是第几镜。
+    ///
+    /// 只认 `sample_ready`：逐镜的 `video` 字段取不到时回的是字面量
+    /// `shot_{i}.mp4`（`delivery.rs:696`），**永远非空，分辨不出有没有**。
+    /// 2026-09-20 我差点拿它当信号。
+    var sampleShotReady: Int? { Self.readySampleShot(job) }
+
+    /// 纯函数，判据够得着。**三个键要一起读** ——
+    /// `sample_ready == true` 而 `sample_shot == nil` 时什么都不该播：
+    /// 那是一个我们读不懂的状态，不是"第 0 镜好了"。
+    static func readySampleShot(_ job: MetagGateway.Job?) -> Int? {
+        guard let job, job.sample_ready == true, let shot = job.sample_shot, shot >= 0 else {
+            return nil
+        }
+        return shot
+    }
+
+    /// 那一镜没渲成。**要说出来** —— 他刚被告知"正在给你渲一镜真的"，
+    /// 没有下文比没渲更伤。免费机会 worker 已经还给他了。
+    var sampleFailure: String? {
+        job?.sample_error.flatMap { $0.isEmpty ? nil : $0 }
+    }
+
     /// 当前旁白人格。网关认不出的值一律当没有 —— 宁可不显示，也不显示一个错的。
     var narrator: MetagNarrator? { job?.narrator.flatMap(MetagNarrator.init(rawValue:)) }
     var ready: Bool { job?.status == "done" && !(job?.shots.isEmpty ?? true) }
@@ -584,6 +607,9 @@ struct MetagDraftSheet: View {
     @State private var sampling = false
     @State private var sampled = false
     @State private var sampleError: String?
+    /// 自动那一次只发一回。`sampled` 不够用：它只在**成功**之后为真，
+    /// 而草案每次 `ready` 翻起来都会再触发一次（改旁白、换音色都会）。
+    @State private var autoSampled = false
     /// 引擎名跟界面语言走 —— 此前写死 "zh"，英文和西语用户在**决定花多少钱的那一步**
     /// 看到的是中文档位名。
     private var uiLang: String { AppLocalization.shared.gatewayLanguage }
@@ -699,6 +725,38 @@ struct MetagDraftSheet: View {
             return picked
         }
         return engines.filter(canSample).min { $0.credits_per_shot < $1.credits_per_shot }
+    }
+
+    /// 渲那一镜真的。**按钮和自动走同一段** —— 两条路各写一遍，
+    /// 迟早有一处忘记（这颗按钮本身就是"三份名单漏一份"的产物）。
+    ///
+    /// `auto` 只改一件事：**自动那次失败了不往屏幕上写红字。**
+    /// 他没要求过这件事，失败也没失去什么，而按钮还在原处等他 ——
+    /// 报一个他没发起的错误，只会让他以为草案坏了。
+    /// 手动那次照旧说清楚：那是他按的，他有权知道结果。
+    ///
+    /// （服务端渲挂了是另一回事，那一条由 `model.sampleFailure` 说 ——
+    /// 请求成功、渲染失败，两件事不能共用一句话。）
+    private func runSample(auto: Bool) async {
+        guard !sampled, !sampling, let tier = sampleTier?.id,
+              let job = model.jobId, !job.isEmpty else { return }
+        if auto {
+            guard !autoSampled else { return }
+            autoSampled = true
+        }
+        sampling = true
+        defer { sampling = false }
+        do {
+            try await MetagGateway.sampleShot(id: job, engine: tier)
+            sampled = true
+            sampleError = nil
+        } catch {
+            if auto {
+                Log.account.notice("auto sample unavailable: \(error.localizedDescription)")
+            } else {
+                sampleError = error.localizedDescription
+            }
+        }
     }
 
     /// 选中的档位自带台词/音效/环境声。取自报价单，不硬编引擎名单 ——
@@ -862,9 +920,27 @@ struct MetagDraftSheet: View {
         .onChange(of: model.jobId) { _, _ in
             sampled = false
             sampleError = nil
+            autoSampled = false
         }
         // 草案好了、价也报回来了 —— 两件事哪个后到都要能接上，所以两处都试一次。
-        .onChange(of: model.ready) { _, _ in startAutoProduce() }
+        .onChange(of: model.ready) { _, _ in
+            startAutoProduce()
+            // **草案一就绪，就去渲那一镜真的 —— 不等他发现那颗按钮。**
+            //
+            // 这颗按钮线上从来没成功过一次（服务端白名单漏了最便宜那一档，
+            // 于是默认档位的每一个人都拿 400），而"使用 0 次"被我们读成了
+            // "没人要"。现在它成了，但仍然要他先看见、先想到、先点。
+            //
+            // 而草案回答不了他唯一真正想知道的事：**动起来好不好看。**
+            // 我们的 QC 数：local 平均 motion 5.91，wan-flash 14.82。
+            //
+            // ⚠ 这一条 2026-09-20 上过一次又被我撤掉：当时**渲完没有人看得见**
+            // （网关不回 `sample_ready`，草案播的是静帧那条，web 那侧的回调
+            // 一个消费者都没有）。自动花钱买一个看不见的东西，比没人点的按钮更糟。
+            // 现在展示接上了（`sampleShotReady` → 播 `shot_N.mp4` 并标"成片画质"），
+            // 它才连同展示一起回来。**先有交付，再有自动。**
+            if model.ready { Task { await runSample(auto: true) } }
+        }
         .onChange(of: exactPrice) { _, _ in startAutoProduce() }
         // 关窗、切走、点取消 —— 对他都是同一件事：他不看了。
         .onDisappear {
@@ -1010,7 +1086,23 @@ struct MetagDraftSheet: View {
             // 一排静态图：那不是"看一眼"，那是"看一眼它的证据"。
             //
             // 拿不到那条片子就退回场记板，不留空白。
-            if let preview = model.job?.preview {
+            // **渲好了就播那一镜 —— 那才是他等的东西。**
+            //
+            // 草案是静帧 + 旁白，它回答"故事对不对"，回答不了"动起来好不好看"，
+            // 而后者正是他付钱买的那件事。这一镜渲完之前，屏幕上放的是草案；
+            // 渲完之后**换成它**，并且标上"成片画质"——同一块画面上两种东西，
+            // 必须每一刻都说清楚现在是哪一种。
+            if let shot = model.sampleShotReady {
+                MetagDraftPlayer(
+                    jobId: model.jobId ?? "",
+                    name: "shot_\(shot).mp4",
+                    label: L10n.string("Shot \((shot + 1).formatted()) · final quality")
+                )
+                Text(L10n.string("This one shot is what producing looks like — the rest are still frames."))
+                    .font(.system(size: AppTheme.FontSize.xs))
+                    .foregroundStyle(AppTheme.Text.secondaryColor)
+                    .fixedSize(horizontal: false, vertical: true)
+            } else if let preview = model.job?.preview {
                 MetagDraftPlayer(jobId: model.jobId ?? "", name: preview)
                 // **成片会多出什么，用这一档自己的话说。**
                 // 不写"更高清""更精美"这类形容词 —— 档位的 spec 是登记表里的真数据，
@@ -1126,17 +1218,7 @@ struct MetagDraftSheet: View {
                     // 报价单上哪个数字对应刚才那个画面。
                     Button(sampling ? L10n.key("Rendering a sample shot…")
                                     : L10n.string("See one \(sampleTier?.displayName(for: uiLang) ?? "") shot for real — free, once")) {
-                        sampling = true
-                        Task {
-                            do {
-                                guard let tier = sampleTier?.id else { return }
-                                try await MetagGateway.sampleShot(id: model.jobId ?? "", engine: tier)
-                                sampled = true
-                            } catch {
-                                sampleError = error.localizedDescription
-                            }
-                            sampling = false
-                        }
+                        Task { await runSample(auto: false) }
                     }
                     // 外层 `if` 已经保证了 `sampleTier != nil`，而这一段只在
                     // 草案就绪后渲染、`jobId` 不可能为 nil —— 那两个条件从没起过作用。
@@ -1154,7 +1236,18 @@ struct MetagDraftSheet: View {
                     .font(.system(size: AppTheme.FontSize.xs)).foregroundStyle(AppTheme.Text.mutedColor)
             }
             if let e = sampleError {
-                Text(e).font(.system(size: AppTheme.FontSize.xs)).foregroundStyle(AppTheme.Status.errorColor)
+                Text(verbatim: e).font(.system(size: AppTheme.FontSize.xs)).foregroundStyle(AppTheme.Status.errorColor)
+            }
+            // **服务端说那一镜没渲成。** 和上面那行不是一回事：那行是
+            // "请求没发出去"，这行是"发出去了、渲挂了"。他刚被告知
+            // 「正在给你渲一镜真的」，**没有下文比没渲更伤**。
+            // 免费机会 worker 已经还给他了（`billing.release_free_sample`），
+            // 所以这句话要带上"还能再来一次"，不是一句死路。
+            if model.sampleFailure != nil {
+                Text(L10n.string("That free shot didn't render — your free one is still yours to spend."))
+                    .font(.system(size: AppTheme.FontSize.xs))
+                    .foregroundStyle(AppTheme.Status.warningColor)
+                    .fixedSize(horizontal: false, vertical: true)
             }
             if engine != "local" {
                 Toggle(L10n.string("Use this tier for every shot"), isOn: $allShots)

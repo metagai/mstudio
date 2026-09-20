@@ -20,6 +20,12 @@ import SwiftUI
 struct MetagDraftPlayer: View {
     let jobId: String
     let name: String
+    /// 画面左上角那枚标：**这块画面是什么**。
+    ///
+    /// 默认是草案（静帧）。免费试渲那一镜播的是真的成片画质，
+    /// 那时候还印"静帧"就是一句假话 —— **而那一镜存在的全部意义，
+    /// 正是让他看见"不是静帧"长什么样。**
+    var label: String = L10n.string("Draft · still frames")
 
     @State private var player: AVPlayer?
 
@@ -42,7 +48,7 @@ struct MetagDraftPlayer: View {
         // 他说得没错，错的是我们从没告诉他这是草案。同一段画面，
         // 知道它是草案的人看到的是"第一步"，不知道的人看到的是"这就是成品"。
         .overlay(alignment: .topLeading) {
-            Text(L10n.string("Draft · still frames"))
+            Text(verbatim: label)
                 .font(.system(size: AppTheme.FontSize.xxs, weight: AppTheme.FontWeight.medium))
                 .foregroundStyle(AppTheme.Text.primaryColor)
                 .padding(.horizontal, AppTheme.Spacing.smMd)
@@ -57,7 +63,10 @@ struct MetagDraftPlayer: View {
             RoundedRectangle(cornerRadius: AppTheme.Radius.md, style: .continuous)
                 .strokeBorder(AppTheme.Border.subtleColor, lineWidth: AppTheme.BorderWidth.hairline)
         )
-        .task(id: jobId) {
+        // **id 要带上 name。** 只用 jobId 的话，同一条草案里从静帧换成
+        // 试渲那一镜时这段 task 不会重跑 —— 播放器还在播旧的那条，
+        // 而标已经改成"成片画质"了：**最坏的一种错，屏幕上两个东西互相矛盾**。
+        .task(id: "\(jobId)/\(name)") {
             guard let url = try? await MetagGateway.fileURL(job: jobId, name: name) else { return }
             let created = AVPlayer(url: url)
             player = created

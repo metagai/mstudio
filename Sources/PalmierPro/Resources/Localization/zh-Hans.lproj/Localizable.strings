@@ -1287,6 +1287,7 @@
 "That file is too large — images up to 8 MB, voice samples up to 16 MB." = "文件太大了 —— 图片上限 8 MB，音色样本上限 16 MB。";
 "That file isn't there any more — pick it again." = "那个文件已经不在了 —— 重新选一个。";
 "That file type is not supported — images as PNG/JPEG/WebP, audio as WAV/MP3/M4A." = "不支持这个格式 —— 图片用 PNG/JPEG/WebP，音频用 WAV/MP3/M4A。";
+"That free shot didn't render — your free one is still yours to spend." = "那一镜没渲成 —— 你的免费机会还在。";
 "That generation type is not available yet — text-to-video and image-to-video are." = "该生成类型暂未开放（当前支持文生视频与图生视频）。";
 "That is not yours to open." = "这不是你的内容。";
 "That job is gone — jobs are kept for 24 hours, free files for 60 minutes." = "这个任务已经不在了 —— 任务保留 24 小时，免费产物保留 60 分钟。";
@@ -1336,6 +1337,7 @@
 "This month's payment didn't go through. Nothing's cut off yet." = "这个月没扣成功，暂时还没有中断。";
 "This one couldn't be filmed as written. Try describing the scene a different way." = "这一条按原话拍不出来。换个说法描述这个画面试试。";
 "This one didn't come out. We can see it on our side — try again, or change a line." = "这一条没出来。我们这边看得到 —— 再试一次，或者改一句话。";
+"This one shot is what producing looks like — the rest are still frames." = "这一镜就是出片的样子 —— 其余还是静帧。";
 "This permanently removes %@." = "这将永久移除 %@。";
 "This sample is my own voice, or I have permission to use it." = "这段样本是我本人的声音，或我已获得使用授权。";
 "This shot has only one take. Re-shoot with more takes to compare." = "这一镜只有一条，没得挑。重拍时多要几条才能对比。";

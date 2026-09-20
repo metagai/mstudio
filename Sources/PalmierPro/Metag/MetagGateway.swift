@@ -241,6 +241,25 @@ enum MetagGateway {
         let job_id: String
         let status: String?
         let error: String?
+        /// 免费试渲的是第几镜（0 起）。**没试渲过时网关回 null，不回 0** ——
+        /// 三个键一起看才有意义，见 `sample_ready`。
+        var sample_shot: Int? = nil
+        /// 那一镜**的文件真的写完了**。网关 e19166f 起回这个键。
+        ///
+        /// ⚠ **不能拿逐镜的 `video` 当"到了"的信号**：`delivery.rs:696` 取不到
+        /// 就回字面量 `shot_{i}.mp4`，它永远非空。能回答"到了没有"的只有这一个，
+        /// 因为它是 worker 写完文件之后才写的。
+        ///
+        /// ⚠ **没试渲过是 null，不是 false**（CTO 特意不回 false：客户端读到
+        /// false 会显示"正在渲"，而真相是"根本没开始"）。
+        ///
+        /// ⚠ **只有 24 小时内的活任务带这三个键**；超过 24 小时走归档那条路
+        /// （`job_detail_from_pg`），那条路不带 —— 在归档任务上读到 nil
+        /// 要理解成"不知道"，不是"没试渲过"。草案本来就是当下看的东西。
+        var sample_ready: Bool? = nil
+        /// 那一镜没渲成的原因（已脱敏截断）。**免费机会 worker 会还给他**
+        /// （`billing.release_free_sample`），所以这不是一句死路。
+        var sample_error: String? = nil
         let shots: [Shot]
         let cover: String?
         /// Shots finish serially (~36s each), so fill placeholders as they land.

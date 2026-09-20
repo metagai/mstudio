@@ -198,3 +198,56 @@ vi	Today's free shot is used up on this network — it comes back tomorrow.
 vi	Everyone's free shots for today are taken — nothing wrong on your end. Tomorrow there are more.
 zh-Hant	Today's free shot is used up on this network — it comes back tomorrow.
 zh-Hant	Everyone's free shots for today are taken — nothing wrong on your end. Tomorrow there are more.
+
+# ── 2026-09-20：试渲那一镜的展示两句 ────────────────────────
+# 三门已翻；其余 25 门登记在此，理由同上。
+ar	This one shot is what producing looks like — the rest are still frames.
+ar	That free shot didn't render — your free one is still yours to spend.
+bn	This one shot is what producing looks like — the rest are still frames.
+bn	That free shot didn't render — your free one is still yours to spend.
+cs	This one shot is what producing looks like — the rest are still frames.
+cs	That free shot didn't render — your free one is still yours to spend.
+da	This one shot is what producing looks like — the rest are still frames.
+da	That free shot didn't render — your free one is still yours to spend.
+de	This one shot is what producing looks like — the rest are still frames.
+de	That free shot didn't render — your free one is still yours to spend.
+fi	This one shot is what producing looks like — the rest are still frames.
+fi	That free shot didn't render — your free one is still yours to spend.
+fr	This one shot is what producing looks like — the rest are still frames.
+fr	That free shot didn't render — your free one is still yours to spend.
+he	This one shot is what producing looks like — the rest are still frames.
+he	That free shot didn't render — your free one is still yours to spend.
+hi	This one shot is what producing looks like — the rest are still frames.
+hi	That free shot didn't render — your free one is still yours to spend.
+id	This one shot is what producing looks like — the rest are still frames.
+id	That free shot didn't render — your free one is still yours to spend.
+it	This one shot is what producing looks like — the rest are still frames.
+it	That free shot didn't render — your free one is still yours to spend.
+ja	This one shot is what producing looks like — the rest are still frames.
+ja	That free shot didn't render — your free one is still yours to spend.
+ko	This one shot is what producing looks like — the rest are still frames.
+ko	That free shot didn't render — your free one is still yours to spend.
+nb	This one shot is what producing looks like — the rest are still frames.
+nb	That free shot didn't render — your free one is still yours to spend.
+nl	This one shot is what producing looks like — the rest are still frames.
+nl	That free shot didn't render — your free one is still yours to spend.
+pl	This one shot is what producing looks like — the rest are still frames.
+pl	That free shot didn't render — your free one is still yours to spend.
+pt-BR	This one shot is what producing looks like — the rest are still frames.
+pt-BR	That free shot didn't render — your free one is still yours to spend.
+pt-PT	This one shot is what producing looks like — the rest are still frames.
+pt-PT	That free shot didn't render — your free one is still yours to spend.
+ru	This one shot is what producing looks like — the rest are still frames.
+ru	That free shot didn't render — your free one is still yours to spend.
+sv	This one shot is what producing looks like — the rest are still frames.
+sv	That free shot didn't render — your free one is still yours to spend.
+th	This one shot is what producing looks like — the rest are still frames.
+th	That free shot didn't render — your free one is still yours to spend.
+tr	This one shot is what producing looks like — the rest are still frames.
+tr	That free shot didn't render — your free one is still yours to spend.
+uk	This one shot is what producing looks like — the rest are still frames.
+uk	That free shot didn't render — your free one is still yours to spend.
+vi	This one shot is what producing looks like — the rest are still frames.
+vi	That free shot didn't render — your free one is still yours to spend.
+zh-Hant	This one shot is what producing looks like — the rest are still frames.
+zh-Hant	That free shot didn't render — your free one is still yours to spend.

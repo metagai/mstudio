@@ -1149,6 +1149,7 @@
 "That file is too large — images up to 8 MB, voice samples up to 16 MB." = "That file is too large — images up to 8 MB, voice samples up to 16 MB.";
 "That file isn't there any more — pick it again." = "That file isn't there any more — pick it again.";
 "That file type is not supported — images as PNG/JPEG/WebP, audio as WAV/MP3/M4A." = "That file type is not supported — images as PNG/JPEG/WebP, audio as WAV/MP3/M4A.";
+"That free shot didn't render — your free one is still yours to spend." = "That free shot didn't render — your free one is still yours to spend.";
 "That generation type is not available yet — text-to-video and image-to-video are." = "That generation type is not available yet — text-to-video and image-to-video are.";
 "That is not yours to open." = "That is not yours to open.";
 "That job is gone — jobs are kept for 24 hours, free files for 60 minutes." = "That job is gone — jobs are kept for 24 hours, free files for 60 minutes.";
@@ -1196,6 +1197,7 @@
 "This month's payment didn't go through. Nothing's cut off yet." = "This month's payment didn't go through. Nothing's cut off yet.";
 "This one couldn't be filmed as written. Try describing the scene a different way." = "This one couldn't be filmed as written. Try describing the scene a different way.";
 "This one didn't come out. We can see it on our side — try again, or change a line." = "This one didn't come out. We can see it on our side — try again, or change a line.";
+"This one shot is what producing looks like — the rest are still frames." = "This one shot is what producing looks like — the rest are still frames.";
 "This permanently removes %@." = "This permanently removes %@.";
 "This sample is my own voice, or I have permission to use it." = "This sample is my own voice, or I have permission to use it.";
 "This shot has only one take. Re-shoot with more takes to compare." = "This shot has only one take. Re-shoot with more takes to compare.";
