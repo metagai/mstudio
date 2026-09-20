@@ -1498,3 +1498,6 @@
 "Rendering shot %lld of %lld…" = "Renderer klip %1$lld af %2$lld…";
 "Still rendering. It will appear in your films when it is done." = "Renderer stadig. Den dukker op i dine film, når den er færdig.";
 "Try it first." = "Prøv det først.";
+"Loaded %@ shots. Shot %@ didn't pass the automatic check." = "Indlæste %1$@ klip. Klip %2$@ bestod ikke den automatiske kontrol.";
+"Loaded %@ shots. Shots %@ didn't pass the automatic check." = "Indlæste %1$@ klip. Klip %2$@ bestod ikke den automatiske kontrol.";
+"Fix it" = "Ret det";

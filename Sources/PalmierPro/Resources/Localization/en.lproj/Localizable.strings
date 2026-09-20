@@ -463,6 +463,7 @@
 "First/Last" = "First/Last";
 "Fit" = "Fit";
 "Fix Flagged Shots" = "Fix Flagged Shots";
+"Fix it" = "Fix it";
 "Fix names & jargon" = "Fix names & jargon";
 "Fixed %@ shots." = "Fixed %@ shots.";
 "Fixing %@ shots." = "Fixing %@ shots.";
@@ -631,6 +632,8 @@
 "Loaded %@ shots — no score." = "Loaded %@ shots — no score.";
 "Loaded %@ shots, with score and captions." = "Loaded %@ shots, with score and captions.";
 "Loaded %@ shots." = "Loaded %@ shots.";
+"Loaded %@ shots. Shot %@ didn't pass the automatic check." = "Loaded %@ shots. Shot %@ didn't pass the automatic check.";
+"Loaded %@ shots. Shots %@ didn't pass the automatic check." = "Loaded %@ shots. Shots %@ didn't pass the automatic check.";
 "Loading community skills" = "Loading community skills";
 "Loading community skills…" = "Loading community skills…";
 "Loading media metadata…" = "Loading media metadata…";

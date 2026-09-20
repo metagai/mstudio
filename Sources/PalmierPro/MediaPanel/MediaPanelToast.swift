@@ -13,6 +13,9 @@ struct MediaPanelToast: Equatable, Sendable {
     /// 要保持 `Equatable`（不然动画对不上）和 `Sendable`。
     enum Action: Equatable, Sendable {
         case export
+        /// 某一镜没通过自动检查。**说出问题的同时把修它的那一下放在手边** ——
+        /// 否则他得自己右键时间线上的某个片段才找得到重拍。
+        case fixFlagged(job: String, shot: Int)
     }
 
     var message: String

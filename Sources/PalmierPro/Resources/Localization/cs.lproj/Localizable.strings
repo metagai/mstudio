@@ -1498,3 +1498,6 @@
 "Rendering shot %lld of %lld…" = "Vykresluje se záběr %1$lld z %2$lld…";
 "Still rendering. It will appear in your films when it is done." = "Stále se vykresluje. Až bude hotovo, objeví se mezi vašimi filmy.";
 "Try it first." = "Nejdřív to vyzkoušejte.";
+"Loaded %@ shots. Shot %@ didn't pass the automatic check." = "Načteno %1$@ záběrů. Záběr %2$@ neprošel automatickou kontrolou.";
+"Loaded %@ shots. Shots %@ didn't pass the automatic check." = "Načteno %1$@ záběrů. Záběry %2$@ neprošly automatickou kontrolou.";
+"Fix it" = "Opravit";

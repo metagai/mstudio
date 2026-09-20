@@ -1508,3 +1508,6 @@
 "Rendering shot %lld of %lld…" = "ショット %1$lld / %2$lld をレンダリング中…";
 "Still rendering. It will appear in your films when it is done." = "レンダリング中です。完成すると作品一覧に表示されます。";
 "Try it first." = "まず試す。";
+"Loaded %@ shots. Shot %@ didn't pass the automatic check." = "%1$@ ショットを読み込みました。ショット %2$@ は自動チェックに通りませんでした。";
+"Loaded %@ shots. Shots %@ didn't pass the automatic check." = "%1$@ ショットを読み込みました。ショット %2$@ は自動チェックに通りませんでした。";
+"Fix it" = "修正";

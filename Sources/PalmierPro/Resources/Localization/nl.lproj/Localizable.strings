@@ -1498,3 +1498,6 @@
 "Rendering shot %lld of %lld…" = "Shot %1$lld van %2$lld renderen…";
 "Still rendering. It will appear in your films when it is done." = "Nog bezig met renderen. De film verschijnt zodra hij klaar is.";
 "Try it first." = "Probeer het eerst.";
+"Loaded %@ shots. Shot %@ didn't pass the automatic check." = "%1$@ shots geladen. Shot %2$@ kwam niet door de automatische controle.";
+"Loaded %@ shots. Shots %@ didn't pass the automatic check." = "%1$@ shots geladen. Shots %2$@ kwamen niet door de automatische controle.";
+"Fix it" = "Herstellen";

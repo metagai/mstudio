@@ -1498,3 +1498,6 @@
 "Rendering shot %lld of %lld…" = "מעבד שוט %1$lld מתוך %2$lld…";
 "Still rendering. It will appear in your films when it is done." = "עדיין מעבד. הסרט יופיע כשיסתיים.";
 "Try it first." = "נסה קודם.";
+"Loaded %@ shots. Shot %@ didn't pass the automatic check." = "נטענו %1$@ שוטים. שוט %2$@ לא עבר את הבדיקה האוטומטית.";
+"Loaded %@ shots. Shots %@ didn't pass the automatic check." = "נטענו %1$@ שוטים. השוטים %2$@ לא עברו את הבדיקה האוטומטית.";
+"Fix it" = "תקן";

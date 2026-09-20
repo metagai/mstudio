@@ -1498,3 +1498,6 @@
 "Rendering shot %lld of %lld…" = "%2$lld개 중 %1$lld번째 숏 렌더링 중…";
 "Still rendering. It will appear in your films when it is done." = "아직 렌더링 중입니다. 완료되면 내 영상에 나타납니다.";
 "Try it first." = "먼저 해보세요.";
+"Loaded %@ shots. Shot %@ didn't pass the automatic check." = "%1$@개 숏을 불러왔습니다. %2$@번 숏이 자동 검사를 통과하지 못했습니다.";
+"Loaded %@ shots. Shots %@ didn't pass the automatic check." = "%1$@개 숏을 불러왔습니다. %2$@번 숏이 자동 검사를 통과하지 못했습니다.";
+"Fix it" = "고치기";

@@ -56,6 +56,10 @@ enum MetagReshoot {
     ///
     /// The gate only judges whether a shot is usable — frozen, flickering, solid colour.
     /// Whether a shot is *good* stays with the person, so nothing here picks on taste.
+    /// 服务端质量门的及格线（`workers/shot_quality.py` 的 `PASS`）。
+    /// 两侧必须是同一个数：客户端标红的那几镜，就是服务端会去修的那几镜。
+    nonisolated static let qcPass: Double = 0.75
+
     static func fixFlagged(asset: MediaAsset, editor: EditorViewModel) async {
         guard let (job, _) = eligibleShot(for: asset) else { return }
         let result: MetagGateway.Converged

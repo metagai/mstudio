@@ -1498,3 +1498,6 @@
 "Rendering shot %lld of %lld…" = "%2$lld-এর মধ্যে %1$lld নম্বর শট রেন্ডার হচ্ছে…";
 "Still rendering. It will appear in your films when it is done." = "এখনও রেন্ডার হচ্ছে। শেষ হলে আপনার ফিল্মে দেখা যাবে।";
 "Try it first." = "আগে চেষ্টা করে দেখুন।";
+"Loaded %@ shots. Shot %@ didn't pass the automatic check." = "%1$@টি শট লোড হয়েছে। %2$@ নম্বর শট স্বয়ংক্রিয় পরীক্ষায় উত্তীর্ণ হয়নি।";
+"Loaded %@ shots. Shots %@ didn't pass the automatic check." = "%1$@টি শট লোড হয়েছে। %2$@ নম্বর শটগুলো স্বয়ংক্রিয় পরীক্ষায় উত্তীর্ণ হয়নি।";
+"Fix it" = "ঠিক করুন";

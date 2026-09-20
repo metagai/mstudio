@@ -1556,3 +1556,6 @@
 "Rendering shot %lld of %lld…" = "Renderizando toma %1$lld de %2$lld…";
 "Still rendering. It will appear in your films when it is done." = "Sigue renderizando. Aparecerá en tus películas al terminar.";
 "Try it first." = "Pruébalo primero.";
+"Loaded %@ shots. Shot %@ didn't pass the automatic check." = "Se cargaron %1$@ tomas. La toma %2$@ no pasó la comprobación automática.";
+"Loaded %@ shots. Shots %@ didn't pass the automatic check." = "Se cargaron %1$@ tomas. Las tomas %2$@ no pasaron la comprobación automática.";
+"Fix it" = "Corregir";

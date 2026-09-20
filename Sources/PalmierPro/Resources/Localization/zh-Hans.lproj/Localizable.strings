@@ -1556,3 +1556,6 @@
 "Rendering shot %lld of %lld…" = "正在渲染第 %1$lld 镜，共 %2$lld 镜…";
 "Still rendering. It will appear in your films when it is done." = "仍在渲染。完成后会出现在你的影片里。";
 "Try it first." = "先试一下。";
+"Loaded %@ shots. Shot %@ didn't pass the automatic check." = "已载入 %1$@ 镜。第 %2$@ 镜没通过自动检查。";
+"Loaded %@ shots. Shots %@ didn't pass the automatic check." = "已载入 %1$@ 镜。第 %2$@ 镜没通过自动检查。";
+"Fix it" = "修它";

@@ -21,9 +21,13 @@ struct FilmLandingTests {
 
     /// 取到片子就挂上"导出"。
     @Test func aLandedFilmOffersExport() {
-        let src = Self.source("Metag/MetagJobOpener.swift")
-        #expect(src.contains("action: added > 0 ? .export : nil"),
+        #expect(MetagJobOpener.deliveryAction(added: 4, flagged: [], jobId: "j") == .export,
                 "片子落地又变成只弹一句提示了 —— 那一刻是他最想留住它的时候")
+        #expect(MetagJobOpener.deliveryAction(added: 0, flagged: [], jobId: "j") == nil,
+                "一镜都没取到，摆一颗导出按钮是骗人")
+        #expect(MetagJobOpener.deliveryAction(added: 4, flagged: [2], jobId: "j")
+                == .fixFlagged(job: "j", shot: 2),
+                "有镜头没过检查时，先让他拿到对的东西，而不是先请他导出")
     }
 
     /// **一镜都没取到就不挂** —— 没有东西可导，摆一颗按钮是骗人。

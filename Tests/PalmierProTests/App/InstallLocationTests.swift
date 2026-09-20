@@ -51,10 +51,12 @@ struct InstallLocationTests {
     /// 上一版只比版本号 —— 版本不同就覆盖，于是旧进程还在跑，
     /// 而它的 bundle 已经不在原地了。那一份自己会通过自动更新拿到新版。
     @Test func itNeverReplacesACopyThatIsRunning() {
-        let installed = URL(fileURLWithPath: "/Applications/METAG.app")
+        // `URL(fileURLWithPath:)` 会去问文件系统要不要补结尾斜杠 ——
+        // 于是这条判据的结果取决于本机装没装 app。显式声明它是目录。
+        let installed = URL(fileURLWithPath: "/Applications/METAG.app", isDirectory: true)
         #expect(InstallLocation.isRunning(at: installed, among: [installed]))
         #expect(InstallLocation.isRunning(at: installed, among: [
-            URL(fileURLWithPath: "/Applications/METAG.app/")
+            URL(fileURLWithPath: "/Applications/METAG.app/", isDirectory: true)
         ]), "同一个路径多一个斜杠就认不出来了")
         #expect(!InstallLocation.isRunning(at: installed, among: [
             URL(fileURLWithPath: "/Volumes/METAG/METAG.app")

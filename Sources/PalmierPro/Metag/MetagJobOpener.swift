@@ -271,16 +271,26 @@ enum MetagJobOpener {
                 )
             }
 
+            // **自动检查的结论一直到不了他这儿。**
+            //
+            // 每一镜出来时服务端都打了分（`workers/shot_quality.py`：卡死、抖动、
+            // 近乎纯色），自研档拿它当闸、失败自动重拍；付费档只打分不采纳 ——
+            // 该不该再花一次钱是用户的决定。但那个决定他从来没机会做：
+            // 分数存了库、网关回了、客户端解了，**然后没有任何一处说出来**，
+            // 他得自己右键某个片段才看得到。生成成功不等于验收通过。
+            let flagged = Self.flaggedShots(scores: job.scores, delivered: shotAssets.map(\.index))
             editor.mediaPanelToast = MediaPanelToast(
-                message: message(added: added, narrations: narrations, captioned: captioned,
-                                 score: score, salvaged: job.status == "failed",
-                                 textExpired: job.text_expired == true),
-                kind: added > 0 ? .success : .warning,
+                message: flagged.isEmpty
+                    ? message(added: added, narrations: narrations, captioned: captioned,
+                              score: score, salvaged: job.status == "failed",
+                              textExpired: job.text_expired == true)
+                    : Self.flaggedMessage(added: added, flagged: flagged),
+                kind: flagged.isEmpty ? (added > 0 ? .success : .warning) : .warning,
                 // **他刚拿到片子，这一刻请他留住它。**
                 // 「愿不愿意导出」就是我们量的那个内容质量指标，而在此之前
                 // 那件事只存在于菜单栏第二层 —— 我们从没在他最想留住它的时候
                 // 开过口。取不到片子时不挂：没有东西可导。
-                action: added > 0 ? .export : nil
+                action: Self.deliveryAction(added: added, flagged: flagged, jobId: job.job_id)
             )
         } catch {
             // **这里我不记。**
@@ -293,8 +303,37 @@ enum MetagJobOpener {
         }
     }
 
-    @MainActor
+    /// 片子落地那一刻按钮该是哪一个。
+    ///
+    /// 一镜都没取到就不挂动作：没有东西可导，摆一颗按钮是骗人。
+    /// 有镜头没过检查时，"修它"比"导出"重要 —— 先让他拿到对的东西。
+    nonisolated static func deliveryAction(added: Int, flagged: [Int], jobId: String)
+        -> MediaPanelToast.Action? {
+        guard added > 0 else { return nil }
+        guard let first = flagged.first else { return .export }
+        return .fixFlagged(job: jobId, shot: first)
+    }
 
+    /// 没通过自动检查的镜号。**只看真交到他手上的那几镜** ——
+    /// 没铺上去的镜头说了他也找不着。分数缺席不算不合格：
+    /// 打分器自己没看成时服务端就记 1.00，缺一格是"没有结论"，不是"坏"。
+    nonisolated static func flaggedShots(scores: [Double?]?, delivered: [Int]) -> [Int] {
+        guard let scores else { return [] }
+        return delivered.filter { i in
+            guard i < scores.count, let s = scores[i] else { return false }
+            return s < MetagReshoot.qcPass
+        }
+    }
+
+    /// 说出是哪一镜，而不是"有几镜有问题"。**他要去看的是画面，不是数字。**
+    nonisolated static func flaggedMessage(added: Int, flagged: [Int]) -> String {
+        let shots = flagged.map { String($0 + 1) }.joined(separator: ", ")
+        return flagged.count == 1
+            ? L10n.string("Loaded \(added.formatted()) shots. Shot \(shots) didn't pass the automatic check.")
+            : L10n.string("Loaded \(added.formatted()) shots. Shots \(shots) didn't pass the automatic check.")
+    }
+
+    @MainActor
     static func message(added: Int, narrations: Int, captioned: Bool,
                         score: Bool, salvaged: Bool, textExpired: Bool) -> String {
         // 取不到就直说。含糊其辞比说不出口更伤信任。

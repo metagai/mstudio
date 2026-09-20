@@ -1498,3 +1498,6 @@
 "Rendering shot %lld of %lld…" = "Renderar tagning %1$lld av %2$lld…";
 "Still rendering. It will appear in your films when it is done." = "Renderar fortfarande. Filmen dyker upp när den är klar.";
 "Try it first." = "Testa först.";
+"Loaded %@ shots. Shot %@ didn't pass the automatic check." = "Läste in %1$@ tagningar. Tagning %2$@ klarade inte den automatiska kontrollen.";
+"Loaded %@ shots. Shots %@ didn't pass the automatic check." = "Läste in %1$@ tagningar. Tagningarna %2$@ klarade inte den automatiska kontrollen.";
+"Fix it" = "Åtgärda";

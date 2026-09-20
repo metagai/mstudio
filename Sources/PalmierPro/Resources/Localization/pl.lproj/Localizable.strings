@@ -1498,3 +1498,6 @@
 "Rendering shot %lld of %lld…" = "Renderowanie ujęcia %1$lld z %2$lld…";
 "Still rendering. It will appear in your films when it is done." = "Wciąż renderuje. Film pojawi się po zakończeniu.";
 "Try it first." = "Najpierw wypróbuj.";
+"Loaded %@ shots. Shot %@ didn't pass the automatic check." = "Wczytano %1$@ ujęć. Ujęcie %2$@ nie przeszło automatycznej kontroli.";
+"Loaded %@ shots. Shots %@ didn't pass the automatic check." = "Wczytano %1$@ ujęć. Ujęcia %2$@ nie przeszły automatycznej kontroli.";
+"Fix it" = "Napraw";

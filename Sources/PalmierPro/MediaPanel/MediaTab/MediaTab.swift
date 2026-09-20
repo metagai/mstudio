@@ -280,6 +280,15 @@ struct MediaTab: View {
                     .buttonStyle(.capsule(.secondary))
                     .controlSize(.small)
             }
+            // 检查判出问题的那一镜，重拍就在这句话旁边。
+            if case .fixFlagged(let job, let shot) = toast.action {
+                Button(L10n.string("Fix it")) {
+                    guard let asset = editor.asset(forJob: job, shotIndex: shot) else { return }
+                    Task { await MetagReshoot.fixFlagged(asset: asset, editor: editor) }
+                }
+                .buttonStyle(.capsule(.secondary))
+                .controlSize(.small)
+            }
         }
         .padding(.horizontal, AppTheme.Spacing.mdLg)
         .padding(.vertical, AppTheme.Spacing.smMd)

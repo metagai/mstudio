@@ -1498,3 +1498,6 @@
 "Rendering shot %lld of %lld…" = "กำลังเรนเดอร์ช็อต %1$lld จาก %2$lld…";
 "Still rendering. It will appear in your films when it is done." = "ยังเรนเดอร์อยู่ เมื่อเสร็จจะปรากฏในหนังของคุณ";
 "Try it first." = "ลองก่อน";
+"Loaded %@ shots. Shot %@ didn't pass the automatic check." = "โหลดแล้ว %1$@ ช็อต ช็อต %2$@ ไม่ผ่านการตรวจอัตโนมัติ";
+"Loaded %@ shots. Shots %@ didn't pass the automatic check." = "โหลดแล้ว %1$@ ช็อต ช็อต %2$@ ไม่ผ่านการตรวจอัตโนมัติ";
+"Fix it" = "แก้ให้";

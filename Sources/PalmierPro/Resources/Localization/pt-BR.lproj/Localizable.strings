@@ -1508,3 +1508,6 @@
 "Rendering shot %lld of %lld…" = "Renderizando tomada %1$lld de %2$lld…";
 "Still rendering. It will appear in your films when it is done." = "Ainda renderizando. Vai aparecer nos seus filmes quando terminar.";
 "Try it first." = "Experimente primeiro.";
+"Loaded %@ shots. Shot %@ didn't pass the automatic check." = "%1$@ tomadas carregadas. A tomada %2$@ não passou na verificação automática.";
+"Loaded %@ shots. Shots %@ didn't pass the automatic check." = "%1$@ tomadas carregadas. As tomadas %2$@ não passaram na verificação automática.";
+"Fix it" = "Corrigir";

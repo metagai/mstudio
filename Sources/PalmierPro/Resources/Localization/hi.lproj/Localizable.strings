@@ -1498,3 +1498,6 @@
 "Rendering shot %lld of %lld…" = "शॉट %1$lld / %2$lld रेंडर हो रहा है…";
 "Still rendering. It will appear in your films when it is done." = "अभी रेंडर हो रहा है। पूरा होने पर आपकी फ़िल्मों में दिखेगा।";
 "Try it first." = "पहले आज़माकर देखें।";
+"Loaded %@ shots. Shot %@ didn't pass the automatic check." = "%1$@ शॉट लोड हुए। शॉट %2$@ स्वचालित जाँच में पास नहीं हुआ।";
+"Loaded %@ shots. Shots %@ didn't pass the automatic check." = "%1$@ शॉट लोड हुए। शॉट %2$@ स्वचालित जाँच में पास नहीं हुए।";
+"Fix it" = "ठीक करें";

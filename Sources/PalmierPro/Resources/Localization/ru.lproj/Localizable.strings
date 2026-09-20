@@ -1498,3 +1498,6 @@
 "Rendering shot %lld of %lld…" = "Рендеринг кадра %1$lld из %2$lld…";
 "Still rendering. It will appear in your films when it is done." = "Ещё рендерится. Фильм появится, когда будет готов.";
 "Try it first." = "Сначала попробуйте.";
+"Loaded %@ shots. Shot %@ didn't pass the automatic check." = "Загружено кадров: %1$@. Кадр %2$@ не прошёл автоматическую проверку.";
+"Loaded %@ shots. Shots %@ didn't pass the automatic check." = "Загружено кадров: %1$@. Кадры %2$@ не прошли автоматическую проверку.";
+"Fix it" = "Исправить";

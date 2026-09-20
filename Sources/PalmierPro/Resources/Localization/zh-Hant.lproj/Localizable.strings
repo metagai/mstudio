@@ -1499,3 +1499,6 @@
 "Rendering shot %lld of %lld…" = "正在算繪第 %1$lld 鏡，共 %2$lld 鏡…";
 "Still rendering. It will appear in your films when it is done." = "仍在算繪。完成後會出現在你的影片裡。";
 "Try it first." = "先試一下。";
+"Loaded %@ shots. Shot %@ didn't pass the automatic check." = "已載入 %1$@ 鏡。第 %2$@ 鏡沒通過自動檢查。";
+"Loaded %@ shots. Shots %@ didn't pass the automatic check." = "已載入 %1$@ 鏡。第 %2$@ 鏡沒通過自動檢查。";
+"Fix it" = "修它";

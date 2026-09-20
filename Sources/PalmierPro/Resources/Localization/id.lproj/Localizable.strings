@@ -1498,3 +1498,6 @@
 "Rendering shot %lld of %lld…" = "Merender bidikan %1$lld dari %2$lld…";
 "Still rendering. It will appear in your films when it is done." = "Masih dirender. Filmnya muncul setelah selesai.";
 "Try it first." = "Coba dulu.";
+"Loaded %@ shots. Shot %@ didn't pass the automatic check." = "Memuat %1$@ bidikan. Bidikan %2$@ tidak lolos pemeriksaan otomatis.";
+"Loaded %@ shots. Shots %@ didn't pass the automatic check." = "Memuat %1$@ bidikan. Bidikan %2$@ tidak lolos pemeriksaan otomatis.";
+"Fix it" = "Perbaiki";

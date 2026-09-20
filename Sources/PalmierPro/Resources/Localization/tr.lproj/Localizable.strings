@@ -1498,3 +1498,6 @@
 "Rendering shot %lld of %lld…" = "%2$lld çekimden %1$lld’i işleniyor…";
 "Still rendering. It will appear in your films when it is done." = "Hâlâ işleniyor. Bitince filmlerinizde görünecek.";
 "Try it first." = "Önce deneyin.";
+"Loaded %@ shots. Shot %@ didn't pass the automatic check." = "%1$@ çekim yüklendi. %2$@ numaralı çekim otomatik denetimi geçemedi.";
+"Loaded %@ shots. Shots %@ didn't pass the automatic check." = "%1$@ çekim yüklendi. %2$@ numaralı çekimler otomatik denetimi geçemedi.";
+"Fix it" = "Düzelt";

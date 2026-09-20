@@ -1498,3 +1498,6 @@
 "Rendering shot %lld of %lld…" = "Đang kết xuất cảnh %1$lld trên %2$lld…";
 "Still rendering. It will appear in your films when it is done." = "Vẫn đang kết xuất. Phim sẽ xuất hiện khi xong.";
 "Try it first." = "Thử trước đã.";
+"Loaded %@ shots. Shot %@ didn't pass the automatic check." = "Đã tải %1$@ cảnh. Cảnh %2$@ không qua được kiểm tra tự động.";
+"Loaded %@ shots. Shots %@ didn't pass the automatic check." = "Đã tải %1$@ cảnh. Các cảnh %2$@ không qua được kiểm tra tự động.";
+"Fix it" = "Sửa";

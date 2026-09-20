@@ -1498,3 +1498,6 @@
 "Rendering shot %lld of %lld…" = "A renderizar o plano %1$lld de %2$lld…";
 "Still rendering. It will appear in your films when it is done." = "Ainda a renderizar. Aparecerá nos seus filmes quando terminar.";
 "Try it first." = "Experimente primeiro.";
+"Loaded %@ shots. Shot %@ didn't pass the automatic check." = "%1$@ planos carregados. O plano %2$@ não passou na verificação automática.";
+"Loaded %@ shots. Shots %@ didn't pass the automatic check." = "%1$@ planos carregados. Os planos %2$@ não passaram na verificação automática.";
+"Fix it" = "Corrigir";
