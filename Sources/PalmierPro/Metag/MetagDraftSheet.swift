@@ -584,6 +584,9 @@ struct MetagDraftSheet: View {
     @State private var sampling = false
     @State private var sampled = false
     @State private var sampleError: String?
+    /// 自动那一次只发一回。`sampled` 不够用：它只在**成功**之后为真，
+    /// 而草案每次 `ready` 翻起来都会再触发一次（改旁白、换音色都会）。
+    @State private var autoSampled = false
     /// 引擎名跟界面语言走 —— 此前写死 "zh"，英文和西语用户在**决定花多少钱的那一步**
     /// 看到的是中文档位名。
     private var uiLang: String { AppLocalization.shared.gatewayLanguage }
@@ -699,6 +702,35 @@ struct MetagDraftSheet: View {
             return picked
         }
         return engines.filter(canSample).min { $0.credits_per_shot < $1.credits_per_shot }
+    }
+
+    /// 渲那一镜真的。**按钮和自动走同一段** —— 两条路各写一遍，
+    /// 迟早有一处忘记（这颗按钮本身就是"三份名单漏一份"的产物）。
+    ///
+    /// `auto` 只改一件事：**自动那次失败了不往屏幕上写红字。**
+    /// 他没要求过这件事，失败也没失去什么，而按钮还在原处等他 ——
+    /// 报一个他没发起的错误，只会让他以为草案坏了。
+    /// 手动那次照旧说清楚：那是他按的，他有权知道结果。
+    private func runSample(auto: Bool) async {
+        guard !sampled, !sampling, let tier = sampleTier?.id,
+              let job = model.jobId, !job.isEmpty else { return }
+        if auto {
+            guard !autoSampled else { return }
+            autoSampled = true
+        }
+        sampling = true
+        defer { sampling = false }
+        do {
+            try await MetagGateway.sampleShot(id: job, engine: tier)
+            sampled = true
+            sampleError = nil
+        } catch {
+            if auto {
+                Log.account.notice("auto sample unavailable: \(error.localizedDescription)")
+            } else {
+                sampleError = error.localizedDescription
+            }
+        }
     }
 
     /// 选中的档位自带台词/音效/环境声。取自报价单，不硬编引擎名单 ——
@@ -862,9 +894,26 @@ struct MetagDraftSheet: View {
         .onChange(of: model.jobId) { _, _ in
             sampled = false
             sampleError = nil
+            autoSampled = false
         }
         // 草案好了、价也报回来了 —— 两件事哪个后到都要能接上，所以两处都试一次。
-        .onChange(of: model.ready) { _, _ in startAutoProduce() }
+        .onChange(of: model.ready) { _, _ in
+            startAutoProduce()
+            // **草案一就绪，就去渲那一镜真的 —— 不等他发现那颗按钮。**
+            //
+            // 这颗按钮线上从来没成功过一次（服务端白名单漏了最便宜那一档，
+            // 于是默认档位的每一个人都拿 400），而"使用 0 次"被我们读成了
+            // "没人要"。现在它成了，但仍然要他先看见、先想到、先点。
+            //
+            // 而草案回答不了他唯一真正想知道的事：**动起来好不好看。**
+            // 我们的 QC 数：local 平均 motion 5.91，wan-flash 14.82 ——
+            // 会动的那一镜是他决定付不付钱的全部依据，不该藏在一颗按钮后面。
+            //
+            // 代价是每人一次（服务端 `free_sample_at` 一人一次，匿名另有
+            // 按 IP 和全站两道闸）。Mac 这一侧不担心机器人：能走到这一屏的人
+            // 是下载过安装包的真人。
+            if model.ready { Task { await runSample(auto: true) } }
+        }
         .onChange(of: exactPrice) { _, _ in startAutoProduce() }
         // 关窗、切走、点取消 —— 对他都是同一件事：他不看了。
         .onDisappear {
@@ -1126,17 +1175,7 @@ struct MetagDraftSheet: View {
                     // 报价单上哪个数字对应刚才那个画面。
                     Button(sampling ? L10n.key("Rendering a sample shot…")
                                     : L10n.string("See one \(sampleTier?.displayName(for: uiLang) ?? "") shot for real — free, once")) {
-                        sampling = true
-                        Task {
-                            do {
-                                guard let tier = sampleTier?.id else { return }
-                                try await MetagGateway.sampleShot(id: model.jobId ?? "", engine: tier)
-                                sampled = true
-                            } catch {
-                                sampleError = error.localizedDescription
-                            }
-                            sampling = false
-                        }
+                        Task { await runSample(auto: false) }
                     }
                     // 外层 `if` 已经保证了 `sampleTier != nil`，而这一段只在
                     // 草案就绪后渲染、`jobId` 不可能为 nil —— 那两个条件从没起过作用。
