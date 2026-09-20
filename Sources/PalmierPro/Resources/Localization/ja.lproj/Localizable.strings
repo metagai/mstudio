@@ -1507,7 +1507,9 @@
 "Making it for %@ credits in %@s" = "%2$@ 秒後に %1$@ クレジットで制作します";
 "Rendering shot %lld of %lld…" = "ショット %1$lld / %2$lld をレンダリング中…";
 "Still rendering. It will appear in your films when it is done." = "レンダリング中です。完成すると作品一覧に表示されます。";
-"Try it first." = "まず試す。";
 "Loaded %@ shots. Shot %@ didn't pass the automatic check." = "%1$@ ショットを読み込みました。ショット %2$@ は自動チェックに通りませんでした。";
 "Loaded %@ shots. Shots %@ didn't pass the automatic check." = "%1$@ ショットを読み込みました。ショット %2$@ は自動チェックに通りませんでした。";
 "Fix it" = "修正";
+"Draft · still frames" = "ドラフト · 静止画";
+"Producing renders every shot as video — %@ · %@" = "制作すると各ショットが動画としてレンダリングされます — %1$@ · %2$@";
+"That's %@ characters — we can read %@. Trim it and try again." = "%1$@ 文字あります — 読み取れるのは %2$@ です。短くしてもう一度お試しください。";

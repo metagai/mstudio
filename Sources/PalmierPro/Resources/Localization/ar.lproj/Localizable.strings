@@ -1497,7 +1497,9 @@
 "Making it for %@ credits in %@s" = "سيبدأ الإنتاج مقابل %1$@ رصيد خلال %2$@ ثانية";
 "Rendering shot %lld of %lld…" = "عرض اللقطة %1$lld من %2$lld…";
 "Still rendering. It will appear in your films when it is done." = "ما زال العرض جاريًا. سيظهر الفيلم عند اكتماله.";
-"Try it first." = "جرّبه أولًا.";
 "Loaded %@ shots. Shot %@ didn't pass the automatic check." = "تم تحميل %1$@ لقطة. اللقطة %2$@ لم تجتز الفحص التلقائي.";
 "Loaded %@ shots. Shots %@ didn't pass the automatic check." = "تم تحميل %1$@ لقطة. اللقطات %2$@ لم تجتز الفحص التلقائي.";
 "Fix it" = "أصلحها";
+"Draft · still frames" = "مسودة · إطارات ثابتة";
+"Producing renders every shot as video — %@ · %@" = "الإنتاج يحوّل كل لقطة إلى فيديو — %1$@ · %2$@";
+"That's %@ characters — we can read %@. Trim it and try again." = "هذا %1$@ حرفًا — نقرأ %2$@. اختصره وحاول مجددًا.";

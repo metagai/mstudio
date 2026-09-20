@@ -1497,7 +1497,9 @@
 "Making it for %@ credits in %@s" = "Verrà creato per %1$@ crediti tra %2$@ s";
 "Rendering shot %lld of %lld…" = "Rendering dell’inquadratura %1$lld di %2$lld…";
 "Still rendering. It will appear in your films when it is done." = "Rendering in corso. Apparirà nei tuoi film al termine.";
-"Try it first." = "Provalo prima.";
 "Loaded %@ shots. Shot %@ didn't pass the automatic check." = "Caricate %1$@ inquadrature. L’inquadratura %2$@ non ha superato il controllo automatico.";
 "Loaded %@ shots. Shots %@ didn't pass the automatic check." = "Caricate %1$@ inquadrature. Le inquadrature %2$@ non hanno superato il controllo automatico.";
 "Fix it" = "Correggi";
+"Draft · still frames" = "Bozza · fotogrammi fissi";
+"Producing renders every shot as video — %@ · %@" = "La produzione renderizza ogni inquadratura come video — %1$@ · %2$@";
+"That's %@ characters — we can read %@. Trim it and try again." = "Sono %1$@ caratteri — ne leggiamo %2$@. Accorcia il testo e riprova.";

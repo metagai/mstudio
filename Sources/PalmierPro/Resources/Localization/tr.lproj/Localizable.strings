@@ -1497,7 +1497,9 @@
 "Making it for %@ credits in %@s" = "%2$@ sn içinde %1$@ kredi karşılığında yapılacak";
 "Rendering shot %lld of %lld…" = "%2$lld çekimden %1$lld’i işleniyor…";
 "Still rendering. It will appear in your films when it is done." = "Hâlâ işleniyor. Bitince filmlerinizde görünecek.";
-"Try it first." = "Önce deneyin.";
 "Loaded %@ shots. Shot %@ didn't pass the automatic check." = "%1$@ çekim yüklendi. %2$@ numaralı çekim otomatik denetimi geçemedi.";
 "Loaded %@ shots. Shots %@ didn't pass the automatic check." = "%1$@ çekim yüklendi. %2$@ numaralı çekimler otomatik denetimi geçemedi.";
 "Fix it" = "Düzelt";
+"Draft · still frames" = "Taslak · sabit kareler";
+"Producing renders every shot as video — %@ · %@" = "Üretim her çekimi video olarak işler — %1$@ · %2$@";
+"That's %@ characters — we can read %@. Trim it and try again." = "Bu %1$@ karakter — %2$@ okuyabiliyoruz. Kısaltıp tekrar deneyin.";

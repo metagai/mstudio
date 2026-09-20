@@ -1497,7 +1497,9 @@
 "Making it for %@ credits in %@s" = "Skapas för %1$@ krediter om %2$@ s";
 "Rendering shot %lld of %lld…" = "Renderar tagning %1$lld av %2$lld…";
 "Still rendering. It will appear in your films when it is done." = "Renderar fortfarande. Filmen dyker upp när den är klar.";
-"Try it first." = "Testa först.";
 "Loaded %@ shots. Shot %@ didn't pass the automatic check." = "Läste in %1$@ tagningar. Tagning %2$@ klarade inte den automatiska kontrollen.";
 "Loaded %@ shots. Shots %@ didn't pass the automatic check." = "Läste in %1$@ tagningar. Tagningarna %2$@ klarade inte den automatiska kontrollen.";
 "Fix it" = "Åtgärda";
+"Draft · still frames" = "Utkast · stillbilder";
+"Producing renders every shot as video — %@ · %@" = "Produktion renderar varje tagning som video — %1$@ · %2$@";
+"That's %@ characters — we can read %@. Trim it and try again." = "Det är %1$@ tecken — vi läser %2$@. Korta ner och försök igen.";

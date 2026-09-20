@@ -79,10 +79,11 @@ struct KeyGoesThroughLookupTests {
     ///
     /// 一个"要等别人来填对"的全局，早晚会在没人填的那条路上被读到。
     @Test func theGlobalCatalogIsRightBeforeAnyoneTouchesIt() {
-        #expect(AppLocalization.Catalog.current.bundle != .main,
+        // 读"没人正在换表时的那一本"：别的判据会临时换表，而那与这条无关。
+        let settled = AppLocalization.Catalog.settled()
+        #expect(settled.bundle != .main,
                 "全局词条表还是 .main —— 那里没有 .lproj，先被读到的那一屏会是英文")
-        #expect(AppLocalization.Catalog.current.bundle
-                == AppLocalization.Catalog.resolve().bundle)
+        #expect(settled.bundle == AppLocalization.Catalog.resolve().bundle)
     }
 
     /// 界面控件不许直接吃 `L10n.key` 的返回值。

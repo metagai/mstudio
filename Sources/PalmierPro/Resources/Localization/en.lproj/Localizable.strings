@@ -366,6 +366,7 @@
 "Draft a film…" = "Draft a film…";
 "Draft already enhanced or cache unavailable" = "Draft already enhanced or cache unavailable";
 "Draft it" = "Draft it";
+"Draft · still frames" = "Draft · still frames";
 "Drafting… this one is free" = "Drafting… this one is free";
 "Drafts are free — no credits charged" = "Drafts are free — no credits charged";
 "Drag METAG into your Applications folder and open it from there." = "Drag METAG into your Applications folder and open it from there.";
@@ -847,6 +848,7 @@
 "Privacy & Diagnostics" = "Privacy & Diagnostics";
 "Produce" = "Produce";
 "Produce · %@ credits" = "Produce · %@ credits";
+"Producing renders every shot as video — %@ · %@" = "Producing renders every shot as video — %@ · %@";
 "Producing this will cost about %@ credits" = "Producing this will cost about %@ credits";
 "Product site, e.g. https://your-product.com" = "Product site, e.g. https://your-product.com";
 "Project" = "Project";
@@ -1155,6 +1157,7 @@
 "That script is longer than we can read in one go — trim it and try again." = "That script is longer than we can read in one go — trim it and try again.";
 "That shot is busy right now — wait for it to land and try again." = "That shot is busy right now — wait for it to land and try again.";
 "That's %@ characters over the limit. Trim it, or remove one." = "That's %@ characters over the limit. Trim it, or remove one.";
+"That's %@ characters — we can read %@. Trim it and try again." = "That's %@ characters — we can read %@. Trim it and try again.";
 "That's the free one for today — your draft is still here. Sign in to keep it and make more." = "That's the free one for today — your draft is still here. Sign in to keep it and make more.";
 "The assistant read your timeline" = "The assistant read your timeline";
 "The clip you're adding has different settings than the current project." = "The clip you're adding has different settings than the current project.";
@@ -1243,7 +1246,6 @@
 "Try Again" = "Try Again";
 "Try again" = "Try again";
 "Try another search." = "Try another search.";
-"Try it first." = "Try it first.";
 "Turn off to save %lld%% on generation cost." = "Turn off to save %lld%% on generation cost.";
 "Turn off to skip audio generation." = "Turn off to skip audio generation.";
 "Tutorial" = "Tutorial";

@@ -1507,7 +1507,9 @@
 "Making it for %@ credits in %@s" = "Wird für %1$@ Credits in %2$@ s erstellt";
 "Rendering shot %lld of %lld…" = "Einstellung %1$lld von %2$lld wird gerendert…";
 "Still rendering. It will appear in your films when it is done." = "Wird noch gerendert. Der Film erscheint, sobald er fertig ist.";
-"Try it first." = "Probier es erst aus.";
 "Loaded %@ shots. Shot %@ didn't pass the automatic check." = "%1$@ Einstellungen geladen. Einstellung %2$@ hat die automatische Prüfung nicht bestanden.";
 "Loaded %@ shots. Shots %@ didn't pass the automatic check." = "%1$@ Einstellungen geladen. Die Einstellungen %2$@ haben die automatische Prüfung nicht bestanden.";
 "Fix it" = "Beheben";
+"Draft · still frames" = "Entwurf · Standbilder";
+"Producing renders every shot as video — %@ · %@" = "Die Produktion rendert jede Einstellung als Video — %1$@ · %2$@";
+"That's %@ characters — we can read %@. Trim it and try again." = "Das sind %1$@ Zeichen — wir lesen %2$@. Kürze den Text und versuche es erneut.";

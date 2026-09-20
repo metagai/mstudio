@@ -52,11 +52,26 @@ final class AppLocalization {
         /// 存在的理由：`errorDescription` 走的是全局那一份，
         /// 而"它到底有没有查表"这件事，在英文机器上两种写法输出一模一样，
         /// **只有换到非英文才看得出来**。
+        ///
+        /// ⚠ **改的是进程级全局，而判据是并行跑的。** 2026-09-20：四个文件在用它，
+        /// 同时另一条判据读 `current`，于是它在全量里随机红、单独跑却绿 ——
+        /// 一个随机红的门，早晚被人当噪音。所以换一本表和读这本表共用一把锁。
+        nonisolated(unsafe) private static let swapLock = NSLock()
+
         static func withCatalog<T>(_ catalog: Catalog, _ body: () throws -> T) rethrows -> T {
+            swapLock.lock()
             let saved = current
             current = catalog
-            defer { current = saved }
+            defer { current = saved; swapLock.unlock() }
             return try body()
+        }
+
+        /// 没人正在换表时的那一本。**判据要断"全局是对的"就得读这个** ——
+        /// 直接读 `current` 会撞上别的判据换表的那一瞬间。
+        static func settled() -> Catalog {
+            swapLock.lock()
+            defer { swapLock.unlock() }
+            return current
         }
 
         func string(_ keyAndValue: String.LocalizationValue) -> String {

@@ -1497,7 +1497,9 @@
 "Making it for %@ credits in %@s" = "Tehdään %1$@ krediitillä %2$@ s kuluttua";
 "Rendering shot %lld of %lld…" = "Renderöidään otos %1$lld/%2$lld…";
 "Still rendering. It will appear in your films when it is done." = "Renderöinti kesken. Elokuva ilmestyy, kun se on valmis.";
-"Try it first." = "Kokeile ensin.";
 "Loaded %@ shots. Shot %@ didn't pass the automatic check." = "Ladattiin %1$@ otosta. Otos %2$@ ei läpäissyt automaattista tarkistusta.";
 "Loaded %@ shots. Shots %@ didn't pass the automatic check." = "Ladattiin %1$@ otosta. Otokset %2$@ eivät läpäisseet automaattista tarkistusta.";
 "Fix it" = "Korjaa";
+"Draft · still frames" = "Luonnos · still-kuvat";
+"Producing renders every shot as video — %@ · %@" = "Tuotanto renderöi jokaisen otoksen videona — %1$@ · %2$@";
+"That's %@ characters — we can read %@. Trim it and try again." = "Tämä on %1$@ merkkiä — luemme %2$@. Lyhennä ja yritä uudelleen.";

@@ -1507,7 +1507,9 @@
 "Making it for %@ credits in %@s" = "Será feito por %1$@ créditos em %2$@ s";
 "Rendering shot %lld of %lld…" = "Renderizando tomada %1$lld de %2$lld…";
 "Still rendering. It will appear in your films when it is done." = "Ainda renderizando. Vai aparecer nos seus filmes quando terminar.";
-"Try it first." = "Experimente primeiro.";
 "Loaded %@ shots. Shot %@ didn't pass the automatic check." = "%1$@ tomadas carregadas. A tomada %2$@ não passou na verificação automática.";
 "Loaded %@ shots. Shots %@ didn't pass the automatic check." = "%1$@ tomadas carregadas. As tomadas %2$@ não passaram na verificação automática.";
 "Fix it" = "Corrigir";
+"Draft · still frames" = "Rascunho · quadros estáticos";
+"Producing renders every shot as video — %@ · %@" = "Produzir renderiza cada tomada como vídeo — %1$@ · %2$@";
+"That's %@ characters — we can read %@. Trim it and try again." = "São %1$@ caracteres — lemos %2$@. Encurte e tente de novo.";

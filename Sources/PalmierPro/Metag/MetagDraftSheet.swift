@@ -1012,6 +1012,15 @@ struct MetagDraftSheet: View {
             // 拿不到那条片子就退回场记板，不留空白。
             if let preview = model.job?.preview {
                 MetagDraftPlayer(jobId: model.jobId ?? "", name: preview)
+                // **成片会多出什么，用这一档自己的话说。**
+                // 不写"更高清""更精美"这类形容词 —— 档位的 spec 是登记表里的真数据，
+                // 他按下出片之后拿到的就是它。
+                if let picked = engines.first(where: { $0.id == engine }) {
+                    Text(L10n.string("Producing renders every shot as video — \(picked.displayName(for: uiLang)) · \(picked.spec)"))
+                        .font(.system(size: AppTheme.FontSize.xs))
+                        .foregroundStyle(AppTheme.Text.mutedColor)
+                        .fixedSize(horizontal: false, vertical: true)
+                }
             } else {
                 filmStrip
             }

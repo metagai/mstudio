@@ -1507,7 +1507,9 @@
 "Making it for %@ credits in %@s" = "Lancement pour %1$@ crédits dans %2$@ s";
 "Rendering shot %lld of %lld…" = "Rendu du plan %1$lld sur %2$lld…";
 "Still rendering. It will appear in your films when it is done." = "Rendu en cours. Le film apparaîtra une fois terminé.";
-"Try it first." = "Essayez d’abord.";
 "Loaded %@ shots. Shot %@ didn't pass the automatic check." = "%1$@ plans chargés. Le plan %2$@ n’a pas passé le contrôle automatique.";
 "Loaded %@ shots. Shots %@ didn't pass the automatic check." = "%1$@ plans chargés. Les plans %2$@ n’ont pas passé le contrôle automatique.";
 "Fix it" = "Corriger";
+"Draft · still frames" = "Brouillon · images fixes";
+"Producing renders every shot as video — %@ · %@" = "La production rend chaque plan en vidéo — %1$@ · %2$@";
+"That's %@ characters — we can read %@. Trim it and try again." = "Cela fait %1$@ caractères — nous en lisons %2$@. Raccourcissez et réessayez.";

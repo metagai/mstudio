@@ -1497,7 +1497,9 @@
 "Making it for %@ credits in %@s" = "จะสร้างด้วย %1$@ เครดิตในอีก %2$@ วินาที";
 "Rendering shot %lld of %lld…" = "กำลังเรนเดอร์ช็อต %1$lld จาก %2$lld…";
 "Still rendering. It will appear in your films when it is done." = "ยังเรนเดอร์อยู่ เมื่อเสร็จจะปรากฏในหนังของคุณ";
-"Try it first." = "ลองก่อน";
 "Loaded %@ shots. Shot %@ didn't pass the automatic check." = "โหลดแล้ว %1$@ ช็อต ช็อต %2$@ ไม่ผ่านการตรวจอัตโนมัติ";
 "Loaded %@ shots. Shots %@ didn't pass the automatic check." = "โหลดแล้ว %1$@ ช็อต ช็อต %2$@ ไม่ผ่านการตรวจอัตโนมัติ";
 "Fix it" = "แก้ให้";
+"Draft · still frames" = "ฉบับร่าง · ภาพนิ่ง";
+"Producing renders every shot as video — %@ · %@" = "การผลิตจะเรนเดอร์ทุกช็อตเป็นวิดีโอ — %1$@ · %2$@";
+"That's %@ characters — we can read %@. Trim it and try again." = "ข้อความนี้ %1$@ ตัวอักษร — เราอ่านได้ %2$@ ตัด ให้สั้นลงแล้วลองใหม่";

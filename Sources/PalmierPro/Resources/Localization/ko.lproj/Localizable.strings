@@ -1497,7 +1497,9 @@
 "Making it for %@ credits in %@s" = "%2$@초 후 %1$@ 크레딧으로 제작합니다";
 "Rendering shot %lld of %lld…" = "%2$lld개 중 %1$lld번째 숏 렌더링 중…";
 "Still rendering. It will appear in your films when it is done." = "아직 렌더링 중입니다. 완료되면 내 영상에 나타납니다.";
-"Try it first." = "먼저 해보세요.";
 "Loaded %@ shots. Shot %@ didn't pass the automatic check." = "%1$@개 숏을 불러왔습니다. %2$@번 숏이 자동 검사를 통과하지 못했습니다.";
 "Loaded %@ shots. Shots %@ didn't pass the automatic check." = "%1$@개 숏을 불러왔습니다. %2$@번 숏이 자동 검사를 통과하지 못했습니다.";
 "Fix it" = "고치기";
+"Draft · still frames" = "초안 · 정지 화면";
+"Producing renders every shot as video — %@ · %@" = "제작하면 각 숏이 영상으로 렌더링됩니다 — %1$@ · %2$@";
+"That's %@ characters — we can read %@. Trim it and try again." = "%1$@자입니다 — 읽을 수 있는 건 %2$@자예요. 줄여서 다시 시도하세요.";

@@ -1497,7 +1497,9 @@
 "Making it for %@ credits in %@s" = "Dibuat seharga %1$@ kredit dalam %2$@ dtk";
 "Rendering shot %lld of %lld…" = "Merender bidikan %1$lld dari %2$lld…";
 "Still rendering. It will appear in your films when it is done." = "Masih dirender. Filmnya muncul setelah selesai.";
-"Try it first." = "Coba dulu.";
 "Loaded %@ shots. Shot %@ didn't pass the automatic check." = "Memuat %1$@ bidikan. Bidikan %2$@ tidak lolos pemeriksaan otomatis.";
 "Loaded %@ shots. Shots %@ didn't pass the automatic check." = "Memuat %1$@ bidikan. Bidikan %2$@ tidak lolos pemeriksaan otomatis.";
 "Fix it" = "Perbaiki";
+"Draft · still frames" = "Draf · bingkai diam";
+"Producing renders every shot as video — %@ · %@" = "Memproduksi merender tiap bidikan sebagai video — %1$@ · %2$@";
+"That's %@ characters — we can read %@. Trim it and try again." = "Ini %1$@ karakter — kami membaca %2$@. Persingkat lalu coba lagi.";

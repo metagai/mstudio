@@ -1497,7 +1497,9 @@
 "Making it for %@ credits in %@s" = "Буде створено за %1$@ кредитів через %2$@ с";
 "Rendering shot %lld of %lld…" = "Рендеринг кадру %1$lld з %2$lld…";
 "Still rendering. It will appear in your films when it is done." = "Ще рендериться. Фільм з’явиться, коли буде готовий.";
-"Try it first." = "Спершу спробуйте.";
 "Loaded %@ shots. Shot %@ didn't pass the automatic check." = "Завантажено кадрів: %1$@. Кадр %2$@ не пройшов автоматичну перевірку.";
 "Loaded %@ shots. Shots %@ didn't pass the automatic check." = "Завантажено кадрів: %1$@. Кадри %2$@ не пройшли автоматичну перевірку.";
 "Fix it" = "Виправити";
+"Draft · still frames" = "Чернетка · стоп-кадри";
+"Producing renders every shot as video — %@ · %@" = "Виробництво рендерить кожен кадр як відео — %1$@ · %2$@";
+"That's %@ characters — we can read %@. Trim it and try again." = "Це %1$@ символів — ми читаємо %2$@. Скоротіть і спробуйте ще раз.";

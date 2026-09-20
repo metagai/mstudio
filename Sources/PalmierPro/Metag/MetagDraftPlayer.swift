@@ -35,6 +35,24 @@ struct MetagDraftPlayer: View {
         }
         .aspectRatio(16 / 9, contentMode: .fit)
         .clipShape(RoundedRectangle(cornerRadius: AppTheme.Radius.md, style: .continuous))
+        // **说出这是什么。**
+        //
+        // 草案按设计就是静帧加缓慢推拉（`workers/animatic.py`），而它看起来
+        // 像一条成片。2026-09-20 一个用户看完它说"每一帧是镜头 PPT"——
+        // 他说得没错，错的是我们从没告诉他这是草案。同一段画面，
+        // 知道它是草案的人看到的是"第一步"，不知道的人看到的是"这就是成品"。
+        .overlay(alignment: .topLeading) {
+            Text(L10n.string("Draft · still frames"))
+                .font(.system(size: AppTheme.FontSize.xxs, weight: AppTheme.FontWeight.medium))
+                .foregroundStyle(AppTheme.Text.primaryColor)
+                .padding(.horizontal, AppTheme.Spacing.smMd)
+                .padding(.vertical, AppTheme.Spacing.xs)
+                .background(
+                    Capsule().fill(AppTheme.Background.prominentColor
+                        .opacity(AppTheme.Opacity.strong))
+                )
+                .padding(AppTheme.Spacing.smMd)
+        }
         .overlay(
             RoundedRectangle(cornerRadius: AppTheme.Radius.md, style: .continuous)
                 .strokeBorder(AppTheme.Border.subtleColor, lineWidth: AppTheme.BorderWidth.hairline)

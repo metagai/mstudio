@@ -1497,7 +1497,9 @@
 "Making it for %@ credits in %@s" = "Wordt gemaakt voor %1$@ credits over %2$@ s";
 "Rendering shot %lld of %lld…" = "Shot %1$lld van %2$lld renderen…";
 "Still rendering. It will appear in your films when it is done." = "Nog bezig met renderen. De film verschijnt zodra hij klaar is.";
-"Try it first." = "Probeer het eerst.";
 "Loaded %@ shots. Shot %@ didn't pass the automatic check." = "%1$@ shots geladen. Shot %2$@ kwam niet door de automatische controle.";
 "Loaded %@ shots. Shots %@ didn't pass the automatic check." = "%1$@ shots geladen. Shots %2$@ kwamen niet door de automatische controle.";
 "Fix it" = "Herstellen";
+"Draft · still frames" = "Concept · stilstaande beelden";
+"Producing renders every shot as video — %@ · %@" = "Produceren rendert elk shot als video — %1$@ · %2$@";
+"That's %@ characters — we can read %@. Trim it and try again." = "Dat zijn %1$@ tekens — we lezen er %2$@. Kort het in en probeer opnieuw.";

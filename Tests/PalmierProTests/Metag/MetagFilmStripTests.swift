@@ -24,7 +24,12 @@ struct MetagFilmStripTests {
     @Test func theCurtainStaysUpWhenTheDraftLands() throws {
         let src = Self.source("Metag/MetagDraftSheet.swift")
         let draftStage = try #require(src.range(of: "private var draftStage: some View {"))
-        let tail = String(src[draftStage.lowerBound...].prefix(700))
+        // **盯整个属性，不是盯它后面 700 个字符。**
+        // 700 是一个随手定的窗口：往里加一行注释就会把 `filmStrip` 顶出窗外，
+        // 于是判据红了，而它要守的那件事一点没变（2026-09-20 就这么红过一次）。
+        let rest = src[draftStage.upperBound...]
+        let end = rest.range(of: "\n    private var ") ?? rest.range(of: "\n    @ViewBuilder")
+        let tail = String(rest[..<(end?.lowerBound ?? rest.endIndex)])
         #expect(tail.contains("filmStrip"),
                 "草案一好，他刚看着填满的那块画面就没了 —— 幕布在最该拉开的那一刻合上了")
         // 一处定义，两处引用。
