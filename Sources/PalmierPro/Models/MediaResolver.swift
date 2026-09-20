@@ -30,6 +30,13 @@ final class MediaResolver: @unchecked Sendable {
         entry(for: assetId)?.generationInput != nil
     }
 
+    /// 这一段画面来自哪一单。**验收要能归属到具体一部片子** ——
+    /// 「他导出了什么」不带片子 id 的话，库里查不出他留下的是哪一部，
+    /// 每一部合格的成本也就算不出来。
+    func backendJobId(_ assetId: String) -> String? {
+        entry(for: assetId)?.generationInput?.backendJobId
+    }
+
     func snapshot() -> MediaResolver {
         let manifest = manifest()
         let projectURL = projectURL()

@@ -106,12 +106,15 @@ struct AppearanceTests {
 struct FilmEventTests {
     @Test("统计里没有任何内容字段")
     func statsCarryNoContent() {
-        let s = FilmExportStats(shots: 3, seconds: 12.5, metag: true)
-        // 结构体只有三个数。加进片名、提示词、文件路径都会让它变成内容上报，
-        // 而隐私政策里公示的是"不含任何内容"。
-        #expect(Mirror(reflecting: s).children.count == 3)
+        let s = FilmExportStats(shots: 3, seconds: 12.5, metag: true, films: [])
+        // **这是一份白名单，不是一个计数。** 加进片名、提示词、文件路径都会让它
+        // 变成内容上报，而落地页公示的原话是"不含姓名、不含 IP，也不含你写的任何文字"。
+        //
+        // `films` 是我们自己生成的出片任务编号 —— 三样都不是。它在这里的理由是：
+        // 导出是唯一一格"他愿不愿意留着它"，而生产库里 1077 条导出记录
+        // 没有一条说得出留下的是哪一部，于是"每一部合格的成本"没有分子。
         let names = Mirror(reflecting: s).children.compactMap(\.label).sorted()
-        #expect(names == ["metag", "seconds", "shots"])
+        #expect(names == ["films", "metag", "seconds", "shots"])
     }
 
     @Test("帧转秒只有一处口径")

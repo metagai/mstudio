@@ -45,6 +45,15 @@ struct FilmExportStats: Sendable {
     let shots: Int
     let seconds: Double
     let metag: Bool
+    /// 这条时间线用到的出片任务，去重后排序。**我们自己的 id，不含任何用户内容。**
+    let films: [String]
+}
+
+extension FilmExportStats {
+    /// 这批片段背后的出片任务，去重且有序。**同一部片子只算一次验收。**
+    static func films(of mediaRefs: [String], in resolver: MediaResolver) -> [String] {
+        Set(mediaRefs.compactMap { resolver.backendJobId($0) }.filter { !$0.isEmpty }).sorted()
+    }
 }
 
 struct ExportJob: Identifiable, Sendable {
@@ -130,12 +139,15 @@ final class ExportQueue {
         // 时间线在这里，别处没有 —— 统计要在入队时算好带下去。
         let clips = timeline.tracks.flatMap(\.clips)
         let fps = Double(max(timeline.fps, 1))
+        // 去重排序：一部片子十一镜就是十一个相同的 id，上报十一次等于把
+        // 一次验收数成十一次。
         let stats = FilmExportStats(
             shots: clips.count,
             // 帧转秒只在这里做一次。**时间线的真源是帧**，秒只是上报口径 ——
             // 别处再算一遍就会因为 fps 取错而对不上。
             seconds: Double(clips.map { $0.startFrame + $0.durationFrames }.max() ?? 0) / fps,
-            metag: clips.contains { resolver.isGenerated($0.mediaRef) }
+            metag: clips.contains { resolver.isGenerated($0.mediaRef) },
+            films: FilmExportStats.films(of: clips.map(\.mediaRef), in: resolver)
         )
         let analyticsInput = ExportTimelineAnalyticsInput(
             scope: .exportedTimeline(root: timeline, resolveTimeline: resolveTimeline),
@@ -356,10 +368,14 @@ final class ExportQueue {
         if status == .completed {
             // **唯一一个问"他愿不愿意留着它"的那一格。** 其余每一格问的都是
             // "他有没有走完流程"。不记文件名、不记内容。
-            MetagFunnel.track(.exported, meta: [
+            // **他留下的是哪一部。** 没有这一格，1077 条导出记录里
+            // 一条都说不出被留下的是什么，每一部合格的成本也就无从算起。
+            var meta: [String: Any] = [
                 "where": jobs[index].source.rawValue,
                 "fmt": jobs[index].outputURL.pathExtension.lowercased(),
-            ])
+            ]
+            if let films = jobs[index].stats?.films, !films.isEmpty { meta["films"] = films }
+            MetagFunnel.track(.exported, meta: meta)
         }
         if status == .completed, let stats = jobs[index].stats {
             MetagGateway.filmEvent(kind: "export", shots: stats.shots,
