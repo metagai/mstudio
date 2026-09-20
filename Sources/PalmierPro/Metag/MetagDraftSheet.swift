@@ -272,8 +272,36 @@ final class MetagDraftModel: ObservableObject {
     /// 他粘/拖进来的图。上传换 frame_id 之后作为 `assets` 交给导演。
     @Published var imageURLs: [URL] = []
 
+    /// **上一条草案在这一刻就该消失。**
+    ///
+    /// 2026-09-20 事故：用户贴进 377 字剧本，请求在网关被拒（400），
+    /// 而面板上仍挂着上一条提示词是 "langlang" 的草案 —— 画面是钢琴家、
+    /// 四句旁白全是钢琴。他看到的是「我写了剧本，它给我一个弹钢琴的视频」。
+    /// 他骂得对：屏幕上那条片子和他刚发出去的那段文字毫无关系。
+    ///
+    /// 清在**发出新请求之前**，不是清在失败的 catch 里 —— 等待的那几十秒里
+    /// 挂着上一条，是同一张错的图，只是他还没来得及骂。
+    private func forgetDraft() {
+        jobId = nil
+        job = nil
+        frames = [:]
+        streamed = []
+        streamedHook = nil
+        edits.removeAll()
+        rerolls.removeAll()
+        quote = nil
+        askedForQuote = false
+        // 这两个是"每条草案只记一次"的闩。不放开的话，新草案的
+        // first_line_ms / first_frame_lag_ms 报的是上一条的数。
+        firstLineMs = nil
+        firstFrameLagMs = nil
+        sawDraft = false
+    }
+
     func draft() async {
         guard !prompt.trimmingCharacters(in: .whitespaces).isEmpty, !busy else { return }
+        // **新的一次请求 = 屏幕上不再有上一条草案。**（见 `forgetDraft`）
+        forgetDraft()
         // 这两步分开记。**「打了字」和「敢按下去」是两件事** ——
         // 合成一步就看不出"写完了却没按"这一段流失，而那一段最值钱。
         pressedAt = .now
@@ -324,8 +352,19 @@ final class MetagDraftModel: ObservableObject {
             jobId = id
             await poll(id)
         } catch {
-            note = error.localizedDescription
+            note = Self.note(for: error, chars: prompt.count)
         }
+    }
+
+    /// 「太长」这一条要说出两个数：**他写了多少、我们能读多少**。
+    /// 只有这里同时知道这两个数 —— 网关那侧的文案够不着他手里那段文字，
+    /// 而一句不带数字的"太长了"不会让任何人知道该删掉多少。
+    static func note(for error: Error, chars: Int) -> String {
+        guard case MetagGateway.Failure.rejected(_, let reason) = error,
+              reason == "prompt_too_long"
+        else { return error.localizedDescription }
+        return L10n.string(
+            "That's \(chars.formatted()) characters — we can read \(PromptPaste.promptMaxCharacters.formatted()). Trim it and try again.")
     }
 
     func revise() async {
@@ -798,6 +837,12 @@ struct MetagDraftSheet: View {
             engines = (try? await MetagGateway.pricing().engines) ?? []
         }
         .onAppear(perform: seedIfNeeded)
+        // 换了一条草案，上一条的试渲状态就不再成立 —— 那句红字和
+        // 「这一条的免费试渲用过了」说的都是上一条片子的事。
+        .onChange(of: model.jobId) { _, _ in
+            sampled = false
+            sampleError = nil
+        }
         // 草案好了、价也报回来了 —— 两件事哪个后到都要能接上，所以两处都试一次。
         .onChange(of: model.ready) { _, _ in startAutoProduce() }
         .onChange(of: exactPrice) { _, _ in startAutoProduce() }

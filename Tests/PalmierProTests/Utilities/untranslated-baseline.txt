@@ -66,3 +66,82 @@ vi	Shot %@ opens on your image %@
 vi	Shot %@ takes its look from your image %@
 zh-Hant	Shot %@ opens on your image %@
 zh-Hant	Shot %@ takes its look from your image %@
+
+# ── 2026-09-20：400 被拒时那三句（弹钢琴那次事故）──────────────────
+# 三门（en / zh-Hans / es）已翻；其余 25 门登记在这儿，理由同上：
+# 我核不了的句子不往外发。哪门被真人翻了就删掉那一行。
+ar	That one didn't get through, and trying again won't change it — tell us and we'll look.
+ar	Tell us what to film first — one line is enough.
+ar	That script is longer than we can read in one go — trim it and try again.
+bn	That one didn't get through, and trying again won't change it — tell us and we'll look.
+bn	Tell us what to film first — one line is enough.
+bn	That script is longer than we can read in one go — trim it and try again.
+cs	That one didn't get through, and trying again won't change it — tell us and we'll look.
+cs	Tell us what to film first — one line is enough.
+cs	That script is longer than we can read in one go — trim it and try again.
+da	That one didn't get through, and trying again won't change it — tell us and we'll look.
+da	Tell us what to film first — one line is enough.
+da	That script is longer than we can read in one go — trim it and try again.
+de	That one didn't get through, and trying again won't change it — tell us and we'll look.
+de	Tell us what to film first — one line is enough.
+de	That script is longer than we can read in one go — trim it and try again.
+fi	That one didn't get through, and trying again won't change it — tell us and we'll look.
+fi	Tell us what to film first — one line is enough.
+fi	That script is longer than we can read in one go — trim it and try again.
+fr	That one didn't get through, and trying again won't change it — tell us and we'll look.
+fr	Tell us what to film first — one line is enough.
+fr	That script is longer than we can read in one go — trim it and try again.
+he	That one didn't get through, and trying again won't change it — tell us and we'll look.
+he	Tell us what to film first — one line is enough.
+he	That script is longer than we can read in one go — trim it and try again.
+hi	That one didn't get through, and trying again won't change it — tell us and we'll look.
+hi	Tell us what to film first — one line is enough.
+hi	That script is longer than we can read in one go — trim it and try again.
+id	That one didn't get through, and trying again won't change it — tell us and we'll look.
+id	Tell us what to film first — one line is enough.
+id	That script is longer than we can read in one go — trim it and try again.
+it	That one didn't get through, and trying again won't change it — tell us and we'll look.
+it	Tell us what to film first — one line is enough.
+it	That script is longer than we can read in one go — trim it and try again.
+ja	That one didn't get through, and trying again won't change it — tell us and we'll look.
+ja	Tell us what to film first — one line is enough.
+ja	That script is longer than we can read in one go — trim it and try again.
+ko	That one didn't get through, and trying again won't change it — tell us and we'll look.
+ko	Tell us what to film first — one line is enough.
+ko	That script is longer than we can read in one go — trim it and try again.
+nb	That one didn't get through, and trying again won't change it — tell us and we'll look.
+nb	Tell us what to film first — one line is enough.
+nb	That script is longer than we can read in one go — trim it and try again.
+nl	That one didn't get through, and trying again won't change it — tell us and we'll look.
+nl	Tell us what to film first — one line is enough.
+nl	That script is longer than we can read in one go — trim it and try again.
+pl	That one didn't get through, and trying again won't change it — tell us and we'll look.
+pl	Tell us what to film first — one line is enough.
+pl	That script is longer than we can read in one go — trim it and try again.
+pt-BR	That one didn't get through, and trying again won't change it — tell us and we'll look.
+pt-BR	Tell us what to film first — one line is enough.
+pt-BR	That script is longer than we can read in one go — trim it and try again.
+pt-PT	That one didn't get through, and trying again won't change it — tell us and we'll look.
+pt-PT	Tell us what to film first — one line is enough.
+pt-PT	That script is longer than we can read in one go — trim it and try again.
+ru	That one didn't get through, and trying again won't change it — tell us and we'll look.
+ru	Tell us what to film first — one line is enough.
+ru	That script is longer than we can read in one go — trim it and try again.
+sv	That one didn't get through, and trying again won't change it — tell us and we'll look.
+sv	Tell us what to film first — one line is enough.
+sv	That script is longer than we can read in one go — trim it and try again.
+th	That one didn't get through, and trying again won't change it — tell us and we'll look.
+th	Tell us what to film first — one line is enough.
+th	That script is longer than we can read in one go — trim it and try again.
+tr	That one didn't get through, and trying again won't change it — tell us and we'll look.
+tr	Tell us what to film first — one line is enough.
+tr	That script is longer than we can read in one go — trim it and try again.
+uk	That one didn't get through, and trying again won't change it — tell us and we'll look.
+uk	Tell us what to film first — one line is enough.
+uk	That script is longer than we can read in one go — trim it and try again.
+vi	That one didn't get through, and trying again won't change it — tell us and we'll look.
+vi	Tell us what to film first — one line is enough.
+vi	That script is longer than we can read in one go — trim it and try again.
+zh-Hant	That one didn't get through, and trying again won't change it — tell us and we'll look.
+zh-Hant	Tell us what to film first — one line is enough.
+zh-Hant	That script is longer than we can read in one go — trim it and try again.

@@ -476,8 +476,15 @@ enum MetagGateway {
             // 但前面得有一句人话。
             case .http(let code):
                 return L10n.string("That didn't go through. Try again — if it keeps happening, tell us.") + " (\(code))"
-            case .rejected(_, let reason):
+            case .rejected(let code, let reason):
                 switch reason {
+                // 他的剧本比这一步能读的长。**数字在界面那一层补**
+                // （`MetagDraftModel.note(for:chars:)` 手里有他那段文字）——
+                // 这句是给够不着那段文字的调用点用的兜底。
+                case "prompt_too_long":
+                    return L10n.string("That script is longer than we can read in one go — trim it and try again.")
+                case "prompt_empty", "topic_empty":
+                    return L10n.string("Tell us what to film first — one line is enough.")
                 case "inflight_limit":
                     return L10n.string("You already have two films rendering — wait for one to finish")
                 case "queue_full":
@@ -514,7 +521,12 @@ enum MetagGateway {
                 case "tts_quota", "highlight_quota", "plan_quota":
                     return L10n.string("Too many requests this minute — try again in a moment.")
                 default:
-                    return L10n.string("Temporarily unavailable — try again shortly")
+                    // **400 不是"稍后再试"** —— 重试会得到同一个结果。
+                    // 说不出是哪一条的时候，至少把原因码带上：他报障时引用得了，
+                    // 而我们能一眼看出该给哪个原因码补一句人话。
+                    return code == 400
+                        ? L10n.string("That one didn't get through, and trying again won't change it — tell us and we'll look.") + " (\(reason))"
+                        : L10n.string("Temporarily unavailable — try again shortly")
                 }
             }
         }
@@ -533,6 +545,11 @@ enum MetagGateway {
     /// 而且把一次网络往返放进了冷启动路径。要用的时候再拿。
     @discardableResult
     static func ensureTicket() async -> Bool {
+        // **判据不许在生产库里建一行用户。** 领票是写路径（`POST /api/v1/anon`
+        // 会落一个 `anon:<uuid>`），而 `refuseUnderTest` 那段账写的就是这件事：
+        // 理由是通用的，此前实现是单点的。领不到票的行为本来就有（让他登录），
+        // 所以这里退回 false 就够，不必抛。
+        if MetagFunnel.isRunningTests { return false }
         // 过期的票要先扔掉。留着它每一次请求都 401，而界面会说成"请登录" ——
         // 用户不知道自己其实登录过，也不知道为什么昨天还好好的。
         if ticketExpired { token = nil }
@@ -673,6 +690,15 @@ enum MetagGateway {
                     // "服务端说了额度不够"唯一的判定点。
                     MetagFunnel.track(.wall)
                     throw Failure.insufficientCredits
+                case 400:
+                    // **原因码在响应体里，而这一档以前把它丢了。**
+                    //
+                    // 2026-09-20：一段 377 字的剧本被网关按上限拒掉，
+                    // 屏幕上是「那一下没通过。再试一次 —— 老是这样就告诉我们。(400)」——
+                    // 没说太长、没说上限、没说他写了多少，**于是他只会拿同一段文字再按一次**。
+                    // 400 尤其不该说"再试一次"：重试一定得到同一个结果。
+                    let why = (try? JSONDecoder().decode([String: String].self, from: data))?["reason"] ?? ""
+                    throw why.isEmpty ? Failure.http(400) : Failure.rejected(400, why)
                 case 429, 503:
                     // 原因码在响应体里。解不出来就退回通用文案 ——
                     // 但**绝不退回裸状态码**，那对用户毫无意义。

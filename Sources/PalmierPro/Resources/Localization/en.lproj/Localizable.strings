@@ -1131,6 +1131,7 @@
 "Take a screenshot of the preview and use it as a reference for generation. Particularly useful for creating AI transitions." = "Take a screenshot of the preview and use it as a reference for generation. Particularly useful for creating AI transitions.";
 "Target Language" = "Target Language";
 "Tell us about your work" = "Tell us about your work";
+"Tell us what to film first — one line is enough." = "Tell us what to film first — one line is enough.";
 "Temperature" = "Temperature";
 "Template" = "Template";
 "Temporarily unavailable — try again shortly" = "Temporarily unavailable — try again shortly";
@@ -1148,8 +1149,10 @@
 "That generation type is not available yet — text-to-video and image-to-video are." = "That generation type is not available yet — text-to-video and image-to-video are.";
 "That is not yours to open." = "That is not yours to open.";
 "That job is gone — jobs are kept for 24 hours, free files for 60 minutes." = "That job is gone — jobs are kept for 24 hours, free files for 60 minutes.";
+"That one didn't get through, and trying again won't change it — tell us and we'll look." = "That one didn't get through, and trying again won't change it — tell us and we'll look.";
 "That one was made with a temporary identity that has since expired. Sign in and your films stay with you." = "That one was made with a temporary identity that has since expired. Sign in and your films stay with you.";
 "That request didn't go through (HTTP %lld)." = "That request didn't go through (HTTP %lld).";
+"That script is longer than we can read in one go — trim it and try again." = "That script is longer than we can read in one go — trim it and try again.";
 "That shot is busy right now — wait for it to land and try again." = "That shot is busy right now — wait for it to land and try again.";
 "That's %@ characters over the limit. Trim it, or remove one." = "That's %@ characters over the limit. Trim it, or remove one.";
 "That's the free one for today — your draft is still here. Sign in to keep it and make more." = "That's the free one for today — your draft is still here. Sign in to keep it and make more.";

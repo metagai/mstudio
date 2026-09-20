@@ -1269,6 +1269,7 @@
 "Take a screenshot of the preview and use it as a reference for generation. Particularly useful for creating AI transitions." = "Captura la previsualización y úsala como referencia para la generación. Resulta especialmente útil para crear transiciones con IA.";
 "Target Language" = "Idioma de destino";
 "Tell us about your work" = "Cuéntanos sobre tu trabajo";
+"Tell us what to film first — one line is enough." = "Dinos primero qué filmar: basta con una línea.";
 "Temperature" = "Temperatura";
 "Template" = "Plantilla";
 "Temporarily unavailable — try again shortly" = "No disponible temporalmente: inténtalo en breve";
@@ -1287,8 +1288,10 @@
 "That generation type is not available yet — text-to-video and image-to-video are." = "Ese tipo de generación aún no está disponible; sí lo están texto a vídeo e imagen a vídeo.";
 "That is not yours to open." = "Eso no es tuyo.";
 "That job is gone — jobs are kept for 24 hours, free files for 60 minutes." = "Ese trabajo ya no está: se guardan 24 horas, y los archivos gratuitos 60 minutos.";
+"That one didn't get through, and trying again won't change it — tell us and we'll look." = "Esa no pasó, y repetirla no cambiará nada: cuéntanoslo y lo miramos.";
 "That one was made with a temporary identity that has since expired. Sign in and your films stay with you." = "Esa se hizo con una identidad temporal que ya caducó. Inicia sesión y tus películas se quedan contigo.";
 "That request didn't go through (HTTP %lld)." = "Esa solicitud no se completó (HTTP %lld).";
+"That script is longer than we can read in one go — trim it and try again." = "Ese guion es más largo de lo que podemos leer de una vez: recórtalo e inténtalo otra vez.";
 "That shot is busy right now — wait for it to land and try again." = "Esa toma está ocupada ahora mismo: espera a que termine e inténtalo de nuevo.";
 "That's %@ characters over the limit. Trim it, or remove one." = "Son %@ caracteres de más. Recorta un poco o quita uno.";
 "That's the free one for today — your draft is still here. Sign in to keep it and make more." = "Esa era la gratuita de hoy; tu borrador sigue aquí. Inicia sesión para conservarlo y hacer más.";
