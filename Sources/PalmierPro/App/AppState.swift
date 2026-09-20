@@ -276,6 +276,17 @@ final class AppState {
     @MainActor
     func startFilm(from line: String, assets: [URL] = [], shots: Int? = nil) async {
         let name = Self.projectName(from: line)
+        // **先放进队列，再开窗。**
+        //
+        // 队列存在的理由就是"顺序无关"（见 `pendingDraft` 那段账），而它原来
+        // 是在 `showEditor` **之后**才被填上的 —— 于是面板如果在开窗那一刻就
+        // `onAppear`（同步渲染时真的会），它来取的时候队列还是空的，通知也可能
+        // 还没订阅上。两条路都错过，就是**他打了字、按了钮，落进一个空编辑器**。
+        //
+        // 2026-09-20 真机复现两次：首页输入 → 项目建了、编辑器开了、
+        // 草案面板是空的、一条任务都没生成。创始人那条 377 字剧本"什么都没发生"
+        // 是同一个形状。
+        queueDraft(prompt: line, assets: assets, shots: shots)
         do {
             var attempt = name
             var n = 2
@@ -292,11 +303,17 @@ final class AppState {
             }
         } catch {
             Log.project.error("start film from line failed: \(error.localizedDescription)")
+            // 开窗失败就把队列里那一份撤回来 —— 留着它，下一次随便打开
+            // 哪个项目都会弹出一张他早就放弃了的草案。
+            _ = takePendingDraft()
             return
         }
-        // 项目开好了再把草案面板端上来：面板活在编辑器的媒体面板里，
-        // 而首页那一刻还没有项目。
-        handOffDraft(prompt: line, assets: assets, shots: shots)
+        // 项目开好了再喊一声：面板醒着的当场接住，醒得晚的在 `onAppear` 里
+        // 自己去队列里取（那一份在开窗之前就已经放好了）。
+        //
+        // **这里只喊，不再排一次队** —— 面板可能已经取走并开了那张草案，
+        // 再排一份进去，下一次任何一个面板 `onAppear` 都会再开一张。
+        announceDraft(prompt: line, assets: assets, shots: shots)
     }
 
     /// 把那一句交给面板。**两条路都留着** —— 面板醒着走通知，醒得晚走排队那一份。
@@ -306,6 +323,12 @@ final class AppState {
     /// **把 `startFilm` 里那一行删掉，判据照样全绿。**
     func handOffDraft(prompt: String?, assets: [URL], shots: Int? = nil) {
         queueDraft(prompt: prompt, assets: assets, shots: shots)
+        announceDraft(prompt: prompt, assets: assets, shots: shots)
+    }
+
+    /// 只喊那一声。**排队是另一件事**（`queueDraft`）—— `startFilm` 在开窗
+    /// 之前就排好了，开完窗只需要喊；两件事写在一个函数里，就只能一起做。
+    func announceDraft(prompt: String?, assets: [URL], shots: Int? = nil) {
         var info: [String: Any] = ["assets": assets]
         if let prompt { info["prompt"] = prompt }
         if let shots { info["shots"] = shots }
