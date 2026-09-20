@@ -524,6 +524,17 @@ enum MetagGateway {
                 // 而它们是**用户自己的配额**，不是我们忙。把用户的正常状态说成
                 // 我们坏了，他会以为产品有问题，而不是知道歇一会儿。
                 // 并发和配额是两件事：前者"等一条跑完就行"，后者"这一小时别再来了"。
+                // 两道闸，**说的不是同一件事**（CTO 2026-09-20 定的参数）：
+                // 按 IP 每天 3 次 / 全站每天 40 次。
+                //
+                // 分开说是因为**责任方不同**：前者是这条网络今天用过了
+                // （公司、学校、CGNAT 后面几百个人共一个出口，可能根本不是他用的），
+                // 后者是我们今天的免费额度发完了 —— **那不是他的错，
+                // 别让他以为是自己超了**。拿同一句顶上，他会以为自己做错了什么。
+                case "sample_quota":
+                    return L10n.string("Today's free shot is used up on this network — it comes back tomorrow.")
+                case "sample_daily_cap":
+                    return L10n.string("Everyone's free shots for today are taken — nothing wrong on your end. Tomorrow there are more.")
                 case "sample_used":
                     return L10n.string("You've already used your free preview shot.")
                 case "sample_engine":

@@ -147,3 +147,29 @@ struct AutoSampleWiringTests {
                 "sampleShot 有两个调用点 —— 两条路会各自长出自己的行为")
     }
 }
+
+/// 两道闸说的不是同一件事，所以不许说同一句话。
+///
+/// 按 IP 那道（`sample_quota`）是"这条网络今天用过了"——公司/学校/CGNAT
+/// 后面几百个人共一个出口，很可能**根本不是他用的**；全站那道
+/// （`sample_daily_cap`）是我们今天的免费额度发完了，**那不是他的错**。
+/// 拿同一句顶上，他会以为自己做错了什么。
+struct SampleQuotaCopyTests {
+    @Test func theTwoGatesDoNotShareOneSentence() {
+        let ip = MetagGateway.Failure.rejected(429, "sample_quota").message(anonymous: true) ?? ""
+        let site = MetagGateway.Failure.rejected(429, "sample_daily_cap").message(anonymous: true) ?? ""
+        #expect(!ip.isEmpty && !site.isEmpty)
+        #expect(ip != site, "两道闸说了同一句话 —— 其中一句对他是假话")
+        // 兜底那句（"Temporarily unavailable"）说明这个码没有自己的文案。
+        #expect(!ip.contains("Temporarily"), "按 IP 那道掉进兜底：「\(ip)」")
+        #expect(!site.contains("Temporarily"), "全站那道掉进兜底：「\(site)」")
+    }
+
+    /// 全站那道**不许把责任说成他的** —— 他一次都没用过也会撞上它。
+    @Test func theSiteWideGateDoesNotBlameHim() {
+        let site = MetagGateway.Failure.rejected(429, "sample_daily_cap").message(anonymous: true) ?? ""
+        #expect(site.lowercased().contains("nothing wrong on your end")
+                || site.contains("不是你"),
+                "没说清这不是他的错：「\(site)」")
+    }
+}

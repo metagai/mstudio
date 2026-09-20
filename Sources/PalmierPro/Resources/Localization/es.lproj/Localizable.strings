@@ -487,6 +487,7 @@
 "Estimated cost. Actual billing may differ slightly." = "Coste estimado. La facturación real puede variar ligeramente.";
 "Every paid step quotes first. Nothing is billed until you approve." = "Cada paso de pago se cotiza antes. No se cobra nada hasta que lo apruebes.";
 "Everyone is generating right now — try again in a few minutes" = "Ahora mismo todos están generando: inténtalo en unos minutos";
+"Everyone's free shots for today are taken — nothing wrong on your end. Tomorrow there are more." = "Los planos gratis de hoy se agotaron para todos: no es cosa tuya. Mañana hay más.";
 "Exclusion" = "Exclusión";
 "Expand" = "Expandir";
 "Expired" = "Caducada";
@@ -1357,6 +1358,7 @@
 "Tints waveforms by speaker. Voices are matched across clips using cloud transcripts." = "Colorea las formas de onda según el hablante. Las voces se comparan entre clips mediante transcripciones en la nube.";
 "Title Safe" = "Área de título";
 "Today's free drafts are all taken. Sign in to make your own, or come back tomorrow." = "Los borradores gratuitos de hoy se agotaron. Inicia sesión para hacer los tuyos o vuelve mañana.";
+"Today's free shot is used up on this network — it comes back tomorrow." = "El plano gratis de hoy ya se usó en esta red: vuelve mañana.";
 "Toggle Agent Panel" = "Mostrar u ocultar el panel del asistente";
 "Tone" = "Tono";
 "Too many requests right now — give it a moment and try again." = "Demasiadas solicitudes ahora mismo: espera un momento e inténtalo de nuevo.";

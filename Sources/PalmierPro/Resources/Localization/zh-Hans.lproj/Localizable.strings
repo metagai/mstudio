@@ -488,6 +488,7 @@
 "Estimated cost. Actual billing may differ slightly." = "预计费用。实际计费可能略有不同。";
 "Every paid step quotes first. Nothing is billed until you approve." = "每个付费步骤都会先报价。你点头之前不会扣费。";
 "Everyone is generating right now — try again in a few minutes" = "此刻大家都在生成，过几分钟再试";
+"Everyone's free shots for today are taken — nothing wrong on your end. Tomorrow there are more." = "今天所有人的免费一镜都用完了 —— 不是你这边的问题。明天还有。";
 "Exclusion" = "排除";
 "Expand" = "展开";
 "Expired" = "产物已过期";
@@ -1358,6 +1359,7 @@
 "Tints waveforms by speaker. Voices are matched across clips using cloud transcripts." = "按说话人为波形着色。使用云端转录匹配不同片段中的声音。";
 "Title Safe" = "标题安全";
 "Today's free drafts are all taken. Sign in to make your own, or come back tomorrow." = "今天的免费草案已经用完了。登录可以做自己的，或者明天再来。";
+"Today's free shot is used up on this network — it comes back tomorrow." = "这条网络今天的免费一镜用完了 —— 明天会回来。";
 "Toggle Agent Panel" = "显示/隐藏助手面板";
 "Tone" = "色调";
 "Too many requests right now — give it a moment and try again." = "现在请求太多了 —— 缓一下再试。";

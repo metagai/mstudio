@@ -416,6 +416,7 @@
 "Estimated cost. Actual billing may differ slightly." = "Estimated cost. Actual billing may differ slightly.";
 "Every paid step quotes first. Nothing is billed until you approve." = "Every paid step quotes first. Nothing is billed until you approve.";
 "Everyone is generating right now — try again in a few minutes" = "Everyone is generating right now — try again in a few minutes";
+"Everyone's free shots for today are taken — nothing wrong on your end. Tomorrow there are more." = "Everyone's free shots for today are taken — nothing wrong on your end. Tomorrow there are more.";
 "Exclusion" = "Exclusion";
 "Expand" = "Expand";
 "Expired" = "Expired";
@@ -1217,6 +1218,7 @@
 "Tints waveforms by speaker. Voices are matched across clips using cloud transcripts." = "Tints waveforms by speaker. Voices are matched across clips using cloud transcripts.";
 "Title Safe" = "Title Safe";
 "Today's free drafts are all taken. Sign in to make your own, or come back tomorrow." = "Today's free drafts are all taken. Sign in to make your own, or come back tomorrow.";
+"Today's free shot is used up on this network — it comes back tomorrow." = "Today's free shot is used up on this network — it comes back tomorrow.";
 "Tone" = "Tone";
 "Too many requests right now — give it a moment and try again." = "Too many requests right now — give it a moment and try again.";
 "Too many requests this hour — try again later." = "Too many requests this hour — try again later.";

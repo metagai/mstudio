@@ -145,3 +145,56 @@ vi	That script is longer than we can read in one go — trim it and try again.
 zh-Hant	That one didn't get through, and trying again won't change it — tell us and we'll look.
 zh-Hant	Tell us what to film first — one line is enough.
 zh-Hant	That script is longer than we can read in one go — trim it and try again.
+
+# ── 2026-09-20：免费试渲两道闸的两句 ──────────────────────────
+# 三门已翻；其余 25 门登记在此，理由同上（我核不了的句子不往外发）。
+ar	Today's free shot is used up on this network — it comes back tomorrow.
+ar	Everyone's free shots for today are taken — nothing wrong on your end. Tomorrow there are more.
+bn	Today's free shot is used up on this network — it comes back tomorrow.
+bn	Everyone's free shots for today are taken — nothing wrong on your end. Tomorrow there are more.
+cs	Today's free shot is used up on this network — it comes back tomorrow.
+cs	Everyone's free shots for today are taken — nothing wrong on your end. Tomorrow there are more.
+da	Today's free shot is used up on this network — it comes back tomorrow.
+da	Everyone's free shots for today are taken — nothing wrong on your end. Tomorrow there are more.
+de	Today's free shot is used up on this network — it comes back tomorrow.
+de	Everyone's free shots for today are taken — nothing wrong on your end. Tomorrow there are more.
+fi	Today's free shot is used up on this network — it comes back tomorrow.
+fi	Everyone's free shots for today are taken — nothing wrong on your end. Tomorrow there are more.
+fr	Today's free shot is used up on this network — it comes back tomorrow.
+fr	Everyone's free shots for today are taken — nothing wrong on your end. Tomorrow there are more.
+he	Today's free shot is used up on this network — it comes back tomorrow.
+he	Everyone's free shots for today are taken — nothing wrong on your end. Tomorrow there are more.
+hi	Today's free shot is used up on this network — it comes back tomorrow.
+hi	Everyone's free shots for today are taken — nothing wrong on your end. Tomorrow there are more.
+id	Today's free shot is used up on this network — it comes back tomorrow.
+id	Everyone's free shots for today are taken — nothing wrong on your end. Tomorrow there are more.
+it	Today's free shot is used up on this network — it comes back tomorrow.
+it	Everyone's free shots for today are taken — nothing wrong on your end. Tomorrow there are more.
+ja	Today's free shot is used up on this network — it comes back tomorrow.
+ja	Everyone's free shots for today are taken — nothing wrong on your end. Tomorrow there are more.
+ko	Today's free shot is used up on this network — it comes back tomorrow.
+ko	Everyone's free shots for today are taken — nothing wrong on your end. Tomorrow there are more.
+nb	Today's free shot is used up on this network — it comes back tomorrow.
+nb	Everyone's free shots for today are taken — nothing wrong on your end. Tomorrow there are more.
+nl	Today's free shot is used up on this network — it comes back tomorrow.
+nl	Everyone's free shots for today are taken — nothing wrong on your end. Tomorrow there are more.
+pl	Today's free shot is used up on this network — it comes back tomorrow.
+pl	Everyone's free shots for today are taken — nothing wrong on your end. Tomorrow there are more.
+pt-BR	Today's free shot is used up on this network — it comes back tomorrow.
+pt-BR	Everyone's free shots for today are taken — nothing wrong on your end. Tomorrow there are more.
+pt-PT	Today's free shot is used up on this network — it comes back tomorrow.
+pt-PT	Everyone's free shots for today are taken — nothing wrong on your end. Tomorrow there are more.
+ru	Today's free shot is used up on this network — it comes back tomorrow.
+ru	Everyone's free shots for today are taken — nothing wrong on your end. Tomorrow there are more.
+sv	Today's free shot is used up on this network — it comes back tomorrow.
+sv	Everyone's free shots for today are taken — nothing wrong on your end. Tomorrow there are more.
+th	Today's free shot is used up on this network — it comes back tomorrow.
+th	Everyone's free shots for today are taken — nothing wrong on your end. Tomorrow there are more.
+tr	Today's free shot is used up on this network — it comes back tomorrow.
+tr	Everyone's free shots for today are taken — nothing wrong on your end. Tomorrow there are more.
+uk	Today's free shot is used up on this network — it comes back tomorrow.
+uk	Everyone's free shots for today are taken — nothing wrong on your end. Tomorrow there are more.
+vi	Today's free shot is used up on this network — it comes back tomorrow.
+vi	Everyone's free shots for today are taken — nothing wrong on your end. Tomorrow there are more.
+zh-Hant	Today's free shot is used up on this network — it comes back tomorrow.
+zh-Hant	Everyone's free shots for today are taken — nothing wrong on your end. Tomorrow there are more.
