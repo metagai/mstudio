@@ -45,3 +45,69 @@ struct StaleDraftTests {
         #expect(!text.lowercased().contains("try again —"), "还在让他重试：「\(text)」")
     }
 }
+
+/// 「能卖」和「能试渲」是两件事。
+///
+/// 2026-09-20 查实：客户端拿"最便宜的付费档"当"能试渲的档"的代理量，
+/// 而服务端那侧是一份手写白名单。线上最便宜的付费档是 wan-flash（7cr，
+/// 界面上写着 "Best value 720P"）—— 它不在白名单里，**于是那颗
+/// 「免费试渲一镜」对每一个停留在默认档位的人都必然 400**。
+/// 而"线上使用 0 次"被我们读成了"没人要"。
+@MainActor
+struct SampleTierTests {
+    static func engine(
+        _ id: String, _ credits: Int, sampleable: Bool? = nil, available: Bool = true
+    ) -> MetagGateway.Pricing.Engine {
+        var e = MetagGateway.Pricing.Engine(
+            id: id, name: id, name_i18n: nil, spec: "", resolution: nil, duration_s: nil,
+            native_audio: false, credits_per_shot: credits)
+        e.sampleable = sampleable
+        e.available = available
+        return e
+    }
+
+    /// 线上那一单的形状：最便宜的付费档不能试渲，它就不许被挑中。
+    @Test func theCheapestPaidTierIsNotAutomaticallyTheSampleTier() {
+        let list = [
+            Self.engine("local", 1, sampleable: false),
+            Self.engine("wan-flash", 7, sampleable: false),
+            Self.engine("seedance", 34, sampleable: true),
+        ]
+        let picked = MetagDraftSheet.sampleTier(in: list, selected: "local")
+        #expect(picked?.id == "seedance", "挑中的是 \(picked?.id ?? "nil") —— 点下去只会拿一个 400")
+    }
+
+    /// 他自己选的那一档不能试渲时，也不许拿它去撞 —— 退到能试的那一档。
+    @Test func aSelectedTierThatCannotBeSampledIsNotUsed() {
+        let list = [
+            Self.engine("local", 1, sampleable: false),
+            Self.engine("wan-flash", 7, sampleable: false),
+            Self.engine("veo", 56, sampleable: true),
+        ]
+        #expect(MetagDraftSheet.sampleTier(in: list, selected: "wan-flash")?.id == "veo")
+    }
+
+    /// 停售的档不许被挑中 —— 这条在加 `sampleable` 之前就成立，别把它改没了。
+    @Test func anUnavailableTierIsStillSkipped() {
+        let list = [
+            Self.engine("local", 1, sampleable: false),
+            Self.engine("seedance", 34, sampleable: true, available: false),
+            Self.engine("veo", 56, sampleable: true),
+        ]
+        #expect(MetagDraftSheet.sampleTier(in: list, selected: "local")?.id == "veo")
+    }
+
+    /// **整份报价单都不带这一列 = 服务端还没上它。**
+    /// 那时按老规则挑，行为不变 —— 把"不知道"当成"不行"，
+    /// 一次回滚就让这个功能从所有人眼前消失。
+    @Test func anOldGatewayKeepsTheOldRule() {
+        let list = [Self.engine("local", 1), Self.engine("wan-flash", 7), Self.engine("veo", 56)]
+        #expect(MetagDraftSheet.sampleTier(in: list, selected: "local")?.id == "wan-flash")
+    }
+
+    /// 一档都试不了就**没有这颗按钮** —— 界面那侧靠 nil 判断。
+    @Test func nothingSampleableMeansNoButton() {
+        let list = [Self.engine("local", 1, sampleable: false), Self.engine("wan-flash", 7, sampleable: false)]
+        #expect(MetagDraftSheet.sampleTier(in: list, selected: "local") == nil)
+    }
+}

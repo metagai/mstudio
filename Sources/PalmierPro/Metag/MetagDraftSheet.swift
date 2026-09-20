@@ -659,7 +659,7 @@ struct MetagDraftSheet: View {
     /// 没有口播的镜头一律回落到这一档 —— **这是服务端的路由规则，不是客户端能算出来的**，
     /// 所以它是一个写明出处的常量，而不是一段假装在推导的代码。
     /// 客户端唯一能做的是：拿它去报价单里查这一档还在不在。
-    private static let fallbackEngineID = "local"
+    static let fallbackEngineID = "local"
 
     private var perShot: Int { engines.first { $0.id == engine }?.credits_per_shot ?? 1 }
 
@@ -670,15 +670,35 @@ struct MetagDraftSheet: View {
     /// 于是"看看付费档长什么样"给新用户看的是一档他用注册赠额买不起的模型。
     /// 现在取报价单里**最便宜的那一档付费档**：它既是新用户真买得起的，
     /// 也让他之后看到的报价对得上。
+    /// **"能卖"和"能试渲"是两件事，现在由登记表分别回答**（`sampleable`）。
+    ///
+    /// 在这之前客户端拿"最便宜的付费档"当"能试渲的档"的代理量，而服务端
+    /// 那侧是一份手写白名单 —— 2026-09-20 两者分家：最便宜的付费档是
+    /// wan-flash，不在白名单里，于是这颗按钮对默认档位的每一个人都必然 400。
+    ///
+    /// 整份报价单一个档都不带 `sampleable` = 服务端还没上这一列。
+    /// 那时按老规则挑（行为不变），**不是把按钮藏起来** ——
+    /// 把"不知道"当成"不行"，一次回滚就让这个功能从所有人眼前消失。
     private var sampleTier: MetagGateway.Pricing.Engine? {
+        Self.sampleTier(in: engines, selected: engine)
+    }
+
+    /// 挑档这件事**是纯的**，所以摆在外面让判据够得着：这条路上一次错
+    /// 就是「一颗必然 400 的按钮在线上挂了一个月，而我们读成没人要」。
+    static func sampleTier(
+        in engines: [MetagGateway.Pricing.Engine], selected: String
+    ) -> MetagGateway.Pricing.Engine? {
+        let serverKnowsSampleable = engines.contains { $0.sampleable != nil }
+        func canSample(_ e: MetagGateway.Pricing.Engine) -> Bool {
+            e.isAvailable && e.id != fallbackEngineID
+                && (serverKnowsSampleable ? e.sampleable == true : true)
+        }
         // 已经选了付费档就试他选的那一档 —— 他想看的是自己要买的东西。
-        if engine != Self.fallbackEngineID,
-           let picked = engines.first(where: { $0.id == engine }), picked.isAvailable {
+        if selected != fallbackEngineID,
+           let picked = engines.first(where: { $0.id == selected }), canSample(picked) {
             return picked
         }
-        return engines
-            .filter { $0.isAvailable && $0.id != Self.fallbackEngineID }
-            .min { $0.credits_per_shot < $1.credits_per_shot }
+        return engines.filter(canSample).min { $0.credits_per_shot < $1.credits_per_shot }
     }
 
     /// 选中的档位自带台词/音效/环境声。取自报价单，不硬编引擎名单 ——
