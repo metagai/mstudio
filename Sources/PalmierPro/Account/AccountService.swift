@@ -135,7 +135,16 @@ final class AccountService {
 
     private init() {}
 
-    var isSignedIn: Bool { MetagGateway.isSignedIn }
+    /// **存下来，不是每次现读。**
+    ///
+    /// 它以前是 `{ MetagGateway.isSignedIn }` —— 读 Keychain 里那把钥匙。
+    /// 钥匙不是可观察的状态，于是授权回来之后界面不会重画：
+    /// 底部那排"用 Apple / Google 登录"继续摆着，像是没登上（创始人 09-20）。
+    /// 现在票一变就广播（`.metagIdentityChanged`），这里跟着更新，界面才动。
+    private(set) var isSignedIn: Bool = MetagGateway.isSignedIn
+
+    /// 票变了 —— 登上、登出、或者 401 把它清了。三种都要跟。
+    func identityChanged() { isSignedIn = MetagGateway.isSignedIn }
     var aiAllowed: Bool { isSignedIn }
     var remainingCredits: Int { metagCredits ?? 0 }
     var creditsKnown: Bool { metagCredits != nil }
@@ -147,6 +156,12 @@ final class AccountService {
     func configure() {
         guard !didConfigure else { return }
         didConfigure = true
+        // 票在别处被换掉（授权回来、401 清票）时，这里是唯一跟上的地方。
+        NotificationCenter.default.addObserver(
+            forName: .metagIdentityChanged, object: nil, queue: .main
+        ) { [weak self] _ in
+            MainThread.run { self?.identityChanged() }
+        }
         isMisconfigured = false
         Task {
             await refreshPricing()

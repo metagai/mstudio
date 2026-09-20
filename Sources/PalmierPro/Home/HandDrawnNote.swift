@@ -4,9 +4,6 @@ import SwiftUI
 struct HandDrawnNote: View {
     let text: String
 
-    @Environment(\.accessibilityReduceMotion) private var reduceMotion
-    @State private var hue: Double = 0
-
     var body: some View {
         HStack(alignment: .top, spacing: AppTheme.Spacing.smMd) {
             arrow
@@ -19,37 +16,26 @@ struct HandDrawnNote: View {
                 .fixedSize(horizontal: false, vertical: true)
         }
         .allowsHitTesting(false)
-        .onAppear(perform: startHueIfAnimating)
     }
 
-    /// Angular gradient masked by the stroke, same approach as `BorderBeam`.
+    /// **一支笔画上去的箭头，不是一道彩虹。**
+    ///
+    /// 上一版用彩虹渐变，创始人 2026-09-20 的判断是"箭头不明显" —— 渐变把
+    /// 一条本来就细的线拆成几段不同亮度，在深色背景上每一段都不够对比。
+    /// 黑白单色 + 更粗的笔画，看得见才谈得上手绘感。
     private var arrow: some View {
-        AngularGradient(
-            colors: [.red, .orange, .yellow, .green, .cyan, .blue, .purple, .red],
-            center: .center,
-            angle: .degrees(hue)
-        )
-        .mask {
-            Canvas { ctx, size in
-                ctx.stroke(
-                    Self.strokePath(in: size),
-                    with: .color(.white),
-                    style: StrokeStyle(lineWidth: AppTheme.BorderWidth.medium,
-                                       lineCap: .round, lineJoin: .round)
-                )
-            }
+        Canvas { ctx, size in
+            ctx.stroke(
+                Self.strokePath(in: size),
+                with: .color(ink),
+                style: StrokeStyle(lineWidth: AppTheme.BorderWidth.thick,
+                                   lineCap: .round, lineJoin: .round)
+            )
         }
     }
 
-    /// Amber, not the brand green the line above already uses.
-    private let ink = AppTheme.Accent.timecodeColor
-
-    private func startHueIfAnimating() {
-        guard !reduceMotion else { return }
-        withAnimation(.linear(duration: AppTheme.Anim.annotationHue).repeatForever(autoreverses: false)) {
-            hue = 360
-        }
-    }
+    /// 和正文同一个墨色：批注是写在纸上的，不是另一个系统发来的提示。
+    private var ink: Color { AppTheme.Text.primaryColor }
 
     /// Curve sweeping up-left, plus a two-line head. Deterministic wobble, so it never reflows.
     static func strokePath(in size: CGSize) -> Path {

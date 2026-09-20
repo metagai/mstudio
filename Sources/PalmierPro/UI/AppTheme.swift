@@ -642,8 +642,6 @@ enum AppTheme {
         static let agentReadHighlightHold: Double = 0.7
         static let agentReadHighlightFade: Double = 0.25
         static let agentReadHighlightDuration = agentReadHighlightHold + agentReadHighlightFade
-        /// One full hue revolution for a hand-drawn annotation.
-        static let annotationHue: Double = 6
     }
 
     // MARK: - Hand-drawn annotation

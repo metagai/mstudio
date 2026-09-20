@@ -1,5 +1,10 @@
 import Foundation
 
+extension Notification.Name {
+    /// 登录票变了（登上、登出、401 被清）。**身份的唯一广播口。**
+    static let metagIdentityChanged = Notification.Name("metagIdentityChanged")
+}
+
 /// METAG 网关客户端：登录态 JWT + 生成任务提交/轮询/下载。
 /// 与 web 端同一套 REST 契约（gateway/src/main.rs），不经 Convex。
 enum MetagGateway {
@@ -36,6 +41,13 @@ enum MetagGateway {
         set {
             if let newValue { KeychainStore.save(newValue, account: tokenAccount) }
             else { KeychainStore.delete(account: tokenAccount) }
+            // **票一变，界面必须跟着变。**
+            //
+            // `isSignedIn` 读的是这把钥匙，而它住在 Keychain 里 —— SwiftUI
+            // 观察不到。2026-09-20 创始人撞上的就是这个：授权回来了，
+            // 底部那排"用 Apple / Google 登录"还摆在那儿，像是没登上。
+            // 401 清票那条路同样要让界面知道，否则反过来假装还登着。
+            NotificationCenter.default.post(name: .metagIdentityChanged, object: nil)
         }
     }
 
