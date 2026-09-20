@@ -33,7 +33,10 @@ struct OnboardingOverlay: View {
                 .padding(.horizontal, AppTheme.Spacing.xxl)
                 .padding(.vertical, AppTheme.Spacing.lg)
         }
-        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        // 登录屏贴着内容长，别的步骤由外层钉死高度。**无条件占满会把
+        // 一个标题加一行字撑成一屏空白** —— 创始人 2026-09-19 的截图就是它。
+        .frame(maxWidth: .infinity,
+               maxHeight: onboarding.step == .account ? nil : .infinity)
         .background(
             RoundedRectangle(cornerRadius: AppTheme.Radius.mdLg, style: .continuous)
                 .fill(.ultraThinMaterial)
@@ -64,7 +67,6 @@ struct OnboardingOverlay: View {
                 .scrollEdgeEffectStyle(.soft, for: .bottom)
         } else {
             content
-                .frame(maxHeight: .infinity, alignment: .topLeading)
         }
     }
 

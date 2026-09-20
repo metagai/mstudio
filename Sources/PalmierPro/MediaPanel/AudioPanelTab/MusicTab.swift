@@ -13,9 +13,17 @@ struct MusicSection: View {
     @State private var generatingLabel = L10n.key("Generating…")
     @State private var note: String?
 
-    private var models: [AudioModelConfig] {
+    /// 能配乐的模型。**目录只由 `/api/v1/pricing` 的视频档位喂，而那份清单里
+    /// 没有音乐档** —— 网关至今没有音乐生成接口（只有 `/api/v1/tts` 的旁白）。
+    /// 于是这一格长期是「Model: None」：看起来能用，点下去什么都不出来。
+    static var musicModels: [AudioModelConfig] {
         AudioModelConfig.allModels.filter { $0.inputs.contains(.video) && $0.category == .music }
     }
+
+    /// 一个模型都没有就整块不出现。**空的入口比没有入口更伤信任。**
+    static var isAvailable: Bool { !musicModels.isEmpty }
+
+    private var models: [AudioModelConfig] { Self.musicModels }
 
     private var model: AudioModelConfig? {
         if let id = selectedModelId, let m = models.first(where: { $0.id == id }) { return m }
