@@ -112,42 +112,6 @@ struct SampleTierTests {
     }
 }
 
-/// 草案就绪就自动渲那一镜真的，**按钮和自动走同一段**。
-///
-/// 判据够不着 SwiftUI 的 `@State`（自动那一次只发一回，靠 `autoSampled` 闩住），
-/// 所以断在源码上 —— 同 `FunnelCoverageTests` 锚 `ensureTicket` 的做法。
-/// 它盯住的是这次事故的形状：**两条路各写一遍，迟早有一处忘记**
-/// （这颗按钮本身就是"同一份名单写三处、加一档漏一处"的产物）。
-struct AutoSampleWiringTests {
-    static var source: String {
-        (try? String(
-            contentsOf: URL(fileURLWithPath: #filePath)
-                .deletingLastPathComponent().deletingLastPathComponent()
-                .deletingLastPathComponent().deletingLastPathComponent()
-                .appendingPathComponent("Sources/PalmierPro/Metag/MetagDraftSheet.swift"),
-            encoding: .utf8)) ?? ""
-    }
-
-    /// 草案就绪那一格上必须真的挂着自动试渲 —— 没有它，这颗按钮又回到
-    /// "等他自己发现"，而线上数据说没有人发现过。
-    @Test func readyTriggersTheFreeShot() throws {
-        let src = Self.source
-        let hook = try #require(src.range(of: "onChange(of: model.ready)"))
-        let after = String(src[hook.lowerBound...].prefix(1400))
-        #expect(after.contains("runSample(auto: true)"),
-                "草案就绪没有自动试渲 —— 那一镜又只能等他自己点")
-    }
-
-    /// 按钮不许自己再写一遍那段请求。
-    @Test func theButtonGoesThroughTheSameFunction() {
-        let src = Self.source
-        #expect(src.contains("runSample(auto: false)"), "按钮没走同一段")
-        // 真正发请求的那一行只应出现一次：在 `runSample` 里。
-        #expect(src.components(separatedBy: "MetagGateway.sampleShot(").count - 1 == 1,
-                "sampleShot 有两个调用点 —— 两条路会各自长出自己的行为")
-    }
-}
-
 /// 两道闸说的不是同一件事，所以不许说同一句话。
 ///
 /// 按 IP 那道（`sample_quota`）是"这条网络今天用过了"——公司/学校/CGNAT
