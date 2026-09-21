@@ -242,3 +242,54 @@ struct LiveliestShotTests {
         #expect(MetagDraftModel.liveliestShot(s) == 0, "被背景动静骗了")
     }
 }
+
+/// **第一条片子默认走会动的那一档。**
+///
+/// 自研档 1cr/镜最便宜，也最不会动：30 天 461 镜平均 motion 5.66，
+/// 而 wan-flash 16.73。默认档决定他第一条片子长什么样，而第一条片子
+/// 决定他还回不回来 —— 2026-09-20 那个说「每一帧是镜头 PPT」的用户，
+/// 看的就是默认档出的片子。
+@MainActor
+struct FirstFilmEngineTests {
+    static func engines(_ spec: [(String, Int, Bool)]) -> [MetagGateway.Pricing.Engine] {
+        let json = "[" + spec.map { id, cr, avail in
+            """
+            {"id":"\(id)","name":"\(id)","name_i18n":null,"spec":"","resolution":null,
+             "duration_s":null,"native_audio":false,"credits_per_shot":\(cr),
+             "available":\(avail)}
+            """
+        }.joined(separator: ",") + "]"
+        return try! JSONDecoder().decode([MetagGateway.Pricing.Engine].self, from: Data(json.utf8))
+    }
+
+    static let live = engines([("local", 1, true), ("wan-flash", 7, true),
+                               ("seedance", 34, true), ("veo", 56, true)])
+
+    /// 第一条片子：挑能用的付费档里最便宜的那一个（今天是 wan-flash）。
+    @Test func theFirstFilmGetsTheCheapestTierThatMoves() {
+        #expect(MetagDraftSheet.firstFilmEngine(in: Self.live, firstFilm: true) == "wan-flash")
+    }
+
+    /// **不是第一条就不动他的选择。** 老用户的默认值是另一件事，
+    /// 由他上次选的决定，不该被这条规则覆盖。
+    @Test func aReturningUserKeepsTheOldDefault() {
+        #expect(MetagDraftSheet.firstFilmEngine(in: Self.live, firstFilm: false) == nil)
+    }
+
+    /// **拿不到报价单就不动默认值** —— 网络抖一下不该让他第一条片子换一档。
+    @Test func noPricingMeansNoChange() {
+        #expect(MetagDraftSheet.firstFilmEngine(in: [], firstFilm: true) == nil)
+    }
+
+    /// 停售的档不许被选中，哪怕它更便宜。
+    @Test func anUnavailableTierIsNotChosen() {
+        let list = Self.engines([("local", 1, true), ("wan-flash", 7, false), ("seedance", 34, true)])
+        #expect(MetagDraftSheet.firstFilmEngine(in: list, firstFilm: true) == "seedance")
+    }
+
+    /// **不挑自研档** —— 它正是我们要绕开的那一档（它是默认值本身）。
+    @Test func itNeverPicksTheInHouseTier() {
+        let onlyLocal = Self.engines([("local", 1, true)])
+        #expect(MetagDraftSheet.firstFilmEngine(in: onlyLocal, firstFilm: true) == nil)
+    }
+}

@@ -719,6 +719,24 @@ struct MetagDraftSheet: View {
     /// 客户端唯一能做的是：拿它去报价单里查这一档还在不在。
     static let fallbackEngineID = "local"
 
+    /// 第一条片子默认用哪一档。**nil = 不动默认值。**
+    ///
+    /// 挑法：能用的付费档里最便宜的那一个。不写死 `wan-flash` ——
+    /// 今晚为止我们已经因为"同一份名单写三处"栽过三次；档位表在网关，
+    /// 客户端只按规则挑，加档下架都不用改这里。
+    ///
+    /// 不是第一条片子、或者报价单没拿到，就返回 nil（保持自研档）。
+    static func firstFilmEngine(
+        in engines: [MetagGateway.Pricing.Engine], firstFilm: Bool
+    ) -> String? {
+        guard firstFilm else { return nil }
+        return engines
+            .filter { $0.isAvailable && $0.id != fallbackEngineID }
+            .min { $0.credits_per_shot < $1.credits_per_shot }?
+            .id
+    }
+
+
     private var perShot: Int { engines.first { $0.id == engine }?.credits_per_shot ?? 1 }
 
     /// 免费试渲用哪一档。
@@ -947,6 +965,23 @@ struct MetagDraftSheet: View {
         .frame(width: AppTheme.MetagDraft.sheetWidth)
         .task {
             engines = (try? await MetagGateway.pricing().engines) ?? []
+            // **第一条片子默认走会动的那一档。**
+            //
+            // 自研档 1cr/镜是最便宜的，也是最不会动的：30 天 461 镜平均
+            // motion 5.66，而 wan-flash 16.73。默认档决定他第一条片子长什么样，
+            // 而第一条片子决定他还回不回来 —— 2026-09-20 一个用户看完说
+            // 「每一帧是镜头 PPT，完全不是视频」，那条片子跑的就是默认档。
+            //
+            // **只改默认值，不改价格显示**：按钮上照旧写这一档的价
+            // （见 `produceLabel`）。服务端不升档（那会让实扣高于报价），
+            // 客户端也不偷偷换 —— 他随时能在档位选择器里改回去。
+            //
+            // 取不到账号信息就保持原样（自研档）：**错的方向必须是
+            // "少给他一次中档"，不是"多花他的钱"**（网关那侧同一个口径）。
+            let firstFilm = (try? await MetagGateway.account())?.first_film ?? false
+            if let first = Self.firstFilmEngine(in: engines, firstFilm: firstFilm) {
+                engine = first
+            }
         }
         .onAppear(perform: seedIfNeeded)
         // 换了一条草案，上一条的试渲状态就不再成立 —— 那句红字和
