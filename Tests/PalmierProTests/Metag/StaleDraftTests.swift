@@ -190,3 +190,55 @@ struct SampleArrivesOnScreenTests {
         #expect(model.sampleFailure == "upstream said no", "渲挂了没有下文，比没渲更伤")
     }
 }
+
+/// 免费试渲不许永远挑第 0 镜。
+///
+/// 2026-09-20 线上实拍两条片子，第 0 镜的提示词分别是
+/// "a lone woman stands under a glowing awning…" / "raindrops ripple across
+/// oily black asphalt…" —— 建置镜，按电影惯例本来就是静的。而我们**永远只渲
+/// 第 0 镜**给陌生人看，于是他唯一那一眼"付费档长什么样"是镜头缓推、人不动。
+/// 判据的样本就是那两条真片子的原文。
+@MainActor
+struct LiveliestShotTests {
+    static func shots(_ prompts: [String]) -> [MetagGateway.Job.Shot] {
+        let json = "[" + prompts.map {
+            let p = $0.replacingOccurrences(of: "\"", with: "\\\"")
+            return """
+            {"asset":null,"asset_use":null,"narration":"","video":"v","audio":"a","prompt":"\(p)"}
+            """
+        }.joined(separator: ",") + "]"
+        return try! JSONDecoder().decode([MetagGateway.Job.Shot].self, from: Data(json.utf8))
+    }
+
+    /// 线上那条片子的原文（a8f80c12，2026-09-20）。第 1 镜里人在数数，
+    /// 第 0 镜只是雨打在柏油路上。
+    @Test func itPicksTheShotWhereSomeoneDoesSomething() {
+        let real = Self.shots([
+            "Wide shot from puddle level: raindrops ripple across oily black asphalt reflecting neon signs. A young East Asian woman stands under a translucent plastic awning.",
+            "Medium close-up: rain streaks diagonally as a yellow bus passes left-to-right. She counts silently, index finger rising and falling six times.",
+            "Over-the-shoulder: a matte-black sedan glides into frame, headlights cutting twin tunnels through rain.",
+            "Extreme close-up, macro lens: raindrops bead on the rim of her white paper cup, steam curling faintly.",
+        ])
+        #expect(MetagDraftModel.liveliestShot(real) == 1,
+                "挑中的是第 \(MetagDraftModel.liveliestShot(real)) 镜 —— 又把建置镜端给了陌生人")
+    }
+
+    /// **一个动作词都没有时留在第 0 镜。** 分不出来就别乱挑：
+    /// 那时至少他看到的是开场，而不是一个随机的中间镜。
+    @Test func itStaysOnTheOpenerWhenNothingMoves() {
+        #expect(MetagDraftModel.liveliestShot(Self.shots([
+            "Wide shot of an empty street at dawn.",
+            "Close-up of a cold cup of coffee on a table.",
+        ])) == 0)
+        #expect(MetagDraftModel.liveliestShot([]) == 0, "没有镜头时不许越界")
+    }
+
+    /// **背景动不算。** 车流、雨丝、霓虹闪烁都会动，而主体不动正是我们要避开的那种。
+    @Test func backgroundMotionDoesNotCount() {
+        let s = Self.shots([
+            "Static frame: she lifts her hand and turns her head toward the door.",
+            "Traffic passing, blurred headlights streaking, rain falling, neon flickering.",
+        ])
+        #expect(MetagDraftModel.liveliestShot(s) == 0, "被背景动静骗了")
+    }
+}

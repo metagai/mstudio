@@ -237,6 +237,10 @@ enum MetagGateway {
             let narration: String
             let video: String
             let audio: String
+            /// 这一镜的画面提示词（英文）。网关一直在发（`delivery.rs:706`），
+            /// Mac 此前没解 —— 而**免费试渲挑哪一镜，只有它答得出**：
+            /// 见 `MetagDraftModel.liveliestShot`。
+            var prompt: String? = nil
         }
         let job_id: String
         let status: String?
@@ -935,11 +939,18 @@ enum MetagGateway {
     /// 新用户的全部体验都是我们最弱的一档。
     ///
     /// 一人一次，对用户 0 credits。第二次网关回 402 / sample_used。
-    static func sampleShot(id: String, engine: String) async throws {
+    /// 免费试渲一镜。**`shot` 要挑，不能一直是第 0 镜。**
+    ///
+    /// 网关不给 `shot` 时默认渲第 0 镜，而第 0 镜按电影惯例是建置镜 ——
+    /// 我们的导演也确实这么写（2026-09-20 线上实拍两条，第 0 镜的提示词分别是
+    /// "a lone woman stands…" 和 "raindrops ripple across oily black asphalt"）。
+    /// **于是唯一那一镜"证明它会动"的样片，系统性地是全片最不动的那一镜。**
+    /// 实拍出来就是：镜头缓推，人一动不动 —— 正是用户骂的那句"镜头 PPT"。
+    static func sampleShot(id: String, engine: String, shot: Int) async throws {
         try Self.refuseUnderTest("sampleShot")
         struct Response: Decodable { let cost: Int }
         let req = try request("api/v1/preview/\(id)/sample", method: "POST",
-                              body: ["engine": engine])
+                              body: ["engine": engine, "shot": shot])
         _ = try await send(req, as: Response.self)
     }
 

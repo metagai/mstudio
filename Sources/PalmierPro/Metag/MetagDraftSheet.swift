@@ -129,6 +129,38 @@ final class MetagDraftModel: ObservableObject {
         return shot
     }
 
+    /// 免费试渲挑哪一镜。**不是第 0 镜。**
+    ///
+    /// 2026-09-20 线上实拍两条片子，第 0 镜的提示词分别是
+    /// "a lone woman stands under a glowing awning…" 和
+    /// "raindrops ripple across oily black asphalt…" —— 都是建置镜，
+    /// 按电影惯例本来就该是静的。而我们**永远只渲第 0 镜**给陌生人看，
+    /// 于是他唯一那一眼"付费档长什么样"，看到的是镜头缓推、人一动不动。
+    /// 那正是他骂的那句「每一帧画面是镜头 PPT」。
+    ///
+    /// 挑法：**看提示词里有没有人在做事**。这是个粗判据 ——
+    /// 它答不了"渲出来动没动"（那要看成片，见 `shot_quality` 那边的洞），
+    /// 但它一定强过"永远挑建置镜"。一个动作词都找不到时留在第 0 镜：
+    /// **分不出来就别乱挑**，那时至少他看到的是开场。
+    static func liveliestShot(_ shots: [MetagGateway.Job.Shot]) -> Int {
+        // 人在做事的词。不收 "passing" / "blurred" 这类背景动静 ——
+        // 背景动、主体不动，正是我们要避开的那一种。
+        let verbs = ["lifts", "raises", "lowers", "turns", "steps", "walks", "runs",
+                     "reaches", "grabs", "opens", "closes", "shifts", "counts",
+                     "tightens", "pulls", "pushes", "rolls", "breathes", "blinks",
+                     "nods", "leans", "sits", "stands up", "kneels", "throws",
+                     "catches", "wipes", "drops", "lifting", "turning", "reaching",
+                     "walking", "stepping", "rising and falling"]
+        var best = 0, bestScore = 0
+        for (i, shot) in shots.enumerated() {
+            let p = (shot.prompt ?? "").lowercased()
+            guard !p.isEmpty else { continue }
+            let score = verbs.reduce(0) { $0 + (p.contains($1) ? 1 : 0) }
+            if score > bestScore { best = i; bestScore = score }
+        }
+        return best
+    }
+
     /// 那一镜没渲成。**要说出来** —— 他刚被告知"正在给你渲一镜真的"，
     /// 没有下文比没渲更伤。免费机会 worker 已经还给他了。
     var sampleFailure: String? {
@@ -747,7 +779,9 @@ struct MetagDraftSheet: View {
         sampling = true
         defer { sampling = false }
         do {
-            try await MetagGateway.sampleShot(id: job, engine: tier)
+            try await MetagGateway.sampleShot(
+                id: job, engine: tier,
+                shot: MetagDraftModel.liveliestShot(model.job?.shots ?? []))
             sampled = true
             sampleError = nil
         } catch {
