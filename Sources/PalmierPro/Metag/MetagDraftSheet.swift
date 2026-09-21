@@ -978,7 +978,16 @@ struct MetagDraftSheet: View {
             //
             // 取不到账号信息就保持原样（自研档）：**错的方向必须是
             // "少给他一次中档"，不是"多花他的钱"**（网关那侧同一个口径）。
-            let firstFilm = (try? await MetagGateway.account())?.first_film ?? false
+            // **匿名身份按定义就不可能出过片** —— 网关的匿名闸禁止批准出片
+            // （`anon.rs` 自己的测试：`assert!(!anon_may("POST", ".../approve"), "定稿是要钱的")`）。
+            //
+            // ⚠ 而且**问也问不到**：`/api/v1/me` 不在匿名白名单里，匿名票调它
+            // 拿的是 401 `sign_in_required`（两个区实测都是）。第一版直接
+            // `try? await account()`，于是这条默认档**对每一个陌生人静默失效** ——
+            // 而陌生人正是它要服务的人。`try?` 把那个 401 吞得一声不响。
+            let firstFilm = MetagTicket.isAnonymous(MetagGateway.token)
+                ? true
+                : ((try? await MetagGateway.account())?.first_film ?? false)
             if let first = Self.firstFilmEngine(in: engines, firstFilm: firstFilm) {
                 engine = first
                 // **光设上限等于没设。**

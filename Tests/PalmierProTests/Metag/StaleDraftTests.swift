@@ -306,6 +306,26 @@ struct FirstFilmEngineTests {
                 "只设了默认档没打开「每一镜都用这一档」—— 那四镜还是会跑 local")
     }
 
+    /// **匿名用户不问服务端**：`/api/v1/me` 不在匿名白名单里，匿名票调它拿的是
+    /// 401 `sign_in_required`（两个区实测都是），而 `try?` 会把它吞得一声不响 ——
+    /// 于是这条默认档**对每一个陌生人静默失效**，而陌生人正是它要服务的人。
+    ///
+    /// 匿名身份按定义不可能出过片（网关的匿名闸禁止批准出片，
+    /// `anon.rs` 自己的测试钉着这条），所以对他们 first_film 恒为真。
+    @Test func anonymousNeverAsksTheServer() throws {
+        let src = try String(
+            contentsOf: URL(fileURLWithPath: #filePath)
+                .deletingLastPathComponent().deletingLastPathComponent()
+                .deletingLastPathComponent().deletingLastPathComponent()
+                .appendingPathComponent("Sources/PalmierPro/Metag/MetagDraftSheet.swift"),
+            encoding: .utf8)
+        let hook = try #require(src.range(of: "let firstFilm ="))
+        let block = String(src[hook.lowerBound...].prefix(300))
+        #expect(block.contains("MetagTicket.isAnonymous"),
+                "匿名那一支还在问 /me —— 那是 401，默认档会静默失效")
+        #expect(block.contains("? true"), "匿名没有被直接判成「第一次」")
+    }
+
     /// **不挑自研档** —— 它正是我们要绕开的那一档（它是默认值本身）。
     @Test func itNeverPicksTheInHouseTier() {
         let onlyLocal = Self.engines([("local", 1, true)])
