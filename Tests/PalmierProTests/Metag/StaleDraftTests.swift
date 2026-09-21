@@ -287,6 +287,25 @@ struct FirstFilmEngineTests {
         #expect(MetagDraftSheet.firstFilmEngine(in: list, firstFilm: true) == "seedance")
     }
 
+    /// **光设上限等于没设 —— 得同时勾上"每一镜都用这一档"。**
+    ///
+    /// 网关的逐镜路由：只有需要口型同步的镜头才用他选的那一档，其余回落 local
+    /// （`main.rs` 那段注释写着"用户选的引擎是上限"）。而绝大多数片子没有口播 ——
+    /// 30 天 555 镜里 461 镜跑在 local 上，平均 motion 5.66。
+    /// 判据够不着 SwiftUI 的 @State，所以断在源码上：设了档就必须同时打开那个开关。
+    @Test func settingTheTierAlsoTurnsOnEveryShot() throws {
+        let src = try String(
+            contentsOf: URL(fileURLWithPath: #filePath)
+                .deletingLastPathComponent().deletingLastPathComponent()
+                .deletingLastPathComponent().deletingLastPathComponent()
+                .appendingPathComponent("Sources/PalmierPro/Metag/MetagDraftSheet.swift"),
+            encoding: .utf8)
+        let hook = try #require(src.range(of: "firstFilmEngine(in: engines, firstFilm: firstFilm)"))
+        let block = String(src[hook.lowerBound...].prefix(1200))
+        #expect(block.contains("allShots = true"),
+                "只设了默认档没打开「每一镜都用这一档」—— 那四镜还是会跑 local")
+    }
+
     /// **不挑自研档** —— 它正是我们要绕开的那一档（它是默认值本身）。
     @Test func itNeverPicksTheInHouseTier() {
         let onlyLocal = Self.engines([("local", 1, true)])

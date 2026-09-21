@@ -981,6 +981,19 @@ struct MetagDraftSheet: View {
             let firstFilm = (try? await MetagGateway.account())?.first_film ?? false
             if let first = Self.firstFilmEngine(in: engines, firstFilm: firstFilm) {
                 engine = first
+                // **光设上限等于没设。**
+                //
+                // 网关的逐镜路由是：只有需要口型同步的镜头才用他选的那一档，
+                // 其余一律回落 local（main.rs:1600 那段，注释写着"用户选的引擎是上限"）。
+                // 而绝大多数片子没有口播 —— 30 天 555 镜里 461 镜跑在 local 上，
+                // 平均 motion 5.66。**所以只改默认档，他第一条片子照样全是自研档，
+                // 也就照样是那句「镜头 PPT」。**
+                //
+                // 勾上"每一镜都用这一档"才是真的用它。代价写在按钮上：
+                // 四镜 × 7cr = 28cr，正好是注册赠额（30）能买的一条完整片子。
+                // 勾上之后 `exactPrice` 才有值 —— 混档报不出准数，
+                // 而**他按下去之前必须看见那个数**。
+                allShots = true
             }
         }
         .onAppear(perform: seedIfNeeded)
