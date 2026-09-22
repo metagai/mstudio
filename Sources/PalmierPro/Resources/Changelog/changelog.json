@@ -2,6 +2,35 @@
   "changelogURL": "https://metag.ai/docs",
   "entries": [
     {
+      "version": "0.1.20",
+      "date": "2026-09-22",
+      "sections": [
+        {
+          "heading": "New",
+          "items": [
+            "Your first film is now made with a model that moves. Until now the opening tier was our own free engine: it holds a frame steady and pushes the camera across it — a video by the file format, a photograph by the eye. Every shot of your first film now uses a paid tier, and the button carries the exact price before you press it.",
+            "One shot, free, at the real quality. The draft is still frames; this is the single moment you get to see what a finished shot actually looks like before deciding to pay for the rest. It starts on its own as soon as the draft is ready.",
+            "When a shot fails its check, the film tells you which one — right next to the button that reshoots it. Before, the verdict existed and never reached the screen."
+          ]
+        },
+        {
+          "heading": "Improved",
+          "items": [
+            "The draft now looks like a storyboard: black border, shot number, and a line saying it is still frames. It no longer spends its first seconds being mistaken for the film you paid for.",
+            "A long script is no longer turned away. Paste a whole scene and you get a quote estimated from its opening, and it says so."
+          ]
+        },
+        {
+          "heading": "Fixed",
+          "items": [
+            "The finished film now arrives by itself. You approved it and paid for it, and then the last step waited for a decision nobody had told you to make. It lands in the media panel when it is done.",
+            "A refused request no longer leaves the previous draft on screen, where it reads as the answer to what you just asked.",
+            "We no longer offer music we cannot make, and we no longer guess which tier can render your free shot from its price alone."
+          ]
+        }
+      ]
+    },
+    {
       "version": "0.1.19",
       "date": "2026-09-13",
       "sections": [

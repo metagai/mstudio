@@ -450,6 +450,15 @@ codesign --verify --strict --verbose=2 "$APP"
 # 不是"这个 app 跑得起来"。** 那四版它全程绿着。
 "$ROOT/scripts/check-app-launches.sh" "$APP"
 
+# **起得来，还得有话对用户说。**
+#
+# 2026-09-13 的 0.1.19 走完了上面每一道 —— 签名、`--verify`、启动检查 ——
+# 然后自动更新把它推给了每一个人，而**用户点开更新说明是空白**：
+# `changelog.json` 里没有 0.1.19 那一条。
+# 上面那些问的是「这个包对不对 / 跑不跑得起来」，**没有一处在问
+# 「这一版有没有话对用户说」。**
+"$ROOT/scripts/check-release-notes-exist.sh" "$APP"
+
 if [ "$MODE" = "sign" ]; then
   echo "==> Done: $APP (signed, not notarized)"
   exit 0
