@@ -40,9 +40,10 @@ enum MetagCrew {
     }
 
     static let members: [Member] = [
-        // 导演占 storyboard 而不是单开一格：把一句话拆成一场场戏，
-        // 正是导演在做的事，而那一段也是最长的一段（约占整段等待的四成）。
-        Member(stage: "storyboard", name: "Nova", title: L10n.key("Director"),
+        // 名字和职位照 studio 的名册（crew-identity.ts，和观看控制台同一批人，2026-10-12）：
+        // storyboard 阶段（把一句话拆成一场场戏）是编剧 Nova；frames 阶段（画首帧）是分镜 Sol ——
+        // 草案里没有人拍片，摄影 Ren 只在付费出片真开机时上场。scripts/check-crew-roster.py 钉着两端。
+        Member(stage: "storyboard", name: "Nova", title: L10n.key("Writer"),
                doing: L10n.key("Breaking your line into shots"),
                tookOver: nil, tint: Color(red: 0.298, green: 0.431, blue: 0.961)),
         Member(stage: "voice", name: "Kai", title: L10n.key("Casting"),
@@ -54,9 +55,9 @@ enum MetagCrew {
                tookOver: L10n.key("Kai picked the voice. Reading Nova's %@ lines now."),
                tint: Color(red: 0.847, green: 0.333, blue: 0.435)),
         // **和 studio 用同一句。** "Lining up the first frame" 在 web 那边
-        // 已经是 Ren 的到场白（他们每人有 hello + doing 两句），Mac 只有
+        // 已经是 Sol 的到场白（他们每人有 hello + doing 两句），Mac 只有
         // doing 一句 —— 用那一句的话，同一个人会先说一遍再显示一遍。
-        Member(stage: "frames", name: "Ren", title: L10n.key("Cinematographer"),
+        Member(stage: "frames", name: "Sol", title: L10n.key("Storyboard"),
                doing: L10n.key("Framing the first shot"),
                tookOver: L10n.key("Working from Nova's shot list — %@ frames to light."),
                tint: Color(red: 0.227, green: 0.635, blue: 0.627)),
